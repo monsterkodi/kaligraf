@@ -1,0 +1,74 @@
+
+#stage
+    position absolute
+    left    0
+    right   0
+    top     0
+    bottom  0
+ 
+.picker
+    position absolute
+    left    200px
+    top     10px
+    
+.dot
+    pointer-events none
+    
+.svg_select_points
+    fill    white
+    
+.svg_select_points_lt
+    cursor  nw-resize
+.svg_select_points_rt
+    cursor  ne-resize
+.svg_select_points_rb
+    cursor  se-resize
+.svg_select_points_lb
+    cursor  sw-resize
+    
+.svg_select_points_t
+    cursor  n-resize
+    fill    gray
+.svg_select_points_r
+    cursor  e-resize
+    fill    gray
+.svg_select_points_b
+    cursor  s-resize
+    fill    gray
+.svg_select_points_l
+    cursor  w-resize
+    fill    gray
+
+.svg_select_points_rot
+    cursor  pointer
+    fill    gray
+
+.svg_select_points_point
+    cursor  move
+
+.svg_select_boundingRect
+    fill            none
+    stroke          gray
+    stroke-width    1
+    stroke-opacity  0.8
+    stroke-dasharray 10 10
+    pointer-events none
+    
+.menu
+    position absolute
+    left 0
+    top 0
+    -webkit-margin-start  0px
+    -webkit-margin-before 0px
+    -webkit-margin-after  0px
+    -webkit-padding-start 0px
+                
+.button
+    padding-left     10px
+    padding-right    10px
+    background-color #888
+    cursor           pointer
+    border-style     hidden
+                
+    &:hover
+        background-color #fff

@@ -1,0 +1,14 @@
+name          kaligraf
+version       0.0.1
+description   experiment
+main          js/main.js
+author        monsterkodi
+license       Unlicense
+dependencies
+              kxk             ^0.16.3
+              svg.colorat.js  ^1.0.0
+              svg.draggable.js  ^2.2.1
+              svg.draw.js     ^2.0.3
+              svg.js          ^2.6.3
+              svg.resize.js   ^1.4.1
+              svg.select.js   ^2.1.2

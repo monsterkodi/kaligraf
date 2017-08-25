@@ -9,7 +9,7 @@
 } = require 'kxk'
 
 WIDTH  = 255
-HEIGHT = 25
+HEIGHT = 30
 
 class Picker
 
@@ -32,78 +32,43 @@ class Picker
             stop.at 1.0, "#fff"
         
         @sqr = @g.rect()
-        @sqr.attr
-            width:  HEIGHT*2
-            height: HEIGHT*2
-
         @bot = @g.rect()
-        @bot.addClass 'trans'
-        @bot.attr
-            width:  HEIGHT*2
-            height: HEIGHT
-            y:      HEIGHT
-            stroke: 'none'
-
         @top = @g.rect()
-        @top.addClass 'trans'
-        @top.attr
-            width:  HEIGHT*2
-            height: HEIGHT
-            stroke: 'none'
+        
+        @sqr.attr width:HEIGHT*2, height:HEIGHT*2, stroke: 'none', fill: @checkers()
+        @bot.attr width:HEIGHT*2, height:HEIGHT,   stroke: 'none', y:HEIGHT
+        @top.attr width:HEIGHT*2, height:HEIGHT,   stroke: 'none'
             
         @grd = @g.group()
         
         @rgb = @grd.rect()
-        @rgb.attr
-            width:  WIDTH
-            height: HEIGHT
-            x:      HEIGHT*2
-            
         @gry = @grd.rect()
-        @gry.attr
-            width:  WIDTH
-            height: HEIGHT
-            x:      HEIGHT*2
-            y:      HEIGHT
-            fill:   @gradientGRY
-
         @col = @grd.rect()
-        @col.attr
-            width:  WIDTH
-            height: HEIGHT/3
-            x:      HEIGHT*2
-            y:      HEIGHT
-            fill:   @gradientCOL
-            
         @lum = @grd.rect()
-        @lum.addClass 'luminanceSlider'
-        @lum.attr 
-            width:  HEIGHT/3
-            height: HEIGHT/3
-            y:      HEIGHT
-            x:      HEIGHT*2+WIDTH/2-HEIGHT/6
-            stroke: 'white'
-            fill:   'black'
-            
         @lph = @grd.rect()
-        @lph.attr 
-            width:  HEIGHT/3
-            height: HEIGHT/3
-            y:      HEIGHT*2-HEIGHT/3
-            x:      HEIGHT*2+WIDTH-HEIGHT/6
-            stroke: 'black'
-            fill:   'white'
+        
+        @rgb.attr width:WIDTH, height:HEIGHT,   x:HEIGHT*2, stroke: 'none', 
+        @gry.attr width:WIDTH, height:HEIGHT,   x:HEIGHT*2, stroke: 'none', y:HEIGHT, fill:@gradientGRY
+        @col.attr width:WIDTH, height:HEIGHT/3, x:HEIGHT*2, stroke: 'none', y:HEIGHT, fill:@gradientCOL
+            
+        @lum.attr width:HEIGHT/3, height:HEIGHT/3, x:HEIGHT*2+WIDTH/2-HEIGHT/3, y:HEIGHT
+        @lph.attr width:HEIGHT/3, height:HEIGHT/3, x:HEIGHT*2+WIDTH-HEIGHT/3,   y:HEIGHT*2-HEIGHT/3
+        @lph.attr stroke:'black', fill:'white'
             
         @col.on 'mousedown', @selectLUM
         @lph.on 'mousedown', @selectLPH            
         @rgb.on 'mousedown', @selectRGB
         @gry.on 'mousedown', @selectGRY
 
+        @bot.addClass 'trans'
+        @top.addClass 'trans'
+        @lum.addClass 'trans'
+        
         @dot = @grd.line()
         @dot.addClass 'colorSlider'
         @dot.plot [[HEIGHT*2,0], [HEIGHT*2,HEIGHT]]
         
-        @drag = new drag 
+        @drag = new drag
             handle: @element
             target: @element
             onStart: => @sqr.on 'mouseup', @toggleGradient
@@ -112,9 +77,9 @@ class Picker
                 @element.style.left = "#{@element.offsetLeft+e.delta.x}px"
                 @element.style.top  = "#{@element.offsetTop+e.delta.y}px"
 
-        @mode       = 'rgb'
-        @alpha      = 1
-        @value      = 2.0/3
+        @mode  = 'rgb'
+        @alpha = 1
+        @value = 2.0/3
         @setLuminance 0.5
                 
     selectGRY: (event) => @pick  event, @gry, @selectGRY
@@ -167,10 +132,6 @@ class Picker
         
         i = @invert @color
         
-        @sqr.attr
-            fill:   @checkers @color
-            stroke: i
-
         @top.style
             fill: @color
             
@@ -197,9 +158,6 @@ class Picker
             stroke: i
             fill:   @color
 
-        # @lph.attr
-            # x: HEIGHT*2 + @alpha * WIDTH - HEIGHT/6
-            
     #  0000000   00000000    0000000   0000000    000  00000000  000   000  000000000  
     # 000        000   000  000   000  000   000  000  000       0000  000     000     
     # 000  0000  0000000    000000000  000   000  000  0000000   000 0 000     000     
@@ -256,9 +214,8 @@ class Picker
         @moveEvents cb
         stopEvent event
         
-        x = clamp HEIGHT*2, WIDTH+HEIGHT*2, @xPosEvent event
-        slider.attr x: x-HEIGHT/6
-    
+        slider.attr x:HEIGHT*2+f*(WIDTH-HEIGHT/3)    
+        
     # 00000000   000   0000000  000   000  
     # 000   000  000  000       000  000   
     # 00000000   000  000       0000000    
@@ -280,9 +237,10 @@ class Picker
     # 00000000      0      00000000  000   000     000     0000000   
     
     moveEvents: (cb) ->
-        @clearEvents cb
+        @clearEvents @moveCB
+        @moveCB = cb
         window.addEventListener 'mousemove', cb
-        window.addEventListener 'mouseup', => @clearEvents cb
+        window.addEventListener 'mouseup', => @clearEvents @moveCB
         
     clearEvents: (cb) ->
         window.removeEventListener 'mousemove', cb
@@ -300,9 +258,9 @@ class Picker
         else            
             new SVG.Color '#000'
 
-    checkers: (c) ->
+    checkers: (c='#fff') ->
         @svg.pattern 10, 10, (add) ->
-            add.rect(10,10).fill "#fff"
+            add.rect(10,10).fill c
             add.rect(5,5)
             add.rect(5,5).move 5,5 
             

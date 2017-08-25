@@ -59,10 +59,30 @@ class Picker
         @gry.attr
             width:  WIDTH
             height: HEIGHT
-            y:      HEIGHT
             x:      HEIGHT*2
+            y:      HEIGHT
             fill:   @gradientGRY
+
+        @lum = @grd.rect()
+        @lum.attr 
+            width:  HEIGHT/4
+            height: HEIGHT/4
+            y:      HEIGHT
+            x:      HEIGHT*2+WIDTH/2-HEIGHT/8
+            stroke: 'white'
+            fill:   'black'
             
+        @lph = @grd.rect()
+        @lph.attr 
+            width:  HEIGHT/4
+            height: HEIGHT/4
+            y:      HEIGHT*2-HEIGHT/4
+            x:      HEIGHT*2+WIDTH-HEIGHT/8
+            stroke: 'black'
+            fill:   'white'
+            
+        @lum.on 'mousedown', @selectLUM
+        @lph.on 'mousedown', @selectLPH            
         @rgb.on 'mousedown', @selectRGB
         @gry.on 'mousedown', @selectGRY
 
@@ -82,42 +102,80 @@ class Picker
     selectRGB: (event) => @pick event, @gradientRGB, @rgb, @selectRGB 
     selectGRY: (event) => @pick event, @gradientGRY, @gry, @selectGRY
     
-    pick: (event, gradient, grd, select) =>
+    selectLUM: (event) => @slide event, @lum, @selectLUM
+    selectLPH: (event) => @slide event, @lph, @selectLPH
+        
+    #  0000000  000      000  0000000    00000000  
+    # 000       000      000  000   000  000       
+    # 0000000   000      000  000   000  0000000   
+    #      000  000      000  000   000  000       
+    # 0000000   0000000  000  0000000    00000000  
+    
+    slide: (event, slider, cb) =>
+        
+        x = clamp HEIGHT*2, WIDTH+HEIGHT*2, @xPosEvent event
+        
+        slider.attr x: x-HEIGHT/8
 
+        @moveEvents cb
+        stopEvent event
+    
+    # 00000000   000   0000000  000   000  
+    # 000   000  000  000       000  000   
+    # 00000000   000  000       0000000    
+    # 000        000  000       000  000   
+    # 000        000   0000000  000   000  
+    
+    pick: (event, gradient, grd, cb) =>
+
+        f = clamp 0, 1, (@xPosEvent(event) - HEIGHT*2) / WIDTH
+        c = gradient.colorAt f
+        i = @invert c
+        @sqr.attr
+            fill:   c
+            stroke: i
+        @dot.attr
+            stroke: i
+            
+        x = HEIGHT*2 + f*WIDTH
+        if grd == @gry
+            y = HEIGHT
+            @lum.hide()
+        else
+            y = 0
+            @lum.show()
+        @dot.plot [[x,y], [x,HEIGHT+y]]
+        
+        @moveEvents cb
+        stopEvent event
+        
+    # 00000000  000   000  00000000  000   000  000000000   0000000  
+    # 000       000   000  000       0000  000     000     000       
+    # 0000000    000 000   0000000   000 0 000     000     0000000   
+    # 000          000     000       000  0000     000          000  
+    # 00000000      0      00000000  000   000     000     0000000   
+    
+    moveEvents: (cb) ->
+        @clearEvents cb
+        window.addEventListener 'mousemove', cb
+        window.addEventListener 'mouseup', => @clearEvents cb
+        
+    clearEvents: (cb) ->
+        window.removeEventListener 'mousemove', cb
+        window.removeEventListener 'mousemove', cb
+
+    xPosEvent: (event) -> 
         r = $("#stage").getBoundingClientRect()
         x = event.pageX - r.left - @element.offsetLeft
         
-        f = clamp 0, 1, (x - HEIGHT*2) / WIDTH
-        
-        i = @invert gradient.colorAt f
-        @sqr.attr 
-            fill:   gradient.colorAt f
-            stroke: i
-        @dot.attr
-            fill:   gradient.colorAt f
-            stroke: i
-            
-        x = f * WIDTH+HEIGHT*2
-        y = grd == @gry and HEIGHT or 0
-        @dot.plot [[x,y], [x,HEIGHT+y]]
-        
-        @clearPickEvents select
-        window.addEventListener 'mousemove', select
-        window.addEventListener 'mouseup', => @clearPickEvents select
-        
-        stopEvent event
-
-    clearPickEvents: (select) =>
-        window.removeEventListener 'mousemove', select
-        window.removeEventListener 'mousemove', select
-        
-    invert: (c) ->
-        i = c
-        i.r = 255 - c.r
-        i.g = 255 - c.g
-        i.b = 255 - c.b
-        i
+    invert: (c) -> new SVG.Color r:255-c.r, g:255-c.g, b:255-c.b
        
+    # 000000000   0000000    0000000    0000000   000      00000000  
+    #    000     000   000  000        000        000      000       
+    #    000     000   000  000  0000  000  0000  000      0000000   
+    #    000     000   000  000   000  000   000  000      000       
+    #    000      0000000    0000000    0000000   0000000  00000000  
+    
     toggleDisplay: =>
         if @element.style.display == 'none'
             @element.style.display = 'initial'

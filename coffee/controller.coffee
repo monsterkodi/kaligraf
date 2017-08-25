@@ -6,15 +6,19 @@
 #  0000000   0000000   000   000     000     000   000   0000000   0000000  0000000  00000000  000   000
 
 {log, setStyle} = require 'kxk'
-Menu  = require './menu'
-Stage = require './stage'
+Menu   = require './menu'
+Stage  = require './stage'
+Tools  = require './tools'
+Picker = require './picker'
 
 class Controller
 
     constructor: (cfg) ->
         
         @element = cfg?.element ? window
-        @stage   = new Stage @element
+        @stage  = new Stage  @element
+        @picker = new Picker @element
+        @tools  = new Tools  @element
         
     setMenu: (menu) ->
         

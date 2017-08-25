@@ -6,17 +6,48 @@
     top     0
     bottom  0
  
+.tools
+    position absolute
+    left    10px
+    top     60px
+    height  60px    
+    width   60px
+    background #444
+    
 .picker
     position absolute
-    left    200px
+    left    10px
     top     10px
     height  60px
     
 .trans
-.colorSlider
-.luminanceSlider
     pointer-events none
+
+.menu
+    position absolute
+    left 0
+    top 0
+    -webkit-margin-start  0px
+    -webkit-margin-before 0px
+    -webkit-margin-after  0px
+    -webkit-padding-start 0px
+                
+.button
+    padding-left     10px
+    padding-right    10px
+    background-color #888
+    cursor           pointer
+    border-style     hidden
+                
+    &:hover
+        background-color #fff
     
+//  0000000  000   000   0000000   
+// 000       000   000  000        
+// 0000000    000 000   000  0000  
+//      000     000     000   000  
+// 0000000       0       0000000   
+
 .svg_select_points
     fill    white
     
@@ -57,21 +88,3 @@
     stroke-dasharray 10 10
     pointer-events none
     
-.menu
-    position absolute
-    left 0
-    top 0
-    -webkit-margin-start  0px
-    -webkit-margin-before 0px
-    -webkit-margin-after  0px
-    -webkit-padding-start 0px
-                
-.button
-    padding-left     10px
-    padding-right    10px
-    background-color #888
-    cursor           pointer
-    border-style     hidden
-                
-    &:hover
-        background-color #fff

@@ -7,21 +7,17 @@
 
 { elem, drag, stopEvent, post, clamp, log, $
 } = require 'kxk'
+Tool = require './tool'
 
 WIDTH  = 255
 HEIGHT = 30
 
-class Picker
+class Picker extends Tool
 
     constructor: (parent) ->
         
-        @element = elem 'div', class: 'picker'
-        parent.appendChild @element
-        
-        post.on 'picker', (msg) =>
-            switch msg
-                when 'toggle' then @toggleDisplay()
-        
+        super name: 'picker', parent: parent        
+                
         @svg = SVG(@element).size "#{WIDTH+HEIGHT*2}", "#{HEIGHT*2}" 
         @svg.addClass 'pickerSVG'
         
@@ -59,24 +55,16 @@ class Picker
         @lph.on 'mousedown', @selectLPH            
         @rgb.on 'mousedown', @selectRGB
         @gry.on 'mousedown', @selectGRY
-
+        
+        @dot = @grd.line()
+        @dot.plot [[HEIGHT*2,0], [HEIGHT*2,HEIGHT]]
+        
         @bot.addClass 'trans'
         @top.addClass 'trans'
         @lum.addClass 'trans'
-        
-        @dot = @grd.line()
-        @dot.addClass 'colorSlider'
-        @dot.plot [[HEIGHT*2,0], [HEIGHT*2,HEIGHT]]
-        
-        @drag = new drag
-            handle: @element
-            target: @element
-            onStart: => @sqr.on 'mouseup', @toggleGradient
-            onMove:  (e) => 
-                @sqr.off 'mouseup', @toggleGradient
-                @element.style.left = "#{@element.offsetLeft+e.delta.x}px"
-                @element.style.top  = "#{@element.offsetTop+e.delta.y}px"
-
+        @dot.addClass 'trans'
+        @sqr.addClass 'trans'
+                
         @mode  = 'rgb'
         @alpha = 1
         @value = 2.0/3
@@ -87,6 +75,8 @@ class Picker
         
     selectLUM: (event) => @slide event, @lum, @selectLUM
     selectLPH: (event) => @slide event, @lph, @selectLPH
+
+    onClick: => @toggleGradient()
     
     #  0000000   000      00000000   000   000   0000000   
     # 000   000  000      000   000  000   000  000   000  
@@ -270,12 +260,6 @@ class Picker
     #    000     000   000  000   000  000   000  000      000       
     #    000      0000000    0000000    0000000   0000000  00000000  
     
-    toggleDisplay: =>
-        if @element.style.display == 'none'
-            @element.style.display = 'initial'
-        else
-            @element.style.display = 'none'
-        
     toggleGradient: =>
         if @grd.visible()
             @grd.hide()

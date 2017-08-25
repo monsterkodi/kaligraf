@@ -12,7 +12,6 @@ sel    = require 'svg.select.js'
 rsz    = require 'svg.resize.js'
 drw    = require 'svg.draw.js'
 clr    = require 'svg.colorat.js'
-Picker = require './picker'
 
 class Stage
 
@@ -22,8 +21,6 @@ class Stage
         parent.appendChild stageElem
         @svg = @element = SVG(stageElem).size '100%', '100%' 
         @shapes = []
-        
-        @picker = new Picker parent
         
         @svg.on 'mousedown', @mouseDown
         @svg.on 'mousemove', @mouseMove

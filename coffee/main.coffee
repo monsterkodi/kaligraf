@@ -14,12 +14,17 @@ class Main
 
         @controller = new Controller element: element  
         @controller.setStyle 'style'
+        
         @controller.setMenu [
             
+            button: 'Tools'
+            click: -> post.emit 'toggle', 'tools'
+        ,
             button: 'Picker'
-            click: (button) -> post.emit 'picker', 'toggle'
+            click: -> post.emit 'toggle', 'picker'
+            
         ]
-                
+                        
     start: ->
                 
 module.exports = Main

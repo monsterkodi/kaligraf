@@ -99,12 +99,40 @@ class Picker
                 @element.style.left = "#{@element.offsetLeft+e.delta.x}px"
                 @element.style.top  = "#{@element.offsetTop+e.delta.y}px"
 
-    selectRGB: (event) => @pick event, @gradientRGB, @rgb, @selectRGB 
     selectGRY: (event) => @pick event, @gradientGRY, @gry, @selectGRY
-    
+    selectRGB: (event) => @pick event, @gradientRGB, @rgb, @selectRGB
+        
     selectLUM: (event) => @slide event, @lum, @selectLUM
     selectLPH: (event) => @slide event, @lph, @selectLPH
-        
+
+    setLuminance: (f) ->
+        c = parseInt 255 * clamp 0, 1, f*2
+        h = parseInt 255 * clamp 0, 1, (f-0.5)*2
+        @gradientRGB = @svg.gradient 'linear', (stop) ->
+            stop.at 0.0,   new SVG.Color r:c, g:h, b:h
+            stop.at 1.0/6, new SVG.Color r:c, g:c, b:h
+            stop.at 2.0/6, new SVG.Color r:h, g:c, b:h
+            stop.at 3.0/6, new SVG.Color r:h, g:c, b:c
+            stop.at 4.0/6, new SVG.Color r:h, g:h, b:c
+            stop.at 5.0/6, new SVG.Color r:c, g:h, b:c
+            stop.at 6.0/6, new SVG.Color r:c, g:h, b:h
+        @rgb.attr
+            fill: @gradientRGB
+         
+        if @mode == 'rgb'
+            @setColor @value
+
+    setColor: (f) ->
+        gradient = @mode == 'rgb' and @gradientRGB or @gradientGRY
+        @value = f
+        @color = gradient.colorAt @value
+        i = @invert @color
+        @sqr.attr
+            fill:   @color
+            stroke: i
+        @dot.attr
+            stroke: i        
+            
     #  0000000  000      000  0000000    00000000  
     # 000       000      000  000   000  000       
     # 0000000   000      000  000   000  0000000   
@@ -114,9 +142,13 @@ class Picker
     slide: (event, slider, cb) =>
         
         x = clamp HEIGHT*2, WIDTH+HEIGHT*2, @xPosEvent event
+        f = clamp 0, 1, (@xPosEvent(event) - HEIGHT*2) / WIDTH
+        
+        if slider == @lum
+            @setLuminance f
         
         slider.attr x: x-HEIGHT/8
-
+        
         @moveEvents cb
         stopEvent event
     
@@ -129,21 +161,19 @@ class Picker
     pick: (event, gradient, grd, cb) =>
 
         f = clamp 0, 1, (@xPosEvent(event) - HEIGHT*2) / WIDTH
-        c = gradient.colorAt f
-        i = @invert c
-        @sqr.attr
-            fill:   c
-            stroke: i
-        @dot.attr
-            stroke: i
-            
+        
         x = HEIGHT*2 + f*WIDTH
         if grd == @gry
             y = HEIGHT
+            @mode = 'gry'
             @lum.hide()
         else
             y = 0
+            @mode = 'rgb'
             @lum.show()
+        
+        @setColor f
+            
         @dot.plot [[x,y], [x,HEIGHT+y]]
         
         @moveEvents cb

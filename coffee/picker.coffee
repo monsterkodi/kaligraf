@@ -35,8 +35,22 @@ class Picker
         @sqr.attr
             width:  HEIGHT*2
             height: HEIGHT*2
-            stroke: 'gray'
 
+        @bot = @g.rect()
+        @bot.addClass 'trans'
+        @bot.attr
+            width:  HEIGHT*2
+            height: HEIGHT
+            y:      HEIGHT
+            stroke: 'none'
+
+        @top = @g.rect()
+        @top.addClass 'trans'
+        @top.attr
+            width:  HEIGHT*2
+            height: HEIGHT
+            stroke: 'none'
+            
         @grd = @g.group()
         
         @rgb = @grd.rect()
@@ -100,14 +114,25 @@ class Picker
 
         @mode       = 'rgb'
         @alpha      = 1
-        @value      = 0
+        @value      = 2.0/3
         @setLuminance 0.5
                 
-    selectGRY: (event) => @pick event, @gradientGRY, @gry, @selectGRY
-    selectRGB: (event) => @pick event, @gradientRGB, @rgb, @selectRGB
+    selectGRY: (event) => @pick  event, @gry, @selectGRY
+    selectRGB: (event) => @pick  event, @rgb, @selectRGB
         
     selectLUM: (event) => @slide event, @lum, @selectLUM
     selectLPH: (event) => @slide event, @lph, @selectLPH
+    
+    #  0000000   000      00000000   000   000   0000000   
+    # 000   000  000      000   000  000   000  000   000  
+    # 000000000  000      00000000   000000000  000000000  
+    # 000   000  000      000        000   000  000   000  
+    # 000   000  0000000  000        000   000  000   000  
+    
+    setAlpha: (f) -> 
+        
+        @alpha = f
+        @setColor @value
     
     # 000      000   000  00     00  000  000   000   0000000   000   000   0000000  00000000  
     # 000      000   000  000   000  000  0000  000  000   000  0000  000  000       000       
@@ -132,6 +157,54 @@ class Picker
     # 000       000   000  000      000   000  0000000    
     # 000       000   000  000      000   000  000   000  
     #  0000000   0000000   0000000   0000000   000   000  
+        
+    setColor: (f) ->
+        
+        gradient = @mode == 'rgb' and @gradientRGB or @gradientGRY
+        
+        @value = f
+        @color = new SVG.Color gradient.colorAt @value
+        
+        i = @invert @color
+        
+        @sqr.attr
+            fill:   @checkers @color
+            stroke: i
+
+        @top.style
+            fill: @color
+            
+        @bot.style
+            fill: @color
+            'fill-opacity': @alpha
+            
+        @dot.attr
+            stroke: i
+
+        x = HEIGHT*2 + @value*WIDTH
+        y = @mode == 'gry' and HEIGHT or 0 
+        @dot.plot [[x,y], [x,HEIGHT+y]]
+            
+        @gradientCOL = @svg.gradient 'linear', (stop) =>
+            stop.at 0.0, "#000"
+            stop.at 0.5, @colorGradient(0.5).colorAt @value
+            stop.at 1.0, "#fff"        
+#             
+        @col.attr
+            fill: @gradientCOL
+            
+        @lum.attr 
+            stroke: i
+            fill:   @color
+
+        # @lph.attr
+            # x: HEIGHT*2 + @alpha * WIDTH - HEIGHT/6
+            
+    #  0000000   00000000    0000000   0000000    000  00000000  000   000  000000000  
+    # 000        000   000  000   000  000   000  000  000       0000  000     000     
+    # 000  0000  0000000    000000000  000   000  000  0000000   000 0 000     000     
+    # 000   000  000   000  000   000  000   000  000  000       000  0000     000     
+    #  0000000   000   000  000   000  0000000    000  00000000  000   000     000     
     
     colorGradient: (f) ->
         
@@ -146,35 +219,7 @@ class Picker
             stop.at 4.0/6, new SVG.Color r:h, g:h, b:c
             stop.at 5.0/6, new SVG.Color r:c, g:h, b:c
             stop.at 6.0/6, new SVG.Color r:c, g:h, b:h
-    
-    setColor: (f) ->
-        
-        gradient = @mode == 'rgb' and @gradientRGB or @gradientGRY
-        
-        @value = f
-        @color = gradient.colorAt @value
-        
-        i = @invert @color
-        
-        @sqr.attr
-            fill:   @color
-            stroke: i
             
-        @dot.attr
-            stroke: i
-
-        @gradientCOL = @svg.gradient 'linear', (stop) =>
-            stop.at 0.0, "#000"
-            stop.at 0.5, @colorGradient(0.5).colorAt @value
-            stop.at 1.0, "#fff"        
-#             
-        @col.attr
-            fill: @gradientCOL
-            
-        @lum.attr 
-            stroke: i
-            fill:   @color
-
     # 00     00   0000000   0000000    00000000  
     # 000   000  000   000  000   000  000       
     # 000000000  000   000  000   000  0000000   
@@ -201,16 +246,18 @@ class Picker
     
     slide: (event, slider, cb) =>
         
-        x = clamp HEIGHT*2, WIDTH+HEIGHT*2, @xPosEvent event
-        f = clamp 0, 1, (@xPosEvent(event) - HEIGHT*2) / WIDTH
+        f = clamp 0, 1, (@xPosEvent(event)-HEIGHT*2) / WIDTH
         
         if slider == @lum
             @setLuminance f
-        
-        slider.attr x: x-HEIGHT/6
+        else
+            @setAlpha f
         
         @moveEvents cb
         stopEvent event
+        
+        x = clamp HEIGHT*2, WIDTH+HEIGHT*2, @xPosEvent event
+        slider.attr x: x-HEIGHT/6
     
     # 00000000   000   0000000  000   000  
     # 000   000  000  000       000  000   
@@ -218,17 +265,11 @@ class Picker
     # 000        000  000       000  000   
     # 000        000   0000000  000   000  
     
-    pick: (event, gradient, grd, cb) =>
+    pick: (event, grd, cb) =>
 
-        f = clamp 0, 1, (@xPosEvent(event) - HEIGHT*2) / WIDTH
-        
         @setMode grd == @gry and 'gry' or 'rgb'        
-        @setColor f
-            
-        x = HEIGHT*2 + f*WIDTH
-        y = @mode == 'gry' and HEIGHT or 0 
-        @dot.plot [[x,y], [x,HEIGHT+y]]
-        
+        @setColor clamp 0, 1, (@xPosEvent(event)-HEIGHT*2) / WIDTH
+                    
         @moveEvents cb
         stopEvent event
         
@@ -251,8 +292,20 @@ class Picker
         r = $("#stage").getBoundingClientRect()
         x = event.pageX - r.left - @element.offsetLeft
         
-    invert: (c) -> new SVG.Color r:255-c.r, g:255-c.g, b:255-c.b
-       
+    invert: (c) -> 
+        if c.r == c.g == c.b
+            return new SVG.Color c.r+c.g+c.b < 255+128 and '#fff' or '#000'
+        if @luminance < 0.5
+            new SVG.Color '#fff'
+        else            
+            new SVG.Color '#000'
+
+    checkers: (c) ->
+        @svg.pattern 10, 10, (add) ->
+            add.rect(10,10).fill "#fff"
+            add.rect(5,5)
+            add.rect(5,5).move 5,5 
+            
     # 000000000   0000000    0000000    0000000   000      00000000  
     #    000     000   000  000        000        000      000       
     #    000     000   000  000  0000  000  0000  000      0000000   

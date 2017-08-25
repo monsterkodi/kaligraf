@@ -26,16 +26,7 @@ class Picker
         @svg.addClass 'pickerSVG'
         
         @g = @svg.group()
-        
-        @gradientRGB = @svg.gradient 'linear', (stop) ->
-            stop.at 0.0,   "#f00"
-            stop.at 1.0/6, "#ff0"
-            stop.at 2.0/6, "#0f0"
-            stop.at 3.0/6, "#0ff"
-            stop.at 4.0/6, "#00f"
-            stop.at 5.0/6, "#f0f"
-            stop.at 6.0/6, "#f00"
-            
+                    
         @gradientGRY = @svg.gradient 'linear', (stop) ->
             stop.at 0.0, "#000"
             stop.at 1.0, "#fff"
@@ -53,7 +44,6 @@ class Picker
             width:  WIDTH
             height: HEIGHT
             x:      HEIGHT*2
-            fill:   @gradientRGB
             
         @gry = @grd.rect()
         @gry.attr
@@ -63,31 +53,40 @@ class Picker
             y:      HEIGHT
             fill:   @gradientGRY
 
-        @lum = @grd.rect()
-        @lum.attr 
-            width:  HEIGHT/4
-            height: HEIGHT/4
+        @col = @grd.rect()
+        @col.attr
+            width:  WIDTH
+            height: HEIGHT/3
+            x:      HEIGHT*2
             y:      HEIGHT
-            x:      HEIGHT*2+WIDTH/2-HEIGHT/8
+            fill:   @gradientCOL
+            
+        @lum = @grd.rect()
+        @lum.addClass 'luminanceSlider'
+        @lum.attr 
+            width:  HEIGHT/3
+            height: HEIGHT/3
+            y:      HEIGHT
+            x:      HEIGHT*2+WIDTH/2-HEIGHT/6
             stroke: 'white'
             fill:   'black'
             
         @lph = @grd.rect()
         @lph.attr 
-            width:  HEIGHT/4
-            height: HEIGHT/4
-            y:      HEIGHT*2-HEIGHT/4
-            x:      HEIGHT*2+WIDTH-HEIGHT/8
+            width:  HEIGHT/3
+            height: HEIGHT/3
+            y:      HEIGHT*2-HEIGHT/3
+            x:      HEIGHT*2+WIDTH-HEIGHT/6
             stroke: 'black'
             fill:   'white'
             
-        @lum.on 'mousedown', @selectLUM
+        @col.on 'mousedown', @selectLUM
         @lph.on 'mousedown', @selectLPH            
         @rgb.on 'mousedown', @selectRGB
         @gry.on 'mousedown', @selectGRY
 
         @dot = @grd.line()
-        @dot.addClass 'dot'
+        @dot.addClass 'colorSlider'
         @dot.plot [[HEIGHT*2,0], [HEIGHT*2,HEIGHT]]
         
         @drag = new drag 
@@ -99,16 +98,47 @@ class Picker
                 @element.style.left = "#{@element.offsetLeft+e.delta.x}px"
                 @element.style.top  = "#{@element.offsetTop+e.delta.y}px"
 
+        @mode       = 'rgb'
+        @alpha      = 1
+        @value      = 0
+        @setLuminance 0.5
+                
     selectGRY: (event) => @pick event, @gradientGRY, @gry, @selectGRY
     selectRGB: (event) => @pick event, @gradientRGB, @rgb, @selectRGB
         
     selectLUM: (event) => @slide event, @lum, @selectLUM
     selectLPH: (event) => @slide event, @lph, @selectLPH
-
+    
+    # 000      000   000  00     00  000  000   000   0000000   000   000   0000000  00000000  
+    # 000      000   000  000   000  000  0000  000  000   000  0000  000  000       000       
+    # 000      000   000  000000000  000  000 0 000  000000000  000 0 000  000       0000000   
+    # 000      000   000  000 0 000  000  000  0000  000   000  000  0000  000       000       
+    # 0000000   0000000   000   000  000  000   000  000   000  000   000   0000000  00000000  
+    
     setLuminance: (f) ->
+        
+        @luminance = f
+        
+        @gradientRGB = @colorGradient f   
+        
+        @rgb.attr
+            fill: @gradientRGB
+         
+        if @mode == 'rgb'
+            @setColor @value
+
+    #  0000000   0000000   000       0000000   00000000   
+    # 000       000   000  000      000   000  000   000  
+    # 000       000   000  000      000   000  0000000    
+    # 000       000   000  000      000   000  000   000  
+    #  0000000   0000000   0000000   0000000   000   000  
+    
+    colorGradient: (f) ->
+        
         c = parseInt 255 * clamp 0, 1, f*2
         h = parseInt 255 * clamp 0, 1, (f-0.5)*2
-        @gradientRGB = @svg.gradient 'linear', (stop) ->
+        
+        @svg.gradient 'linear', (stop) ->
             stop.at 0.0,   new SVG.Color r:c, g:h, b:h
             stop.at 1.0/6, new SVG.Color r:c, g:c, b:h
             stop.at 2.0/6, new SVG.Color r:h, g:c, b:h
@@ -116,22 +146,52 @@ class Picker
             stop.at 4.0/6, new SVG.Color r:h, g:h, b:c
             stop.at 5.0/6, new SVG.Color r:c, g:h, b:c
             stop.at 6.0/6, new SVG.Color r:c, g:h, b:h
-        @rgb.attr
-            fill: @gradientRGB
-         
-        if @mode == 'rgb'
-            @setColor @value
-
+    
     setColor: (f) ->
+        
         gradient = @mode == 'rgb' and @gradientRGB or @gradientGRY
+        
         @value = f
         @color = gradient.colorAt @value
+        
         i = @invert @color
+        
         @sqr.attr
             fill:   @color
             stroke: i
+            
         @dot.attr
-            stroke: i        
+            stroke: i
+
+        @gradientCOL = @svg.gradient 'linear', (stop) =>
+            stop.at 0.0, "#000"
+            stop.at 0.5, @colorGradient(0.5).colorAt @value
+            stop.at 1.0, "#fff"        
+#             
+        @col.attr
+            fill: @gradientCOL
+            
+        @lum.attr 
+            stroke: i
+            fill:   @color
+
+    # 00     00   0000000   0000000    00000000  
+    # 000   000  000   000  000   000  000       
+    # 000000000  000   000  000   000  0000000   
+    # 000 0 000  000   000  000   000  000       
+    # 000   000   0000000   0000000    00000000  
+    
+    setMode: (mode) ->
+        
+        @mode = mode
+        
+        switch @mode
+            when 'gry'
+                @lum.hide()
+                @col.hide()
+            when 'rgb'
+                @lum.show()
+                @col.show()
             
     #  0000000  000      000  0000000    00000000  
     # 000       000      000  000   000  000       
@@ -147,7 +207,7 @@ class Picker
         if slider == @lum
             @setLuminance f
         
-        slider.attr x: x-HEIGHT/8
+        slider.attr x: x-HEIGHT/6
         
         @moveEvents cb
         stopEvent event
@@ -162,18 +222,11 @@ class Picker
 
         f = clamp 0, 1, (@xPosEvent(event) - HEIGHT*2) / WIDTH
         
-        x = HEIGHT*2 + f*WIDTH
-        if grd == @gry
-            y = HEIGHT
-            @mode = 'gry'
-            @lum.hide()
-        else
-            y = 0
-            @mode = 'rgb'
-            @lum.show()
-        
+        @setMode grd == @gry and 'gry' or 'rgb'        
         @setColor f
             
+        x = HEIGHT*2 + f*WIDTH
+        y = @mode == 'gry' and HEIGHT or 0 
         @dot.plot [[x,y], [x,HEIGHT+y]]
         
         @moveEvents cb

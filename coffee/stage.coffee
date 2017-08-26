@@ -116,8 +116,9 @@ class Stage
             when 'polygon', 'polyline'
                 arr  = @drawing.array().valueOf()
                 tail = arr.length > 1 and arr[arr.length-2] or arr[arr.length-1]
-                p = @eventPos event
-                if arr.length < 2 or Math.abs(tail[0]-p.x) + Math.abs(tail[1]-p.y) > 20
+                p = @localPos event
+                dist = Math.abs(tail[0]-p.x) + Math.abs(tail[1]-p.y)
+                if arr.length < 2 or dist > 20
                     @drawing?.draw 'point', event
                 else
                     @drawing?.draw 'update', event
@@ -136,9 +137,7 @@ class Stage
                 
         @drawing = null
        
-    eventPos: (event) ->
-        p = pos event
-        # r = @element.getBoundingClientRect()
-        # p.sub x:r.left, y:r.top
+    eventPos: (event) -> p = pos event
+    localPos: (event) -> p = pos event; r = @element.getBoundingClientRect(); p.sub x:r.left, y:r.top
         
 module.exports = Stage

@@ -5,13 +5,15 @@
 #      000  000       000      000       000          000     000  000   000  000  0000
 # 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000
 
-{ last, pos, elem, log, _ } = require 'kxk'
+{ last, pos, elem, post, log, _ } = require 'kxk'
 
 class Selection
 
     constructor: (@kali) ->
         
         @selected = []
+        
+        post.on 'color', @onColor
 
     #  0000000  00000000  000      00000000   0000000  000000000  00000000  0000000    
     # 000       000       000      000       000          000     000       000   000  
@@ -107,10 +109,10 @@ class Selection
         if not @empty()
             switch key
                 when 'backspace'
-                    for e in @selected
-                        e.selectize false
-                        e.remove()
-                    @selected = []
+                    while not @empty()
+                        l = last @selected
+                        @del l
+                        l.remove()
                     return
                 when 'left', 'right', 'up', 'down'
                     for e in @selected
@@ -138,5 +140,29 @@ class Selection
     moveElement: (e, dx, dy) ->
         t = e.transform()
         e.transform x:t.x+dx, y:t.y+dy
+         
+    #  0000000   0000000   000       0000000   00000000   
+    # 000       000   000  000      000   000  000   000  
+    # 000       000   000  000      000   000  0000000    
+    # 000       000   000  000      000   000  000   000  
+    #  0000000   0000000   0000000   0000000   000   000  
+    
+    onColor: (color, prop, value) =>
+        
+        return if @empty()
+        
+        attr = {}
+        
+        switch prop
+            when 'alpha'
+                attr[color + '-opacity'] = value
+            when 'color'
+                attr[color] = new SVG.Color value
+                
+        log "Selection.onColor color:#{color} prop:#{prop} value:#{value} l:#{_.isEmpty attr}", attr
+        
+        if not _.isEmpty attr
+            for s in @selected
+                s.style attr
             
 module.exports = Selection

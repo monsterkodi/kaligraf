@@ -5,8 +5,7 @@
 # 000       000   000  000      000   000  000   000  
 #  0000000   0000000   0000000   0000000   000   000  
 
-{ elem, drag, stopEvent, post, clamp, log, $
-} = require 'kxk'
+{ elem, drag, stopEvent, post, clamp, log, $ } = require 'kxk'
 Tool = require './tool'
 
 WIDTH  = 255
@@ -90,7 +89,9 @@ class Color extends Tool
         
         @setColor @value
         
-        @lph.attr x:HEIGHT*2+f*(WIDTH-HEIGHT/3)    
+        @lph.attr x:HEIGHT*2+f*(WIDTH-HEIGHT/3)   
+        
+        post.emit 'color', @name, 'alpha', @alpha
     
     # 000      000   000  00     00  000  000   000   0000000   000   000   0000000  00000000  
     # 000      000   000  000   000  000  0000  000  000   000  0000  000  000       000       
@@ -109,8 +110,11 @@ class Color extends Tool
          
         if @mode == 'rgb'
             @setColor @value
+            post.emit 'color', @name, 'color', @color
             
         @lum.attr x:HEIGHT*2+f*(WIDTH-HEIGHT/3)    
+        
+        post.emit 'color', @name, 'luminance', @luminance
 
     #  0000000   0000000   000       0000000   00000000   
     # 000       000   000  000      000   000  000   000  
@@ -118,7 +122,7 @@ class Color extends Tool
     # 000       000   000  000      000   000  000   000  
     #  0000000   0000000   0000000   0000000   000   000  
         
-    setColor: (f) ->
+    setColor: (f, opt) ->
         
         gradient = @mode == 'rgb' and @gradientRGB or @gradientGRY
         
@@ -219,7 +223,7 @@ class Color extends Tool
 
         @setMode grd == @gry and 'gry' or 'rgb'        
         @setColor clamp 0, 1, (@xPosEvent(event)-HEIGHT*2) / WIDTH
-                    
+        post.emit 'color', @name, 'color', @color     
         @moveEvents cb
         stopEvent event
         

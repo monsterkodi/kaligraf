@@ -15,54 +15,30 @@ clr    = require 'svg.colorat.js'
 
 class Stage
 
-    constructor: (parent) ->
+    constructor: (@kali) ->
 
         stageElem = elem 'div', id: 'stage'
-        parent.appendChild stageElem
+        @kali.element.appendChild stageElem
         @svg = @element = SVG(stageElem).size '100%', '100%' 
         @shapes = []
+        @selected = []
         
         @svg.on 'mousedown', @mouseDown
         @svg.on 'mousemove', @mouseMove
         @svg.on 'mouseup',   @mouseUp
-                
-        # @add 'rect',
-            # width:  100
-            # height: 100
-            # y:      100
-            # fill:   '#f00'
-#             
-        # @add 'rect',
-            # width:  500
-            # height: 50
-            # y:      '50%'
-            # x:      200
-            # fill:   '#0ff'
-                        
-    add: (type, attr={}) ->   
+                                        
+    addShape: (shape, attr) ->
         
-        @addShape @svg[type]().attr attr
-
-    addShape: (e) ->
-        e.draggable().on 'dragstart', @dragStart
-        e.draggable().on 'dragmove',  @dragMove
-        e.draggable().on 'dragend',   @dragEnd
+        e = @svg[shape]()
+        e.attr attr
+        e.style
+            fill:             @kali.tools.fill.color
+            stroke:           @kali.tools.stroke.color
+            'fill-opacity':   @kali.tools.fill.alpha
+            'stroke-opacity': @kali.tools.stroke.alpha
         @shapes.push e
         e
         
-    dragStart: (event) => 
-        
-        @deselect()
-        e = event.target.instance
-        e.selectize deepSelect:  true
-        e.resize    snapToAngle: 15
-        @selected = e
-        
-    dragMove:  (event) => 
-        
-    dragEnd:   (event) => 
-        e = event.target.instance
-
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
     # 000000000  000   000  000   000  0000000   0000000   
@@ -70,20 +46,46 @@ class Stage
     # 000   000   0000000    0000000   0000000   00000000  
     
     mouseDown: (event) =>
-        @deselect()
-        @drawing = @add 'polygon'
-        @drawing.attr fill: 'white'
-        @drawing.draw 'point', event
+        
+        if not event.shiftKey
+            @deselect()
+            
+        shape = @kali.shapeTool()
+        if shape == 'pick'
+            e = event.target.instance
+            if e != @svg
+                e.selectize deepSelect: true
+                e.resize snapToAngle: 15
+                e.draggable()
+                e._memory._draggable.start event
+                @selected.push e
+        else
+            @drawing = @addShape shape
+            if shape == 'polygon'
+                @drawing.draw 'point', event
+            else
+                @drawing.draw event
 
-    mouseMove: (event) =>        
-        @drawing?.draw 'point', event
+    mouseMove: (event) =>
+        
+        shape = @kali.shapeTool()
+        if shape == 'polygon'
+            @drawing?.draw 'point', event
 
     mouseUp: (event) =>
-        @drawing?.draw 'done'
+        
+        shape = @kali.shapeTool()
+        if shape == 'polygon'
+            @drawing?.draw 'done'
+        else
+            @drawing?.draw event
         @drawing = null
         
     deselect: () =>
-        @selected?.selectize false, deepSelect: true
-        delete @selected
+        for s in @selected
+            s.selectize false, deepSelect: true
+            s.draggable false
+            s.resize 'stop'
+        @selected = []
         
 module.exports = Stage

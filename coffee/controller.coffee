@@ -9,17 +9,17 @@
 Menu   = require './menu'
 Stage  = require './stage'
 Tools  = require './tools'
-Picker = require './picker'
 
 class Controller
 
     constructor: (cfg) ->
         
         @element = cfg?.element ? window
-        @stage  = new Stage  @element
-        @picker = new Picker @element
-        @tools  = new Tools  @element
+        @stage  = new Stage @
+        @tools  = new Tools @, name: 'tools', text: 'tools'
         
+    shapeTool: -> @tools.getActive('shape').name    
+    
     setMenu: (menu) ->
         
         @menu?.remove()

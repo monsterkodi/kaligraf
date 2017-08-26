@@ -17,15 +17,12 @@ class Main
         @controller = new Controller element: element  
         @controller.setStyle 'style'
         
-        @controller.setMenu [
-            
-            button: 'Tools'
-            click: -> post.emit 'toggle', 'tools'
-        ,
-            button: 'Picker'
-            click: -> post.emit 'toggle', 'picker'
-            
-        ]
+        # @controller.setMenu [
+#             
+            # button: 'Tools'
+            # click: -> post.emit 'toggle', 'tools'
+#             
+        # ]
                         
     start: ->
                 

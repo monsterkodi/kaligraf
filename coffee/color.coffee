@@ -1,9 +1,9 @@
 
-# 00000000   000   0000000  000   000  00000000  00000000 
-# 000   000  000  000       000  000   000       000   000
-# 00000000   000  000       0000000    0000000   0000000  
-# 000        000  000       000  000   000       000   000
-# 000        000   0000000  000   000  00000000  000   000
+#  0000000   0000000   000       0000000   00000000   
+# 000       000   000  000      000   000  000   000  
+# 000       000   000  000      000   000  0000000    
+# 000       000   000  000      000   000  000   000  
+#  0000000   0000000   0000000   0000000   000   000  
 
 { elem, drag, stopEvent, post, clamp, log, $
 } = require 'kxk'
@@ -12,14 +12,13 @@ Tool = require './tool'
 WIDTH  = 255
 HEIGHT = 30
 
-class Picker extends Tool
+class Color extends Tool
 
-    constructor: (parent) ->
+    constructor: (@kali, cfg) ->
         
-        super name: 'picker', parent: parent        
+        super @kali, cfg
                 
         @svg = SVG(@element).size "#{WIDTH+HEIGHT*2}", "#{HEIGHT*2}" 
-        @svg.addClass 'pickerSVG'
         
         @g = @svg.group()
                     
@@ -87,7 +86,10 @@ class Picker extends Tool
     setAlpha: (f) -> 
         
         @alpha = f
+        
         @setColor @value
+        
+        @lph.attr x:HEIGHT*2+f*(WIDTH-HEIGHT/3)    
     
     # 000      000   000  00     00  000  000   000   0000000   000   000   0000000  00000000  
     # 000      000   000  000   000  000  0000  000  000   000  0000  000  000       000       
@@ -106,6 +108,8 @@ class Picker extends Tool
          
         if @mode == 'rgb'
             @setColor @value
+            
+        @lum.attr x:HEIGHT*2+f*(WIDTH-HEIGHT/3)    
 
     #  0000000   0000000   000       0000000   00000000   
     # 000       000   000  000      000   000  000   000  
@@ -204,8 +208,6 @@ class Picker extends Tool
         @moveEvents cb
         stopEvent event
         
-        slider.attr x:HEIGHT*2+f*(WIDTH-HEIGHT/3)    
-        
     # 00000000   000   0000000  000   000  
     # 000   000  000  000       000  000   
     # 00000000   000  000       0000000    
@@ -269,4 +271,4 @@ class Picker extends Tool
             @grd.show()
             @svg.width WIDTH+HEIGHT*2
             
-module.exports = Picker
+module.exports = Color

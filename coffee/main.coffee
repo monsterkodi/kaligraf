@@ -5,8 +5,8 @@
 # 000 0 000  000   000  000  000  0000
 # 000   000  000   000  000  000   000
 
-{log,post} = require 'kxk'
-Controller = require './controller'
+{ post, log } = require 'kxk'
+Kali = require './kali'
 
 class Main
 
@@ -14,14 +14,12 @@ class Main
 
         post.on 'slog', (t) -> window.logview.appendText t
         
-        @controller = new Controller element: element  
-        @controller.setStyle 'style'
+        @kali = new Kali element: element  
+        @kali.setStyle 'style'
         
-        # @controller.setMenu [
-#             
+        # @kali.setMenu [
             # button: 'Tools'
             # click: -> post.emit 'toggle', 'tools'
-#             
         # ]
                         
     start: ->

@@ -37,13 +37,22 @@ class Tools extends Tool
         , 
             name:  'stroke'
             class: 'color'
+        ,
+            name:   'dump'
+            text:   'dump'
+            action: 'dump'
         ]
-            
-        @tools = []
+        
+        @tools = @
+        @children = [@]
+        
+        @setPos x:0, y:0
+        
         for tool in tools
             @addTool tool
             
-        post.on 'tool', @onTool
+        post.on 'tool',   @onTool
+        post.on 'toggle', (name) => @[name]?.toggleDisplay()
         
         @activateTool 'rect'
         @stroke.setLuminance 0.7
@@ -53,7 +62,19 @@ class Tools extends Tool
         
         switch action
             when 'activate' then @activateTool name
+            when 'dump'     then @kali.stage.dump()
+            else
+                if name == @name
+                    for c in @children
+                        c.toggleDisplay() if c != @
+                else
+                    log 'no action?', action, name
 
+    dragMove: (d,e) =>
+        super d, e
+        for c in @children
+            c.moveBy d.delta
+                    
     activateTool: (name) ->
         
         tool = @[name]
@@ -64,7 +85,7 @@ class Tools extends Tool
         
     getActive: (group) ->
         
-        for tool in @tools
+        for tool in @children
             if tool.group == group and tool.active
                 return tool
             
@@ -73,13 +94,11 @@ class Tools extends Tool
         clss = cfg.class and require("./#{cfg.class}") or Tool
         tool = new clss @kali, cfg
 
-        tail = last @tools
-        @tools.push tool
         @[tool.name] = tool
         
-        if tail?
-            tool.setPos x:tail.pos().x, y:tail.pos().y+60
-        else
-            tool.setPos x:0, y:60
+        tail = last @children
+        tool.setPos x:tail.pos().x, y:tail.pos().y+60
+        
+        @children.push tool
         
 module.exports = Tools

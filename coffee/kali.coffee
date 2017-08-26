@@ -1,22 +1,34 @@
 
-#  0000000   0000000   000   000  000000000  00000000    0000000   000      000      00000000  00000000 
-# 000       000   000  0000  000     000     000   000  000   000  000      000      000       000   000
-# 000       000   000  000 0 000     000     0000000    000   000  000      000      0000000   0000000  
-# 000       000   000  000  0000     000     000   000  000   000  000      000      000       000   000
-#  0000000   0000000   000   000     000     000   000   0000000   0000000  0000000  00000000  000   000
+# 000   000   0000000   000      000  
+# 000  000   000   000  000      000  
+# 0000000    000000000  000      000  
+# 000  000   000   000  000      000  
+# 000   000  000   000  0000000  000  
 
-{log, setStyle} = require 'kxk'
+{ setStyle, keyinfo, log } = require 'kxk'
 Menu   = require './menu'
 Stage  = require './stage'
 Tools  = require './tools'
 
-class Controller
+class Kali
 
     constructor: (cfg) ->
         
         @element = cfg?.element ? window
         @stage  = new Stage @
         @tools  = new Tools @, name: 'tools', text: 'tools'
+        
+        @focus()
+        document.addEventListener 'keydown', @onKeyDown
+
+    focus: -> @element.focus()
+        
+    onKeyDown: (event) =>
+    
+        {mod, key, combo, char} = keyinfo.forEvent event
+        log "Kali.onKeyDown mod:#{mod} key:#{key} combo:#{combo} char:#{char}"
+        
+        return if 'unhandled' != @stage.handleKey mod, key, combo, char, event
         
     shapeTool: -> @tools.getActive('shape').name    
     
@@ -33,4 +45,4 @@ class Controller
         link.type='text/css'
         document.head.appendChild link
         
-module.exports = Controller
+module.exports = Kali

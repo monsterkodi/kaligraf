@@ -5,38 +5,50 @@
 #      000     000     000   000  000   000  000       
 # 0000000      000     000   000   0000000   00000000  
 
-{log, elem, post} = require 'kxk'
-SVG    = require 'svg.js'
-drg    = require 'svg.draggable.js'
-sel    = require 'svg.select.js'
-rsz    = require 'svg.resize.js'
-drw    = require 'svg.draw.js'
-clr    = require 'svg.colorat.js'
+{log, elem, post, drag, pos} = require 'kxk'
+SVG = require 'svg.js'
+sel = require 'svg.select.js'
+rsz = require 'svg.resize.js'
+drw = require 'svg.draw.js'
+clr = require 'svg.colorat.js'
+Selection = require './selection'
 
 class Stage
 
     constructor: (@kali) ->
 
-        stageElem = elem 'div', id: 'stage'
-        @kali.element.appendChild stageElem
-        @svg = @element = SVG(stageElem).size '100%', '100%' 
-        @shapes = []
-        @selected = []
+        @element = elem 'div', id: 'stage'
+        @kali.element.appendChild @element
+        @svg = SVG(@element).size '100%', '100%' 
+        @selection = new Selection @kali
         
-        @svg.on 'mousedown', @mouseDown
-        @svg.on 'mousemove', @mouseMove
-        @svg.on 'mouseup',   @mouseUp
-                                        
-    addShape: (shape, attr) ->
+        @drag = new drag
+            target:  @element
+            onStart: @onDragStart
+            onMove:  @onDragMove
+            onStop:  @onDragStop
+        
+    dump: -> log 'Stage.dump', @svg.svg()
+
+    handleKey: (mod, key, combo, char, event) ->
+        # log "Stage.handleKey mod:#{mod} key:#{key} combo:#{combo} char:#{char}"
+        return if 'unhandled' != @selection.handleKey mod, key, combo, char, event
+        'unhandled'
+    
+    #  0000000  000   000   0000000   00000000   00000000  
+    # 000       000   000  000   000  000   000  000       
+    # 0000000   000000000  000000000  00000000   0000000   
+    #      000  000   000  000   000  000        000       
+    # 0000000   000   000  000   000  000        00000000  
+    
+    addShape: (shape) ->
         
         e = @svg[shape]()
-        e.attr attr
         e.style
             fill:             @kali.tools.fill.color
             stroke:           @kali.tools.stroke.color
             'fill-opacity':   @kali.tools.fill.alpha
             'stroke-opacity': @kali.tools.stroke.alpha
-        @shapes.push e
         e
         
     # 00     00   0000000   000   000   0000000  00000000  
@@ -45,20 +57,18 @@ class Stage
     # 000 0 000  000   000  000   000       000  000       
     # 000   000   0000000    0000000   0000000   00000000  
     
-    mouseDown: (event) =>
+    onDragStart: (drag, event) =>
+
+        @kali.focus()
         
         if not event.shiftKey
-            @deselect()
+            @selection.clear()
             
         shape = @kali.shapeTool()
         if shape == 'pick'
             e = event.target.instance
             if e != @svg
-                e.selectize deepSelect: true
-                e.resize snapToAngle: 15
-                e.draggable()
-                e._memory._draggable.start event
-                @selected.push e
+                @selection.add e
         else
             @drawing = @addShape shape
             if shape == 'polygon'
@@ -66,26 +76,21 @@ class Stage
             else
                 @drawing.draw event
 
-    mouseMove: (event) =>
-        
-        shape = @kali.shapeTool()
-        if shape == 'polygon'
+    onDragMove: (drag, event) =>
+
+        if not @selection.empty()
+            @selection.moveBy drag.delta
+            return
+            
+        if @kali.shapeTool() == 'polygon'
             @drawing?.draw 'point', event
 
-    mouseUp: (event) =>
+    onDragStop: (drag, event) =>
         
-        shape = @kali.shapeTool()
-        if shape == 'polygon'
+        if @kali.shapeTool() == 'polygon'
             @drawing?.draw 'done'
         else
             @drawing?.draw event
         @drawing = null
-        
-    deselect: () =>
-        for s in @selected
-            s.selectize false, deepSelect: true
-            s.draggable false
-            s.resize 'stop'
-        @selected = []
-        
+                
 module.exports = Stage

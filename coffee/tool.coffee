@@ -13,6 +13,7 @@ class Tool
 
         @name   = @cfg.name
         @group  = @cfg.group
+        @action = @cfg.action
         @active = false
         @parent = @kali.element
         
@@ -27,20 +28,26 @@ class Tool
             handle:  @element
             target:  @element
             onStart: @dragStart
-            onMove:  (d,e) =>
-                if e.metaKey
-                    @dragMove d,e
-                    @setPos x:@pos().x+d.delta.x, y:@pos().y+d.delta.y
-            onStop: @dragStop
+            onMove:  @dragMove
+            onStop:  @dragStop
 
-        post.on 'toggle', (msg) => if msg == @name then @toggleDisplay()
-         
     dragStart: (d,e) => @element.addEventListener    'mouseup', @onClick
-    dragMove:  (d,e) => @element.removeEventListener 'mouseup', @onClick
     dragStop:  (d,e) => @element.removeEventListener 'mouseup', @onClick
-    onClick:     (e) => 
+    dragMove:  (d,e) =>
+        
+        @element.removeEventListener 'mouseup', @onClick
+        if e.metaKey then @moveBy d.delta
+            
+    moveBy: (delta) -> @setPos x:@pos().x+delta.x, y:@pos().y+delta.y
+        
+    onClick: (e) => 
+        
         if @group?
             post.emit 'tool', 'activate', @name
+        else if @action?
+            post.emit 'tool', @action, @name
+        else
+            post.emit 'tool', 'click', @name
     
     activate:      -> @setActive true
     deactivate:    -> @setActive false

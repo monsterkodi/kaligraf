@@ -5,14 +5,29 @@
 #      000  000       000      000       000          000     000  000   000  000  0000
 # 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000
 
-{ log } = require 'kxk'
+{ last, pos, elem, log, _ } = require 'kxk'
 
 class Selection
 
     constructor: (@kali) ->
         
         @selected = []
-       
+      
+    start: (p) -> @rect = start: p, end: p; @updateRect()
+    move: (p) -> @rect.end = p; @updateRect()
+    end: (p) -> @rect.element.remove(); delete @rect
+    
+    updateRect: ->
+        if not @rect.element
+            @rect.element = elem 'div', class: 'selectangle'
+            @kali.element.appendChild @rect.element
+        @rect.element.style.left   = "#{@rect.start.x}px"
+        @rect.element.style.top    = "#{@rect.start.y}px"
+        @rect.element.style.width  = "#{@rect.end.x - @rect.start.x}px"
+        @rect.element.style.height = "#{@rect.end.y - @rect.start.y}px"
+        
+        log "rect", @rect.start, @rect.end
+        
     empty: -> @selected.length <= 0
     
     handleKey: (mod, key, combo, char, event) ->
@@ -42,16 +57,22 @@ class Selection
             e.selectize deepSelect: true
             e.resize snapToAngle: 15
             @selected.push e
-
+            
+    del: (e) ->
+        e.selectize false, deepSelect: true
+        e.resize 'stop'
+        _.pull @selected, e
+    
     clear: () ->
-        for s in @selected
-            s.selectize false, deepSelect: true
-            s.resize 'stop'
-        @selected = []
+        
+        while not @empty()
+            @del last @selected
         
     moveBy: (delta) ->
         
         for s in @selected
             s.dmove delta.x, delta.y
-        
+
+    contains: (e) -> e in @selected
+            
 module.exports = Selection

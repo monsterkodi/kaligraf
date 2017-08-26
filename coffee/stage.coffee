@@ -31,7 +31,7 @@ class Stage
     dump: -> log 'Stage.dump', @svg.svg()
 
     handleKey: (mod, key, combo, char, event) ->
-        # log "Stage.handleKey mod:#{mod} key:#{key} combo:#{combo} char:#{char}"
+
         return if 'unhandled' != @selection.handleKey mod, key, combo, char, event
         'unhandled'
     
@@ -61,15 +61,29 @@ class Stage
 
         @kali.focus()
         
-        if not event.shiftKey
-            @selection.clear()
-            
         shape = @kali.shapeTool()
+        
+        if shape != 'pick' and event.metaKey
+            log 'activate pick'
+            post.emit 'tool', 'activate', 'pick'
+            shape = 'pick'
+        
         if shape == 'pick'
             e = event.target.instance
-            if e != @svg
-                @selection.add e
+            if e == @svg
+                if not event.shiftKey
+                    @selection.clear()
+                @selection.start @eventPos event
+            else
+                if not @selection.contains e
+                    if not event.shiftKey
+                        @selection.clear()
+                    @selection.add e
+                else
+                    if event.shiftKey
+                        @selection.del e
         else
+            @selection.clear()
             @drawing = @addShape shape
             if shape == 'polygon'
                 @drawing.draw 'point', event
@@ -78,7 +92,10 @@ class Stage
 
     onDragMove: (drag, event) =>
 
-        if not @selection.empty()
+        if @selection.rect?
+            @selection.move @eventPos event
+            return
+        else if not @selection.empty()
             @selection.moveBy drag.delta
             return
             
@@ -87,10 +104,20 @@ class Stage
 
     onDragStop: (drag, event) =>
         
+        if @selection.rect?
+            @selection.end @eventPos event
+            return
+        
         if @kali.shapeTool() == 'polygon'
             @drawing?.draw 'done'
         else
             @drawing?.draw event
         @drawing = null
-                
+       
+    eventPos: (event) ->
+        p = pos event
+        r = @element.getBoundingClientRect()
+        log event.clientX, event.offsetX, p, r.left
+        p.sub x:r.left, y:r.top
+        
 module.exports = Stage

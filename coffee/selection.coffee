@@ -44,25 +44,39 @@ class Selection
     # 000   000  000       000          000       
     # 000   000  00000000   0000000     000       
       
-    start: (p) -> @rect = start: p, end: p; @updateRect()
-    move: (p) -> @rect.end = p; @updateRect()
+    start: (p) -> @rect = x:p.x, y:p.y, x2: p.x, y2:p.y; @updateRect()
+    move: (p) -> @rect.x2 = p.x; @rect.y2 = p.y; @updateRect()
     end: (p) -> @rect.element.remove(); delete @rect
-    
+
+    addRect: ->
+        rect = elem 'div', class: 'selectangle'
+        @kali.element.appendChild rect
+        rect
+            
+    setRect: (elem, rect) ->
+        [sx, ex] = [rect.x, rect.x2]
+        [sy, ey] = [rect.y, rect.y2]
+        if sx > ex then [sx, ex] = [ex, sx]
+        if sy > ey then [sy, ey] = [ey, sy]
+        elem.style.left   = "#{sx}px"
+        elem.style.top    = "#{sy}px"
+        elem.style.width  = "#{ex - sx}px"
+        elem.style.height = "#{ey - sy}px"
+
     updateRect: ->
         
         if not @rect.element
-            @rect.element = elem 'div', class: 'selectangle'
-            @kali.element.appendChild @rect.element
-        [sx, ex] = [@rect.start.x, @rect.end.x]
-        [sy, ey] = [@rect.start.y, @rect.end.y]
-        if sx > ex then [sx, ex] = [ex, sx]
-        if sy > ey then [sy, ey] = [ey, sy]
-        @rect.element.style.left   = "#{sx}px"
-        @rect.element.style.top    = "#{sy}px"
-        @rect.element.style.width  = "#{ex - sx}px"
-        @rect.element.style.height = "#{ey - sy}px"
+            @rect.element = @addRect()
+        @setRect @rect.element, @rect
         
-        log 'children: ', @kali.stage.svg.children().length
+        log 'stage: ', sb = @kali.stage.svg.rbox()
+        for child in @kali.stage.svg.children()
+            bb = child.rbox()
+            bb.x  -= sb.x
+            bb.x2 -= sb.x
+            bb.y  -= sb.y
+            bb.y2 -= sb.y
+            @setRect @addRect(), bb
             
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
@@ -88,7 +102,7 @@ class Selection
                             when 'right' then x =  1
                             when 'up'    then y = -1
                             when 'down'  then y =  1
-                        e.dmove x, y
+                        @moveElement e, x, y
                 
         'unhandled'
         
@@ -101,6 +115,10 @@ class Selection
     moveBy: (delta) ->
         
         for s in @selected
-            s.dmove delta.x, delta.y
-                
+            @moveElement s, delta.x, delta.y
+
+    moveElement: (e, dx, dy) ->
+        t = e.transform()
+        e.transform x:t.x+dx, y:t.y+dy
+            
 module.exports = Selection

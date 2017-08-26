@@ -5,7 +5,7 @@
 #      000     000     000   000  000   000  000       
 # 0000000      000     000   000   0000000   00000000  
 
-{log, elem, post, drag, pos} = require 'kxk'
+{ elem, post, drag, last, pos, log } = require 'kxk'
 SVG = require 'svg.js'
 sel = require 'svg.select.js'
 rsz = require 'svg.resize.js'
@@ -20,6 +20,7 @@ class Stage
         @element = elem 'div', id: 'stage'
         @kali.element.appendChild @element
         @svg = SVG(@element).size '100%', '100%' 
+        @svg.clear()
         @selection = new Selection @kali
         
         @drag = new drag
@@ -41,14 +42,23 @@ class Stage
     #      000  000   000  000   000  000        000       
     # 0000000   000   000  000   000  000        00000000  
     
-    addShape: (shape) ->
+    addShape: (shape, attr, style) ->
         
+        log 'addShape', shape
         e = @svg[shape]()
         e.style
-            fill:             @kali.tools.fill.color
             stroke:           @kali.tools.stroke.color
-            'fill-opacity':   @kali.tools.fill.alpha
             'stroke-opacity': @kali.tools.stroke.alpha
+            
+        if shape not in ['line', 'polyline']
+            e.style
+                fill:             @kali.tools.fill.color
+        else
+            # e.style fill: 'none'
+            e.style 'fill-opacity': 0.0
+            
+        e.attr  attr  if attr?
+        e.style style if style?
         e
         
     # 00     00   0000000   000   000   0000000  00000000  
@@ -64,7 +74,6 @@ class Stage
         shape = @kali.shapeTool()
         
         if shape != 'pick' and event.metaKey
-            # log 'activate pick'
             post.emit 'tool', 'activate', 'pick'
             shape = 'pick'
         
@@ -85,10 +94,11 @@ class Stage
         else
             @selection.clear()
             @drawing = @addShape shape
-            if shape == 'polygon'
-                @drawing.draw 'point', event
-            else
-                @drawing.draw event
+            switch shape 
+                when 'polygon', 'polyline'
+                    @drawing.draw 'point', event
+                else
+                    @drawing.draw event
 
     onDragMove: (drag, event) =>
 
@@ -99,8 +109,15 @@ class Stage
             @selection.moveBy drag.delta
             return
             
-        if @kali.shapeTool() == 'polygon'
-            @drawing?.draw 'point', event
+        switch @kali.shapeTool() 
+            when 'polygon', 'polyline'
+                arr  = @drawing.array().valueOf()
+                tail = arr.length > 1 and arr[arr.length-2] or arr[arr.length-1]
+                p = @eventPos event
+                if arr.length < 2 or Math.abs(tail[0]-p.x) + Math.abs(tail[1]-p.y) > 20
+                    @drawing?.draw 'point', event
+                else
+                    @drawing?.draw 'update', event
 
     onDragStop: (drag, event) =>
         
@@ -108,16 +125,17 @@ class Stage
             @selection.end @eventPos event
             return
         
-        if @kali.shapeTool() == 'polygon'
-            @drawing?.draw 'done'
-        else
-            @drawing?.draw event
+        switch @kali.shapeTool() 
+            when 'polygon', 'polyline'
+                @drawing?.draw 'done'
+            else
+                @drawing?.draw event
+                
         @drawing = null
        
     eventPos: (event) ->
         p = pos event
         r = @element.getBoundingClientRect()
-        # log event.clientX, event.offsetX, p, r.left
         p.sub x:r.left, y:r.top
         
 module.exports = Stage

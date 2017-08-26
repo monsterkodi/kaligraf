@@ -26,6 +26,18 @@ class Tools extends Tool
             text:  'pick'
             group: 'shape'
         ,
+            name:  'polygon'
+            text:  'polygon'
+            group: 'shape'
+        ,
+            name:  'polyline'
+            text:  'polyline'
+            group: 'shape'
+        ,
+            name:  'line'
+            text:  'line'
+            group: 'shape'
+        ,
             name:  'rect'
             text:  'rect'
             group: 'shape'
@@ -34,10 +46,13 @@ class Tools extends Tool
             text:  'circle'
             group: 'shape'
         ,
-            name:  'polygon'
-            text:  'poly'
+            name:  'ellipse'
+            text:  'ellipse'
             group: 'shape'
         ,
+            name:   'pipette'
+            text:   'pipette'
+        ,            
             name:   'dump'
             text:   'dump'
             action: 'dump'
@@ -54,7 +69,7 @@ class Tools extends Tool
         post.on 'tool',   @onTool
         post.on 'toggle', (name) => @[name]?.toggleDisplay()
         
-        @activateTool 'rect'
+        @activateTool 'pick'
         @stroke.setLuminance 0.7
         @fill.setAlpha 0.7
         

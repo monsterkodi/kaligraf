@@ -234,7 +234,7 @@ class Picker extends Tool
         
     clearEvents: (cb) ->
         window.removeEventListener 'mousemove', cb
-        window.removeEventListener 'mousemove', cb
+        window.removeEventListener 'mouseup',   cb
 
     xPosEvent: (event) -> 
         r = $("#stage").getBoundingClientRect()
@@ -261,12 +261,12 @@ class Picker extends Tool
     #    000      0000000    0000000    0000000   0000000  00000000  
     
     toggleGradient: =>
+
         if @grd.visible()
             @grd.hide()
             @svg.width HEIGHT*2
         else
             @grd.show()
             @svg.width WIDTH+HEIGHT*2
-        @sqr.off 'mouseup', @toggleGradient
-    
+            
 module.exports = Picker

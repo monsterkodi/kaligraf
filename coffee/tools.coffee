@@ -5,13 +5,9 @@
 #    000     000   000  000   000  000           000
 #    000      0000000    0000000   0000000  0000000 
 
-
 { elem, stopEvent, log
 }    = require 'kxk'
 Tool = require './tool'
-
-WIDTH  = 30
-HEIGHT = 300
 
 class Tools extends Tool
 
@@ -19,7 +15,21 @@ class Tools extends Tool
                 
         super name: 'tools', parent: parent
         
-    onClick: (e) =>
-        log 'tools'
+        @tools = []
+        tools = [
+            name: 'rect'
+        ,
+            name: 'circle'
+        ,
+            name: 'polygon'
+        ]
+            
+        for tool in tools
+            
+            @addTool tool
+
+    addTool: (tool) ->
         
+        @tools.push new Tool name: tool.name, parent: @parent
+                    
 module.exports = Tools

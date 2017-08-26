@@ -5,17 +5,18 @@
 #    000     000   000  000   000  000    
 #    000      0000000    0000000   0000000
 
-{ elem, drag, post } = require 'kxk'
+{ elem, drag, post, log } = require 'kxk'
 
 class Tool
 
     constructor: (cfg) ->
 
-        @name  = cfg.name
-        parent = cfg.parent
+        @name   = cfg.name
+        @parent = cfg.parent
         
         @element = elem 'div', class: @name
-        parent.appendChild @element
+        @element.classList.add 'tool'
+        @parent.appendChild @element
 
         @drag = new drag
             handle: @element
@@ -25,11 +26,14 @@ class Tool
                 @dragMove e
                 @element.style.left = "#{@element.offsetLeft+e.delta.x}px"
                 @element.style.top  = "#{@element.offsetTop+e.delta.y}px"
+            onStop: @dragStop
 
         post.on 'toggle', (msg) => if msg == @name then @toggleDisplay()
          
     dragStart: (e) => @element.addEventListener    'mouseup', @onClick
     dragMove:  (e) => @element.removeEventListener 'mouseup', @onClick
+    dragStop:  (e) => @element.removeEventListener 'mouseup', @onClick
+    onClick:   (e) => log "tool #{@name}"
         
     # 000000000   0000000    0000000    0000000   000      00000000  
     #    000     000   000  000        000        000      000       
@@ -43,5 +47,5 @@ class Tool
             @element.style.display = 'initial'
         else
             @element.style.display = 'none'
-                
+    
 module.exports = Tool

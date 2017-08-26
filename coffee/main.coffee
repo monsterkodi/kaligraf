@@ -12,6 +12,8 @@ class Main
 
     constructor: (element) ->
 
+        post.on 'slog', (t) -> window.logview.appendText t
+        
         @controller = new Controller element: element  
         @controller.setStyle 'style'
         

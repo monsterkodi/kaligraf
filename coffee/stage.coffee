@@ -5,7 +5,7 @@
 #      000     000     000   000  000   000  000       
 # 0000000      000     000   000   0000000   00000000  
 
-{log, elem} = require 'kxk'
+{log, elem, post} = require 'kxk'
 SVG    = require 'svg.js'
 drg    = require 'svg.draggable.js'
 sel    = require 'svg.select.js'
@@ -63,6 +63,12 @@ class Stage
     dragEnd:   (event) => 
         e = event.target.instance
 
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
     mouseDown: (event) =>
         @deselect()
         @drawing = @add 'polygon'

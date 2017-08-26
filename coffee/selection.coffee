@@ -12,23 +12,63 @@ class Selection
     constructor: (@kali) ->
         
         @selected = []
+
+    #  0000000  00000000  000      00000000   0000000  000000000  00000000  0000000    
+    # 000       000       000      000       000          000     000       000   000  
+    # 0000000   0000000   000      0000000   000          000     0000000   000   000  
+    #      000  000       000      000       000          000     000       000   000  
+    # 0000000   00000000  0000000  00000000   0000000     000     00000000  0000000    
+    
+    add: (e) -> 
+        if e not in @selected
+            e.selectize deepSelect: true
+            e.resize snapToAngle: 15
+            @selected.push e
+            
+    del: (e) ->
+        e.selectize false, deepSelect: true
+        e.resize 'stop'
+        _.pull @selected, e
+    
+    clear: () ->
+        
+        while not @empty()
+            @del last @selected
+        
+    empty: -> @selected.length <= 0
+    contains: (e) -> e in @selected
+        
+    # 00000000   00000000   0000000  000000000    
+    # 000   000  000       000          000       
+    # 0000000    0000000   000          000       
+    # 000   000  000       000          000       
+    # 000   000  00000000   0000000     000       
       
     start: (p) -> @rect = start: p, end: p; @updateRect()
     move: (p) -> @rect.end = p; @updateRect()
     end: (p) -> @rect.element.remove(); delete @rect
     
     updateRect: ->
+        
         if not @rect.element
             @rect.element = elem 'div', class: 'selectangle'
             @kali.element.appendChild @rect.element
-        @rect.element.style.left   = "#{@rect.start.x}px"
-        @rect.element.style.top    = "#{@rect.start.y}px"
-        @rect.element.style.width  = "#{@rect.end.x - @rect.start.x}px"
-        @rect.element.style.height = "#{@rect.end.y - @rect.start.y}px"
+        [sx, ex] = [@rect.start.x, @rect.end.x]
+        [sy, ey] = [@rect.start.y, @rect.end.y]
+        if sx > ex then [sx, ex] = [ex, sx]
+        if sy > ey then [sy, ey] = [ey, sy]
+        @rect.element.style.left   = "#{sx}px"
+        @rect.element.style.top    = "#{sy}px"
+        @rect.element.style.width  = "#{ex - sx}px"
+        @rect.element.style.height = "#{ey - sy}px"
         
-        log "rect", @rect.start, @rect.end
-        
-    empty: -> @selected.length <= 0
+        log 'children: ', @kali.stage.svg.children().length
+            
+    # 000   000  00000000  000   000  
+    # 000  000   000        000 000   
+    # 0000000    0000000     00000    
+    # 000  000   000          000     
+    # 000   000  00000000     000     
     
     handleKey: (mod, key, combo, char, event) ->
         
@@ -52,27 +92,15 @@ class Selection
                 
         'unhandled'
         
-    add: (e) -> 
-        if e not in @selected
-            e.selectize deepSelect: true
-            e.resize snapToAngle: 15
-            @selected.push e
-            
-    del: (e) ->
-        e.selectize false, deepSelect: true
-        e.resize 'stop'
-        _.pull @selected, e
+    # 00     00   0000000   000   000  00000000  
+    # 000   000  000   000  000   000  000       
+    # 000000000  000   000   000 000   0000000   
+    # 000 0 000  000   000     000     000       
+    # 000   000   0000000       0      00000000  
     
-    clear: () ->
-        
-        while not @empty()
-            @del last @selected
-        
     moveBy: (delta) ->
         
         for s in @selected
             s.dmove delta.x, delta.y
-
-    contains: (e) -> e in @selected
-            
+                
 module.exports = Selection

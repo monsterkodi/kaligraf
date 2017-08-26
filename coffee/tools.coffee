@@ -16,6 +16,12 @@ class Tools extends Tool
         super @kali, cfg
         
         tools = [
+            name:  'fill'
+            class: 'color'
+        , 
+            name:  'stroke'
+            class: 'color'
+        ,
             name:  'pick'
             text:  'pick'
             group: 'shape'
@@ -31,12 +37,6 @@ class Tools extends Tool
             name:  'polygon'
             text:  'poly'
             group: 'shape'
-        , 
-            name:  'fill'
-            class: 'color'
-        , 
-            name:  'stroke'
-            class: 'color'
         ,
             name:   'dump'
             text:   'dump'

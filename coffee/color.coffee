@@ -68,6 +68,7 @@ class Color extends Tool
         @alpha = 1
         @value = 2.0/3
         @setLuminance 0.5
+        @toggleGradient()
                 
     selectGRY: (event) => @pick  event, @gry, @selectGRY
     selectRGB: (event) => @pick  event, @rgb, @selectRGB

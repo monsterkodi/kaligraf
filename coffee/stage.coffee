@@ -64,7 +64,7 @@ class Stage
         shape = @kali.shapeTool()
         
         if shape != 'pick' and event.metaKey
-            log 'activate pick'
+            # log 'activate pick'
             post.emit 'tool', 'activate', 'pick'
             shape = 'pick'
         
@@ -117,7 +117,7 @@ class Stage
     eventPos: (event) ->
         p = pos event
         r = @element.getBoundingClientRect()
-        log event.clientX, event.offsetX, p, r.left
+        # log event.clientX, event.offsetX, p, r.left
         p.sub x:r.left, y:r.top
         
 module.exports = Stage

@@ -54,29 +54,47 @@ class Selection
         rect
             
     setRect: (elem, rect) ->
-        [sx, ex] = [rect.x, rect.x2]
-        [sy, ey] = [rect.y, rect.y2]
-        if sx > ex then [sx, ex] = [ex, sx]
-        if sy > ey then [sy, ey] = [ey, sy]
-        elem.style.left   = "#{sx}px"
-        elem.style.top    = "#{sy}px"
-        elem.style.width  = "#{ex - sx}px"
-        elem.style.height = "#{ey - sy}px"
-
+        r = @offsetRect @normRect rect
+        elem.style.left   = "#{r.x}px"
+        elem.style.top    = "#{r.y}px"
+        elem.style.width  = "#{r.x2 - r.x}px"
+        elem.style.height = "#{r.y2 - r.y}px"
+        
     updateRect: ->
         
         if not @rect.element
             @rect.element = @addRect()
-        @setRect @rect.element, @rect
+        @setRect @rect.element, @rect        
+        @selectInRect @rect
         
-        log 'stage: ', sb = @kali.stage.svg.rbox()
+    selectInRect: (rect) ->
+        r = @normRect rect
         for child in @kali.stage.svg.children()
-            bb = child.rbox()
-            bb.x  -= sb.x
-            bb.x2 -= sb.x
-            bb.y  -= sb.y
-            bb.y2 -= sb.y
-            @setRect @addRect(), bb
+            if child.id().startsWith 'SvgjsG'
+                continue
+            rb = child.rbox()
+            if @intersect r, rb
+                @add child
+
+    intersect: (a, b) ->
+        if a.x2 < b.x then return false
+        if a.y2 < b.y then return false
+        if b.x2 < a.x then return false
+        if b.y2 < a.y then return false
+        true
+        
+    normRect: (r) ->
+        [sx, ex] = [r.x, r.x2]
+        [sy, ey] = [r.y, r.y2]
+        if sx > ex then [sx, ex] = [ex, sx]
+        if sy > ey then [sy, ey] = [ey, sy] 
+        x:sx, y:sy, x2:ex, y2:ey
+        
+    offsetRect: (r) ->
+        s = @kali.stage.element.getBoundingClientRect()
+        x = s.left
+        y = s.top
+        x:r.x-x, x2:r.x2-x, y:r.y-y, y2:r.y2-y
             
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   

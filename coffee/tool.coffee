@@ -21,8 +21,8 @@ class Tool
         @element.classList.add 'tool'
         @parent.appendChild @element
 
-        if @cfg.text?
-            @element.appendChild elem 'span', text: @cfg.text
+        if not @cfg.class?
+            @element.appendChild elem 'span', text: @cfg.name
         
         @drag = new drag
             handle:  @element

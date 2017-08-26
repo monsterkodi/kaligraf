@@ -26,7 +26,7 @@ class Kali
     onKeyDown: (event) =>
     
         {mod, key, combo, char} = keyinfo.forEvent event
-        log "Kali.onKeyDown mod:#{mod} key:#{key} combo:#{combo} char:#{char}"
+        # log "Kali.onKeyDown mod:#{mod} key:#{key} combo:#{combo} char:#{char}"
         
         return if 'unhandled' != @stage.handleKey mod, key, combo, char, event
         

@@ -44,18 +44,20 @@ class Stage
     
     addShape: (shape, attr, style) ->
         
-        log 'addShape', shape
+        # log 'addShape', shape
         e = @svg[shape]()
         e.style
             stroke:           @kali.tools.stroke.color
             'stroke-opacity': @kali.tools.stroke.alpha
             
-        if shape not in ['line', 'polyline']
+        if shape not in ['polyline', 'line']
             e.style
-                fill:             @kali.tools.fill.color
+                fill:           @kali.tools.fill.color
+                'fill-opacity': @kali.tools.fill.alpha
         else
-            # e.style fill: 'none'
-            e.style 'fill-opacity': 0.0
+            e.style 
+                fill:           'none'
+                'fill-opacity': 0.0
             
         e.attr  attr  if attr?
         e.style style if style?
@@ -103,6 +105,7 @@ class Stage
     onDragMove: (drag, event) =>
 
         if @selection.rect?
+            @selection.clear() if not event.shiftKey
             @selection.move @eventPos event
             return
         else if not @selection.empty()
@@ -135,7 +138,7 @@ class Stage
        
     eventPos: (event) ->
         p = pos event
-        r = @element.getBoundingClientRect()
-        p.sub x:r.left, y:r.top
+        # r = @element.getBoundingClientRect()
+        # p.sub x:r.left, y:r.top
         
 module.exports = Stage

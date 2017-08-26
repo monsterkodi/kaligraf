@@ -16,46 +16,17 @@ class Tools extends Tool
         super @kali, cfg
         
         tools = [
-            name:  'fill'
-            class: 'color'
-        , 
-            name:  'stroke'
-            class: 'color'
-        ,
-            name:  'pick'
-            text:  'pick'
-            group: 'shape'
-        ,
-            name:  'polygon'
-            text:  'polygon'
-            group: 'shape'
-        ,
-            name:  'polyline'
-            text:  'polyline'
-            group: 'shape'
-        ,
-            name:  'line'
-            text:  'line'
-            group: 'shape'
-        ,
-            name:  'rect'
-            text:  'rect'
-            group: 'shape'
-        ,
-            name:  'circle'
-            text:  'circle'
-            group: 'shape'
-        ,
-            name:  'ellipse'
-            text:  'ellipse'
-            group: 'shape'
-        ,
-            name:   'pipette'
-            text:   'pipette'
-        ,            
-            name:   'dump'
-            text:   'dump'
-            action: 'dump'
+            { name: 'stroke',   class: 'color' }
+            { name: 'fill',     class: 'color' }
+            { name: 'pick',     group: 'shape' }
+            { name: 'polygon',  group: 'shape' }
+            { name: 'polyline', group: 'shape' }
+            { name: 'line',     group: 'shape' }
+            { name: 'rect',     group: 'shape' }
+            { name: 'circle',   group: 'shape' }
+            { name: 'ellipse',  group: 'shape' }
+            { name: 'pipette',                 }
+            { name: 'dump',     action: 'dump' }
         ]
         
         @tools = @

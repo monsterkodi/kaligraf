@@ -138,6 +138,7 @@ class Selection
             @moveElement s, delta.x, delta.y
 
     moveElement: (e, dx, dy) ->
+        
         t = e.transform()
         e.transform x:t.x+dx, y:t.y+dy
          
@@ -146,6 +147,24 @@ class Selection
     # 000       000   000  000      000   000  0000000    
     # 000       000   000  000      000   000  000   000  
     #  0000000   0000000   0000000   0000000   000   000  
+    
+    pickColor: ->
+        
+        return if @empty()
+        stroke = r:0, g:0, b:0
+        fill   = r:0, g:0, b:0
+        for s in @selected
+            sc = new SVG.Color s.style 'stroke'
+            fc = new SVG.Color s.style 'fill'
+            for c in ['r', 'g', 'b']
+                stroke[c] += sc[c]
+                fill[c]   += fc[c]
+        for c in ['r', 'g', 'b']                
+            stroke[c] /= @selected.length
+            fill[c]   /= @selected.length
+           
+        post.emit 'setColor', 'fill',   fill
+        post.emit 'setColor', 'stroke', stroke
     
     onColor: (color, prop, value) =>
         
@@ -159,8 +178,6 @@ class Selection
             when 'color'
                 attr[color] = new SVG.Color value
                 
-        log "Selection.onColor color:#{color} prop:#{prop} value:#{value} l:#{_.isEmpty attr}", attr
-        
         if not _.isEmpty attr
             for s in @selected
                 s.style attr

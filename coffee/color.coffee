@@ -5,7 +5,7 @@
 # 000       000   000  000      000   000  000   000  
 #  0000000   0000000   0000000   0000000   000   000  
 
-{ elem, drag, stopEvent, post, clamp, log, $ } = require 'kxk'
+{ elem, drag, stopEvent, post, clamp, log, $, _ } = require 'kxk'
 Tool = require './tool'
 
 WIDTH  = 255
@@ -68,7 +68,7 @@ class Color extends Tool
         @value = 2.0/3
         @setLuminance 0.5
         @toggleGradient()
-                
+        
     selectGRY: (event) => @pick  event, @gry, @selectGRY
     selectRGB: (event) => @pick  event, @rgb, @selectRGB
         
@@ -121,13 +121,30 @@ class Color extends Tool
     # 000       000   000  000      000   000  0000000    
     # 000       000   000  000      000   000  000   000  
     #  0000000   0000000   0000000   0000000   000   000  
-        
-    setColor: (f, opt) ->
+
+    setColor: (f) ->
         
         gradient = @mode == 'rgb' and @gradientRGB or @gradientGRY
         
         @value = f
-        @color = new SVG.Color gradient.colorAt @value
+        
+        @updateColor new SVG.Color gradient.colorAt @value
+            
+        x = HEIGHT*2 + @value*WIDTH
+        y = @mode == 'gry' and HEIGHT or 0 
+        @dot.plot [[x,y], [x,HEIGHT+y]]
+            
+        @gradientCOL = @svg.gradient 'linear', (stop) =>
+            stop.at 0.0, "#000"
+            stop.at 0.5, @colorGradient(0.5).colorAt @value
+            stop.at 1.0, "#fff"        
+#             
+        @col.attr
+            fill: @gradientCOL
+
+    updateColor: (color) ->
+        
+        @color = color
         
         i = @invert @color
         
@@ -141,21 +158,9 @@ class Color extends Tool
         @dot.attr
             stroke: i
 
-        x = HEIGHT*2 + @value*WIDTH
-        y = @mode == 'gry' and HEIGHT or 0 
-        @dot.plot [[x,y], [x,HEIGHT+y]]
-            
-        @gradientCOL = @svg.gradient 'linear', (stop) =>
-            stop.at 0.0, "#000"
-            stop.at 0.5, @colorGradient(0.5).colorAt @value
-            stop.at 1.0, "#fff"        
-#             
-        @col.attr
-            fill: @gradientCOL
-            
         @lum.attr 
             stroke: i
-            fill:   @color
+            fill:   @color        
 
     #  0000000   00000000    0000000   0000000    000  00000000  000   000  000000000  
     # 000        000   000  000   000  000   000  000  000       0000  000     000     

@@ -138,7 +138,8 @@ class Selection
             @moveElement s, delta.x, delta.y
 
     moveElement: (e, dx, dy) ->
-        
+        dx /= @kali.stage.zoom()
+        dy /= @kali.stage.zoom()
         t = e.transform()
         e.transform x:t.x+dx, y:t.y+dy
          

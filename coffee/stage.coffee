@@ -22,15 +22,27 @@ class Stage
         @svg = SVG(@element).size '100%', '100%' 
         @svg.clear()
         @selection = new Selection @kali
-        
+        log 'Stage.constructor', @svg.viewbox()
         @drag = new drag
             target:  @element
             onStart: @onDragStart
             onMove:  @onDragMove
             onStop:  @onDragStop
         
-    dump: -> log 'Stage.dump\n', @svg.svg()
-
+    dump: -> 
+        @resetZoom()
+        items = @selection.empty() and @svg.children() or @selection.selected
+        # log "Stage.dump #{items.length}:"
+        bb = null
+        for item in items
+            bb ?= item.rbox()
+            bb = bb.merge item.rbox()
+        bb = bb.transform new SVG.Matrix().translate -@viewPos().x, -@viewPos().y
+        @grow bb
+        @svg.viewbox bb
+        log @svg.svg()
+        @resetZoom()
+        
     handleKey: (mod, key, combo, char, event) ->
 
         return if 'unhandled' != @selection.handleKey mod, key, combo, char, event
@@ -44,7 +56,6 @@ class Stage
     
     addShape: (shape, attr, style) ->
         
-        # log 'addShape', shape
         e = @svg[shape]()
         e.style
             stroke:           @kali.tools.stroke.color
@@ -136,8 +147,58 @@ class Stage
                 @drawing?.draw event
                 
         @drawing = null
-       
-    eventPos: (event) -> p = pos event
-    localPos: (event) -> p = pos event; r = @element.getBoundingClientRect(); p.sub x:r.left, y:r.top
+    
+    # 0000000   0000000    0000000   00     00  
+    #    000   000   000  000   000  000   000  
+    #   000    000   000  000   000  000000000  
+    #  000     000   000  000   000  000 0 000  
+    # 0000000   0000000    0000000   000   000  
+    
+    zoom: -> @svg.viewbox().zoom
+    resetZoom: ->
+        box = @svg.viewbox()
+        box.width  = @viewSize().width
+        box.height = @viewSize().height
+        delete box.zoom
+        box.x = 0
+        box.y = 0
+        @svg.viewbox box
         
+    zoomIn: ->
+        @svg.viewbox @grow @svg.viewbox(), -10
+        
+    zoomOut: ->
+        @svg.viewbox @grow @svg.viewbox()
+    
+    viewPos:  -> r = @element.getBoundingClientRect(); x:r.left, y:r.top
+    viewSize: -> r = @element.getBoundingClientRect(); width:r.width, height:r.height
+    eventPos: (event) -> p = pos event
+    localPos: (event) -> p = pos event; p.sub @viewPos()
+       
+    #  0000000   00000000    0000000   000   000  
+    # 000        000   000  000   000  000 0 000  
+    # 000  0000  0000000    000   000  000000000  
+    # 000   000  000   000  000   000  000   000  
+    #  0000000   000   000   0000000   00     00  
+    
+    grow: (box, percent=10) ->
+        
+        w = box.width * percent / 100
+        box.width = box.width + 2*w
+        box.x -= w
+        
+        h = box.height * percent / 100
+        box.height = box.height + 2*h
+        box.y -= h
+        
+        if box.w?  then box.w  = box.width
+        if box.h?  then box.h  = box.height
+        if box.x2? then box.x2 = box.x + box.width
+        if box.y2? then box.y2 = box.y + box.height
+        if box.cx? then box.cx = box.x + box.w/2
+        if box.cy? then box.cy = box.y + box.y/2
+        
+        box.zoom ?= box.zoom * (100-2*percent)/100
+        box
+    
 module.exports = Stage

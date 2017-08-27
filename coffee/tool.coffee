@@ -42,7 +42,7 @@ class Tool
     # 0000000       0       0000000   
     
     setSVG: (svg) ->
-        log 'setSVG', svg
+        # log 'setSVG', svg
         @svg = SVG(@element).size '100%', '100%' 
         @svg.addClass 'toolSVG'
         @svg.clear()

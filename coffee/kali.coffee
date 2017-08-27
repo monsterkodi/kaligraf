@@ -15,8 +15,8 @@ class Kali
     constructor: (cfg) ->
         
         @element = cfg?.element ? window
-        @stage  = new Stage @
-        @tools  = new Tools @, name: 'tools', text: 'tools'
+        @stage   = new Stage @
+        @tools   = new Tools @, name: 'tools', text: 'tools'
         
         @focus()
         @element.addEventListener 'keydown', @onKeyDown
@@ -26,7 +26,9 @@ class Kali
     onKeyDown: (event) =>
         
         {mod, key, combo, char} = keyinfo.forEvent event
-        # log "Kali.onKeyDown mod:#{mod} key:#{key} combo:#{combo} char:#{char}"
+        log "Kali.onKeyDown mod:#{mod} key:#{key} combo:#{combo} char:#{char}"
+        switch combo
+            when 'command+s' then return stopEvent(event) and @stage.dump()
         return stopEvent(event) if 'unhandled' != @stage.handleKey mod, key, combo, char, event
         
     shapeTool: -> @tools.getActive('shape').name    

@@ -23,5 +23,7 @@ class Main
         # ]
                         
     start: ->
+    onResize: => log 'Kali.mainresize'
+    resize: => log 'Kali.mainresize'
                 
 module.exports = Main

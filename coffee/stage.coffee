@@ -20,28 +20,70 @@ class Stage
         @element = elem 'div', id: 'stage'
         @kali.element.appendChild @element
         @svg = SVG(@element).size '100%', '100%' 
+        @svg.style
+            'stroke-linecap': 'round'
+            'stroke-linejoin': 'round'
         @svg.clear()
         @selection = new Selection @kali
-        log 'Stage.constructor', @svg.viewbox()
+        
         @drag = new drag
             target:  @element
             onStart: @onDragStart
             onMove:  @onDragMove
             onStop:  @onDragStop
+
+        window.area.on 'resized', @onResize
+        @resetZoom()
+
+    #  0000000  000   000   0000000   
+    # 000       000   000  000        
+    # 0000000    000 000   000  0000  
+    #      000     000     000   000  
+    # 0000000       0       0000000   
+    
+    setSVG: (svg) ->
+        @clear()
+        @svg.svg svg
+        
+    addSVG: (svg) ->
+        @svg.svg svg
+        
+    clear: -> 
+        @selection.clear()
+        @svg.clear()
         
     dump: -> 
-        @resetZoom()
+
         items = @selection.empty() and @svg.children() or @selection.selected
-        # log "Stage.dump #{items.length}:"
+        
         bb = null
         for item in items
+            item.selectize false
             bb ?= item.rbox()
             bb = bb.merge item.rbox()
         bb = bb.transform new SVG.Matrix().translate -@viewPos().x, -@viewPos().y
         @grow bb
-        @svg.viewbox bb
-        log @svg.svg()
-        @resetZoom()
+        
+        log @getSVG items, bb
+        
+        if not @selection.empty()
+            for item in @selection.selection
+                item.selectize true
+
+    save: -> 
+        log 'save', @getSVG @svg.children(), x:0, y:0, width:@viewSize().width, height:@viewSize().height
+        
+    load: -> log 'load'
+        
+    getSVG: (items, bb) ->
+        log 'dump', items.length
+
+        svgStr = '<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-linejoin: round;" '
+        svgStr += "viewBox=\"#{bb.x} #{bb.y} #{bb.width} #{bb.height}\">"
+        for item in items
+            svgStr += item.svg()
+        svgStr += '</svg>'
+        svgStr
         
     handleKey: (mod, key, combo, char, event) ->
 
@@ -56,10 +98,15 @@ class Stage
     
     addShape: (shape, attr, style) ->
         
-        e = @svg[shape]()
+        if shape == 'triangle'
+            e = @svg.polygon('0,-50 100,0 0,50')
+        else
+            e = @svg[shape]()
+            
         e.style
             stroke:           @kali.tools.stroke.color
             'stroke-opacity': @kali.tools.stroke.alpha
+            'stroke-width':   @kali.tools.width.width
             
         if shape not in ['polyline', 'line']
             e.style
@@ -74,11 +121,11 @@ class Stage
         e.style style if style?
         e
         
-    # 00     00   0000000   000   000   0000000  00000000  
-    # 000   000  000   000  000   000  000       000       
-    # 000000000  000   000  000   000  0000000   0000000   
-    # 000 0 000  000   000  000   000       000  000       
-    # 000   000   0000000    0000000   0000000   00000000  
+    #  0000000  000000000   0000000   00000000   000000000  
+    # 000          000     000   000  000   000     000     
+    # 0000000      000     000000000  0000000       000     
+    #      000     000     000   000  000   000     000     
+    # 0000000      000     000   000  000   000     000     
     
     onDragStart: (drag, event) =>
 
@@ -86,45 +133,70 @@ class Stage
         
         shape = @kali.shapeTool()
         
-        if shape != 'pick' and event.metaKey
-            post.emit 'tool', 'activate', 'pick'
-            shape = 'pick'
+        for s,k of {pick:event.metaKey, pan:event.altKey, loupe:event.ctrlKey}
+            if k and shape != s
+                @kali.tools[s].onClick()
+                shape = s
         
-        if shape == 'pick'
-            e = event.target.instance
-            if e == @svg
-                if not event.shiftKey
-                    @selection.clear()
-                @selection.start @eventPos event
-            else
-                if not @selection.contains e
+        switch shape 
+            when 'pick'
+                e = event.target.instance
+                if not e?
+                    e = SVG.adopt event.target
+                if e == @svg
                     if not event.shiftKey
                         @selection.clear()
-                    @selection.add e
+                    @selection.start @eventPos event
                 else
-                    if event.shiftKey
-                        @selection.del e
-        else
-            @selection.clear()
-            @drawing = @addShape shape
-            switch shape 
-                when 'polygon', 'polyline'
-                    @drawing.draw 'point', event
-                else
-                    @drawing.draw event
+                    if not @selection.contains e
+                        if not event.shiftKey
+                            @selection.clear()
+                        @selection.add e
+                    else
+                        if event.shiftKey
+                            @selection.del e
+            when 'pan'   then log 'pan'
+            when 'loupe' then log 'loupe'
+            else
+                @selection.clear()
+                @drawing = @addShape shape
+                switch shape 
+                    when 'triangle'
+                        p = @localPos event
+                        @drawing.translate p.x, p.y
+                        delete @drawing
+                    when 'polygon', 'polyline'
+                        @drawing.draw 'point', event
+                    else
+                        @drawing.draw event
 
+    # 00     00   0000000   000   000  00000000  
+    # 000   000  000   000  000   000  000       
+    # 000000000  000   000   000 000   0000000   
+    # 000 0 000  000   000     000     000       
+    # 000   000   0000000       0      00000000  
+    
     onDragMove: (drag, event) =>
 
-        if @selection.rect?
-            @selection.clear() if not event.shiftKey
-            @selection.move @eventPos event
-            return
-        else if not @selection.empty()
-            @selection.moveBy drag.delta
-            return
+        shape = @kali.shapeTool()
+                    
+        switch shape
             
-        switch @kali.shapeTool() 
+            when 'pan'   then @panBy drag.delta
+            when 'loupe' 
+                
+                log 'move loupe', drag.pos, drag.deltaSum
+                
+            when 'pick'
+                
+                if @selection.rect?
+                    @selection.clear() if not event.shiftKey
+                    @selection.move @eventPos event
+                else if not @selection.empty()
+                    @selection.moveBy drag.delta
+                
             when 'polygon', 'polyline'
+                
                 arr  = @drawing.array().valueOf()
                 tail = arr.length > 1 and arr[arr.length-2] or arr[arr.length-1]
                 p = @localPos event
@@ -134,6 +206,12 @@ class Stage
                 else
                     @drawing?.draw 'update', event
 
+    #  0000000  000000000   0000000   00000000   
+    # 000          000     000   000  000   000  
+    # 0000000      000     000   000  00000000   
+    #      000     000     000   000  000        
+    # 0000000      000      0000000   000        
+    
     onDragStop: (drag, event) =>
         
         if @selection.rect?
@@ -141,6 +219,7 @@ class Stage
             return
         
         switch @kali.shapeTool() 
+            when 'loupe' then log 'loupe end', drag
             when 'polygon', 'polyline'
                 @drawing?.draw 'done'
             else
@@ -159,21 +238,37 @@ class Stage
         box = @svg.viewbox()
         box.width  = @viewSize().width
         box.height = @viewSize().height
-        delete box.zoom
+        box.zoom = 1
         box.x = 0
         box.y = 0
-        @svg.viewbox box
+        @setViewBox box
         
-    zoomIn: ->
-        @svg.viewbox @grow @svg.viewbox(), -10
+    zoomIn:  -> @setViewBox @grow @svg.viewbox(), -10
+    zoomOut: -> @setViewBox @grow @svg.viewbox()
         
-    zoomOut: ->
-        @svg.viewbox @grow @svg.viewbox()
+    panBy: (delta) ->
+        box = @svg.viewbox()
+        box.x -= delta.x / @zoom()
+        box.y -= delta.y / @zoom()
+        @setViewBox box
     
+    # 000   000  000  00000000  000   000  
+    # 000   000  000  000       000 0 000  
+    #  000 000   000  0000000   000000000  
+    #    000     000  000       000   000  
+    #     0      000  00000000  00     00  
+    
+    onResize: (w, h) => @resetZoom()
+    
+    setViewBox: (box) ->
+        @svg.viewbox box
+        post.emit 'stage', 'viewbox', box
+        post.emit 'stage', 'zoom',    box.zoom
+
     viewPos:  -> r = @element.getBoundingClientRect(); x:r.left, y:r.top
     viewSize: -> r = @element.getBoundingClientRect(); width:r.width, height:r.height
-    eventPos: (event) -> p = pos event
-    localPos: (event) -> p = pos event; p.sub @viewPos()
+    eventPos: (event) -> pos event
+    localPos: (event) -> @eventPos(event).sub @viewPos()
        
     #  0000000   00000000    0000000   000   000  
     # 000        000   000  000   000  000 0 000  
@@ -182,7 +277,7 @@ class Stage
     #  0000000   000   000   0000000   00     00  
     
     grow: (box, percent=10) ->
-        
+
         w = box.width * percent / 100
         box.width = box.width + 2*w
         box.x -= w
@@ -198,7 +293,7 @@ class Stage
         if box.cx? then box.cx = box.x + box.w/2
         if box.cy? then box.cy = box.y + box.y/2
         
-        box.zoom ?= box.zoom * (100-2*percent)/100
+        if box.zoom? then box.zoom *= (100-2*percent)/100
         box
     
 module.exports = Stage

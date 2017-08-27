@@ -14,6 +14,7 @@ class Selection
         @selected = []
         
         post.on 'color', @onColor
+        post.on 'line', @onLine
 
     #  0000000  00000000  000      00000000   0000000  000000000  00000000  0000000    
     # 000       000       000      000       000          000     000       000   000  
@@ -21,7 +22,7 @@ class Selection
     #      000  000       000      000       000          000     000       000   000  
     # 0000000   00000000  0000000  00000000   0000000     000     00000000  0000000    
     
-    add: (e) -> 
+    add: (e) ->
         if e not in @selected
             e.selectize deepSelect: true
             e.resize snapToAngle: 15
@@ -72,8 +73,14 @@ class Selection
     selectInRect: (rect) ->
         r = @normRect rect
         for child in @kali.stage.svg.children()
-            if child.id().startsWith 'SvgjsG'
+
+            # if child.id().startsWith 'SvgjsG'
+                # continue
+            
+            if child.type != 'g' and child.id().startsWith 'SvgjsG'
+                log 'skip', child
                 continue
+
             rb = child.rbox()
             if @intersect r, rb
                 @add child
@@ -182,5 +189,13 @@ class Selection
         if not _.isEmpty attr
             for s in @selected
                 s.style attr
+                
+    onLine: (prop, value) =>
+        
+        return if @empty()
+        
+        for s in @selected
+            s.style switch prop
+                when 'width' then 'stroke-width': value
             
 module.exports = Selection

@@ -26,9 +26,12 @@ class Kali
     onKeyDown: (event) =>
         
         {mod, key, combo, char} = keyinfo.forEvent event
-        log "Kali.onKeyDown mod:#{mod} key:#{key} combo:#{combo} char:#{char}"
+        # log "Kali.onKeyDown mod:#{mod} key:#{key} combo:#{combo} char:#{char}"
         switch combo
             when 'command+s' then return stopEvent(event) and @stage.dump()
+            when 'command+-' then return stopEvent(event) and @stage.zoomOut()
+            when 'command+=' then return stopEvent(event) and @stage.zoomIn()
+            when 'command+0' then return stopEvent(event) and @stage.resetZoom()
         return stopEvent(event) if 'unhandled' != @stage.handleKey mod, key, combo, char, event
         
     shapeTool: -> @tools.getActive('shape').name    

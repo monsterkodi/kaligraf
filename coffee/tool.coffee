@@ -20,13 +20,13 @@ class Tool
         @element.classList.add 'tool'
         @element.addEventListener 'mouseenter', @onMouseEnter
         @element.addEventListener 'mouseleave', @onMouseLeave
-        # @element.style.display = 'block'
+
         @kali.element.appendChild @element
         
         if @cfg.svg?
             @setSVG @cfg.svg
         else if not @cfg.class?
-            @element.appendChild elem 'span', text: @cfg.name
+            @element.appendChild elem 'div', class: 'title', text: @cfg.name
         
         @drag = new drag
             handle:  @element
@@ -42,11 +42,9 @@ class Tool
     # 0000000       0       0000000   
     
     setSVG: (svg) ->
-        # log 'setSVG', svg
-        @svg = SVG(@element).size '100%', '100%' 
+        @element.innerHTML = svg
+        @svg = SVG.adopt(@element.firstChild)
         @svg.addClass 'toolSVG'
-        @svg.clear()
-        @svg.svg svg
             
     # 000   000   0000000   000   000  00000000  00000000     
     # 000   000  000   000  000   000  000       000   000    
@@ -154,9 +152,16 @@ class Tool
     
     onClick: (e) => 
         
+        if e?.metaKey and @svg?
+            for child in @svg.children()
+                @kali.stage.addSVG child.svg()
+            return
+        
         if @hasChildren()
             @toggleChildren()
         else if @hasParent()
+            if not @parent.childrenVisible()
+                @parent.showChildren()
             @swapParent()
         
         if @group?
@@ -199,5 +204,18 @@ class Tool
             for tool in @children
                 if a = tool.getActive group
                     return a
-    
+
+    minusPlus: (minusCB, plusCB) ->
+        plus  = elem 'span', class:'toolPlus',  text:'+'
+        minus = elem 'span', class:'toolMinus', text:'-'               
+        
+        plus .addEventListener 'mousedown', plusCB
+        minus.addEventListener 'mousedown', minusCB
+        
+        plusMinus = elem 'div', class:'toolPlusMinus'
+        plusMinus.appendChild minus
+        plusMinus.appendChild plus
+        @element.appendChild plusMinus
+        
+                    
 module.exports = Tool

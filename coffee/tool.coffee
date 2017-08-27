@@ -20,10 +20,12 @@ class Tool
         @element.classList.add 'tool'
         @element.addEventListener 'mouseenter', @onMouseEnter
         @element.addEventListener 'mouseleave', @onMouseLeave
-        @element.style.display = 'block'
+        # @element.style.display = 'block'
         @kali.element.appendChild @element
         
-        if not @cfg.class?
+        if @cfg.svg?
+            @setSVG @cfg.svg
+        else if not @cfg.class?
             @element.appendChild elem 'span', text: @cfg.name
         
         @drag = new drag
@@ -32,18 +34,19 @@ class Tool
             onStart: @dragStart
             onMove:  @dragMove
             onStop:  @dragStop
-            
-    initChildren: ->
-        
-        if @cfg.list?
-            @children = []
-            for child in @cfg.list
-                tail = last(@children) ? @
-                tool = @kali.tools.newTool child
-                tool.parent = @
-                tool.setPos x:tail.pos().x+60, y:tail.pos().y
-                @children.push tool
-            @hideChildren()
+         
+    #  0000000  000   000   0000000   
+    # 000       000   000  000        
+    # 0000000    000 000   000  0000  
+    #      000     000     000   000  
+    # 0000000       0       0000000   
+    
+    setSVG: (svg) ->
+        log 'setSVG', svg
+        @svg = SVG(@element).size '100%', '100%' 
+        @svg.addClass 'toolSVG'
+        @svg.clear()
+        @svg.svg svg
             
     # 000   000   0000000   000   000  00000000  00000000     
     # 000   000  000   000  000   000  000       000   000    
@@ -67,7 +70,19 @@ class Tool
     # 000       000000000  000  000      000   000  0000000    0000000   000 0 000  
     # 000       000   000  000  000      000   000  000   000  000       000  0000  
     #  0000000  000   000  000  0000000  0000000    000   000  00000000  000   000  
-  
+
+    initChildren: ->
+        
+        if @cfg.list?
+            @children = []
+            for child in @cfg.list
+                tail = last(@children) ? @
+                tool = @kali.tools.newTool child
+                tool.parent = @
+                tool.setPos x:tail.pos().x+60, y:tail.pos().y
+                @children.push tool
+            @hideChildren()
+    
     hasParent: -> @parent? and @parent.name != 'tools'
     hasChildren: -> @children?.length > 0
     

@@ -5,7 +5,7 @@
 # 000  000   000   000  000      000  
 # 000   000  000   000  0000000  000  
 
-{ setStyle, keyinfo, log } = require 'kxk'
+{ setStyle, keyinfo, stopEvent, log } = require 'kxk'
 Menu   = require './menu'
 Stage  = require './stage'
 Tools  = require './tools'
@@ -19,16 +19,15 @@ class Kali
         @tools  = new Tools @, name: 'tools', text: 'tools'
         
         @focus()
-        document.addEventListener 'keydown', @onKeyDown
+        @element.addEventListener 'keydown', @onKeyDown
 
     focus: -> @element.focus()
         
     onKeyDown: (event) =>
-    
+        
         {mod, key, combo, char} = keyinfo.forEvent event
         # log "Kali.onKeyDown mod:#{mod} key:#{key} combo:#{combo} char:#{char}"
-        
-        return if 'unhandled' != @stage.handleKey mod, key, combo, char, event
+        return stopEvent(event) if 'unhandled' != @stage.handleKey mod, key, combo, char, event
         
     shapeTool: -> @tools.getActive('shape').name    
     

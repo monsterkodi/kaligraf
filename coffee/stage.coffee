@@ -29,7 +29,7 @@ class Stage
             onMove:  @onDragMove
             onStop:  @onDragStop
         
-    dump: -> log 'Stage.dump', @svg.svg()
+    dump: -> log 'Stage.dump\n', @svg.svg()
 
     handleKey: (mod, key, combo, char, event) ->
 

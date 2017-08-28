@@ -36,21 +36,30 @@ class Selection
     # 0000000   00000000  0000000  00000000   0000000     000     00000000  0000000    
     
     add: (e) ->
+        
         if e not in @items
-            e.selectize()
-            e.resize snapToAngle: 15
+            # e.selectize()
+            # e.resize snapToAngle: 15
             @items.push e
+            post.emit 'selection', 'add', e
             
     del: (e) ->
-        e.selectize false
-        e.resize 'stop'
-        _.pull @items, e
+        
+        # e.selectize false
+        # e.resize 'stop'
+        
+        if e in @items
+            _.pull @items, e
+            post.emit 'selection', 'del', e
     
     clear: () ->
         
+        if not @empty()
+            post.emit 'selection', 'clear', @items.length
+            
         while not @empty()
             @del last @items
-        
+                    
     empty: -> @items.length <= 0
     contains: (e) -> e in @items
         
@@ -60,32 +69,36 @@ class Selection
     # 000   000  000       000          000       
     # 000   000  00000000   0000000     000       
       
-    start: (p) -> @rect = x:p.x, y:p.y, x2: p.x, y2:p.y; @updateRect()
-    move: (p) -> @rect.x2 = p.x; @rect.y2 = p.y; @updateRect()
+    start: (p,o) -> @rect = x:p.x, y:p.y, x2: p.x, y2:p.y; @updateRect o
+    move: (p,o) -> @rect.x2 = p.x; @rect.y2 = p.y; @updateRect o
     end: (p) -> @rect.element.remove(); delete @rect
 
     addRect: (clss='selectangle')->
+        
         rect = elem 'div', class: 'selectangle'
         @kali.element.appendChild rect
         rect
             
     setRect: (elem, rect) ->
+        
         r = @offsetRect normRect rect
         elem.style.left   = "#{r.x}px"
         elem.style.top    = "#{r.y}px"
         elem.style.width  = "#{r.x2 - r.x}px"
         elem.style.height = "#{r.y2 - r.y}px"
         
-    updateRect: ->
+    updateRect: (opt={}) ->
         
         if not @rect.element
             @rect.element = @addRect()
+                            
         @setRect @rect.element, @rect        
-        @selectInRect @rect
         
-    selectInRect: (rect) ->
+        @selectInRect @rect, opt
         
-        r = @normRect rect
+    selectInRect: (rect, opt) ->
+        
+        r = normRect rect
         
         for child in @kali.stage.svg.children()
 
@@ -96,6 +109,8 @@ class Selection
             rb = child.rbox()
             if rectsIntersect r, rb
                 @add child
+            else if not opt.join
+                @del child
         
     offsetRect: (r) ->
         s = @kali.stage.element.getBoundingClientRect()
@@ -191,7 +206,6 @@ class Selection
                             when 'up'    then y = -1
                             when 'down'  then y =  1
                         @moveElement e, x, y
-                
         'unhandled'
                 
 module.exports = Selection

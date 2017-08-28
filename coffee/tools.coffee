@@ -25,6 +25,10 @@ class Tools extends Tool
         @kali.tools = @
         
         @init [
+            [
+                { name: 'zoom',  class: 'zoom', action: 'zoom_reset' }
+                { name: 'width', class: 'line' }
+            ]
             { name: 'stroke', class: 'color' }
             { name: 'fill',   class: 'color' }
             [
@@ -42,10 +46,6 @@ class Tools extends Tool
                 { name: 'circle',   group: 'shape' }
                 { name: 'ellipse',  group: 'shape' }
                 { name: 'triangle', group: 'shape' }
-            ]
-            [
-                { name: 'zoom',  class: 'zoom', action: 'zoom_reset' }
-                { name: 'width', class: 'line' }
             ]
             [
                 { name: 'save',  action: 'save',  orient: 'down' }
@@ -76,6 +76,8 @@ class Tools extends Tool
         @fill.setLuminance 0.6
         @width.setWidth 10
         
+        @load.onClick()
+        
     #  0000000   0000000    0000000    
     # 000   000  000   000  000   000  
     # 000000000  000   000  000   000  
@@ -91,7 +93,7 @@ class Tools extends Tool
         if tool.cfg.orient == 'down'
             tool.setPos x:(tail? and tail.pos().x or 0) + 60, y:0
         else
-            tool.setPos x:0, y:(tail? and tail.pos().y or 0) + 60
+            tool.setPos x:0, y:(tail? and tail.pos().y or -30) + 60
         
         tool.parent = @
         @children.push tool

@@ -7,9 +7,9 @@
 
 { setStyle, keyinfo, stopEvent, log, $ } = require 'kxk'
 
-Menu   = require './menu'
-Stage  = require './stage'
-Tools  = require './tools'
+Menu  = require './menu'
+Stage = require './stage'
+Tools = require './tools'
 
 class Kali
 
@@ -17,7 +17,7 @@ class Kali
         
         @element = cfg?.element ? window
         @stage   = new Stage @
-        @tools   = new Tools @, name: 'tools', text: 'tools'
+        @tools   = new Tools @, name: 'tools', text: 'tools', orient: 'down'
         
         @focus()
         @element.addEventListener 'keydown', @onKeyDown
@@ -27,7 +27,7 @@ class Kali
     onKeyDown: (event) =>
         
         {mod, key, combo, char} = keyinfo.forEvent event
-        log "Kali.onKeyDown mod:#{mod} key:#{key} combo:#{combo} char:#{char}"
+        # log "Kali.onKeyDown mod:#{mod} key:#{key} combo:#{combo} char:#{char}"
         return stopEvent(event) if 'unhandled' != @stage.handleKey mod, key, combo, char, event
         
     shapeTool: -> @tools.getActive('shape').name    

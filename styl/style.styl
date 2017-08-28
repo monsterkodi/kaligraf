@@ -1,86 +1,92 @@
 
 #stage
-    position    absolute
-    left        0
-    right       0
-    top         0
-    bottom      0
- 
-.tool
-    position    absolute
-    height      60px    
-    width       60px
-    color       #888
-    background  #222
-    cursor      pointer
-    &.active
-        color #fff
-        background #333
-    &:hover
-        color #ff0
+#resizer
+    position                absolute
+    left                    0
+    right                   0
+    top                     0
+    bottom                  0
 
+#resizer
+    pointer-events          none
+    
+.tool
+    position                absolute
+    width                   60px
+    height                  60px    
+    color                   #888
+    background              #222
+    cursor                  pointer
+    &.active
+        color               #fff
+        background          #333
+    &:hover
+        color               #ff0
+    &.down
+            height          30px
+            
 .tool .title
-    text-align      center
-    padding-top     4px
-    padding-bottom  4px
+    text-align              center
+    padding-top             4px
+    padding-bottom          4px
         
 .toolPlus
 .toolMinus
-    padding-left   8px
-    padding-right  8px
-    color       #888
+    padding-left            8px
+    padding-right           8px
+    color                   #888
     &:hover
-        color #ff0
+        color               #ff0
     
 .toolPlusMinus
-    padding 6px
+    padding                 6px
         
 .toolSVG
-    position    absolute
-    left        20%
-    top         20%
-    width       60%
-    height      60%
+    position                absolute
+    left                    20%
+    top                     20%
+    width                   60%
+    height                  60%
     
 .active .toolSVG
-    left        10%
-    top         10%
-    width       80%
-    height      80%
+    left                    10%
+    top                     10%
+    width                   80%
+    height                  80%
         
 .selectangle
-    pointer-events      none
-    position            absolute
-    box-sizing          border-box
-    border              1px dotted #fff
-    padding             0
-    overflow            hidden
-    background-color    #888
-    opacity             0.25
+    pointer-events          none
+    position                absolute
+    box-sizing              border-box
+    border                  1px dotted #fff
+    padding                 0
+    overflow                hidden
+    background-color        #888
+    opacity                 0.25
 
 .trans
-    pointer-events none
+    pointer-events          none
 
 .menu
-    position absolute
-    pointer-events none
-    left 0
-    top 0
-    -webkit-margin-start  0px
-    -webkit-margin-before 0px
-    -webkit-margin-after  0px
-    -webkit-padding-start 0px
+    position                absolute
+    pointer-events          none
+    left                    0  
+    top                     0
+    -webkit-margin-start    0px
+    -webkit-margin-before   0px
+    -webkit-margin-after    0px
+    -webkit-padding-start   0px
                 
 .button
-    padding-left     10px
-    padding-right    10px
-    background-color #888
-    cursor           pointer
-    border-style     hidden
+    padding-left            10px
+    padding-right           10px
+    background-color        #888
+    cursor                  pointer
+    border-style            hidden
                 
     &:hover
-        background-color #fff
-    
+        background-color    #fff
+        
 //  0000000  000   000   0000000   
 // 000       000   000  000        
 // 0000000    000 000   000  0000  

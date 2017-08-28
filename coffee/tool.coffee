@@ -18,6 +18,7 @@ class Tool
                 
         @element = elem 'div', class: @name
         @element.classList.add 'tool'
+        @element.classList.add 'down' if @cfg.orient == 'down'
         @element.addEventListener 'mouseenter', @onMouseEnter
         @element.addEventListener 'mouseleave', @onMouseLeave
 
@@ -79,7 +80,7 @@ class Tool
                 tool = @kali.tools.newTool child
                 tool.parent = @
                 if @cfg.orient == 'down'
-                    tool.setPos x:tail.pos().x, y:tail.pos().y+60
+                    tool.setPos x:tail.pos().x, y:tail.pos().y+30
                 else
                     tool.setPos x:tail.pos().x+60, y:tail.pos().y
                 @children.push tool
@@ -173,12 +174,14 @@ class Tool
             @kali.stage.addSVG @svg.svg()
             return
         
-        if @hasChildren()
+        if @hasChildren() and e
             @toggleChildren()
         else if @hasParent()
             if not @parent.childrenVisible()
                 @parent.showChildren()
             @swapParent()
+        else 
+            @hideChildren()
         
         if @group?
             post.emit 'tool', 'activate', @name

@@ -6,14 +6,16 @@
 # 0000000      000     000   000   0000000   00000000  
 
 { resolve, elem, post, drag, last, pos, fs, log, _ } = require 'kxk'
-{ growViewBox } = require './utils'
+{ growViewBox, normRect } = require './utils'
 { clipboard } = require 'electron' 
+
 SVG = require 'svg.js'
 sel = require 'svg.select.js'
 rsz = require 'svg.resize.js'
 drw = require 'svg.draw.js'
 clr = require 'svg.colorat.js'
 Selection = require './selection'
+Resizer   = require './resizer'
 
 class Stage
 
@@ -27,6 +29,7 @@ class Stage
             'stroke-linejoin': 'round'
         @svg.clear()
         @selection = new Selection @kali
+        @resizer   = new Resizer   @kali
         
         @drag = new drag
             target:  @element
@@ -46,10 +49,10 @@ class Stage
     setSVG: (svg) ->
         
         @clear()
-        @addSVG svg
+        @addSVG svg, select:false
         @resetZoom()
         
-    addSVG: (svg) -> 
+    addSVG: (svg, opt) -> 
         
         e = elem 'div'
         e.innerHTML = svg
@@ -64,7 +67,7 @@ class Stage
                 for child in svg.children()
                     @svg.svg child.svg()
                     added = last @svg.children() 
-                    if added.type != 'defs'
+                    if added.type != 'defs' and opt.select != false
                         @selection.add last @svg.children() 
 
     getSVG: (items, bb) ->
@@ -136,8 +139,7 @@ class Stage
     load: ->
         
         svg = fs.readFileSync resolve('~/Desktop/kaligraf.svg'), encoding: 'utf8'
-        @setSVG svg 
-        @selection.clear()
+        @setSVG svg
                     
     #  0000000  000   000   0000000   00000000   00000000  
     # 000       000   000  000   000  000   000  000       
@@ -240,8 +242,7 @@ class Stage
             when 'pick'
                 
                 if @selection.rect?
-                    @selection.clear() if not event.shiftKey
-                    @selection.move @eventPos event
+                    @selection.move @eventPos(event), join:event.shiftKey
                 else if not @selection.empty()
                     @selection.moveBy drag.delta
                 
@@ -275,7 +276,7 @@ class Stage
                 @selection.loupe.remove()
                 delete @selection.loupe
                 r = x:drag.startPos.x, y:drag.startPos.y, x2:drag.pos.x, y2:drag.pos.y
-                @selection.normRect r
+                normRect r
                 @setViewBox x:r.x, y:r.y, width:r.x2-r.x, height:r.y2-r.y
                 
             when 'polygon', 'polyline'

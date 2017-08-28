@@ -11,7 +11,7 @@ class Selection
 
     constructor: (@kali) ->
         
-        @selected = []
+        @items = []
         
         post.on 'color', @onColor
         post.on 'line', @onLine
@@ -23,23 +23,23 @@ class Selection
     # 0000000   00000000  0000000  00000000   0000000     000     00000000  0000000    
     
     add: (e) ->
-        if e not in @selected
-            e.selectize deepSelect: true
+        if e not in @items
+            e.selectize()
             e.resize snapToAngle: 15
-            @selected.push e
+            @items.push e
             
     del: (e) ->
-        e.selectize false, deepSelect: true
+        e.selectize false
         e.resize 'stop'
-        _.pull @selected, e
+        _.pull @items, e
     
     clear: () ->
         
         while not @empty()
-            @del last @selected
+            @del last @items
         
-    empty: -> @selected.length <= 0
-    contains: (e) -> e in @selected
+    empty: -> @items.length <= 0
+    contains: (e) -> e in @items
         
     # 00000000   00000000   0000000  000000000    
     # 000   000  000       000          000       
@@ -51,7 +51,7 @@ class Selection
     move: (p) -> @rect.x2 = p.x; @rect.y2 = p.y; @updateRect()
     end: (p) -> @rect.element.remove(); delete @rect
 
-    addRect: ->
+    addRect: (clss='selectangle')->
         rect = elem 'div', class: 'selectangle'
         @kali.element.appendChild rect
         rect
@@ -71,13 +71,15 @@ class Selection
         @selectInRect @rect
         
     selectInRect: (rect) ->
+        
         r = @normRect rect
+        
         for child in @kali.stage.svg.children()
 
             # if child.id().startsWith 'SvgjsG'
                 # continue
             
-            if child.type != 'g' and child.id().startsWith 'SvgjsG'
+            if child.type != 'g' and child.id()?.startsWith 'SvgjsG'
                 log 'skip', child
                 continue
 
@@ -114,15 +116,15 @@ class Selection
     handleKey: (mod, key, combo, char, event) ->
         
         if not @empty()
-            switch key
-                when 'backspace'
+            switch combo
+                when 'backspace', 'command+x'
                     while not @empty()
-                        l = last @selected
+                        l = last @items
                         @del l
                         l.remove()
                     return
                 when 'left', 'right', 'up', 'down'
-                    for e in @selected
+                    for e in @items
                         x = y = 0
                         switch key
                             when 'left'  then x = -1
@@ -141,7 +143,7 @@ class Selection
     
     moveBy: (delta) ->
         
-        for s in @selected
+        for s in @items
             @moveElement s, delta.x, delta.y
 
     moveElement: (e, dx, dy) ->
@@ -161,15 +163,15 @@ class Selection
         return if @empty()
         stroke = r:0, g:0, b:0
         fill   = r:0, g:0, b:0
-        for s in @selected
+        for s in @items
             sc = new SVG.Color s.style 'stroke'
             fc = new SVG.Color s.style 'fill'
             for c in ['r', 'g', 'b']
                 stroke[c] += sc[c]
                 fill[c]   += fc[c]
         for c in ['r', 'g', 'b']                
-            stroke[c] /= @selected.length
-            fill[c]   /= @selected.length
+            stroke[c] /= @items.length
+            fill[c]   /= @items.length
            
         post.emit 'setColor', 'fill',   fill
         post.emit 'setColor', 'stroke', stroke
@@ -187,14 +189,14 @@ class Selection
                 attr[color] = new SVG.Color value
                 
         if not _.isEmpty attr
-            for s in @selected
+            for s in @items
                 s.style attr
                 
     onLine: (prop, value) =>
         
         return if @empty()
         
-        for s in @selected
+        for s in @items
             s.style switch prop
                 when 'width' then 'stroke-width': value
             

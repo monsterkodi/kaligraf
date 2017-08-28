@@ -153,8 +153,9 @@ class Tool
     onClick: (e) => 
         
         if e?.metaKey and @svg?
-            for child in @svg.children()
-                @kali.stage.addSVG child.svg()
+            @kali.stage.addSVG @svg.svg()
+            # for child in @svg.children()
+                # @kali.stage.addSVG child.svg()
             return
         
         if @hasChildren()

@@ -5,7 +5,8 @@
 #      000     000     000   000  000   000  000       
 # 0000000      000     000   000   0000000   00000000  
 
-{ elem, post, drag, last, pos, log } = require 'kxk'
+{ resolve, elem, post, drag, last, pos, fs, log, _ } = require 'kxk'
+{ clipboard } = require 'electron' 
 SVG = require 'svg.js'
 sel = require 'svg.select.js'
 rsz = require 'svg.resize.js'
@@ -42,52 +43,91 @@ class Stage
     # 0000000       0       0000000   
     
     setSVG: (svg) ->
-        @clear()
-        @svg.svg svg
         
-    addSVG: (svg) ->
-        @svg.svg svg
+        @clear()
+        @addSVG svg
+        @resetZoom()
+        
+    addSVG: (svg) -> 
+        
+        e = elem 'div'
+        e.innerHTML = svg
+        svg = SVG.adopt e.firstChild
+        if svg? and svg.children().length
+            @selection.clear()
+            for child in svg.children()
+                @svg.svg child.svg()
+                added = last @svg.children() 
+                if added.type != 'defs'
+                    @selection.add last @svg.children() 
         
     clear: -> 
+        
         @selection.clear()
         @svg.clear()
         
-    dump: -> 
+    copy: -> 
 
-        items = @selection.empty() and @svg.children() or @selection.selected
-        
+        selected = _.clone @selection.items
+        items = @selection.empty() and @svg.children() or selected
+        @selection.clear()
         bb = null
         for item in items
-            item.selectize false
             bb ?= item.rbox()
             bb = bb.merge item.rbox()
         bb = bb.transform new SVG.Matrix().translate -@viewPos().x, -@viewPos().y
         @grow bb
         
-        log @getSVG items, bb
+        svg = @getSVG items, bb
+        clipboard.writeText svg
+        log svg
         
-        if not @selection.empty()
-            for item in @selection.selection
-                item.selectize true
+        for item in selected
+            @selection.add item        
 
+    paste: -> @addSVG clipboard.readText()
+                
     save: -> 
-        log 'save', @getSVG @svg.children(), x:0, y:0, width:@viewSize().width, height:@viewSize().height
         
-    load: -> log 'load'
+        svg = @getSVG @svg.children(), x:0, y:0, width:@viewSize().width, height:@viewSize().height
+        fs.writeFileSync resolve('~/Desktop/kaligraf.svg'), svg
+        
+    load: ->
+        
+        svg = fs.readFileSync resolve('~/Desktop/kaligraf.svg'), encoding: 'utf8'
+        @setSVG svg 
+        @selection.clear()
         
     getSVG: (items, bb) ->
-        log 'dump', items.length
-
+        
+        selected = _.clone @selection.items
+        @selection.clear()
+        
         svgStr = '<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-linejoin: round;" '
         svgStr += "viewBox=\"#{bb.x} #{bb.y} #{bb.width} #{bb.height}\">"
         for item in items
             svgStr += item.svg()
         svgStr += '</svg>'
+        
+        for item in selected
+            @selection.add item
+        
         svgStr
         
     handleKey: (mod, key, combo, char, event) ->
 
+        switch combo
+            when 'command+s' then return @save()
+            when 'command+o' then return @load()
+            when 'command+c' then return @copy()
+            when 'command+v' then return @paste()
+            when 'command+k' then return @clear()
+            when 'command+-' then return @zoomOut()
+            when 'command+=' then return @zoomIn()
+            when 'command+0' then return @resetZoom()
+        
         return if 'unhandled' != @selection.handleKey mod, key, combo, char, event
+        
         'unhandled'
     
     #  0000000  000   000   0000000   00000000   00000000  
@@ -138,10 +178,11 @@ class Stage
                 @kali.tools[s].onClick()
                 shape = s
         
-        switch shape 
+        switch shape
             when 'pick'
                 e = event.target.instance
                 if not e?
+                    log 'ADOPT!!!', event.target.id
                     e = SVG.adopt event.target
                 if e == @svg
                     if not event.shiftKey
@@ -156,7 +197,8 @@ class Stage
                         if event.shiftKey
                             @selection.del e
             when 'pan'   then log 'pan'
-            when 'loupe' then log 'loupe'
+            when 'loupe' 
+                @selection.loupe = @selection.addRect 'loupe'
             else
                 @selection.clear()
                 @drawing = @addShape shape
@@ -178,14 +220,13 @@ class Stage
     
     onDragMove: (drag, event) =>
 
-        shape = @kali.shapeTool()
-                    
-        switch shape
+        switch @kali.shapeTool()
             
             when 'pan'   then @panBy drag.delta
             when 'loupe' 
                 
-                log 'move loupe', drag.pos, drag.deltaSum
+                r = x:drag.startPos.x, y:drag.startPos.y, x2:drag.pos.x, y2:drag.pos.y                
+                @selection.setRect @selection.loupe, r
                 
             when 'pick'
                 
@@ -219,7 +260,14 @@ class Stage
             return
         
         switch @kali.shapeTool() 
-            when 'loupe' then log 'loupe end', drag
+            when 'loupe' 
+                @selection.loupe.remove()
+                delete @selection.loupe
+                r = x:drag.startPos.x, y:drag.startPos.y, x2:drag.pos.x, y2:drag.pos.y
+                log 'loupe end', r
+                @selection.normRect r
+                log 'loupe end', r
+                @setViewBox x:r.x, y:r.y, width:r.x2-r.x, height:r.y2-r.y
             when 'polygon', 'polyline'
                 @drawing?.draw 'done'
             else

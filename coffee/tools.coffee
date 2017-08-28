@@ -49,9 +49,10 @@ class Tools extends Tool
             ]
             ,
             [
-                { name: 'save',  action: 'save' }
-                { name: 'load',  action: 'load' }
-                { name: 'dump',  action: 'dump' }
+                { name: 'save',  action: 'save'  }
+                { name: 'load',  action: 'load'  }
+                { name: 'copy',  action: 'copy'  }
+                { name: 'paste', action: 'paste' }
             ]
         ]
         
@@ -127,7 +128,8 @@ class Tools extends Tool
         
         switch action
             when 'activate'   then @activateTool name
-            when 'dump'       then @kali.stage.dump()
+            when 'copy'       then @kali.stage.copy()
+            when 'paste'      then @kali.stage.paste()
             when 'save'       then @kali.stage.save()
             when 'load'       then @kali.stage.load()
             when 'zoom_reset' then @kali.stage.resetZoom()

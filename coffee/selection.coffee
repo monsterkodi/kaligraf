@@ -6,6 +6,7 @@
 # 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000
 
 { last, pos, elem, post, log, _ } = require 'kxk'
+{ normRect, rectsIntersect } = require './utils'
 
 class Selection
 
@@ -16,6 +17,18 @@ class Selection
         post.on 'color', @onColor
         post.on 'line', @onLine
 
+    # 0000000    00000000  000      00000000  000000000  00000000  
+    # 000   000  000       000      000          000     000       
+    # 000   000  0000000   000      0000000      000     0000000   
+    # 000   000  000       000      000          000     000       
+    # 0000000    00000000  0000000  00000000     000     00000000  
+    
+    delete: ->        
+        while not @empty()
+            l = last @items
+            @del l
+            l.remove()
+        
     #  0000000  00000000  000      00000000   0000000  000000000  00000000  0000000    
     # 000       000       000      000       000          000     000       000   000  
     # 0000000   0000000   000      0000000   000          000     0000000   000   000  
@@ -57,7 +70,7 @@ class Selection
         rect
             
     setRect: (elem, rect) ->
-        r = @offsetRect @normRect rect
+        r = @offsetRect normRect rect
         elem.style.left   = "#{r.x}px"
         elem.style.top    = "#{r.y}px"
         elem.style.width  = "#{r.x2 - r.x}px"
@@ -76,65 +89,20 @@ class Selection
         
         for child in @kali.stage.svg.children()
 
-            # if child.id().startsWith 'SvgjsG'
-                # continue
-            
             if child.type != 'g' and child.id()?.startsWith 'SvgjsG'
                 log 'skip', child
                 continue
 
             rb = child.rbox()
-            if @intersect r, rb
+            if rectsIntersect r, rb
                 @add child
-
-    intersect: (a, b) ->
-        if a.x2 < b.x then return false
-        if a.y2 < b.y then return false
-        if b.x2 < a.x then return false
-        if b.y2 < a.y then return false
-        true
-        
-    normRect: (r) ->
-        [sx, ex] = [r.x, r.x2]
-        [sy, ey] = [r.y, r.y2]
-        if sx > ex then [sx, ex] = [ex, sx]
-        if sy > ey then [sy, ey] = [ey, sy] 
-        x:sx, y:sy, x2:ex, y2:ey
         
     offsetRect: (r) ->
         s = @kali.stage.element.getBoundingClientRect()
         x = s.left
         y = s.top
         x:r.x-x, x2:r.x2-x, y:r.y-y, y2:r.y2-y
-            
-    # 000   000  00000000  000   000  
-    # 000  000   000        000 000   
-    # 0000000    0000000     00000    
-    # 000  000   000          000     
-    # 000   000  00000000     000     
-    
-    handleKey: (mod, key, combo, char, event) ->
-        
-        if not @empty()
-            switch combo
-                when 'backspace', 'command+x'
-                    while not @empty()
-                        l = last @items
-                        @del l
-                        l.remove()
-                    return
-                when 'left', 'right', 'up', 'down'
-                    for e in @items
-                        x = y = 0
-                        switch key
-                            when 'left'  then x = -1
-                            when 'right' then x =  1
-                            when 'up'    then y = -1
-                            when 'down'  then y =  1
-                        @moveElement e, x, y
-                
-        'unhandled'
-        
+                    
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
     # 000000000  000   000   000 000   0000000   
@@ -147,6 +115,7 @@ class Selection
             @moveElement s, delta.x, delta.y
 
     moveElement: (e, dx, dy) ->
+        
         dx /= @kali.stage.zoom()
         dy /= @kali.stage.zoom()
         t = e.transform()
@@ -199,5 +168,30 @@ class Selection
         for s in @items
             s.style switch prop
                 when 'width' then 'stroke-width': value
-            
+
+    # 000   000  00000000  000   000  
+    # 000  000   000        000 000   
+    # 0000000    0000000     00000    
+    # 000  000   000          000     
+    # 000   000  00000000     000     
+    
+    handleKey: (mod, key, combo, char, event) ->
+        
+        if not @empty()
+            switch combo
+                when 'backspace', 'delete'
+                    @delete()
+                    return
+                when 'left', 'right', 'up', 'down'
+                    for e in @items
+                        x = y = 0
+                        switch key
+                            when 'left'  then x = -1
+                            when 'right' then x =  1
+                            when 'up'    then y = -1
+                            when 'down'  then y =  1
+                        @moveElement e, x, y
+                
+        'unhandled'
+                
 module.exports = Selection

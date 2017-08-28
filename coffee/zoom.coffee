@@ -25,9 +25,9 @@ class Zoom extends Tool
     onZoomOut: (event) => stopEvent(event) and post.emit 'tool', 'zoom_out', @name
     
     onStage: (prop, value) =>
+        
         switch prop
             when 'zoom'
                 @title.innerHTML = "#{parseInt value*100}%"
-                
     
 module.exports = Zoom

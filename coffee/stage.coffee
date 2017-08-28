@@ -6,6 +6,7 @@
 # 0000000      000     000   000   0000000   00000000  
 
 { resolve, elem, post, drag, last, pos, fs, log, _ } = require 'kxk'
+{ growViewBox } = require './utils'
 { clipboard } = require 'electron' 
 SVG = require 'svg.js'
 sel = require 'svg.select.js'
@@ -52,52 +53,20 @@ class Stage
         
         e = elem 'div'
         e.innerHTML = svg
-        svg = SVG.adopt e.firstChild
-        if svg? and svg.children().length
-            @selection.clear()
-            for child in svg.children()
-                @svg.svg child.svg()
-                added = last @svg.children() 
-                if added.type != 'defs'
-                    @selection.add last @svg.children() 
         
-    clear: -> 
-        
-        @selection.clear()
-        @svg.clear()
-        
-    copy: -> 
+        if e.firstChild.tagName == 'svg'
 
-        selected = _.clone @selection.items
-        items = @selection.empty() and @svg.children() or selected
-        @selection.clear()
-        bb = null
-        for item in items
-            bb ?= item.rbox()
-            bb = bb.merge item.rbox()
-        bb = bb.transform new SVG.Matrix().translate -@viewPos().x, -@viewPos().y
-        @grow bb
-        
-        svg = @getSVG items, bb
-        clipboard.writeText svg
-        log svg
-        
-        for item in selected
-            @selection.add item        
-
-    paste: -> @addSVG clipboard.readText()
+            svg = SVG.adopt e.firstChild
+            if svg? and svg.children().length
                 
-    save: -> 
-        
-        svg = @getSVG @svg.children(), x:0, y:0, width:@viewSize().width, height:@viewSize().height
-        fs.writeFileSync resolve('~/Desktop/kaligraf.svg'), svg
-        
-    load: ->
-        
-        svg = fs.readFileSync resolve('~/Desktop/kaligraf.svg'), encoding: 'utf8'
-        @setSVG svg 
-        @selection.clear()
-        
+                @selection.clear()
+                
+                for child in svg.children()
+                    @svg.svg child.svg()
+                    added = last @svg.children() 
+                    if added.type != 'defs'
+                        @selection.add last @svg.children() 
+
     getSVG: (items, bb) ->
         
         selected = _.clone @selection.items
@@ -113,23 +82,63 @@ class Stage
             @selection.add item
         
         svgStr
-        
-    handleKey: (mod, key, combo, char, event) ->
-
-        switch combo
-            when 'command+s' then return @save()
-            when 'command+o' then return @load()
-            when 'command+c' then return @copy()
-            when 'command+v' then return @paste()
-            when 'command+k' then return @clear()
-            when 'command+-' then return @zoomOut()
-            when 'command+=' then return @zoomIn()
-            when 'command+0' then return @resetZoom()
-        
-        return if 'unhandled' != @selection.handleKey mod, key, combo, char, event
-        
-        'unhandled'
+                    
+    #  0000000   0000000   00000000   000   000  
+    # 000       000   000  000   000   000 000   
+    # 000       000   000  00000000     00000    
+    # 000       000   000  000           000     
+    #  0000000   0000000   000           000     
     
+    copy: -> 
+        
+        selected = _.clone @selection.items
+        items = @selection.empty() and @svg.children() or selected
+        return if items.length <= 0
+        @selection.clear()
+        bb = null
+        for item in items
+            bb ?= item.rbox()
+            bb = bb.merge item.rbox()
+        bb = bb.transform new SVG.Matrix().translate -@viewPos().x, -@viewPos().y
+        growViewBox bb
+        
+        svg = @getSVG items, bb
+        clipboard.writeText svg
+        log svg
+        
+        for item in selected
+            @selection.add item        
+
+    paste: -> @addSVG clipboard.readText()
+
+    cut: -> 
+        
+        if not @selection.empty()
+            @copy()
+            @selection.delete()
+    
+    clear: -> 
+        
+        @selection.clear()
+        @svg.clear()
+
+    #  0000000   0000000   000   000  00000000  
+    # 000       000   000  000   000  000       
+    # 0000000   000000000   000 000   0000000   
+    #      000  000   000     000     000       
+    # 0000000   000   000      0      00000000  
+    
+    save: -> 
+        
+        svg = @getSVG @svg.children(), x:0, y:0, width:@viewSize().width, height:@viewSize().height
+        fs.writeFileSync resolve('~/Desktop/kaligraf.svg'), svg
+        
+    load: ->
+        
+        svg = fs.readFileSync resolve('~/Desktop/kaligraf.svg'), encoding: 'utf8'
+        @setSVG svg 
+        @selection.clear()
+                    
     #  0000000  000   000   0000000   00000000   00000000  
     # 000       000   000  000   000  000   000  000       
     # 0000000   000000000  000000000  00000000   0000000   
@@ -260,17 +269,21 @@ class Stage
             return
         
         switch @kali.shapeTool() 
+            
             when 'loupe' 
+                
                 @selection.loupe.remove()
                 delete @selection.loupe
                 r = x:drag.startPos.x, y:drag.startPos.y, x2:drag.pos.x, y2:drag.pos.y
-                log 'loupe end', r
                 @selection.normRect r
-                log 'loupe end', r
                 @setViewBox x:r.x, y:r.y, width:r.x2-r.x, height:r.y2-r.y
+                
             when 'polygon', 'polyline'
+                
                 @drawing?.draw 'done'
+                
             else
+                
                 @drawing?.draw event
                 
         @drawing = null
@@ -282,6 +295,9 @@ class Stage
     # 0000000   0000000    0000000   000   000  
     
     zoom: -> @svg.viewbox().zoom
+    zoomIn:  -> @setViewBox growViewBox @svg.viewbox(), -10
+    zoomOut: -> @setViewBox growViewBox @svg.viewbox()
+    
     resetZoom: ->
         box = @svg.viewbox()
         box.width  = @viewSize().width
@@ -290,10 +306,13 @@ class Stage
         box.x = 0
         box.y = 0
         @setViewBox box
-        
-    zoomIn:  -> @setViewBox @grow @svg.viewbox(), -10
-    zoomOut: -> @setViewBox @grow @svg.viewbox()
-        
+                
+    # 00000000    0000000   000   000  
+    # 000   000  000   000  0000  000  
+    # 00000000   000000000  000 0 000  
+    # 000        000   000  000  0000  
+    # 000        000   000  000   000  
+    
     panBy: (delta) ->
         box = @svg.viewbox()
         box.x -= delta.x / @zoom()
@@ -307,6 +326,8 @@ class Stage
     #     0      000  00000000  00     00  
     
     onResize: (w, h) => @resetZoom()
+    eventPos: (event) -> pos event
+    localPos: (event) -> @eventPos(event).sub @viewPos()
     
     setViewBox: (box) ->
         @svg.viewbox box
@@ -315,33 +336,29 @@ class Stage
 
     viewPos:  -> r = @element.getBoundingClientRect(); x:r.left, y:r.top
     viewSize: -> r = @element.getBoundingClientRect(); width:r.width, height:r.height
-    eventPos: (event) -> pos event
-    localPos: (event) -> @eventPos(event).sub @viewPos()
        
-    #  0000000   00000000    0000000   000   000  
-    # 000        000   000  000   000  000 0 000  
-    # 000  0000  0000000    000   000  000000000  
-    # 000   000  000   000  000   000  000   000  
-    #  0000000   000   000   0000000   00     00  
+    # 000   000  00000000  000   000  
+    # 000  000   000        000 000   
+    # 0000000    0000000     00000    
+    # 000  000   000          000     
+    # 000   000  00000000     000     
     
-    grow: (box, percent=10) ->
+    handleKey: (mod, key, combo, char, event) ->
 
-        w = box.width * percent / 100
-        box.width = box.width + 2*w
-        box.x -= w
+        switch combo
+            
+            when 'command+s' then return @save()
+            when 'command+o' then return @load()
+            when 'command+x' then return @cut()
+            when 'command+c' then return @copy()
+            when 'command+v' then return @paste()
+            when 'command+k' then return @clear()
+            when 'command+-' then return @zoomOut()
+            when 'command+=' then return @zoomIn()
+            when 'command+0' then return @resetZoom()
         
-        h = box.height * percent / 100
-        box.height = box.height + 2*h
-        box.y -= h
+        return if 'unhandled' != @selection.handleKey mod, key, combo, char, event
         
-        if box.w?  then box.w  = box.width
-        if box.h?  then box.h  = box.height
-        if box.x2? then box.x2 = box.x + box.width
-        if box.y2? then box.y2 = box.y + box.height
-        if box.cx? then box.cx = box.x + box.w/2
-        if box.cy? then box.cy = box.y + box.y/2
+        'unhandled'
         
-        if box.zoom? then box.zoom *= (100-2*percent)/100
-        box
-    
 module.exports = Stage

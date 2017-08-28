@@ -275,9 +275,11 @@ class Color extends Tool
     toggleGradient: =>
 
         if @grd.visible()
+            @lower()
             @grd.hide()
             @svg.width HEIGHT*2
         else
+            @raise()
             @grd.show()
             @svg.width WIDTH+HEIGHT*2
             

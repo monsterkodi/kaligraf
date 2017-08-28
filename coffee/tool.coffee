@@ -42,6 +42,7 @@ class Tool
     # 0000000       0       0000000   
     
     setSVG: (svg) ->
+        
         @element.innerHTML = svg
         @svg = SVG.adopt(@element.firstChild)
         @svg.addClass 'toolSVG'
@@ -77,7 +78,10 @@ class Tool
                 tail = last(@children) ? @
                 tool = @kali.tools.newTool child
                 tool.parent = @
-                tool.setPos x:tail.pos().x+60, y:tail.pos().y
+                if @cfg.orient == 'down'
+                    tool.setPos x:tail.pos().x, y:tail.pos().y+60
+                else
+                    tool.setPos x:tail.pos().x+60, y:tail.pos().y
                 @children.push tool
             @hideChildren()
     
@@ -89,16 +93,29 @@ class Tool
     
     showChildren: -> 
         
+        @raise()
         if @hasChildren()
             for c in @children
                 c.show()
                 
     hideChildren: -> 
         
+        @lower()
         if @hasChildren()
             for c in @children
                 c.hide()
 
+    raise: ->
+        
+        @element.style.zIndex = 100
+        if @hasChildren()
+            for c in @children
+                c.raise()
+
+    lower: ->
+        
+        @element.style.zIndex = 0
+                
     #  0000000  000   000   0000000   00000000   
     # 000       000 0 000  000   000  000   000  
     # 0000000   000000000  000000000  00000000   
@@ -154,8 +171,6 @@ class Tool
         
         if e?.metaKey and @svg?
             @kali.stage.addSVG @svg.svg()
-            # for child in @svg.children()
-                # @kali.stage.addSVG child.svg()
             return
         
         if @hasChildren()

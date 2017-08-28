@@ -5,7 +5,8 @@
 # 000  000   000   000  000      000  
 # 000   000  000   000  0000000  000  
 
-{ setStyle, keyinfo, stopEvent, log } = require 'kxk'
+{ setStyle, keyinfo, stopEvent, log, $ } = require 'kxk'
+
 Menu   = require './menu'
 Stage  = require './stage'
 Tools  = require './tools'
@@ -38,10 +39,12 @@ class Kali
                     
     setStyle: (name) ->
         
-        link = document.createElement 'link'
-        link.rel='stylesheet' 
-        link.href="#{__dirname}/css/#{name}.css"  
-        link.type='text/css'
-        document.head.appendChild link
+        if not $('kali-style')
+            link = document.createElement 'link'
+            link.rel  ='stylesheet'
+            link.id   = 'kali-style'
+            link.href ="#{__dirname}/css/#{name}.css"  
+            link.type ='text/css'
+            document.head.appendChild link
         
 module.exports = Kali

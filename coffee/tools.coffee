@@ -47,12 +47,15 @@ class Tools extends Tool
                 { name: 'zoom',  class: 'zoom', action: 'zoom_reset' }
                 { name: 'width', class: 'line' }
             ]
-            ,
             [
-                { name: 'save',  action: 'save'  }
-                { name: 'load',  action: 'load'  }
-                { name: 'copy',  action: 'copy'  }
-                { name: 'paste', action: 'paste' }
+                { name: 'save',  action: 'save',  orient: 'down' }
+                { name: 'load',  action: 'load',  orient: 'down' }
+                { name: 'clear', action: 'clear', orient: 'down' }
+            ]
+            [
+                { name: 'cut',   action: 'cut',   orient: 'down' }
+                { name: 'copy',  action: 'copy',  orient: 'down' }
+                { name: 'paste', action: 'paste', orient: 'down' }
             ]
         ]
         
@@ -67,9 +70,8 @@ class Tools extends Tool
         for tool in tools
             @addTool tool
             
-        @activateTool 'pick'
+        @activateTool 'rect'
         @stroke.setLuminance 0.75
-        # @stroke.setAlpha 0.5
         @fill.setAlpha 0.5
         @fill.setLuminance 0.6
         @width.setWidth 10
@@ -83,14 +85,25 @@ class Tools extends Tool
     addTool: (cfg) ->
 
         tool = @newTool cfg        
-        
+
         tail = last @children
-        tool.setPos x:0, y:(tail? and tail.pos().y or 0) + 60
+        
+        if tool.cfg.orient == 'down'
+            tool.setPos x:(tail? and tail.pos().x or 0) + 60, y:0
+        else
+            tool.setPos x:0, y:(tail? and tail.pos().y or 0) + 60
+        
         tool.parent = @
         @children.push tool
         tool.initChildren()
         tool
 
+    # 000   000  00000000  000   000  
+    # 0000  000  000       000 0 000  
+    # 000 0 000  0000000   000000000  
+    # 000  0000  000       000   000  
+    # 000   000  00000000  00     00  
+    
     newTool: (cfg) ->
         
         svgs = 
@@ -128,9 +141,11 @@ class Tools extends Tool
         
         switch action
             when 'activate'   then @activateTool name
+            when 'cut'        then @kali.stage.cut()
             when 'copy'       then @kali.stage.copy()
             when 'paste'      then @kali.stage.paste()
             when 'save'       then @kali.stage.save()
+            when 'clear'      then @kali.stage.clear()
             when 'load'       then @kali.stage.load()
             when 'zoom_reset' then @kali.stage.resetZoom()
             when 'zoom_in'    then @kali.stage.zoomIn()
@@ -148,17 +163,18 @@ class Tools extends Tool
     activateTool: (name) ->
         
         tool = @[name]
+        
         if tool.group?
             active = @getActive tool.group
             active?.deactivate()
+            
         tool.activate()
         
         cursor = switch name
             when 'pan'      then '-webkit-grab'
             when 'loupe'    then 'zoom-in'
-            else 
-                'default'
-        log 'cursor', cursor
+            else 'default'
+            
         @kali.stage.svg.style cursor: cursor
         
 module.exports = Tools

@@ -24,9 +24,7 @@ class Stage
         @element = elem 'div', id: 'stage'
         @kali.element.appendChild @element
         @svg = SVG(@element).size '100%', '100%' 
-        @svg.style
-            'stroke-linecap': 'round'
-            'stroke-linejoin': 'round'
+        @svg.addClass 'stageSVG'
         @svg.clear()
         
         @kali.stage = @
@@ -84,7 +82,7 @@ class Stage
                 for child in svg.children()
                     @svg.svg child.svg()
                     added = last @svg.children() 
-                    if added.type != 'defs' and opt.select != false
+                    if added.type != 'defs' and opt?.select != false
                         @selection.add last @svg.children() 
 
     getSVG: (items, bb) ->
@@ -210,7 +208,7 @@ class Stage
         switch shape
             
             when 'pick'
-                # e = event.target.instance
+
                 e = @itemAtPos ep
                 
                 if not e?
@@ -231,7 +229,7 @@ class Stage
                         if event.shiftKey
                             @selection.del e
                             
-            when 'pan'   then log 'pan'
+            when 'pan'   then #log 'pan'
             when 'loupe' 
                 @selection.loupe = @selection.addRect 'loupe'
             else
@@ -382,6 +380,7 @@ class Stage
             when 'command+=' then return @zoomIn()
             when 'command+0' then return @resetZoom()
         
+        return if 'unhandled' != @resizer  .handleKey mod, key, combo, char, event
         return if 'unhandled' != @selection.handleKey mod, key, combo, char, event
         
         'unhandled'

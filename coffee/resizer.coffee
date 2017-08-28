@@ -17,9 +17,7 @@ class Resizer
         @element = elem 'div', id: 'resizer'
         @kali.element.appendChild @element
         @svg = SVG(@element).size '100%', '100%' 
-        @svg.style
-            'stroke-linecap': 'round'
-            'stroke-linejoin': 'round'
+        @svg.addClass 'resizerSVG'
         @svg.clear()
         
         @box   = null
@@ -38,11 +36,7 @@ class Resizer
     createRect: ->
         
         @rect = @svg.rect()
-        @rect.style
-            stroke: '#fff'
-            fill:   'rgba(0,0,0,0.1)'
-            cursor: '-webkit-grab'
-            'pointer-events': 'all'
+        @rect.addClass 'resizerRect'
             
         @drag = new drag
             target:  @rect.node
@@ -64,16 +58,14 @@ class Resizer
     
     onDragStop:  => 
     
-    onDragMove: (drag) => 
-        
-        if not @selection.rect? 
-            @selection.moveBy drag.delta
-            @moveBy drag.delta
+    onDragMove: (drag) => @moveBy drag.delta
             
     moveBy: (delta) ->
         
-        @setBox moveBox @box, delta
-        @updateItems()
+        if not @selection.rect?
+            @selection.moveBy delta
+            @setBox moveBox @box, delta
+            @updateItems()
         
     # 0000000     0000000   000   000  
     # 000   000  000   000   000 000   
@@ -96,12 +88,13 @@ class Resizer
     # 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000  
     
     onSelection: (action, items, item) =>
-        log 'onSelection action:', action, 'item:', item?.id()
+        # log 'onSelection action:', action, 'item:', item?.id()
         switch action
             when 'add'   then @addItem items, item
             when 'del'   then @delItem items, item
             when 'clear' then @clear()
 
+    empty: -> not @box
     clear: ->
         
         @box = null
@@ -113,10 +106,8 @@ class Resizer
     addRectForItem: (item) ->
         
         @itemRect[item.id()] = r = @svg.rect()
-        r.style
-            fill: 'none'
-            stroke: '#888'
-            'stroke-dasharray': '2,2'
+        r.addClass 'resizerItemRect'
+
         @updateItem item
 
     updateItems: ->
@@ -179,5 +170,26 @@ class Resizer
         
         switch action
             when 'viewbox' then @calcBox()
+
+    # 000   000  00000000  000   000  
+    # 000  000   000        000 000   
+    # 0000000    0000000     00000    
+    # 000  000   000          000     
+    # 000   000  00000000     000     
     
+    handleKey: (mod, key, combo, char, event) ->
+        
+        if not @empty()
+            switch combo
+                when 'left', 'right', 'up', 'down'
+                    p = pos 0, 0
+                    switch key
+                        when 'left'  then p.x = -1
+                        when 'right' then p.x =  1
+                        when 'up'    then p.y = -1
+                        when 'down'  then p.y =  1
+                    @moveBy p
+                    
+        'unhandled'
+            
 module.exports = Resizer

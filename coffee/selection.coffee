@@ -197,15 +197,6 @@ class Selection
                 when 'backspace', 'delete'
                     @delete()
                     return
-                when 'left', 'right', 'up', 'down'
-                    for e in @items
-                        x = y = 0
-                        switch key
-                            when 'left'  then x = -1
-                            when 'right' then x =  1
-                            when 'up'    then y = -1
-                            when 'down'  then y =  1
-                        @moveElement e, x, y
         'unhandled'
                 
 module.exports = Selection

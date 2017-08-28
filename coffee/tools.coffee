@@ -70,7 +70,8 @@ class Tools extends Tool
         for tool in tools
             @addTool tool
             
-        @activateTool 'rect'
+        # @activateTool 'rect'
+        @activateTool 'pick'
         @stroke.setLuminance 0.75
         @fill.setAlpha 0.5
         @fill.setLuminance 0.6

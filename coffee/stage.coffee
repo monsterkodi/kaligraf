@@ -6,7 +6,7 @@
 # 0000000      000     000   000   0000000   00000000  
 
 { resolve, elem, post, drag, last, pos, fs, log, _ } = require 'kxk'
-{ growViewBox, normRect } = require './utils'
+{ growViewBox, normRect, boxForItems } = require './utils'
 { clipboard } = require 'electron' 
 
 SVG = require 'svg.js'
@@ -28,6 +28,9 @@ class Stage
             'stroke-linecap': 'round'
             'stroke-linejoin': 'round'
         @svg.clear()
+        
+        @kali.stage = @
+        
         @selection = new Selection @kali
         @resizer   = new Resizer   @kali
         
@@ -38,8 +41,24 @@ class Stage
             onStop:  @onDragStop
 
         window.area.on 'resized', @onResize
+
         @resetZoom()
 
+    # 000  000000000  00000000  00     00  
+    # 000     000     000       000   000  
+    # 000     000     0000000   000000000  
+    # 000     000     000       000 0 000  
+    # 000     000     00000000  000   000  
+    
+    itemAtPos: (p) ->
+        
+        e = document.elementsFromPoint p.x, p.y
+        # log "itemAtPos #{e.length}", p 
+        for i in e
+            if i.instance? and i != @svg and i.instance in @svg.children()
+                log "itemAtPos #{i.instance.id()}", p 
+                return i.instance
+        
     #  0000000  000   000   0000000   
     # 000       000   000  000        
     # 0000000    000 000   000  0000  
@@ -98,11 +117,8 @@ class Stage
         items = @selection.empty() and @svg.children() or selected
         return if items.length <= 0
         @selection.clear()
-        bb = null
-        for item in items
-            bb ?= item.rbox()
-            bb = bb.merge item.rbox()
-        bb = bb.transform new SVG.Matrix().translate -@viewPos().x, -@viewPos().y
+        
+        bb = boxForItems items, @viewPos()
         growViewBox bb
         
         svg = @getSVG items, bb
@@ -178,7 +194,9 @@ class Stage
     #      000     000     000   000  000   000     000     
     # 0000000      000     000   000  000   000     000     
     
-    onDragStart: (drag, event) =>
+    onDragStart: (drag, event) => @handleMouseDown event
+        
+    handleMouseDown: (event) ->
 
         @kali.focus()
         
@@ -189,24 +207,33 @@ class Stage
                 @kali.tools[s].onClick()
                 shape = s
         
+        ep = @eventPos(event)
+                
         switch shape
+            
             when 'pick'
-                e = event.target.instance
+                # e = event.target.instance
+                e = @itemAtPos ep
+                
                 if not e?
                     log 'ADOPT!!!', event.target.id
                     e = SVG.adopt event.target
+                    
                 if e == @svg
                     if not event.shiftKey
                         @selection.clear()
-                    @selection.start @eventPos event
+                    @selection.start @eventPos(event), join:event.shiftKey
                 else
                     if not @selection.contains e
                         if not event.shiftKey
                             @selection.clear()
+                        @selection.pos = @eventPos(event)
                         @selection.add e
                     else
+                        log 'del?', e?.id()
                         if event.shiftKey
                             @selection.del e
+                            
             when 'pan'   then log 'pan'
             when 'loupe' 
                 @selection.loupe = @selection.addRect 'loupe'
@@ -243,8 +270,8 @@ class Stage
                 
                 if @selection.rect?
                     @selection.move @eventPos(event), join:event.shiftKey
-                else if not @selection.empty()
-                    @selection.moveBy drag.delta
+                # else if not @selection.empty()
+                    # @selection.moveBy drag.delta
                 
             when 'polygon', 'polyline'
                 

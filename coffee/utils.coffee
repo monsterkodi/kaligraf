@@ -4,8 +4,22 @@
 # 000   000     000     000  000           000    
 #  0000000      000     000  0000000  0000000     
 
+{ empty, pos } = require 'kxk'
+
 module.exports = 
 
+    boxForItems: (items, offset={x:0,y:0}) ->
+        return new SVG.RBox() if empty items
+        bb = null
+        for item in items
+            bb ?= item.rbox()
+            bb = bb.merge item.rbox()
+        bb.transform new SVG.Matrix().translate -offset.x, -offset.y
+
+    moveBox: (box, d) -> box.x += d.x; box.y += d.y; box
+        
+    posForRect: (r) -> pos parseInt(r.x), parseInt(r.y)
+        
     # 000  000   000  000000000  00000000  00000000    0000000  00000000   0000000  000000000  
     # 000  0000  000     000     000       000   000  000       000       000          000     
     # 000  000 0 000     000     0000000   0000000    0000000   0000000   000          000     
@@ -13,6 +27,7 @@ module.exports =
     # 000  000   000     000     00000000  000   000  0000000   00000000   0000000     000     
     
     rectsIntersect: (a, b) ->
+        
         if a.x2 < b.x then return false
         if a.y2 < b.y then return false
         if b.x2 < a.x then return false
@@ -26,6 +41,7 @@ module.exports =
     # 000   000   0000000   000   000  000   000  000   000  00000000   0000000     000     
     
     normRect: (r) ->
+        
         [sx, ex] = [r.x, r.x2]
         [sy, ey] = [r.y, r.y2]
         if sx > ex then [sx, ex] = [ex, sx]

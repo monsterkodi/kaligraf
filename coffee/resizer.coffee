@@ -22,8 +22,9 @@ class Resizer
             'stroke-linejoin': 'round'
         @svg.clear()
         
-        @box  = null
-        @rect = null
+        @box   = null
+        @rect  = null
+        @itemRect = {}
         
         post.on 'selection', @onSelection
         post.on 'stage',     @onStage
@@ -57,19 +58,22 @@ class Resizer
     
     onDragStart: (drag, event) => 
         
-        # log 'onDragStart'
         if event?.shiftKey
-            log 'onDragStart skip'
             @kali.stage.handleMouseDown event
             return 'skip'
     
-    onDragStop:  => #log 'onDragStop'
+    onDragStop:  => 
     
     onDragMove: (drag) => 
         
         if not @selection.rect? 
             @selection.moveBy drag.delta
-            @setBox moveBox @box, drag.delta
+            @moveBy drag.delta
+            
+    moveBy: (delta) ->
+        
+        @setBox moveBox @box, delta
+        @updateItems()
         
     # 0000000     0000000   000   000  
     # 000   000  000   000   000 000   
@@ -102,9 +106,40 @@ class Resizer
         
         @box = null
         @rect.remove()
+        for id, ir of @itemRect
+            ir.remove()
+        @itemRect = {}
+
+    addRectForItem: (item) ->
+        
+        @itemRect[item.id()] = r = @svg.rect()
+        r.style
+            fill: 'none'
+            stroke: '#888'
+            'stroke-dasharray': '2,2'
+        @updateItem item
+
+    updateItems: ->
+        for item in @selection.items
+            @updateItem item
+        
+    updateItem: (item) ->
+        
+        @setItemBox item, boxForItems [item], @viewPos()
+        
+    setItemBox: (item, box) ->
+        
+        r = @itemRect[item.id()]
+        r.attr
+            x:      box.x
+            y:      box.y
+            width:  box.w
+            height: box.h
             
     addItem: (items, item) ->
-        # log 'addItem', items.length
+        
+        @addRectForItem item
+        
         if items.length == 1
             @createRect()
             @setBox item.rbox()
@@ -112,13 +147,15 @@ class Resizer
             @setBox @box.merge item.rbox()
             
         if @kali.stage.selection.pos
-            log 'start drag'
             @drag.start @kali.stage.selection.pos
         else
             log 'no pos?'
             
     delItem: (items, item) ->
-        # log 'delItem', items.length
+        
+        @itemRect[item.id()]?.remove()
+        delete @itemRect[item.id()]
+        
         if @box
             @setBox boxForItems items
 
@@ -127,6 +164,7 @@ class Resizer
         selection = @kali.stage.selection
         if not selection.empty()
             @setBox boxForItems selection.items
+            @updateItems()
             
     # 000   000  000  00000000  000   000  
     # 000   000  000  000       000 0 000  

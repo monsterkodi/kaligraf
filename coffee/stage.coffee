@@ -53,10 +53,8 @@ class Stage
     itemAtPos: (p) ->
         
         e = document.elementsFromPoint p.x, p.y
-        # log "itemAtPos #{e.length}", p 
         for i in e
             if i.instance? and i != @svg and i.instance in @svg.children()
-                log "itemAtPos #{i.instance.id()}", p 
                 return i.instance
         
     #  0000000  000   000   0000000   
@@ -230,7 +228,6 @@ class Stage
                         @selection.pos = @eventPos(event)
                         @selection.add e
                     else
-                        log 'del?', e?.id()
                         if event.shiftKey
                             @selection.del e
                             

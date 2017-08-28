@@ -54,7 +54,7 @@ class Selection
             post.emit 'selection', 'del', @items, e
     
     clear: () ->
-        log 'selection clear'
+
         if not @empty()
             post.emit 'selection', 'clear'
             
@@ -109,7 +109,6 @@ class Selection
             if rectsIntersect r, rb
                 @add child
             else if not opt.join
-                log 'selectInRect', opt
                 @del child
         
     offsetRect: (r) ->

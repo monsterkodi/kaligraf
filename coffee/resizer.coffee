@@ -81,16 +81,22 @@ class Resizer
             onMove:  @onDragMove
             onStop:  @onDragStop
 
-    onCornerStart: (drag, event) => log "corner #{drag.id} onStart"
-    onCornerStop:  (drag, event) => log "corner #{drag.id} onStop"
+    # 00000000   00000000   0000000  000  0000000  00000000    
+    # 000   000  000       000       000     000   000         
+    # 0000000    0000000   0000000   000    000    0000000     
+    # 000   000  000            000  000   000     000         
+    # 000   000  00000000  0000000   000  0000000  00000000    
+    
+    onCornerStart: (drag, event) => #log "corner #{drag.id} onStart"
+    onCornerStop:  (drag, event) => #log "corner #{drag.id} onStop"
     onCornerMove:  (drag, event) => @onResizeMove drag, event
 
-    onBorderStart: (drag, event) => log "border #{drag.id} onStart"
-    onBorderStop:  (drag, event) => log "border #{drag.id} onStop"
+    onBorderStart: (drag, event) => #log "border #{drag.id} onStart"
+    onBorderStop:  (drag, event) => #log "border #{drag.id} onStop"
     onBorderMove:  (drag, event) => @onResizeMove drag, event
         
     onResizeMove:  (drag, event) =>
-        log "border #{drag.id} onMove"
+        # log "border #{drag.id} onMove"
         
         left  = drag.id.includes 'left'
         right = drag.id.includes 'right'
@@ -102,25 +108,41 @@ class Resizer
         dx    =  drag.delta.x if right
         dy    = -drag.delta.y if top
         dy    =  drag.delta.y if bot
-        
-        for item in @selection.items
 
-            if item.type in ['circle']
-                item.radius item.radius() + dx/2 + dy/2
+        fx = (@box.w + dx)/@box.w
+        fy = (@box.h + dy)/@box.h
+
+        for item in @selection.items
+            if item.type in ['circle', 'ellipse']
+                iw = item.width()
+                ih = item.height()
             else
-                fx = (@box.w + dx)/@box.w
-                fy = (@box.h + dy)/@box.h
+                if right then item.x @box.x + fx * (item.x() - @box.x) 
+                if bot   then item.y @box.y + fy * (item.y() - @box.y)
+                if left  then item.x @box.x2 - fx * (@box.x2 - item.x())
+                if top   then item.y @box.y2 - fy * (@box.y2 - item.y())
+                            
+            if item.type in ['circle']
+                if Math.abs(dx) > Math.abs(dy)
+                    f = fx
+                else if Math.abs(dy) > Math.abs(dx)
+                    f = fy
+                else
+                    f = 1
+                item.radius (item.width() * f)/2.0
+            else
                 item.size item.width() * fx, item.height() * fy
-                    
-            if item.type not in ['circle', 'ellipse']
-                if left
-                    item.x item.x() + drag.delta.x * (1.0 - (item.x()-@box.x) / @box.w)
-                if right
-                    item.x item.x() + drag.delta.x *        (item.x()-@box.x) / @box.w
-                if top
-                    item.y item.y() + drag.delta.y * (1.0 - (item.y()-@box.y) / @box.h)
-                if bot
-                    item.y item.y() + drag.delta.y *        (item.y()-@box.y) / @box.h
+                
+            if item.type in ['circle']
+                if right then item.cx item.width()/2  + @box.x  + f * ((item.cx() - iw/2) - @box.x)
+                if bot   then item.cy item.height()/2 + @box.y  + f * ((item.cy() - ih/2) - @box.y) 
+                if left  then item.cx item.width()/2  + @box.x2 - f * (@box.x2 - (item.cx() - iw/2))
+                if top   then item.cy item.height()/2 + @box.y2 - f * (@box.y2 - (item.cy() - ih/2))
+            else if item.type in ['ellipse']
+                if right then item.cx item.width()/2  + @box.x  + fx * ((item.cx() - iw/2) - @box.x)
+                if bot   then item.cy item.height()/2 + @box.y  + fy * ((item.cy() - ih/2) - @box.y) 
+                if left  then item.cx item.width()/2  + @box.x2 - fx * (@box.x2 - (item.cx() - iw/2))
+                if top   then item.cy item.height()/2 + @box.y2 - fy * (@box.y2 - (item.cy() - ih/2))
                                                         
         @calcBox()         
         
@@ -145,8 +167,7 @@ class Resizer
         
         if not @selection.rect?
             @selection.moveBy delta
-            @setBox moveBox @rbox, delta
-            @updateItems()
+            @calcBox()
         
     # 0000000     0000000   000   000  
     # 000   000  000   000   000 000   
@@ -157,15 +178,27 @@ class Resizer
     setBox: (@rbox) ->
         
         @box = new SVG.RBox @rbox
-        @box.x -= @viewPos().x
-        @box.y -= @viewPos().y
+        @box.x  -= @viewPos().x
+        @box.y  -= @viewPos().y
+        @box.cx -= @viewPos().x
+        @box.cy -= @viewPos().y
+        @box.x2 -= @viewPos().x
+        @box.y2 -= @viewPos().y
+        
+        # log @box
         
         @g.attr 
             x:      @box.x
             y:      @box.y
             width:  @box.w
             height: @box.h
+
+    calcBox: ->
         
+        if not @selection.empty()
+            @setBox boxForItems @selection.items
+            @updateItems()
+            
     #  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000  
     # 000       000       000      000       000          000     000  000   000  0000  000  
     # 0000000   0000000   000      0000000   000          000     000  000   000  000 0 000  
@@ -205,19 +238,20 @@ class Resizer
         
         if items.length == 1
             @createRect()
-            @setBox item.rbox()
-        else
-            @setBox @rbox.merge item.rbox()
-            
+            # @setBox item.rbox()
+        # else
+            # @setBox @rbox.merge item.rbox()
+        @calcBox()
+        
         if @selection.pos
             @drag.start @selection.pos
             
     delItem: (items, item) ->
 
         @delRectForItem item
-        
-        if @box
-            @setBox boxForItems items
+        @calcBox()        
+        # if @box
+            # @setBox boxForItems items
     
     addRectForItem: (item) ->
         
@@ -235,12 +269,11 @@ class Resizer
             item.forget 'itemRect'
         
     updateItems: ->
-        
+        # log "updateItems @box: #{@box.x} #{@box.y} #{@box.w} #{@box.h}"
         for item in @selection.items
             @updateItem item
         
     updateItem: (item) ->
-        
         @setItemBox item, boxForItems [item], @viewPos()
         
     setItemBox: (item, box) ->
@@ -253,13 +286,7 @@ class Resizer
             height: box.h
 
     itemBox: (item) -> boxForItems [item], @viewPos()
-            
-    calcBox: ->
-        
-        if not @selection.empty()
-            @setBox boxForItems @selection.items
-            @updateItems()
-            
+                        
     # 000   000  000  00000000  000   000  
     # 000   000  000  000       000 0 000  
     #  000 000   000  0000000   000000000  

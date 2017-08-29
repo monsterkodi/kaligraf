@@ -133,8 +133,8 @@ class Selection
         
         dx /= @kali.stage.zoom()
         dy /= @kali.stage.zoom()
-        t = e.transform()
-        e.transform x:t.x+dx, y:t.y+dy
+        e.cx e.cx() + dx
+        e.cy e.cy() + dy
          
     #  0000000   0000000   000       0000000   00000000   
     # 000       000   000  000      000   000  000   000  

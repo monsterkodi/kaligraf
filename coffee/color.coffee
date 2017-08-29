@@ -138,7 +138,7 @@ class Color extends Tool
             stop.at 0.0, "#000"
             stop.at 0.5, @colorGradient(0.5).colorAt @value
             stop.at 1.0, "#fff"        
-#             
+
         @col.attr
             fill: @gradientCOL
 
@@ -239,15 +239,17 @@ class Color extends Tool
     # 00000000      0      00000000  000   000     000     0000000   
     
     moveEvents: (cb) ->
+        
         @clearEvents @moveCB
         @moveCB = cb
         window.addEventListener 'mousemove', cb
         window.addEventListener 'mouseup', => @clearEvents @moveCB
         
     clearEvents: (cb) ->
+        
         window.removeEventListener 'mousemove', cb
         window.removeEventListener 'mouseup',   cb
-
+        
     xPosEvent: (event) -> 
         r = $("#stage").getBoundingClientRect()
         x = event.pageX - r.left - @element.offsetLeft
@@ -271,8 +273,15 @@ class Color extends Tool
     #    000     000   000  000  0000  000  0000  000      0000000   
     #    000     000   000  000   000  000   000  000      000       
     #    000      0000000    0000000    0000000   0000000  00000000  
+
+    childrenVisible: -> @grd.visible()
+    hideChildren:    -> @toggleGradient() if @childrenVisible()
     
-    toggleGradient: =>
+    # onMouseEnter: => 
+        # super
+        # if not @grd.visible() then @toggleGradient()
+        
+    toggleGradient:  ->
 
         if @grd.visible()
             @lower()

@@ -56,9 +56,10 @@ class Tool
 
     onMouseEnter: =>
         
-        if @kali.tools.temp and @kali.tools.temp.children.indexOf(@) < 0
+        if @kali.tools.temp and (not @kali.tools.temp.children or @kali.tools.temp.children.indexOf(@) < 0)
             @kali.tools.temp.hideChildren()
             delete @kali.tools.temp
+            
         if @hasChildren() and not @childrenVisible()
             @kali.tools.temp = @
             @showChildren()
@@ -86,11 +87,11 @@ class Tool
                 @children.push tool
             @hideChildren()
     
-    hasParent: -> @parent? and @parent.name != 'tools'
+    hasParent:   -> @parent? and @parent.name != 'tools'
     hasChildren: -> @children?.length > 0
     
     childrenVisible: -> @hasChildren() and first(@children).visible()
-    toggleChildren: -> if @childrenVisible() then @hideChildren() else @showChildren()
+    toggleChildren:  -> if @childrenVisible() then @hideChildren() else @showChildren()
     
     showChildren: -> 
         
@@ -109,7 +110,7 @@ class Tool
     raise: ->
         
         @element.style.zIndex = 100
-        if @hasChildren()
+        if @children?.length
             for c in @children
                 c.raise()
 
@@ -124,6 +125,7 @@ class Tool
     # 0000000   00     00  000   000  000        
     
     swapParent: ->
+        
         prt = @parent
         top = prt.parent
         @children = prt.children

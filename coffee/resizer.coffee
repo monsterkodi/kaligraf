@@ -20,9 +20,8 @@ class Resizer
         @svg.addClass 'resizerSVG'
         @svg.clear()
         
-        @box   = null
-        @rect  = null
-        @itemRect = {}
+        @box  = null
+        @rect = null
         
         post.on 'selection', @onSelection
         post.on 'stage',     @onStage
@@ -35,9 +34,24 @@ class Resizer
     
     createRect: ->
         
-        @rect = @svg.rect()
-        @rect.addClass 'resizerRect'
-            
+        @g = @svg.nested()
+        @g.addClass 'resizerGroup'
+        
+        @rect = @g.rect().addClass 'resizerRect'
+        @rect.attr width: '100%', height: '100%'
+        
+        tl = @g.rect().addClass 'resizerCorner'
+        tl.attr x: -10, y: -10
+
+        tr = @g.rect().addClass 'resizerCorner'
+        tr.attr x: '100%', y: -10
+
+        bl = @g.rect().addClass 'resizerCorner'
+        bl.attr x: -10, y: '100%'
+        
+        br = @g.rect().addClass 'resizerCorner'
+        br.attr x: '100%', y: '100%'
+       
         @drag = new drag
             target:  @rect.node
             onStart: @onDragStart
@@ -56,7 +70,7 @@ class Resizer
             @kali.stage.handleMouseDown event
             return 'skip'
     
-    onDragStop:  => 
+    onDragStop: => 
     
     onDragMove: (drag) => @moveBy drag.delta
             
@@ -75,7 +89,8 @@ class Resizer
     
     setBox: (@box) ->
         
-        @rect.attr 
+        # @rect.attr 
+        @g.attr 
             x:      @box.x-@viewPos().x
             y:      @box.y-@viewPos().y
             width:  @box.w
@@ -98,35 +113,14 @@ class Resizer
     clear: ->
         
         @box = null
-        @rect.remove()
-        for id, ir of @itemRect
-            ir.remove()
-        @itemRect = {}
+        @svg.clear()
 
-    addRectForItem: (item) ->
-        
-        @itemRect[item.id()] = r = @svg.rect()
-        r.addClass 'resizerItemRect'
+    # 000  000000000  00000000  00     00   0000000  
+    # 000     000     000       000   000  000       
+    # 000     000     0000000   000000000  0000000   
+    # 000     000     000       000 0 000       000  
+    # 000     000     00000000  000   000  0000000   
 
-        @updateItem item
-
-    updateItems: ->
-        for item in @selection.items
-            @updateItem item
-        
-    updateItem: (item) ->
-        
-        @setItemBox item, boxForItems [item], @viewPos()
-        
-    setItemBox: (item, box) ->
-        
-        r = @itemRect[item.id()]
-        r.attr
-            x:      box.x
-            y:      box.y
-            width:  box.w
-            height: box.h
-            
     addItem: (items, item) ->
         
         @addRectForItem item
@@ -137,24 +131,50 @@ class Resizer
         else
             @setBox @box.merge item.rbox()
             
-        if @kali.stage.selection.pos
-            @drag.start @kali.stage.selection.pos
-        else
-            log 'no pos?'
+        if @selection.pos
+            @drag.start @selection.pos
             
     delItem: (items, item) ->
-        
-        @itemRect[item.id()]?.remove()
-        delete @itemRect[item.id()]
+
+        @delRectForItem item
         
         if @box
             @setBox boxForItems items
+    
+    addRectForItem: (item) ->
+        
+        r = @svg.rect()
+        r.addClass 'resizerItemRect'
+        item.remember 'itemRect', r.id()
+        @updateItem item
 
+    delRectForItem: (item) ->
+        
+        SVG.get(item.remember 'itemRect')?.remove()
+        item.forget 'itemRect'
+        
+    updateItems: ->
+        
+        for item in @selection.items
+            @updateItem item
+        
+    updateItem: (item) ->
+        
+        @setItemBox item, boxForItems [item], @viewPos()
+        
+    setItemBox: (item, box) ->
+        
+        r = SVG.get item.remember 'itemRect'
+        r?.attr
+            x:      box.x
+            y:      box.y
+            width:  box.w
+            height: box.h
+            
     calcBox: ->
         
-        selection = @kali.stage.selection
-        if not selection.empty()
-            @setBox boxForItems selection.items
+        if not @selection.empty()
+            @setBox boxForItems @selection.items
             @updateItems()
             
     # 000   000  000  00000000  000   000  

@@ -67,7 +67,7 @@ class Stage
         @addSVG svg, select:false
         @resetZoom()
         
-    addSVG: (svg, opt) -> 
+    addSVG: (svg, opt) ->
         
         e = elem 'div'
         e.innerHTML = svg
@@ -124,7 +124,9 @@ class Stage
         for item in selected
             @selection.add item        
 
-    paste: -> @addSVG clipboard.readText()
+    paste: -> 
+        delete @selection.pos
+        @addSVG clipboard.readText()
 
     cut: -> 
         

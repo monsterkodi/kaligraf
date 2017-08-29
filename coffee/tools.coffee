@@ -77,7 +77,7 @@ class Tools extends Tool
         @fill.setLuminance 0.6
         @width.setWidth 10
         
-        # @load.onClick()
+        @load.onClick()
         
     #  0000000   0000000    0000000    
     # 000   000  000   000  000   000  

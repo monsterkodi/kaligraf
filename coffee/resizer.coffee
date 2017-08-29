@@ -23,6 +23,9 @@ class Resizer
         @box  = null
         @rect = null
         
+        @borderDrag = {}
+        @cornerDrag = {}
+        
         post.on 'selection', @onSelection
         post.on 'stage',     @onStage
 
@@ -39,25 +42,89 @@ class Resizer
         
         @rect = @g.rect().addClass 'resizerRect'
         @rect.attr width: '100%', height: '100%'
-        
-        tl = @g.rect().addClass 'resizerCorner'
-        tl.attr x: -10, y: -10
 
-        tr = @g.rect().addClass 'resizerCorner'
-        tr.attr x: '100%', y: -10
+        addBorder = (x, y, w, h, cursor, id) =>
+            border = @g.rect().addClass 'resizerBorder'
+            border.attr x:x, y:y, width:w, height:h
+            border.style cursor: cursor
+            @borderDrag[id] = new drag
+                target:  border.node 
+                onStart: @onBorderStart
+                onMove:  @onBorderMove
+                onStop:  @onBorderStop
+            @borderDrag[id].id = id
 
-        bl = @g.rect().addClass 'resizerCorner'
-        bl.attr x: -10, y: '100%'
-        
-        br = @g.rect().addClass 'resizerCorner'
-        br.attr x: '100%', y: '100%'
-       
+        addBorder -5,     0, 5, '100%', 'ew-resize', 'left'
+        addBorder '100%', 0, 5, '100%', 'ew-resize', 'right'
+        addBorder 0,     -5, '100%', 5, 'ns-resize', 'top'
+        addBorder 0, '100%', '100%', 5, 'ns-resize', 'bot'
+
+        addCorner = (x, y, cursor, id) =>
+            corner = @g.circle(10).addClass 'resizerCorner'
+            corner.attr cx:x, cy:y
+            corner.style cursor:cursor
+            @cornerDrag[id] = new drag 
+                target:  corner.node
+                onStart: @onCornerStart
+                onMove:  @onCornerMove
+                onStop:  @onCornerStop
+            @cornerDrag[id].id = id
+                
+        addCorner 0,           0, 'nw-resize', 'top left'
+        addCorner '100%',      0, 'ne-resize', 'top right'
+        addCorner 0,      '100%', 'sw-resize', 'bot left'
+        addCorner '100%', '100%', 'se-resize', 'bot right'
+
         @drag = new drag
             target:  @rect.node
             onStart: @onDragStart
             onMove:  @onDragMove
             onStop:  @onDragStop
+
+    onCornerStart: (drag, event) => log "corner #{drag.id} onStart"
+    onCornerStop:  (drag, event) => log "corner #{drag.id} onStop"
+    onCornerMove:  (drag, event) => @onResizeMove drag, event
+
+    onBorderStart: (drag, event) => log "border #{drag.id} onStart"
+    onBorderStop:  (drag, event) => log "border #{drag.id} onStop"
+    onBorderMove:  (drag, event) => @onResizeMove drag, event
+        
+    onResizeMove:  (drag, event) =>
+        log "border #{drag.id} onMove"
+        
+        left  = drag.id.includes 'left'
+        right = drag.id.includes 'right'
+        top   = drag.id.includes 'top'
+        bot   = drag.id.includes 'bot'
+        dx    = 0
+        dy    = 0
+        dx    = -drag.delta.x if left
+        dx    =  drag.delta.x if right
+        dy    = -drag.delta.y if top
+        dy    =  drag.delta.y if bot
+        
+        for item in @selection.items
+
+            if item.type in ['circle']
+                item.radius item.radius() + dx/2 + dy/2
+            else
+                fx = (@box.w + dx)/@box.w
+                fy = (@box.h + dy)/@box.h
+                item.size item.width() * fx, item.height() * fy
                     
+            if item.type not in ['circle', 'ellipse']
+                if left
+                    item.x item.x() + drag.delta.x * (1.0 - (item.x()-@box.x) / @box.w)
+                if right
+                    item.x item.x() + drag.delta.x *        (item.x()-@box.x) / @box.w
+                if top
+                    item.y item.y() + drag.delta.y * (1.0 - (item.y()-@box.y) / @box.h)
+                if bot
+                    item.y item.y() + drag.delta.y *        (item.y()-@box.y) / @box.h
+                                                        
+        @calcBox()         
+        
+                
     # 0000000    00000000    0000000    0000000   
     # 000   000  000   000  000   000  000        
     # 000   000  0000000    000000000  000  0000  
@@ -78,7 +145,7 @@ class Resizer
         
         if not @selection.rect?
             @selection.moveBy delta
-            @setBox moveBox @box, delta
+            @setBox moveBox @rbox, delta
             @updateItems()
         
     # 0000000     0000000   000   000  
@@ -87,12 +154,15 @@ class Resizer
     # 000   000  000   000   000 000   
     # 0000000     0000000   000   000  
     
-    setBox: (@box) ->
+    setBox: (@rbox) ->
         
-        # @rect.attr 
+        @box = new SVG.RBox @rbox
+        @box.x -= @viewPos().x
+        @box.y -= @viewPos().y
+        
         @g.attr 
-            x:      @box.x-@viewPos().x
-            y:      @box.y-@viewPos().y
+            x:      @box.x
+            y:      @box.y
             width:  @box.w
             height: @box.h
         
@@ -114,7 +184,15 @@ class Resizer
         
         @box = null
         @svg.clear()
+        
+        for k,d of @borderDrag
+            d.deactivate()
+        @borderDrag = {}
 
+        for k,d of @cornerDrag
+            d.deactivate()
+        @cornerDrag = {}
+        
     # 000  000000000  00000000  00     00   0000000  
     # 000     000     000       000   000  000       
     # 000     000     0000000   000000000  0000000   
@@ -129,7 +207,7 @@ class Resizer
             @createRect()
             @setBox item.rbox()
         else
-            @setBox @box.merge item.rbox()
+            @setBox @rbox.merge item.rbox()
             
         if @selection.pos
             @drag.start @selection.pos
@@ -150,8 +228,11 @@ class Resizer
 
     delRectForItem: (item) ->
         
-        SVG.get(item.remember 'itemRect')?.remove()
-        item.forget 'itemRect'
+        if rectID = item.remember 'itemRect' 
+            if rectID.startsWith 'SvgjsRect'
+                log 'delRectForItem', rectID
+            SVG.get(rectID)?.remove()
+            item.forget 'itemRect'
         
     updateItems: ->
         
@@ -170,6 +251,8 @@ class Resizer
             y:      box.y
             width:  box.w
             height: box.h
+
+    itemBox: (item) -> boxForItems [item], @viewPos()
             
     calcBox: ->
         

@@ -7,7 +7,7 @@
 { empty, pos } = require 'kxk'
 
 module.exports = 
-
+    
     boxForItems: (items, offset={x:0,y:0}) ->
         return new SVG.RBox() if empty items
         bb = null

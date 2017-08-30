@@ -70,14 +70,15 @@ class Tools extends Tool
         for tool in tools
             @addTool tool
             
-        @stroke.setLuminance 0.75
-        @fill.setAlpha 0.5
-        @fill.setLuminance 0.6
-        @width.setWidth 10
+        @stroke.setLuminance 1
+        @stroke.setAlpha 0.5
+        @fill.setLuminance 0
+        @fill.setAlpha 0.15
+        @width.setWidth 1
         
-        # @activateTool 'rect'
+        @activateTool 'rect'
         # @activateTool 'pick'
-        @activateTool 'circle'
+        # @activateTool 'circle'
         # @load.onClick()
         
     #  0000000   0000000    0000000    
@@ -151,7 +152,7 @@ class Tools extends Tool
             when 'save'       then @kali.stage.save()
             when 'clear'      then @kali.stage.clear()
             when 'load'       then @kali.stage.load()
-            when 'zoom_reset' then @kali.stage.resetZoom()
+            when 'zoom_reset' then @kali.stage.resetView()
             when 'zoom_in'    then @kali.stage.zoomIn()
             when 'zoom_out'   then @kali.stage.zoomOut()
             
@@ -180,5 +181,11 @@ class Tools extends Tool
             else 'default'
             
         @kali.stage.svg.style cursor: cursor
+
+    collapseTemp: ->
+        
+        if @temp 
+            @temp.hideChildren()
+            delete @temp
         
 module.exports = Tools

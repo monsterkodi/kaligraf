@@ -131,8 +131,8 @@ class Selection
 
     moveElement: (e, dx, dy) ->
         
-        dx /= @kali.stage.zoom()
-        dy /= @kali.stage.zoom()
+        dx /= @kali.stage.zoom
+        dy /= @kali.stage.zoom
         e.cx e.cx() + dx
         e.cy e.cy() + dy
          

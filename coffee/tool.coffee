@@ -55,10 +55,9 @@ class Tool
     # 000   000   0000000       0      00000000  000   000    
 
     onMouseEnter: =>
-        
-        if @kali.tools.temp and (not @kali.tools.temp.children or @kali.tools.temp.children.indexOf(@) < 0)
-            @kali.tools.temp.hideChildren()
-            delete @kali.tools.temp
+
+        if @parent != @kali.tools.temp
+            @kali.tools.collapseTemp()
             
         if @hasChildren() and not @childrenVisible()
             @kali.tools.temp = @

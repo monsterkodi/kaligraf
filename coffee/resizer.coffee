@@ -104,23 +104,26 @@ class Resizer
         bot   = drag.id.includes 'bot'
         dx    = 0
         dy    = 0
-        dx    = -drag.delta.x if left
-        dx    =  drag.delta.x if right
-        dy    = -drag.delta.y if top
-        dy    =  drag.delta.y if bot
+        if left  then dx = -drag.delta.x
+        if right then dx =  drag.delta.x
+        if top   then dy = -drag.delta.y
+        if bot   then dy =  drag.delta.y
 
-        fx = (@box.w + dx)/@box.w
-        fy = (@box.h + dy)/@box.h
+        return if dx == 0 and dy == 0
+        
+        dx /= @kali.stage.zoom
+        dy /= @kali.stage.zoom
+        
+        fx = (@sbox.w + dx)/@sbox.w
+        fy = (@sbox.h + dy)/@sbox.h
+        
+        # log "resize move #{dx} #{dy}", @box
+        # log "sbox", @sbox
 
         for item in @selection.items
-            if item.type in ['circle', 'ellipse']
-                iw = item.width()
-                ih = item.height()
-            else
-                if right then item.x @box.x + fx * (item.x() - @box.x) 
-                if bot   then item.y @box.y + fy * (item.y() - @box.y)
-                if left  then item.x @box.x2 - fx * (@box.x2 - item.x())
-                if top   then item.y @box.y2 - fy * (@box.y2 - item.y())
+            
+            iw = item.width()
+            ih = item.height()
                             
             if item.type in ['circle']
                 if Math.abs(dx) > Math.abs(dy)
@@ -133,16 +136,22 @@ class Resizer
             else
                 item.size item.width() * fx, item.height() * fy
                 
-            if item.type in ['circle']
-                if right then item.cx item.width()/2  + @box.x  + f * ((item.cx() - iw/2) - @box.x)
-                if bot   then item.cy item.height()/2 + @box.y  + f * ((item.cy() - ih/2) - @box.y) 
-                if left  then item.cx item.width()/2  + @box.x2 - f * (@box.x2 - (item.cx() - iw/2))
-                if top   then item.cy item.height()/2 + @box.y2 - f * (@box.y2 - (item.cy() - ih/2))
-            else if item.type in ['ellipse']
-                if right then item.cx item.width()/2  + @box.x  + fx * ((item.cx() - iw/2) - @box.x)
-                if bot   then item.cy item.height()/2 + @box.y  + fy * ((item.cy() - ih/2) - @box.y) 
-                if left  then item.cx item.width()/2  + @box.x2 - fx * (@box.x2 - (item.cx() - iw/2))
-                if top   then item.cy item.height()/2 + @box.y2 - fy * (@box.y2 - (item.cy() - ih/2))
+            switch item.type 
+                when 'circle'
+                    if right then item.cx item.width()/2  + @sbox.x  + f * ((item.cx() - iw/2) - @sbox.x)
+                    if bot   then item.cy item.height()/2 + @sbox.y  + f * ((item.cy() - ih/2) - @sbox.y) 
+                    if left  then item.cx item.width()/2  + @sbox.x2 - f * (@sbox.x2 - (item.cx() - iw/2))
+                    if top   then item.cy item.height()/2 + @sbox.y2 - f * (@sbox.y2 - (item.cy() - ih/2))
+                when 'ellipse'
+                    if right then item.cx item.width()/2  + @sbox.x  + fx * ((item.cx() - iw/2) - @sbox.x)
+                    if bot   then item.cy item.height()/2 + @sbox.y  + fy * ((item.cy() - ih/2) - @sbox.y) 
+                    if left  then item.cx item.width()/2  + @sbox.x2 - fx * (@sbox.x2 - (item.cx() - iw/2))
+                    if top   then item.cy item.height()/2 + @sbox.y2 - fy * (@sbox.y2 - (item.cy() - ih/2))
+                else
+                    if right then item.x @sbox.x  + fx * (item.x() - @sbox.x) 
+                    if bot   then item.y @sbox.y  + fy * (item.y() - @sbox.y)
+                    if left  then item.x @sbox.x2 - fx * (@sbox.x2 - item.x())
+                    if top   then item.y @sbox.y2 - fy * (@sbox.y2 - item.y())
                                                         
         @calcBox()         
         
@@ -178,24 +187,46 @@ class Resizer
     setBox: (@rbox) ->
         
         @box = new SVG.RBox @rbox
-        @box.x  -= @viewPos().x
-        @box.y  -= @viewPos().y
-        @box.cx -= @viewPos().x
-        @box.cy -= @viewPos().y
-        @box.x2 -= @viewPos().x
-        @box.y2 -= @viewPos().y
         
-        # log @box
+        dx = @viewPos().x
+        dy = @viewPos().y
+        
+        @box.x  -= dx
+        @box.cx -= dx
+        @box.x2 -= dx
+        @box.y  -= dy
+        @box.cy -= dy
+        @box.y2 -= dy
         
         @g.attr 
             x:      @box.x
             y:      @box.y
             width:  @box.w
             height: @box.h
+            
+        @sbox = new SVG.RBox @box
+        
+        dx = @kali.stage.svg.viewbox().x
+        dy = @kali.stage.svg.viewbox().y
+        
+        @sbox.x  = @sbox.x  / @kali.stage.zoom + dx
+        @sbox.cx = @sbox.cx / @kali.stage.zoom + dx
+        @sbox.x2 = @sbox.x2 / @kali.stage.zoom + dx
+        @sbox.y  = @sbox.y  / @kali.stage.zoom + dy
+        @sbox.cy = @sbox.cy / @kali.stage.zoom + dy
+        @sbox.y2 = @sbox.y2 / @kali.stage.zoom + dy
+        
+        @sbox.w /= @kali.stage.zoom
+        @sbox.h /= @kali.stage.zoom
+            
+        @sbox.width = @sbox.w
+        @sbox.height = @sbox.h
 
     calcBox: ->
         
-        if not @selection.empty()
+        if @selection.empty()
+            @clear()
+        else
             @setBox boxForItems @selection.items
             @updateItems()
             
@@ -238,9 +269,7 @@ class Resizer
         
         if items.length == 1
             @createRect()
-            # @setBox item.rbox()
-        # else
-            # @setBox @rbox.merge item.rbox()
+            
         @calcBox()
         
         if @selection.pos
@@ -250,8 +279,6 @@ class Resizer
 
         @delRectForItem item
         @calcBox()        
-        # if @box
-            # @setBox boxForItems items
     
     addRectForItem: (item) ->
         
@@ -263,10 +290,12 @@ class Resizer
     delRectForItem: (item) ->
         
         if rectID = item.remember 'itemRect' 
-            if rectID.startsWith 'SvgjsRect'
-                log 'delRectForItem', rectID
+            # if rectID.startsWith 'SvgjsRect'
+                # log '--', rectID, SVG.get(rectID)?
             SVG.get(rectID)?.remove()
             item.forget 'itemRect'
+        # else
+            # log '??', item.id()
         
     updateItems: ->
         # log "updateItems @box: #{@box.x} #{@box.y} #{@box.w} #{@box.h}"

@@ -7,7 +7,4 @@ license       Unlicense
 dependencies
               kxk             ^0.16.6
               svg.colorat.js  ^1.0.0
-              svg.draw.js     ^2.0.3
               svg.js          ^2.6.3
-              svg.resize.js   ^1.4.1
-              svg.select.js   ^2.1.2

@@ -163,8 +163,8 @@ class Shapes
                 
                 switch shape
                     when 'ellipse', 'circle'
-                        @drawing.cx drag.startPos.x - @viewPos().x + @drawing.width()/2
-                        @drawing.cy drag.startPos.y - @viewPos().y + @drawing.height()/2
+                        @drawing.cx drag.startPos.x - @stage.viewPos().x + @drawing.width()/2
+                        @drawing.cy drag.startPos.y - @stage.viewPos().y + @drawing.height()/2
 
     setLinePoint: (p) ->
         

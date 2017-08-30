@@ -28,7 +28,7 @@ class Zoom extends Tool
         
         switch prop
             when 'zoom'
-                if value < 3
+                if value < 2
                     @title.innerHTML = "#{parseInt value*100}%"
                 else
                     @title.innerHTML = "x#{parseInt value}"

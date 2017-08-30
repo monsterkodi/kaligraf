@@ -34,16 +34,8 @@ class Kali
         
     shapeTool: -> @tools.getActive('shape').name    
     
-    items: ->
-        
-        @stage.svg.children().filter (child) ->
-            if child.type != 'g' and child.id()?.startsWith 'SvgjsG'
-                log 'skip group', child.id()
-                return false
-            if child.type == 'defs'
-                return false
-            true
-    
+    items: -> @stage.items()
+            
     setStyle: (name) ->
         
         if not $('kali-style')

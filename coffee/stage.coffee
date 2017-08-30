@@ -7,7 +7,7 @@
 
 { resolve, elem, post, drag, last, pos, fs, log, _ } = require 'kxk'
 
-{ growBox, normRect, boxForItems } = require './utils'
+{ growBox, normRect, boxForItems, boxCenter } = require './utils'
 
 { clipboard } = require 'electron' 
 
@@ -56,7 +56,16 @@ class Stage
         for i in e
             if i.instance? and i != @svg and i.instance in @svg.children()
                 return i.instance
-        
+
+    items: ->
+        @svg.children().filter (child) ->
+            if child.type != 'g' and child.id()?.startsWith 'SvgjsG'
+                log 'skip group', child.id()
+                return false
+            if child.type == 'defs'
+                return false
+            true
+                
     #  0000000  000   000   0000000   
     # 000       000   000  000        
     # 0000000    000 000   000  0000  
@@ -172,8 +181,9 @@ class Stage
     viewPos:  -> r = @element.getBoundingClientRect(); x:r.left, y:r.top
     viewSize: -> r = @element.getBoundingClientRect(); width:r.width, height:r.height
     viewCenter: -> pos(0,0).mid pos @viewSize().width, @viewSize().height 
-    stageCenter: -> box = @svg.viewbox(); pos box.x + box.width/2.0, box.y + box.height/2.0
+    stageCenter: -> boxCenter @svg.viewbox()
     stageForView: (viewPos) -> viewPos.scale(1.0/@zoom).add @panPos()
+    itemsCenter: -> @stageForView boxCenter boxForItems @items(), @viewPos()
     
     loupe: (p1, p2) ->
         
@@ -185,6 +195,10 @@ class Stage
     centerAtStagePos: (stagePos) ->
         
         @moveViewBy stagePos.sub @stageCenter()
+        
+    centerItems: -> 
+        log 'centerItems', @itemsCenter()
+        @centerAtStagePos @itemsCenter()
         
     # 0000000   0000000    0000000   00     00  
     #    000   000   000  000   000  000   000  
@@ -202,21 +216,18 @@ class Stage
     ]
     
     zoomIn: -> 
-        log 'zoomIn', Stage.zoomLevels.length
         for i in [0...Stage.zoomLevels.length]
-            log @zoom, i, Stage.zoomLevels[i]
             if @zoom < Stage.zoomLevels[i]
                 @setZoom Stage.zoomLevels[i]
                 return
             
     zoomOut: -> 
-        log 'zoomOut'
         for i in [Stage.zoomLevels.length-1..0]
             if @zoom > Stage.zoomLevels[i]
                 @setZoom Stage.zoomLevels[i]
                 return
                 
-    resetView: -> log 'resetView'; @resetPan(); @resetZoom()
+    resetView: -> log 'resetView'; @centerItems(); @resetZoom()
     resetZoom: -> @setZoom 1
     setZoom: (z) -> 
         log "setZoom #{z}"
@@ -250,7 +261,6 @@ class Stage
     # 000        000   000  000   000  
 
     panPos:    -> vb = @svg.viewbox(); pos vb.x, vb.y
-    resetPan:  -> @moveViewBy @panPos().scale -1
     
     panBy: (delta) -> @moveViewBy pos(delta).scale -1.0/@zoom
     moveViewBy: (delta) ->

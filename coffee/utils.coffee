@@ -25,6 +25,7 @@ module.exports =
             bb = bb.merge item.rbox()
         bb.transform new SVG.Matrix().translate -offset.x, -offset.y
 
+    boxCenter: (box) -> pos box.x + box.width/2.0, box.y + box.height/2.0
     zoomBox:  (box, zoom ) -> module.exports.scaleBox 1.0/zoom
     scaleBox: (box, scale) ->
         

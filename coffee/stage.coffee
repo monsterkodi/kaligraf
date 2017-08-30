@@ -41,6 +41,7 @@ class Stage
 
         window.area.on 'resized', @onResize
 
+        @zoom = 1
         @resetView()
 
     # 000  000000000  00000000  00     00  
@@ -170,11 +171,20 @@ class Stage
     stagePos: (event) -> @localPos(event).scale(1.0/@zoom).add @panPos()
     viewPos:  -> r = @element.getBoundingClientRect(); x:r.left, y:r.top
     viewSize: -> r = @element.getBoundingClientRect(); width:r.width, height:r.height
+    viewCenter: -> pos(0,0).mid pos @viewSize().width, @viewSize().height 
+    stageCenter: -> box = @svg.viewbox(); pos box.x + box.width/2.0, box.y + box.height/2.0
+    stageForView: (viewPos) -> viewPos.scale(1.0/@zoom).add @panPos()
     
-    # transformPoint: (x, y) ->
-        # p.x = x - (@offset.x - window.pageXOffset)
-        # p.y = y - (@offset.y - window.pageYOffset)
-        # p.matrixTransform @m
+    loupe: (p1, p2) ->
+        
+        viewPos1 = pos(p1).sub @viewPos()
+        viewPos2 = pos(p2).sub @viewPos()
+        
+        @centerAtStagePos @stageForView viewPos1.mid viewPos2
+
+    centerAtStagePos: (stagePos) ->
+        
+        @moveViewBy stagePos.sub @stageCenter()
         
     # 0000000   0000000    0000000   00     00  
     #    000   000   000  000   000  000   000  
@@ -213,20 +223,18 @@ class Stage
             @setZoom parseInt @zoom - 10
         else
             @setZoom parseInt @zoom - 100
-    
+
+    resetView: -> log 'resetView'; @resetPan(); @resetZoom()
+    resetZoom: -> @setZoom 1
     setZoom: (z) -> 
         log "setZoom #{z}"
         @zoom = z
         @resetSize()
-
-    panPos:    -> vb = @svg.viewbox(); pos vb.x, vb.y
-    resetPan:  -> @panBy @panPos().scale -1
-    resetView: -> @resetZoom(); @resetPan()
-    resetZoom: -> @setZoom 1
         
     resetSize: ->
         
         box = @svg.viewbox()
+        # log 'resetSize', box
         box.width  = @viewSize().width  / @zoom
         box.height = @viewSize().height / @zoom
         @setViewBox box
@@ -246,13 +254,17 @@ class Stage
     # 00000000   000000000  000 0 000  
     # 000        000   000  000  0000  
     # 000        000   000  000   000  
+
+    panPos:    -> vb = @svg.viewbox(); pos vb.x, vb.y
+    resetPan:  -> @moveViewBy @panPos().scale -1
     
-    panBy: (delta) ->
-        
+    panBy: (delta) -> @moveViewBy pos(delta).scale -1.0/@zoom
+    moveViewBy: (delta) ->
+        log 'moveViewBy', delta
         box = @svg.viewbox()
-        # log 'pan', box
-        box.x -= delta.x / @zoom
-        box.y -= delta.y / @zoom
+
+        box.x += delta.x
+        box.y += delta.y
         
         @setViewBox box
     

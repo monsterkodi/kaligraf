@@ -7,8 +7,6 @@
 
 { last, log } = require 'kxk'
 
-{ normRect } = require './utils'
-
 class Shapes
 
     constructor: (@kali) ->
@@ -210,9 +208,7 @@ class Shapes
                 
                 @selection.loupe.remove()
                 delete @selection.loupe
-                r = x:drag.startPos.x, y:drag.startPos.y, x2:drag.pos.x, y2:drag.pos.y
-                normRect r
-                @stage.setViewBox x:r.x, y:r.y, width:r.x2-r.x, height:r.y2-r.y
+                @stage.loupe drag.startPos, drag.pos
 
         if @drawing
             

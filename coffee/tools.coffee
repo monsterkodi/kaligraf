@@ -19,8 +19,8 @@ class Tools extends Tool
         @fill.setAlpha 0.15
         @width.setWidth 1
         
-        # @activateTool 'rect'
-        @activateTool 'pick'
+        @activateTool 'rect'
+        @activateTool 'loupe'
         @load.onClick()
     
     constructor: (@kali, cfg) ->

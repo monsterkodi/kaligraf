@@ -192,44 +192,38 @@ class Stage
     #  000     000   000  000   000  000 0 000  
     # 0000000   0000000    0000000   000   000  
     
-    zoomIn:  -> 
-        
-        if @zoom < 0.1
-            @setZoom Math.min 0.1, @zoom + 0.01
-        else if @zoom < 0.3
-            @setZoom Math.min 0.3, @zoom + 0.05
-        else if @zoom < 2
-            @setZoom Math.min 2, @zoom + 0.1
-        else if @zoom < 4
-            @setZoom Math.min 4, @zoom + 0.2
-        else if @zoom < 10
-            @setZoom Math.min 10, @zoom + 0.5
-        else
-            @setZoom parseInt @zoom + 1
+    @zoomLevels = [
+        0.01, 0.02, 0.05, 
+        0.10, 0.15, 0.20, 0.25, 0.33, 0.50, 0.75,
+        1, 1.5, 2, 3, 4, 5, 6, 8, 
+        10, 15, 20, 40, 80, 
+        100, 150, 200, 400, 800, 
+        1000
+    ]
+    
+    zoomIn: -> 
+        log 'zoomIn', Stage.zoomLevels.length
+        for i in [0...Stage.zoomLevels.length]
+            log @zoom, i, Stage.zoomLevels[i]
+            if @zoom < Stage.zoomLevels[i]
+                @setZoom Stage.zoomLevels[i]
+                return
             
     zoomOut: -> 
-
-        if @zoom <= 0.011
-            @setZoom 0.01
-        else if @zoom <= 0.11
-            @setZoom @zoom - 0.01
-        else if @zoom < 0.31
-            @setZoom Math.min 0.25, @zoom - 0.05
-        else if @zoom <= 1.1
-            @setZoom @zoom - 0.1
-        else if @zoom < 21
-            @setZoom parseInt @zoom - 1
-        else if @zoom < 110
-            @setZoom parseInt @zoom - 10
-        else
-            @setZoom parseInt @zoom - 100
-
+        log 'zoomOut'
+        for i in [Stage.zoomLevels.length-1..0]
+            if @zoom > Stage.zoomLevels[i]
+                @setZoom Stage.zoomLevels[i]
+                return
+                
     resetView: -> log 'resetView'; @resetPan(); @resetZoom()
     resetZoom: -> @setZoom 1
     setZoom: (z) -> 
         log "setZoom #{z}"
+        sc = @stageCenter()
         @zoom = z
         @resetSize()
+        @centerAtStagePos sc
         
     resetSize: ->
         

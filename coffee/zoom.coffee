@@ -28,6 +28,9 @@ class Zoom extends Tool
         
         switch prop
             when 'zoom'
-                @title.innerHTML = "#{parseInt value*100}%"
+                if value < 3
+                    @title.innerHTML = "#{parseInt value*100}%"
+                else
+                    @title.innerHTML = "x#{parseInt value}"
     
 module.exports = Zoom

@@ -122,6 +122,7 @@ class Stage
             @selection.add item        
 
     paste: -> 
+        
         delete @selection.pos
         @addSVG clipboard.readText()
 
@@ -135,6 +136,7 @@ class Stage
         
         @selection.clear()
         @svg.clear()
+        @resetView()
 
     #  0000000   0000000   000   000  00000000  
     # 000       000   000  000   000  000       
@@ -162,7 +164,7 @@ class Stage
         
         switch shape 
             when 'triangle'
-                e = @svg.polygon '0,-50 100,0 0,50'
+                e = @svg.polygon '-50,50 0,-50 50,50'
             when 'line', 'polyline', 'polygon'
                 e = @svg[shape]()
                 e.plot [[stagePos.x, stagePos.y], [stagePos.x, stagePos.y]]
@@ -208,7 +210,7 @@ class Stage
                 shape = s
         
         eventPos = @eventPos event 
-        stagePos = @localPos event
+        stagePos = @stagePos event
                 
         switch shape
             
@@ -240,8 +242,17 @@ class Stage
                 
             when 'pan' then
             else
-                
                 @selection.clear()
+                
+                if @drawing? and shape in ['line', 'polygon', 'polyline']
+                    switch shape
+                        when 'polygon', 'polyline' 
+                            @addPolyPoint stagePos
+                        when 'line'                
+                            @setLinePoint stagePos
+                            delete @drawing
+                    return
+                        
                 @drawing = @addShape shape, stagePos 
                 @drawing.cx stagePos.x
                 @drawing.cy stagePos.y
@@ -256,7 +267,7 @@ class Stage
 
         shape = @kali.shapeTool()
         
-        stagePos = @localPos event
+        stagePos = @stagePos event
         
         switch shape
             
@@ -274,24 +285,13 @@ class Stage
                 if @selection.rect?
                     @selection.move @eventPos(event), join:event.shiftKey
 
-            when 'line'
+            when 'line' 
                 
-                arr = @drawing.array().valueOf()
-                last(arr)[0] = stagePos.x
-                last(arr)[1] = stagePos.y
-                @drawing.plot arr
-                
+                @setLinePoint stagePos
+                                
             when 'polygon', 'polyline'
                 
-                arr  = @drawing.array().valueOf()
-                tail = arr.length > 1 and arr[arr.length-2] or arr[arr.length-1]
-                dist = Math.abs(tail[0]-stagePos.x) + Math.abs(tail[1]-stagePos.y)
-                if arr.length < 2 or dist > 20
-                    arr.push [stagePos.x, stagePos.y]
-                else
-                    last(arr)[0] = stagePos.x
-                    last(arr)[1] = stagePos.y
-                @drawing.plot arr
+                @addPolyPoint stagePos
                 
             else
                 
@@ -303,6 +303,25 @@ class Stage
                         @drawing.cx drag.startPos.x - @viewPos().x + @drawing.width()/2
                         @drawing.cy drag.startPos.y - @viewPos().y + @drawing.height()/2
 
+    setLinePoint: (p) ->
+        
+        arr = @drawing.array().valueOf()
+        last(arr)[0] = p.x
+        last(arr)[1] = p.y
+        @drawing.plot arr
+        
+    addPolyPoint: (p) ->
+        
+        arr  = @drawing.array().valueOf()
+        tail = arr.length > 1 and arr[arr.length-2] or arr[arr.length-1]
+        dist = Math.abs(tail[0]-p.x) + Math.abs(tail[1]-p.y)
+        if arr.length < 2 or dist > 20
+            arr.push [p.x, p.y]
+        else
+            last(arr)[0] = p.x
+            last(arr)[1] = p.y
+        @drawing.plot arr
+                        
     #  0000000  000000000   0000000   00000000   
     # 000          000     000   000  000   000  
     # 0000000      000     000   000  00000000   
@@ -311,11 +330,11 @@ class Stage
     
     onDragStop: (drag, event) =>
         
-        ep = @eventPos event
-        lp = @localPos event
+        eventPos = @eventPos event
+        stagePos = @stagePos event
         
         if @selection.rect?
-            @selection.end ep
+            @selection.end eventPos
             return
         
         shape = @kali.shapeTool() 
@@ -333,17 +352,45 @@ class Stage
         if @drawing
             
             if @drawing.width() == 0
-                @drawing.width switch shape
-                    when 'ellipse' then 50
-                    else 100
-                @drawing.cx lp.x
+                
+                switch shape
+                    when 'line' 
+                        log 'empty line?'
+                        @drawing.remember 'isPickPoly', true
+                        return
+                    when 'polygon', 'polyline'
+                        log 'empty poly?'
+                        @drawing.remember 'isPickPoly', true
+                        return
+                    when 'ellipse'
+                        @drawing.width 50
+                    else
+                        @drawing.width 100
+                    
+                @drawing.cx stagePos.x
+                
+                switch shape
+                    when 'circle'
+                        @drawing.cy stagePos.y
                     
             if @drawing.height() == 0
+                
                 @drawing.height 100
-                @drawing.cy lp.y
+                @drawing.cy stagePos.y
+            
+            if not @drawing.remember 'isPickPoly'
+                
+                delete @drawing
+
+    endDrawing: ->
+        
+        if @drawing
+            
+            if @drawing.width() == 0 or @drawing.height() == 0
+                @drawing.remove()
                 
             delete @drawing
-
+                
     # 000   000  000  00000000  000   000  
     # 000   000  000  000       000 0 000  
     #  000 000   000  0000000   000000000  
@@ -353,6 +400,7 @@ class Stage
     onResize: (w, h) => @resetSize()
     eventPos: (event) -> pos event
     localPos: (event) -> @eventPos(event).sub @viewPos()
+    stagePos: (event) -> @localPos(event).scale(1.0/@zoom).add @panPos()
     viewPos:  -> r = @element.getBoundingClientRect(); x:r.left, y:r.top
     viewSize: -> r = @element.getBoundingClientRect(); width:r.width, height:r.height
     
@@ -373,8 +421,9 @@ class Stage
     setZoom: (z) -> 
         @zoom = z
         @resetSize()
-       
-    resetPan:  -> @panBy x:-@svg.viewbox().x, y:-@svg.viewbox().y
+
+    panPos:    -> vb = @svg.viewbox(); pos vb.x, vb.y
+    resetPan:  -> @panBy @panPos().scale -1
     resetView: -> @resetZoom(); @resetPan()
     resetZoom: -> @setZoom 1
         
@@ -420,15 +469,16 @@ class Stage
 
         switch combo
             
-            when 'command+s' then return @save()
-            when 'command+o' then return @load()
-            when 'command+x' then return @cut()
-            when 'command+c' then return @copy()
-            when 'command+v' then return @paste()
-            when 'command+k' then return @clear()
-            when 'command+-' then return @zoomOut()
-            when 'command+=' then return @zoomIn()
-            when 'command+0' then return @resetView()
+            when 'command+s'       then return @save()
+            when 'command+o'       then return @load()
+            when 'command+x'       then return @cut()
+            when 'command+c'       then return @copy()
+            when 'command+v'       then return @paste()
+            when 'command+k'       then return @clear()
+            when 'command+-'       then return @zoomOut()
+            when 'command+='       then return @zoomIn()
+            when 'command+0'       then return @resetView()
+            when 'enter', 'return', 'esc' then return @endDrawing()                
         
         return if 'unhandled' != @resizer  .handleKey mod, key, combo, char, event
         return if 'unhandled' != @selection.handleKey mod, key, combo, char, event

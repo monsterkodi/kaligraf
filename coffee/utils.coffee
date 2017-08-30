@@ -8,53 +8,59 @@
 
 module.exports = 
     
+    # 0000000     0000000   000   000  
+    # 000   000  000   000   000 000   
+    # 0000000    000   000    00000    
+    # 000   000  000   000   000 000   
+    # 0000000     0000000   000   000  
+    
     boxForItems: (items, offset={x:0,y:0}) ->
-        return new SVG.RBox() if empty items
+        
+        if empty items
+            return new SVG.RBox() 
+            
         bb = null
         for item in items
             bb ?= item.rbox()
             bb = bb.merge item.rbox()
         bb.transform new SVG.Matrix().translate -offset.x, -offset.y
 
-    moveBox: (box, d) -> box.x += d.x; box.y += d.y; box
+    zoomBox:  (box, zoom ) -> module.exports.scaleBox 1.0/zoom
+    scaleBox: (box, scale) ->
         
-    posForRect: (r) -> pos parseInt(r.x), parseInt(r.y)
+        box.x      *= scale
+        box.y      *= scale
+        box.width  *= scale
+        box.height *= scale
         
-    # 000  000   000  000000000  00000000  00000000    0000000  00000000   0000000  000000000  
-    # 000  0000  000     000     000       000   000  000       000       000          000     
-    # 000  000 0 000     000     0000000   0000000    0000000   0000000   000          000     
-    # 000  000  0000     000     000       000   000       000  000       000          000     
-    # 000  000   000     000     00000000  000   000  0000000   00000000   0000000     000     
-    
-    rectsIntersect: (a, b) ->
+        if box.cx? then box.cx *= scale
+        if box.x2? then box.x2 *= scale
+        if box.cy? then box.cy *= scale
+        if box.y2? then box.y2 *= scale
         
-        if a.x2 < b.x then return false
-        if a.y2 < b.y then return false
-        if b.x2 < a.x then return false
-        if b.y2 < a.y then return false
-        true
+        if box.w? then box.w = box.width
+        if box.h? then box.h = box.height
         
-    # 000   000   0000000   00000000   00     00  00000000   00000000   0000000  000000000  
-    # 0000  000  000   000  000   000  000   000  000   000  000       000          000     
-    # 000 0 000  000   000  0000000    000000000  0000000    0000000   000          000     
-    # 000  0000  000   000  000   000  000 0 000  000   000  000       000          000     
-    # 000   000   0000000   000   000  000   000  000   000  00000000   0000000     000     
-    
-    normRect: (r) ->
+        box
+
+    moveBox: (box, delta) -> 
         
-        [sx, ex] = [r.x, r.x2]
-        [sy, ey] = [r.y, r.y2]
-        if sx > ex then [sx, ex] = [ex, sx]
-        if sy > ey then [sy, ey] = [ey, sy] 
-        x:sx, y:sy, x2:ex, y2:ey
-    
+        box.x += delta.x
+        box.y += delta.y
+        if box.cx? then box.cx += delta.x
+        if box.x2? then box.x2 += delta.x
+        if box.cy? then box.cy += delta.y
+        if box.y2? then box.y2 += delta.y
+        
+        box        
+
     #  0000000   00000000    0000000   000   000  
     # 000        000   000  000   000  000 0 000  
     # 000  0000  0000000    000   000  000000000  
     # 000   000  000   000  000   000  000   000  
     #  0000000   000   000   0000000   00     00  
     
-    growViewBox: (box, percent=10) ->
+    growBox: (box, percent=10) ->
 
         w = box.width * percent / 100
         box.width = box.width + 2*w
@@ -71,6 +77,42 @@ module.exports =
         if box.cx? then box.cx = box.x + box.w/2
         if box.cy? then box.cy = box.y + box.y/2
         
-        if box.zoom? then box.zoom *= (100-2*percent)/100
         box
+        
+    # 00000000   00000000   0000000  000000000  
+    # 000   000  000       000          000     
+    # 0000000    0000000   000          000     
+    # 000   000  000       000          000     
+    # 000   000  00000000   0000000     000     
+    
+    posForRect: (r) -> pos parseInt(r.x), parseInt(r.y)
+        
+    # 000  000   000  000000000  00000000  00000000    0000000  00000000   0000000  000000000  
+    # 000  0000  000     000     000       000   000  000       000       000          000     
+    # 000  000 0 000     000     0000000   0000000    0000000   0000000   000          000     
+    # 000  000  0000     000     000       000   000       000  000       000          000     
+    # 000  000   000     000     00000000  000   000  0000000   00000000   0000000     000     
+    
+    rectsIntersect: (a, b) ->
+        
+        if a.x2 < b.x then return false
+        if a.y2 < b.y then return false
+        if b.x2 < a.x then return false
+        if b.y2 < a.y then return false
+        true
+        
+    # 000   000   0000000   00000000   00     00  
+    # 0000  000  000   000  000   000  000   000  
+    # 000 0 000  000   000  0000000    000000000  
+    # 000  0000  000   000  000   000  000 0 000  
+    # 000   000   0000000   000   000  000   000  
+    
+    normRect: (r) ->
+        
+        [sx, ex] = [r.x, r.x2]
+        [sy, ey] = [r.y, r.y2]
+        if sx > ex then [sx, ex] = [ex, sx]
+        if sy > ey then [sy, ey] = [ey, sy] 
+        x:sx, y:sy, x2:ex, y2:ey
+    
     

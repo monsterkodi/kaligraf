@@ -5,17 +5,28 @@
 #    000     000   000  000   000  000           000
 #    000      0000000    0000000   0000000  0000000 
 
-{ elem, stopEvent, post, first, last, log, _
-}    = require 'kxk'
+{ elem, stopEvent, post, first, last, log, _ } = require 'kxk'
+
 Tool = require './tool'
 
 class Tools extends Tool
 
+    loadPrefs: ->
+        
+        @stroke.setLuminance 1
+        @stroke.setAlpha 0.5
+        @fill.setLuminance 0
+        @fill.setAlpha 0.15
+        @width.setWidth 1
+        
+        # @activateTool 'rect'
+        @activateTool 'pick'
+        @load.onClick()
+    
     constructor: (@kali, cfg) ->
                 
         super @kali, cfg
                 
-        @tools = @
         @children = []
         @setPos x:0, y:0
         
@@ -23,8 +34,16 @@ class Tools extends Tool
         post.on 'toggle', (name) => @[name]?.toggleVisible()
         
         @kali.tools = @
-        
-        @init [
+                
+    # 000  000   000  000  000000000  
+    # 000  0000  000  000     000     
+    # 000  000 0 000  000     000     
+    # 000  000  0000  000     000     
+    # 000  000   000  000     000     
+    
+    init: () ->
+
+        tools = [
             [
                 { name: 'zoom',  class: 'zoom', action: 'zoom_reset' }
                 { name: 'width', class: 'line' }
@@ -59,28 +78,9 @@ class Tools extends Tool
             ]
         ]
         
-    # 000  000   000  000  000000000  
-    # 000  0000  000  000     000     
-    # 000  000 0 000  000     000     
-    # 000  000  0000  000     000     
-    # 000  000   000  000     000     
-    
-    init: (tools) ->
-        
         for tool in tools
             @addTool tool
-            
-        @stroke.setLuminance 1
-        @stroke.setAlpha 0.5
-        @fill.setLuminance 0
-        @fill.setAlpha 0.15
-        @width.setWidth 1
-        
-        @activateTool 'rect'
-        # @activateTool 'pick'
-        # @activateTool 'circle'
-        # @load.onClick()
-        
+                    
     #  0000000   0000000    0000000    
     # 000   000  000   000  000   000  
     # 000000000  000   000  000   000  

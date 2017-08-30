@@ -6,11 +6,14 @@
 # 0000000      000     000   000   0000000   00000000  
 
 { resolve, elem, post, drag, last, pos, fs, log, _ } = require 'kxk'
-{ growViewBox, normRect, boxForItems } = require './utils'
+
+{ growBox, normRect, boxForItems } = require './utils'
+
 { clipboard } = require 'electron' 
 
 SVG       = require 'svg.js'
 clr       = require 'svg.colorat.js'
+Shapes    = require './shapes'
 Selection = require './selection'
 Resizer   = require './resizer'
 
@@ -28,12 +31,13 @@ class Stage
         
         @selection = new Selection @kali
         @resizer   = new Resizer   @kali
+        @shapes    = new Shapes    @kali
         
         @drag = new drag
             target:  @element
-            onStart: @onDragStart
-            onMove:  @onDragMove
-            onStop:  @onDragStop
+            onStart: @shapes.onStart
+            onMove:  @shapes.onMove
+            onStop:  @shapes.onStop
 
         window.area.on 'resized', @onResize
 
@@ -112,7 +116,7 @@ class Stage
         @selection.clear()
         
         bb = boxForItems items, @viewPos()
-        growViewBox bb
+        growBox bb
         
         svg = @getSVG items, bb
         clipboard.writeText svg
@@ -153,244 +157,7 @@ class Stage
         
         svg = fs.readFileSync resolve('~/Desktop/kaligraf.svg'), encoding: 'utf8'
         @setSVG svg
-                    
-    #  0000000  000   000   0000000   00000000   00000000  
-    # 000       000   000  000   000  000   000  000       
-    # 0000000   000000000  000000000  00000000   0000000   
-    #      000  000   000  000   000  000        000       
-    # 0000000   000   000  000   000  000        00000000  
-    
-    addShape: (shape, stagePos, attr, style) ->
-        
-        switch shape 
-            when 'triangle'
-                e = @svg.polygon '-50,50 0,-50 50,50'
-            when 'line', 'polyline', 'polygon'
-                e = @svg[shape]()
-                e.plot [[stagePos.x, stagePos.y], [stagePos.x, stagePos.y]]
-            else
-                e = @svg[shape]()
-            
-        e.style
-            stroke:           @kali.tools.stroke.color
-            'stroke-opacity': @kali.tools.stroke.alpha
-            'stroke-width':   @kali.tools.width.width
-            
-        if shape not in ['polyline', 'line']
-            e.style
-                fill:           @kali.tools.fill.color
-                'fill-opacity': @kali.tools.fill.alpha
-        else
-            e.style 
-                fill:           'none'
-                'fill-opacity': 0.0
-            
-        e.attr  attr  if attr?
-        e.style style if style?
-        e
-        
-    #  0000000  000000000   0000000   00000000   000000000  
-    # 000          000     000   000  000   000     000     
-    # 0000000      000     000000000  0000000       000     
-    #      000     000     000   000  000   000     000     
-    # 0000000      000     000   000  000   000     000     
-    
-    onDragStart: (drag, event) => @handleMouseDown event
-        
-    handleMouseDown: (event) ->
-
-        @kali.focus()
-        @kali.tools.collapseTemp()
-        
-        shape = @kali.shapeTool()
-        
-        for s,k of {pick:event.metaKey, pan:event.altKey, loupe:event.ctrlKey}
-            if k and shape != s
-                @kali.tools[s].onClick()
-                shape = s
-        
-        eventPos = @eventPos event 
-        stagePos = @stagePos event
-                
-        switch shape
-            
-            when 'pick'
-
-                e = @itemAtPos eventPos
-                
-                if not e?
-                    # log 'ADOPT!!!', event.target.id
-                    e = SVG.adopt event.target
-                    
-                if e == @svg
-                    if not event.shiftKey
-                        @selection.clear()
-                    @selection.start @eventPos(event), join:event.shiftKey
-                else
-                    if not @selection.contains e
-                        if not event.shiftKey
-                            @selection.clear()
-                        @selection.pos = @eventPos(event)
-                        @selection.add e
-                    else
-                        if event.shiftKey
-                            @selection.del e
-                            
-            when 'loupe' 
-                
-                @selection.loupe = @selection.addRect 'loupe'
-                
-            when 'pan' then
-            else
-                @selection.clear()
-                
-                if @drawing? and shape in ['line', 'polygon', 'polyline']
-                    switch shape
-                        when 'polygon', 'polyline' 
-                            @addPolyPoint stagePos
-                        when 'line'                
-                            @setLinePoint stagePos
-                            delete @drawing
-                    return
-                        
-                @drawing = @addShape shape, stagePos 
-                @drawing.cx stagePos.x
-                @drawing.cy stagePos.y
-
-    # 00     00   0000000   000   000  00000000  
-    # 000   000  000   000  000   000  000       
-    # 000000000  000   000   000 000   0000000   
-    # 000 0 000  000   000     000     000       
-    # 000   000   0000000       0      00000000  
-    
-    onDragMove: (drag, event) =>
-
-        shape = @kali.shapeTool()
-        
-        stagePos = @stagePos event
-        
-        switch shape
-            
-            when 'pan'   
-                
-                @panBy drag.delta
-                
-            when 'loupe' 
-                
-                r = x:drag.startPos.x, y:drag.startPos.y, x2:drag.pos.x, y2:drag.pos.y                
-                @selection.setRect @selection.loupe, r
-                
-            when 'pick'
-                
-                if @selection.rect?
-                    @selection.move @eventPos(event), join:event.shiftKey
-
-            when 'line' 
-                
-                @setLinePoint stagePos
-                                
-            when 'polygon', 'polyline'
-                
-                @addPolyPoint stagePos
-                
-            else
-                
-                @drawing.width  drag.deltaSum.x
-                @drawing.height drag.deltaSum.y
-                
-                switch shape
-                    when 'ellipse', 'circle'
-                        @drawing.cx drag.startPos.x - @viewPos().x + @drawing.width()/2
-                        @drawing.cy drag.startPos.y - @viewPos().y + @drawing.height()/2
-
-    setLinePoint: (p) ->
-        
-        arr = @drawing.array().valueOf()
-        last(arr)[0] = p.x
-        last(arr)[1] = p.y
-        @drawing.plot arr
-        
-    addPolyPoint: (p) ->
-        
-        arr  = @drawing.array().valueOf()
-        tail = arr.length > 1 and arr[arr.length-2] or arr[arr.length-1]
-        dist = Math.abs(tail[0]-p.x) + Math.abs(tail[1]-p.y)
-        if arr.length < 2 or dist > 20
-            arr.push [p.x, p.y]
-        else
-            last(arr)[0] = p.x
-            last(arr)[1] = p.y
-        @drawing.plot arr
-                        
-    #  0000000  000000000   0000000   00000000   
-    # 000          000     000   000  000   000  
-    # 0000000      000     000   000  00000000   
-    #      000     000     000   000  000        
-    # 0000000      000      0000000   000        
-    
-    onDragStop: (drag, event) =>
-        
-        eventPos = @eventPos event
-        stagePos = @stagePos event
-        
-        if @selection.rect?
-            @selection.end eventPos
-            return
-        
-        shape = @kali.shapeTool() 
-            
-        switch shape
-            
-            when 'loupe' 
-                
-                @selection.loupe.remove()
-                delete @selection.loupe
-                r = x:drag.startPos.x, y:drag.startPos.y, x2:drag.pos.x, y2:drag.pos.y
-                normRect r
-                @setViewBox x:r.x, y:r.y, width:r.x2-r.x, height:r.y2-r.y
-
-        if @drawing
-            
-            if @drawing.width() == 0
-                
-                switch shape
-                    when 'line' 
-                        log 'empty line?'
-                        @drawing.remember 'isPickPoly', true
-                        return
-                    when 'polygon', 'polyline'
-                        log 'empty poly?'
-                        @drawing.remember 'isPickPoly', true
-                        return
-                    when 'ellipse'
-                        @drawing.width 50
-                    else
-                        @drawing.width 100
-                    
-                @drawing.cx stagePos.x
-                
-                switch shape
-                    when 'circle'
-                        @drawing.cy stagePos.y
-                    
-            if @drawing.height() == 0
-                
-                @drawing.height 100
-                @drawing.cy stagePos.y
-            
-            if not @drawing.remember 'isPickPoly'
-                
-                delete @drawing
-
-    endDrawing: ->
-        
-        if @drawing
-            
-            if @drawing.width() == 0 or @drawing.height() == 0
-                @drawing.remove()
-                
-            delete @drawing
-                
+                                            
     # 000   000  000  00000000  000   000  
     # 000   000  000  000       000 0 000  
     #  000 000   000  0000000   000000000  
@@ -415,10 +182,40 @@ class Stage
     #  000     000   000  000   000  000 0 000  
     # 0000000   0000000    0000000   000   000  
     
-    zoomIn:  -> @setZoom @zoom * 1.1
-    zoomOut: -> @setZoom @zoom * 0.9
+    zoomIn:  -> 
+        
+        if @zoom < 0.1
+            @setZoom Math.min 0.1, @zoom + 0.01
+        else if @zoom < 0.3
+            @setZoom Math.min 0.3, @zoom + 0.05
+        else if @zoom < 2
+            @setZoom Math.min 2, @zoom + 0.1
+        else if @zoom < 4
+            @setZoom Math.min 4, @zoom + 0.2
+        else if @zoom < 10
+            @setZoom Math.min 10, @zoom + 0.5
+        else
+            @setZoom parseInt @zoom + 1
+            
+    zoomOut: -> 
+
+        if @zoom <= 0.011
+            @setZoom 0.01
+        else if @zoom <= 0.11
+            @setZoom @zoom - 0.01
+        else if @zoom < 0.31
+            @setZoom Math.min 0.25, @zoom - 0.05
+        else if @zoom <= 1.1
+            @setZoom @zoom - 0.1
+        else if @zoom < 21
+            @setZoom parseInt @zoom - 1
+        else if @zoom < 110
+            @setZoom parseInt @zoom - 10
+        else
+            @setZoom parseInt @zoom - 100
     
     setZoom: (z) -> 
+        log "setZoom #{z}"
         @zoom = z
         @resetSize()
 
@@ -441,7 +238,7 @@ class Stage
         # log 'setViewBox', box, @svg.viewbox()
         box = @svg.viewbox()
         post.emit 'stage', 'viewbox', box
-        post.emit 'stage', 'zoom',    box.zoom
+        post.emit 'stage', 'zoom',    @zoom
         box
             
     # 00000000    0000000   000   000  
@@ -478,7 +275,8 @@ class Stage
             when 'command+-'       then return @zoomOut()
             when 'command+='       then return @zoomIn()
             when 'command+0'       then return @resetView()
-            when 'enter', 'return', 'esc' then return @endDrawing()                
+            when 'enter', 'return', 'esc' 
+                return @shapes.endDrawing()                
         
         return if 'unhandled' != @resizer  .handleKey mod, key, combo, char, event
         return if 'unhandled' != @selection.handleKey mod, key, combo, char, event

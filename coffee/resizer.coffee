@@ -7,7 +7,7 @@
 
 { elem, post, drag, first, last, pos, log, _ } = require 'kxk'
 
-{ boxForItems, posForRect, moveBox } = require './utils'
+{ boxForItems, posForRect, moveBox, zoomBox } = require './utils'
 
 class Resizer
 
@@ -117,8 +117,8 @@ class Resizer
         fx = (@sbox.w + dx)/@sbox.w
         fy = (@sbox.h + dy)/@sbox.h
         
-        # log "resize move #{dx} #{dy}", @box
-        # log "sbox", @sbox
+        log "resize move #{dx} #{dy}", @box
+        log "sbox", @sbox
 
         for item in @selection.items
             
@@ -154,7 +154,6 @@ class Resizer
                     if top   then item.y @sbox.y2 - fy * (@sbox.y2 - item.y())
                                                         
         @calcBox()         
-        
                 
     # 0000000    00000000    0000000    0000000   
     # 000   000  000   000  000   000  000        
@@ -165,7 +164,7 @@ class Resizer
     onDragStart: (drag, event) => 
         
         if event?.shiftKey
-            @kali.stage.handleMouseDown event
+            @kali.stage.shapes.handleMouseDown event
             return 'skip'
     
     onDragStop: => 
@@ -209,18 +208,8 @@ class Resizer
         dx = @kali.stage.svg.viewbox().x
         dy = @kali.stage.svg.viewbox().y
         
-        @sbox.x  = @sbox.x  / @kali.stage.zoom + dx
-        @sbox.cx = @sbox.cx / @kali.stage.zoom + dx
-        @sbox.x2 = @sbox.x2 / @kali.stage.zoom + dx
-        @sbox.y  = @sbox.y  / @kali.stage.zoom + dy
-        @sbox.cy = @sbox.cy / @kali.stage.zoom + dy
-        @sbox.y2 = @sbox.y2 / @kali.stage.zoom + dy
-        
-        @sbox.w /= @kali.stage.zoom
-        @sbox.h /= @kali.stage.zoom
-            
-        @sbox.width = @sbox.w
-        @sbox.height = @sbox.h
+        zoomBox @sbox, @kali.stage.zoom
+        moveBox @sbox, pos dx, dy
 
     calcBox: ->
         

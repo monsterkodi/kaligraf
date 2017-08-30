@@ -179,6 +179,8 @@ class Tools extends Tool
             when 'pan'      then '-webkit-grab'
             when 'loupe'    then 'zoom-in'
             else 'default'
+        
+        @kali.stage.resizer.activate name == 'pick'
             
         @kali.stage.svg.style cursor: cursor
 

@@ -6,6 +6,7 @@
 # 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000
 
 { last, pos, elem, post, log, _ } = require 'kxk'
+
 { normRect, rectsIntersect, posForRect } = require './utils'
 
 class Selection
@@ -39,15 +40,11 @@ class Selection
     add: (e) ->
         
         if e not in @items
-            # e.selectize()
-            # e.resize snapToAngle: 15
+
             @items.push e
             post.emit 'selection', 'add', @items, e
             
     del: (e) ->
-        
-        # e.selectize false
-        # e.resize 'stop'
         
         if e in @items
             _.pull @items, e

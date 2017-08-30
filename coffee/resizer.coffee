@@ -81,6 +81,24 @@ class Resizer
             onMove:  @onDragMove
             onStop:  @onDragStop
 
+    #  0000000    0000000  000000000  000  000   000   0000000   000000000  00000000  
+    # 000   000  000          000     000  000   000  000   000     000     000       
+    # 000000000  000          000     000   000 000   000000000     000     0000000   
+    # 000   000  000          000     000     000     000   000     000     000       
+    # 000   000   0000000     000     000      0      000   000     000     00000000  
+    
+    deactivate: -> @activate false
+    
+    activate: (active=true) ->
+        if active
+            @drag?.activate()
+            @g?.removeClass 'resizerInactive'
+            @svg?.removeClass 'resizerInactive'
+        else
+            @drag?.deactivate()
+            @g?.addClass 'resizerInactive'
+            @svg?.addClass 'resizerInactive'
+            
     # 00000000   00000000   0000000  000  0000000  00000000    
     # 000   000  000       000       000     000   000         
     # 0000000    0000000   0000000   000    000    0000000     
@@ -117,8 +135,8 @@ class Resizer
         fx = (@sbox.w + dx)/@sbox.w
         fy = (@sbox.h + dy)/@sbox.h
         
-        log "resize move #{dx} #{dy}", @box
-        log "sbox", @sbox
+        # log "resize move #{dx} #{dy}", @box
+        # log "sbox", @sbox
 
         for item in @selection.items
             

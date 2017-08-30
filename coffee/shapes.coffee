@@ -7,6 +7,8 @@
 
 { last, log } = require 'kxk'
 
+{ normRect } = require './utils'
+
 class Shapes
 
     constructor: (@kali) ->

@@ -15,17 +15,21 @@
     stroke-linecap          round
     stroke-linejoin         round
 
+.resizerSVG
+    opacity                 1
+    &.resizerInactive
+        opacity             0.3
+    
 .resizerGroup
     cursor                  -webkit-grab
     pointer-events          all
-
+    &.resizerInactive
+        pointer-events      none
+        
 .resizerRect
     fill                    rgba(0,0,0,0.1)
     cursor                  -webkit-grab
-    pointer-events          all
-    // stroke                  #88f
     stroke                  'none'
-    stroke-dasharray        2,4
 
 .resizerBorder
     fill                    #88f

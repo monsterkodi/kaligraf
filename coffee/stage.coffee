@@ -158,12 +158,16 @@ class Stage
     #      000  000   000  000   000  000        000       
     # 0000000   000   000  000   000  000        00000000  
     
-    addShape: (shape, attr, style) ->
+    addShape: (shape, stagePos, attr, style) ->
         
-        if shape == 'triangle'
-            e = @svg.polygon('0,-50 100,0 0,50')
-        else
-            e = @svg[shape]()
+        switch shape 
+            when 'triangle'
+                e = @svg.polygon '0,-50 100,0 0,50'
+            when 'line', 'polyline', 'polygon'
+                e = @svg[shape]()
+                e.plot [[stagePos.x, stagePos.y], [stagePos.x, stagePos.y]]
+            else
+                e = @svg[shape]()
             
         e.style
             stroke:           @kali.tools.stroke.color
@@ -203,16 +207,17 @@ class Stage
                 @kali.tools[s].onClick()
                 shape = s
         
-        ep = @eventPos(event)
+        eventPos = @eventPos event 
+        stagePos = @localPos event
                 
         switch shape
             
             when 'pick'
 
-                e = @itemAtPos ep
+                e = @itemAtPos eventPos
                 
                 if not e?
-                    log 'ADOPT!!!', event.target.id
+                    # log 'ADOPT!!!', event.target.id
                     e = SVG.adopt event.target
                     
                 if e == @svg
@@ -229,17 +234,17 @@ class Stage
                         if event.shiftKey
                             @selection.del e
                             
-            when 'pan'   then # log 'pan'
             when 'loupe' 
                 
                 @selection.loupe = @selection.addRect 'loupe'
                 
+            when 'pan' then
             else
                 
                 @selection.clear()
-                @drawing = @addShape shape 
-                @drawing.cx @localPos(event).x
-                @drawing.cy @localPos(event).y
+                @drawing = @addShape shape, stagePos 
+                @drawing.cx stagePos.x
+                @drawing.cy stagePos.y
 
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
@@ -250,6 +255,8 @@ class Stage
     onDragMove: (drag, event) =>
 
         shape = @kali.shapeTool()
+        
+        stagePos = @localPos event
         
         switch shape
             
@@ -266,18 +273,24 @@ class Stage
                 
                 if @selection.rect?
                     @selection.move @eventPos(event), join:event.shiftKey
+
+            when 'line'
+                
+                arr = @drawing.array().valueOf()
+                last(arr)[0] = stagePos.x
+                last(arr)[1] = stagePos.y
+                @drawing.plot arr
                 
             when 'polygon', 'polyline'
                 
                 arr  = @drawing.array().valueOf()
                 tail = arr.length > 1 and arr[arr.length-2] or arr[arr.length-1]
-                p = @localPos event
-                dist = Math.abs(tail[0]-p.x) + Math.abs(tail[1]-p.y)
+                dist = Math.abs(tail[0]-stagePos.x) + Math.abs(tail[1]-stagePos.y)
                 if arr.length < 2 or dist > 20
-                    arr.push [p.x, p.y]
+                    arr.push [stagePos.x, stagePos.y]
                 else
-                    last(arr)[0] = p.x
-                    last(arr)[1] = p.y
+                    last(arr)[0] = stagePos.x
+                    last(arr)[1] = stagePos.y
                 @drawing.plot arr
                 
             else
@@ -298,11 +311,16 @@ class Stage
     
     onDragStop: (drag, event) =>
         
+        ep = @eventPos event
+        lp = @localPos event
+        
         if @selection.rect?
-            @selection.end @eventPos event
+            @selection.end ep
             return
         
-        switch @kali.shapeTool() 
+        shape = @kali.shapeTool() 
+            
+        switch shape
             
             when 'loupe' 
                 
@@ -311,8 +329,20 @@ class Stage
                 r = x:drag.startPos.x, y:drag.startPos.y, x2:drag.pos.x, y2:drag.pos.y
                 normRect r
                 @setViewBox x:r.x, y:r.y, width:r.x2-r.x, height:r.y2-r.y
+
+        if @drawing
+            
+            if @drawing.width() == 0
+                @drawing.width switch shape
+                    when 'ellipse' then 50
+                    else 100
+                @drawing.cx lp.x
+                    
+            if @drawing.height() == 0
+                @drawing.height 100
+                @drawing.cy lp.y
                 
-        @drawing = null
+            delete @drawing
 
     # 000   000  000  00000000  000   000  
     # 000   000  000  000       000 0 000  

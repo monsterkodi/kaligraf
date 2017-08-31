@@ -94,28 +94,28 @@ class Tool
     
     showChildren: -> 
         
-        @raise()
+        @toFront()
         if @hasChildren()
             for c in @children
                 c.show()
                 
     hideChildren: -> 
         
-        @lower()
+        @toBack()
         if @hasChildren()
             for c in @children
                 c.hide()
 
-    raise: ->
+    toFront: ->
         
         @element.style.zIndex = 100
         if @children?.length
             for c in @children
-                c.raise()
+                c.toFront()
 
-    lower: ->
+    toBack: ->
         
-        @element.style.zIndex = 0
+        @element.style.zIndex = 1
                 
     #  0000000  000   000   0000000   00000000   
     # 000       000 0 000  000   000  000   000  
@@ -170,6 +170,8 @@ class Tool
     #  0000000  0000000  000   0000000  000   000  
     
     onClick: (e) => 
+        
+        log "onClick #{@name}"
         
         if e?.metaKey and @svg?
             @kali.stage.addSVG @svg.svg()

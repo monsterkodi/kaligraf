@@ -11,6 +11,25 @@ Tool = require './tool'
 
 class Tools extends Tool
 
+    constructor: (@kali, cfg) ->
+                
+        super @kali, cfg
+                
+        @tools    = []
+        @children = []
+        @setPos x:0, y:0
+        
+        post.on 'tool',   @onAction
+        post.on 'toggle', (name) => @[name]?.toggleVisible()
+        
+        @kali.tools = @
+                
+    # 00000000   00000000   00000000  00000000   0000000  
+    # 000   000  000   000  000       000       000       
+    # 00000000   0000000    0000000   000000    0000000   
+    # 000        000   000  000       000            000  
+    # 000        000   000  00000000  000       0000000   
+    
     loadPrefs: ->
         
         @stroke.setLuminance 1
@@ -23,18 +42,6 @@ class Tools extends Tool
         @activateTool 'loupe'
         @load.onClick()
     
-    constructor: (@kali, cfg) ->
-                
-        super @kali, cfg
-                
-        @children = []
-        @setPos x:0, y:0
-        
-        post.on 'tool',   @onAction
-        post.on 'toggle', (name) => @[name]?.toggleVisible()
-        
-        @kali.tools = @
-                
     # 000  000   000  000  000000000  
     # 000  0000  000  000     000     
     # 000  000 0 000  000     000     
@@ -45,7 +52,7 @@ class Tools extends Tool
 
         tools = [
             [
-                { name: 'zoom',  class: 'zoom', action: 'zoom_reset' }
+                { name: 'zoom',  class: 'zoom', action: 'zoom_reset', combo: 'command+0' }
                 { name: 'width', class: 'line' }
             ]
             { name: 'stroke', class: 'color' }
@@ -56,28 +63,43 @@ class Tools extends Tool
                 { name: 'loupe', group: 'shape' }
             ]
             [
-                { name: 'polygon',  group: 'shape' }
-                { name: 'polyline', group: 'shape' }
-                { name: 'line',     group: 'shape' }
-            ]
-            [
                 { name: 'rect',     group: 'shape' }
                 { name: 'circle',   group: 'shape' }
                 { name: 'ellipse',  group: 'shape' }
                 { name: 'triangle', group: 'shape' }
             ]
             [
-                { name: 'save',  action: 'save',  orient: 'down' }
-                { name: 'load',  action: 'load',  orient: 'down' }
-                { name: 'clear', action: 'clear', orient: 'down' }
+                { name: 'polygon',  group: 'shape' }
+                { name: 'polyline', group: 'shape' }
+                { name: 'line',     group: 'shape' }
             ]
             [
-                { name: 'cut',   action: 'cut',   orient: 'down' }
-                { name: 'copy',  action: 'copy',  orient: 'down' }
-                { name: 'paste', action: 'paste', orient: 'down' }
+                { name: 'image',  group: 'shape' }
+                { name: 'text',   group: 'shape' }
             ]
+            [
+                { name: 'save',  action: 'save',  orient: 'down', combo: 'command+s' }
+                { name: 'load',  action: 'load',  orient: 'down', combo: 'command+o' }
+                { name: 'clear', action: 'clear', orient: 'down', combo: 'command+k' }
+            ]
+            [
+                { name: 'all',   action: 'selectAll', orient: 'down', combo: 'command+a' }
+                { name: 'none',  action: 'deselect',  orient: 'down', combo: 'command+d' }
+            ]            
+            [
+                { name: 'cut',   action: 'cut',   orient: 'down', combo: 'command+x' }
+                { name: 'copy',  action: 'copy',  orient: 'down', combo: 'command+c' }
+                { name: 'paste', action: 'paste', orient: 'down', combo: 'command+v' }
+            ]
+            [
+                { name: 'back',  action: 'back',  orient: 'down', combo: 'command+alt+down' }
+                { name: 'lower', action: 'lower', orient: 'down', combo: 'command+down' }
+                { name: 'raise', action: 'raise', orient: 'down', combo: 'command+up' }
+                { name: 'front', action: 'front', orient: 'down', combo: 'command+alt+up' }
+            ]            
         ]
         
+        @element.style.zIndex = 1 
         for tool in tools
             @addTool tool
                     
@@ -133,6 +155,7 @@ class Tools extends Tool
         clss = cfg.class and require("./#{cfg.class}") or Tool
         tool = new clss @kali, cfg
         @[tool.name] = tool
+        @tools.push tool
         tool
         
     #  0000000    0000000  000000000  000   0000000   000   000  
@@ -155,10 +178,40 @@ class Tools extends Tool
             when 'zoom_reset' then @kali.stage.resetView()
             when 'zoom_in'    then @kali.stage.zoomIn()
             when 'zoom_out'   then @kali.stage.zoomOut()
+            when 'lower'      then @kali.stage.order 'backward'
+            when 'raise'      then @kali.stage.order 'forward'
+            when 'back'       then @kali.stage.order 'back'
+            when 'front'      then @kali.stage.order 'front'
+            when 'selectAll'  then @kali.stage.select 'all'
+            when 'deselect'   then @kali.stage.select 'none'
             
-            # else
-                # log 'no action?', action, name
-                    
+            else
+                log 'action?', action, name
+
+    # 000   000  00000000  000   000  
+    # 000  000   000        000 000   
+    # 0000000    0000000     00000    
+    # 000  000   000          000     
+    # 000   000  00000000     000     
+    
+    handleKey: (mod, key, combo, char, event, down) ->
+        # log "Tools.handleKey mod:#{mod} key:#{key} combo:#{combo} down:#{down}"
+
+        if down 
+            if mod == 'ctrl' then @ctrlDown = true
+            
+            for tool in @tools
+                if tool.cfg.combo == combo
+                    return tool.onClick()
+            
+        else
+            @ctrlDown = false
+            
+        if @kali.shapeTool() == 'loupe'
+            @kali.stage.svg.style cursor:@ctrlDown and 'zoom-out' or 'zoom-in'
+            
+        'unhandled'
+                
     #  0000000    0000000  000000000  000  000   000   0000000   000000000  00000000  
     # 000   000  000          000     000  000   000  000   000     000     000       
     # 000000000  000          000     000   000 000   000000000     000     0000000   
@@ -177,7 +230,7 @@ class Tools extends Tool
         
         cursor = switch name
             when 'pan'      then '-webkit-grab'
-            when 'loupe'    then 'zoom-in'
+            when 'loupe'    then @ctrlDown and 'zoom-out' or 'zoom-in'
             else 'default'
         
         @kali.stage.resizer.activate name == 'pick'

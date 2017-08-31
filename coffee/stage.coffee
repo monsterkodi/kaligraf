@@ -5,7 +5,7 @@
 #      000     000     000   000  000   000  000       
 # 0000000      000     000   000   0000000   00000000  
 
-{ resolve, elem, post, drag, last, pos, fs, log, _ } = require 'kxk'
+{ resolve, elem, post, drag, last, clamp, pos, fs, log, _ } = require 'kxk'
 
 { growBox, normRect, boxForItems, boxCenter } = require './utils'
 
@@ -39,6 +39,7 @@ class Stage
             onMove:  @shapes.onMove
             onStop:  @shapes.onStop
 
+        @element.addEventListener 'wheel', @onWheel
         window.area.on 'resized', @onResize
 
         @zoom = 1
@@ -152,6 +153,27 @@ class Stage
         @svg.clear()
         @resetView()
 
+    #  0000000   00000000   0000000    00000000  00000000     
+    # 000   000  000   000  000   000  000       000   000    
+    # 000   000  0000000    000   000  0000000   0000000      
+    # 000   000  000   000  000   000  000       000   000    
+    #  0000000   000   000  0000000    00000000  000   000    
+    
+    order: (order) -> 
+        
+        if not @selection.empty()
+            for item in @selection.items
+                item[order]()    
+                
+    select: (select) ->
+        
+        switch select
+            when 'none' 
+                @selection.clear()
+            when 'all' 
+                for item in @items()
+                    @selection.add item
+        
     #  0000000   0000000   000   000  00000000  
     # 000       000   000  000   000  000       
     # 0000000   000000000   000 000   0000000   
@@ -177,28 +199,60 @@ class Stage
     onResize: (w, h) => @resetSize()
     eventPos: (event) -> pos event
     localPos: (event) -> @eventPos(event).sub @viewPos()
-    stagePos: (event) -> @localPos(event).scale(1.0/@zoom).add @panPos()
+    stagePos: (event) -> @stageForView @localPos event
     viewPos:  -> r = @element.getBoundingClientRect(); x:r.left, y:r.top
     viewSize: -> r = @element.getBoundingClientRect(); width:r.width, height:r.height
-    viewCenter: -> pos(0,0).mid pos @viewSize().width, @viewSize().height 
-    stageCenter: -> boxCenter @svg.viewbox()
     stageForView: (viewPos) -> viewPos.scale(1.0/@zoom).add @panPos()
+    
+    #  0000000  00000000  000   000  000000000  00000000  00000000   
+    # 000       000       0000  000     000     000       000   000  
+    # 000       0000000   000 0 000     000     0000000   0000000    
+    # 000       000       000  0000     000     000       000   000  
+    #  0000000  00000000  000   000     000     00000000  000   000  
+    
+    viewCenter:  -> pos(0,0).mid pos @viewSize().width, @viewSize().height 
+    stageCenter: -> boxCenter @svg.viewbox()
     itemsCenter: -> @stageForView boxCenter boxForItems @items(), @viewPos()
+        
+    centerAtStagePos: (stagePos) ->
+        
+        @moveViewBy stagePos.sub @stageCenter()
+        
+    centerItems: -> @centerAtStagePos @itemsCenter()
+
+    # 000       0000000   000   000  00000000   00000000  
+    # 000      000   000  000   000  000   000  000       
+    # 000      000   000  000   000  00000000   0000000   
+    # 000      000   000  000   000  000        000       
+    # 0000000   0000000    0000000   000        00000000  
     
     loupe: (p1, p2) ->
         
         viewPos1 = pos(p1).sub @viewPos()
         viewPos2 = pos(p2).sub @viewPos()
         
-        @centerAtStagePos @stageForView viewPos1.mid viewPos2
+        sc = @stageForView viewPos1.mid viewPos2
+        
+        sd = @stageForView(viewPos1).sub @stageForView(viewPos2)
+        dw = Math.abs sd.x
+        dh = Math.abs sd.y
+        
+        if dw == 0 or dh == 0
+            z = 2
+        else
+            vb = @svg.viewbox()
+            zw = vb.width  / dw
+            zh = vb.height / dh
+            z = Math.min zw, zh
+            
+        if @kali.tools.ctrlDown then z = 1.0/z
+        
+        @setZoom @zoom * z, sc
 
-    centerAtStagePos: (stagePos) ->
-        
-        @moveViewBy stagePos.sub @stageCenter()
-        
-    centerItems: -> 
-        log 'centerItems', @itemsCenter()
-        @centerAtStagePos @itemsCenter()
+    onWheel: (event) => 
+    
+        log "deltaY #{event.deltaY}", @localPos(event), @stageForView(@localPos(event)), @svg.viewbox()
+        @setZoom @zoom * (1.0 - event.deltaY/5000.0)
         
     # 0000000   0000000    0000000   00     00  
     #    000   000   000  000   000  000   000  
@@ -216,22 +270,26 @@ class Stage
     ]
     
     zoomIn: -> 
+        
         for i in [0...Stage.zoomLevels.length]
             if @zoom < Stage.zoomLevels[i]
                 @setZoom Stage.zoomLevels[i]
                 return
             
     zoomOut: -> 
+        
         for i in [Stage.zoomLevels.length-1..0]
             if @zoom > Stage.zoomLevels[i]
                 @setZoom Stage.zoomLevels[i]
                 return
                 
-    resetView: -> log 'resetView'; @centerItems(); @resetZoom()
+    resetView: -> @centerItems(); @resetZoom()
     resetZoom: -> @setZoom 1
-    setZoom: (z) -> 
-        log "setZoom #{z}"
-        sc = @stageCenter()
+    
+    setZoom: (z, sc=@stageCenter()) -> 
+        
+        z = clamp 0.01, 1000, z
+        
         @zoom = z
         @resetSize()
         @centerAtStagePos sc
@@ -239,7 +297,7 @@ class Stage
     resetSize: ->
         
         box = @svg.viewbox()
-        # log 'resetSize', box
+
         box.width  = @viewSize().width  / @zoom
         box.height = @viewSize().height / @zoom
         @setViewBox box
@@ -248,7 +306,7 @@ class Stage
         
         delete box.zoom
         @svg.viewbox box
-        # log 'setViewBox', box, @svg.viewbox()
+
         box = @svg.viewbox()
         post.emit 'stage', 'viewbox', box
         post.emit 'stage', 'zoom',    @zoom
@@ -263,8 +321,9 @@ class Stage
     panPos:    -> vb = @svg.viewbox(); pos vb.x, vb.y
     
     panBy: (delta) -> @moveViewBy pos(delta).scale -1.0/@zoom
+    
     moveViewBy: (delta) ->
-        log 'moveViewBy', delta
+
         box = @svg.viewbox()
 
         box.x += delta.x
@@ -278,25 +337,20 @@ class Stage
     # 000  000   000          000     
     # 000   000  00000000     000     
     
-    handleKey: (mod, key, combo, char, event) ->
+    handleKey: (mod, key, combo, char, event, down) ->
 
-        switch combo
-            
-            when 'command+s'       then return @save()
-            when 'command+o'       then return @load()
-            when 'command+x'       then return @cut()
-            when 'command+c'       then return @copy()
-            when 'command+v'       then return @paste()
-            when 'command+k'       then return @clear()
-            when 'command+-'       then return @zoomOut()
-            when 'command+='       then return @zoomIn()
-            when 'command+0'       then return @resetView()
-            when 'enter', 'return', 'esc' 
-                return @shapes.endDrawing()                
+        if down
+            switch combo
+                
+                when 'command+-' then return @zoomOut()
+                when 'command+=' then return @zoomIn()
+                when 'command+0' then return @resetView()
+                when 'enter', 'return', 'esc' 
+                    return @shapes.endDrawing()                
         
-        return if 'unhandled' != @resizer  .handleKey mod, key, combo, char, event
-        return if 'unhandled' != @selection.handleKey mod, key, combo, char, event
-        
+        return if 'unhandled' != @resizer  .handleKey mod, key, combo, char, event, down
+        return if 'unhandled' != @selection.handleKey mod, key, combo, char, event, down
+                
         'unhandled'
         
 module.exports = Stage

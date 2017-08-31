@@ -343,9 +343,9 @@ class Resizer
     # 000  000   000          000     
     # 000   000  00000000     000     
     
-    handleKey: (mod, key, combo, char, event) ->
+    handleKey: (mod, key, combo, char, event, down) ->
         
-        if not @empty()
+        if not @empty() and down
             switch combo
                 when 'left', 'right', 'up', 'down'
                     p = pos 0, 0
@@ -354,7 +354,7 @@ class Resizer
                         when 'right' then p.x =  1
                         when 'up'    then p.y = -1
                         when 'down'  then p.y =  1
-                    @moveBy p
+                    return @moveBy p
                     
         'unhandled'
             

@@ -20,6 +20,7 @@ class Kali
         
         @focus()
         @element.addEventListener 'keydown', @onKeyDown
+        @element.addEventListener 'keyup',   @onKeyUp
         
         @tools.init()
         @tools.loadPrefs()
@@ -29,10 +30,16 @@ class Kali
     onKeyDown: (event) =>
         
         {mod, key, combo, char} = keyinfo.forEvent event
-        # log "Kali.onKeyDown mod:#{mod} key:#{key} combo:#{combo} char:#{char}"
-        return stopEvent(event) if 'unhandled' != @stage.handleKey mod, key, combo, char, event
+        return stopEvent(event) if 'unhandled' != @tools.handleKey mod, key, combo, char, event, true
+        return stopEvent(event) if 'unhandled' != @stage.handleKey mod, key, combo, char, event, true
+
+    onKeyUp: (event) =>
         
-    shapeTool: -> @tools.getActive('shape').name    
+        {mod, key, combo, char} = keyinfo.forEvent event
+        return stopEvent(event) if 'unhandled' != @tools.handleKey mod, key, combo, char, event, false
+        return stopEvent(event) if 'unhandled' != @stage.handleKey mod, key, combo, char, event, false
+        
+    shapeTool: -> @tools.getActive('shape').name
     
     items: -> @stage.items()
             

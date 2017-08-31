@@ -187,13 +187,13 @@ class Selection
     # 000  000   000          000     
     # 000   000  00000000     000     
     
-    handleKey: (mod, key, combo, char, event) ->
+    handleKey: (mod, key, combo, char, event, down) ->
         
-        if not @empty()
+        if not @empty() and down
             switch combo
                 when 'backspace', 'delete'
-                    @delete()
-                    return
+                    return @delete()
+                    
         'unhandled'
                 
 module.exports = Selection

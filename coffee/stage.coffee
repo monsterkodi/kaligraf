@@ -22,7 +22,7 @@ class Stage
     constructor: (@kali) ->
 
         @element = elem 'div', id: 'stage'
-        @kali.element.appendChild @element
+        @kali.element.insertBefore @element, @kali.element.firstChild
         @svg = SVG(@element).size '100%', '100%' 
         @svg.addClass 'stageSVG'
         @svg.clear()

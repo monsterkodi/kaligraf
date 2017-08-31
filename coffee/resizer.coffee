@@ -138,37 +138,55 @@ class Resizer
         fx = (@sbox.w + dx)/@sbox.w
         fy = (@sbox.h + dy)/@sbox.h
         
-        # log "resize move #{dx} #{dy}", @box
-        # log "sbox", @sbox
-
         for item in @selection.items
             
-            iw = item.width()
-            ih = item.height()
-                            
-            if item.type in ['circle']
+            if item.type == 'text'
+                iw = item.rbox().width
+                ih = item.rbox().height
+            else
+                iw = item.width()
+                ih = item.height()
+
+            if item.type in ['circle', 'text']
+                
                 if Math.abs(dx) > Math.abs(dy)
-                    f = fx
+                    fy = fx
                 else if Math.abs(dy) > Math.abs(dx)
-                    f = fy
+                    fx = fy
                 else
-                    f = 1
-                item.radius (item.width() * f)/2.0
+                    fx = fy = 1
+                
+            if item.type == 'circle'
+                
+                item.radius (item.width() * fx)/2.0
+                
+            else if item.type == 'text'
+
+                item.font 'size', fx * item.font 'size'
+                
             else
                 item.size item.width() * fx, item.height() * fy
-                
-            switch item.type 
-                when 'circle'
-                    if right then item.cx item.width()/2  + @sbox.x  + f * ((item.cx() - iw/2) - @sbox.x)
-                    if bot   then item.cy item.height()/2 + @sbox.y  + f * ((item.cy() - ih/2) - @sbox.y) 
-                    if left  then item.cx item.width()/2  + @sbox.x2 - f * (@sbox.x2 - (item.cx() - iw/2))
-                    if top   then item.cy item.height()/2 + @sbox.y2 - f * (@sbox.y2 - (item.cy() - ih/2))
-                when 'ellipse'
-                    if right then item.cx item.width()/2  + @sbox.x  + fx * ((item.cx() - iw/2) - @sbox.x)
-                    if bot   then item.cy item.height()/2 + @sbox.y  + fy * ((item.cy() - ih/2) - @sbox.y) 
-                    if left  then item.cx item.width()/2  + @sbox.x2 - fx * (@sbox.x2 - (item.cx() - iw/2))
-                    if top   then item.cy item.height()/2 + @sbox.y2 - fy * (@sbox.y2 - (item.cy() - ih/2))
+            
+            switch item.type
+                    
+                when 'circle', 'ellipse'
+                    
+                    cx = item.cx(); cy = item.cy(); nw = item.width(); nh = item.height()
+                    
+                    if right then item.cx nw/2 + @sbox.x  + fx * ((cx - iw/2) - @sbox.x)
+                    if bot   then item.cy nh/2 + @sbox.y  + fy * ((cy - ih/2) - @sbox.y) 
+                    if left  then item.cx nw/2 + @sbox.x2 - fx * (@sbox.x2 - (cx - iw/2))
+                    if top   then item.cy nh/2 + @sbox.y2 - fy * (@sbox.y2 - (cy - ih/2))
+                    
+                when 'text'
+                    
+                    if right then item.x @sbox.x  + fx * (item.x() - @sbox.x) 
+                    if bot   then item.y @sbox.y  + fy * (item.y() - @sbox.y)
+                    if left  then item.x @sbox.x2 - fx * (@sbox.x2 - item.x())
+                    if top   then item.y @sbox.y2 - fy * (@sbox.y2 - item.y())
+                    
                 else
+                    
                     if right then item.x @sbox.x  + fx * (item.x() - @sbox.x) 
                     if bot   then item.y @sbox.y  + fy * (item.y() - @sbox.y)
                     if left  then item.x @sbox.x2 - fx * (@sbox.x2 - item.x())

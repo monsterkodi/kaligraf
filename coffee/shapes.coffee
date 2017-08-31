@@ -26,14 +26,25 @@ class Shapes
     addShape: (shape, stagePos, attr, style) ->
         
         switch shape 
+            
             when 'triangle'
+                
                 e = @svg.polygon '-50,50 0,-50 50,50'
+                
             when 'line', 'polyline', 'polygon'
+                
                 e = @svg[shape]()
                 e.plot [[stagePos.x, stagePos.y], [stagePos.x, stagePos.y]]
+                
+            when 'text'
+                # e = @svg.text 'Hy!'
+                e = @svg.text 'Hy!\nWorld\n.oOXOo.'
+                e.font 'size', 100
+                # e.font 'anchor', 'middle'
+                
             else
                 e = @svg[shape]()
-            
+                
         e.style
             stroke:           @tools.stroke.color
             'stroke-opacity': @tools.stroke.alpha
@@ -101,7 +112,7 @@ class Shapes
                             
             when 'loupe' 
                 
-                @selection.loupe = @selection.addRect 'loupe'
+                @selection.loupe = @selection.addRect 'loupeRect'
                 
             when 'pan' then
             else
@@ -220,6 +231,7 @@ class Shapes
                         return
                     when 'ellipse'
                         @drawing.width 50
+                    when 'text' then
                     else
                         @drawing.width 100
                     
@@ -231,7 +243,11 @@ class Shapes
                     
             if @drawing.height() == 0
                 
-                @drawing.height 100
+                switch shape
+                    when 'text' then
+                    else
+                        @drawing.height 100
+                        
                 @drawing.cy stagePos.y
             
             if not @drawing.remember 'isPickPoly'

@@ -39,7 +39,9 @@ class Tools extends Tool
         @width.setWidth 1
         
         @activateTool 'rect'
-        @activateTool 'loupe'
+        @activateTool 'text'
+        # @activateTool 'loupe'
+        @activateTool 'pick'
         @load.onClick()
     
     # 000  000   000  000  000000000  

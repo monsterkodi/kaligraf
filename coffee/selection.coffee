@@ -27,9 +27,15 @@ class Selection
     delete: ->  
         
         while not @empty()
+            
             l = last @items
             @del l
-            l.remove()
+
+            if l.parent()?.removeElement?
+                l.remove()
+            else
+                l.clear()
+                l.node.remove()
         
     #  0000000  00000000  000      00000000   0000000  000000000  00000000  0000000    
     # 000       000       000      000       000          000     000       000   000  
@@ -40,8 +46,11 @@ class Selection
     add: (e) ->
         
         if e not in @items
-
+            
             @items.push e
+            
+            log 'items', @items.length, e.type
+            
             post.emit 'selection', 'add', @items, e
             
     del: (e) ->
@@ -71,9 +80,9 @@ class Selection
     move: (p,o) -> @rect.x2 = p.x; @rect.y2 = p.y; @updateRect o
     end: (p) -> @rect.element.remove(); delete @rect; delete @pos
 
-    addRect: (clss='selectangle') ->
+    addRect: (clss='selectionRect') ->
         
-        rect = elem 'div', class: 'selectangle'
+        rect = elem 'div', class: "selectangle #{clss}"
         @kali.element.appendChild rect
         rect
             
@@ -130,6 +139,7 @@ class Selection
         
         dx /= @kali.stage.zoom
         dy /= @kali.stage.zoom
+
         e.cx e.cx() + dx
         e.cy e.cy() + dy
          

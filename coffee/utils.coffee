@@ -4,7 +4,7 @@
 # 000   000     000     000  000           000    
 #  0000000      000     000  0000000  0000000     
 
-{ empty, pos } = require 'kxk'
+{ empty, pos, log } = require 'kxk'
 
 module.exports = 
     
@@ -21,8 +21,13 @@ module.exports =
             
         bb = null
         for item in items
-            bb ?= item.rbox()
-            bb = bb.merge item.rbox()
+            if item.type == 'tspan'
+                # log item.type, item.rbox(), item.parent().type, item.parent().rbox()
+                b = item.rbox()
+            else
+                b = item.rbox()
+            bb ?= b
+            bb = bb.merge b
         bb.transform new SVG.Matrix().translate -offset.x, -offset.y
 
     boxCenter: (box) -> pos box.x + box.width/2.0, box.y + box.height/2.0

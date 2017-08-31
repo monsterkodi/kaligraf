@@ -74,8 +74,8 @@ class Tools extends Tool
                 { name: 'line',     group: 'shape' }
             ]
             [
-                { name: 'image',  group: 'shape' }
-                { name: 'text',   group: 'shape' }
+                { name: 'image',  group: 'shape'}
+                { name: 'text',   group: 'shape'}
             ]
             [
                 { name: 'save',  action: 'save',  orient: 'down', combo: 'command+s' }

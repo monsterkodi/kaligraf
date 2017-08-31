@@ -5,11 +5,11 @@
 #      000     000     000   000  000   000  000       
 # 0000000      000     000   000   0000000   00000000  
 
-{ resolve, elem, post, drag, last, clamp, pos, fs, log, _ } = require 'kxk'
+{ resolve, elem, post, drag, stopEvent, last, clamp, pos, fs, log, _ } = require 'kxk'
 
-{ growBox, normRect, boxForItems, boxCenter } = require './utils'
+{ growBox, normRect, boxForItems, boxOffset, boxCenter } = require './utils'
 
-{ clipboard } = require 'electron' 
+{ clipboard } = require 'electron'
 
 SVG       = require 'svg.js'
 clr       = require 'svg.colorat.js'
@@ -198,11 +198,12 @@ class Stage
     
     onResize: (w, h) => @resetSize()
     eventPos: (event) -> pos event
-    localPos: (event) -> @eventPos(event).sub @viewPos()
+    localPos: (event) -> @eventPos(event).minus @viewPos()
     stagePos: (event) -> @stageForView @localPos event
-    viewPos:  -> r = @element.getBoundingClientRect(); x:r.left, y:r.top
+    viewPos:  -> r = @element.getBoundingClientRect(); pos r.left, r.top
     viewSize: -> r = @element.getBoundingClientRect(); width:r.width, height:r.height
-    stageForView: (viewPos) -> viewPos.scale(1.0/@zoom).add @panPos()
+    stageForView: (viewPos) -> pos(viewPos).scale(1.0/@zoom).plus @panPos()
+    viewForStage: (stagePos) -> pos(stagePos).sub(@panPos()).scale @zoom
     
     #  0000000  00000000  000   000  000000000  00000000  00000000   
     # 000       000       0000  000     000     000       000   000  
@@ -212,11 +213,10 @@ class Stage
     
     viewCenter:  -> pos(0,0).mid pos @viewSize().width, @viewSize().height 
     stageCenter: -> boxCenter @svg.viewbox()
+    stageOffset: -> boxOffset @svg.viewbox()
     itemsCenter: -> @stageForView boxCenter boxForItems @items(), @viewPos()
         
-    centerAtStagePos: (stagePos) ->
-        
-        @moveViewBy stagePos.sub @stageCenter()
+    centerAtStagePos: (stagePos) -> @moveViewBox stagePos.minus @stageCenter()
         
     centerItems: -> @centerAtStagePos @itemsCenter()
 
@@ -249,10 +249,28 @@ class Stage
         
         @setZoom @zoom * z, sc
 
-    onWheel: (event) => 
+    # 000   000  000   000  00000000  00000000  000      
+    # 000 0 000  000   000  000       000       000      
+    # 000000000  000000000  0000000   0000000   000      
+    # 000   000  000   000  000       000       000      
+    # 00     00  000   000  00000000  00000000  0000000  
     
-        log "deltaY #{event.deltaY}", @localPos(event), @stageForView(@localPos(event)), @svg.viewbox()
+    onWheel: (event) => 
+        
+        # if event.deltaY > 0
+            # @setZoom @zoom * (1.0 - event.deltaY/5000.0)
+            # return
+
+        oldCenter = @stageCenter()
+        viewPos = @localPos event
+        oldPos  = @stagePos event
+        
         @setZoom @zoom * (1.0 - event.deltaY/5000.0)
+        
+        newPos = @viewForStage oldPos
+        viewDiff = viewPos.minus newPos
+
+        @panBy viewDiff
         
     # 0000000   0000000    0000000   00     00  
     #    000   000   000  000   000  000   000  
@@ -293,25 +311,7 @@ class Stage
         @zoom = z
         @resetSize()
         @centerAtStagePos sc
-        
-    resetSize: ->
-        
-        box = @svg.viewbox()
-
-        box.width  = @viewSize().width  / @zoom
-        box.height = @viewSize().height / @zoom
-        @setViewBox box
-
-    setViewBox: (box) ->
-        
-        delete box.zoom
-        @svg.viewbox box
-
-        box = @svg.viewbox()
-        post.emit 'stage', 'viewbox', box
-        post.emit 'stage', 'zoom',    @zoom
-        box
-            
+                    
     # 00000000    0000000   000   000  
     # 000   000  000   000  0000  000  
     # 00000000   000000000  000 0 000  
@@ -320,9 +320,24 @@ class Stage
 
     panPos:    -> vb = @svg.viewbox(); pos vb.x, vb.y
     
-    panBy: (delta) -> @moveViewBy pos(delta).scale -1.0/@zoom
+    panBy: (delta) -> @moveViewBox pos(delta).scale -1.0/@zoom
+
+    # 000   000  000  00000000  000   000  0000000     0000000   000   000  
+    # 000   000  000  000       000 0 000  000   000  000   000   000 000   
+    #  000 000   000  0000000   000000000  0000000    000   000    00000    
+    #    000     000  000       000   000  000   000  000   000   000 000   
+    #     0      000  00000000  00     00  0000000     0000000   000   000  
     
-    moveViewBy: (delta) ->
+    resetSize: ->
+        
+        box = @svg.viewbox()
+
+        box.width  = @viewSize().width  / @zoom
+        box.height = @viewSize().height / @zoom
+        
+        @setViewBox box
+        
+    moveViewBox: (delta) ->
 
         box = @svg.viewbox()
 
@@ -330,7 +345,18 @@ class Stage
         box.y += delta.y
         
         @setViewBox box
-    
+
+    setViewBox: (box) ->
+        
+        delete box.zoom
+        
+        @svg.viewbox box
+
+        box = @svg.viewbox()
+        post.emit 'stage', 'viewbox', box
+        post.emit 'stage', 'zoom',    @zoom
+        box
+        
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
     # 0000000    0000000     00000    

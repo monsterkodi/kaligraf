@@ -171,8 +171,6 @@ class Tool
     
     onClick: (e) => 
         
-        log "onClick #{@name}"
-        
         if e?.metaKey and @svg?
             @kali.stage.addSVG @svg.svg()
             return

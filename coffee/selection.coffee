@@ -52,7 +52,7 @@ class Selection
     set: (items) ->
         
         @clear()
-        @items = _.clone items
+        @items = items
         
         for e in @items
             @addRectForItem e
@@ -78,6 +78,8 @@ class Selection
     clear: () ->
 
         if not @empty()
+            for item in @items
+                item.forget 'itemRect'
             @items = []
             @svg.clear()
             post.emit 'selection', 'clear'
@@ -95,43 +97,34 @@ class Selection
 
         r = @svg.rect()
         r.addClass 'resizerItemRect'
-        item.remember 'itemRect', r.id()
-        @updateItem item
+        item.remember 'itemRect', r
+        @updateItemRect item, r
 
     delRectForItem: (item) ->
         
-        if rectID = item.remember 'itemRect' 
-            SVG.get(rectID)?.remove()
+        if r = item.remember 'itemRect' 
+            r.remove()
             item.forget 'itemRect'
         
     updateItems: ->
 
         for item in @items
-            @updateItem item
+            @updateItemRect item
         
-    updateItem: (item) ->
+    updateItemRect: (item, r) ->
         
-        box = @itemBox item
-        
-        r = SVG.get item.remember 'itemRect'
+        box = item.bbox()
+        r = item.remember 'itemRect' if not r?
         r?.attr
             x:      box.x
             y:      box.y
             width:  box.w
             height: box.h
 
-    itemBox: (item) -> 
-        
-        item.bbox()
-        # boxForItems [item], @viewPos()    
-
     onStage: (action, box) =>
         
         if action == 'viewbox' 
             @svg.viewbox box
-            # @updateItems()
-
-    viewPos: -> r = @element.getBoundingClientRect(); pos r.left, r.top
     
     # 00000000   00000000   0000000  000000000    
     # 000   000  000       000          000       
@@ -199,7 +192,9 @@ class Selection
         x = s.left
         y = s.top
         x:r.x-x, x2:r.x2-x, y:r.y-y, y2:r.y2-y
-                    
+
+    viewPos: -> r = @element.getBoundingClientRect(); pos r.left, r.top
+            
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
     # 000000000  000   000   000 000   0000000   

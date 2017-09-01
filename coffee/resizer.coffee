@@ -313,8 +313,11 @@ class Resizer
         
         if items.length == 1
             @createRect()
-            
-        @calcBox()
+            @rbox = item.rbox()
+          
+        # @calcBox()
+        @rbox = @rbox.merge item.rbox()
+        @setBox @rbox
         
         if @selection.pos
             log 'drag start'

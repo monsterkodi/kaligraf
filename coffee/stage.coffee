@@ -122,8 +122,9 @@ class Stage
     copy: -> 
         
         selected = _.clone @selection.items
-        items = @selection.empty() and @svg.children() or selected
+        items = @selection.empty() and @items() or selected
         return if items.length <= 0
+        
         @selection.clear()
         
         bb = boxForItems items, @viewPos()
@@ -300,6 +301,8 @@ class Stage
     centerSelection: -> 
     
         items = @selection.empty() and @items() or @selection.items
+        return if items.length <= 0
+        
         b = boxForItems items, @viewPos()
         v = @svg.viewbox()
         w = (b.w / @zoom) / v.width

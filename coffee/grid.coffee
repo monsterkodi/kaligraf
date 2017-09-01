@@ -50,32 +50,32 @@ class Grid extends Tool
             xn = Math.ceil vw / s
             yn = Math.ceil vh / s
             
-            style = stroke: '#888', 'stroke-width': 1, 'stroke-opacity': a * 0.5
+            style = stroke: '#888', 'stroke-width': 1, 'stroke-opacity': 0.05 + a * 0.5
             
             for x in [0..xn]
                 v = (x*s-ox)*z
-                grid.line(v,sy,v,sh).style(style).addClass "grid-#{s}"
+                grid.line(v,sy,v,sh).style(style)#.addClass "grid-#{s}"
             for y in [0..yn]
                 v = (y*s-oy)*z
-                grid.line(sx,v,sw,v).style(style).addClass "grid-#{s}"
+                grid.line(sx,v,sw,v).style(style)#.addClass "grid-#{s}"
         
-        if z > 100  
+        if z >= 100  
             
             @title.innerHTML = '1'
-            draw @svg, @grid, 1, (z-100)/(1000-100)
+            draw @svg, @grid, 1, z/1000
             draw @svg, @grid, 10, 1.0
             
-        else if z > 10
+        else if z >= 10
             
             @title.innerHTML = '10'
-            draw @svg, @grid, 10, (z-10)/(100-10)
+            draw @svg, @grid, 10, z/100
             draw @svg, @grid, 100, 1.0
             
-        else if z > 1
+        else if z >= 1
             
             @title.innerHTML = '100'
+            draw @svg, @grid, 100, z/10
             draw @svg, @grid, 1000, 1.0
-            draw @svg, @grid, 100, (z-1)/(10-1)
             
         else
             @title.innerHTML = '1000'

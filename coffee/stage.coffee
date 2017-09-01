@@ -255,10 +255,6 @@ class Stage
     
     onWheel: (event) => 
         
-        # if event.deltaY > 0
-            # @setZoom @zoom * (1.0 - event.deltaY/5000.0)
-            # return
-
         oldCenter = @stageCenter()
         viewPos = @localPos event
         oldPos  = @stagePos event
@@ -289,17 +285,17 @@ class Stage
         
         for i in [0...Stage.zoomLevels.length]
             if @zoom < Stage.zoomLevels[i]
-                @setZoom Stage.zoomLevels[i]
+                @setZoom Stage.zoomLevels[i], @stageCenter()
                 return
             
     zoomOut: -> 
         
         for i in [Stage.zoomLevels.length-1..0]
             if @zoom > Stage.zoomLevels[i]
-                @setZoom Stage.zoomLevels[i]
+                @setZoom Stage.zoomLevels[i], @stageCenter()
                 return
                 
-    resetView: -> @setZoom 1, pos(0,0) #@itemsCenter()
+    resetView: -> @setZoom 1, pos 0,0
     
     centerSelection: -> 
     
@@ -311,13 +307,13 @@ class Stage
         z = 0.8 * @zoom / Math.max(w, h)
         @setZoom z, @stageForView boxCenter b         
     
-    setZoom: (z, sc=@stageCenter()) -> 
+    setZoom: (z, sc) -> 
         
         z = clamp 0.01, 1000, z
         
         @zoom = z
         @resetSize()
-        @centerAtStagePos sc
+        @centerAtStagePos sc if sc?
                     
     # 00000000    0000000   000   000  
     # 000   000  000   000  0000  000  
@@ -342,7 +338,7 @@ class Stage
         box.width  = @viewSize().width  / @zoom
         box.height = @viewSize().height / @zoom
         
-        @setViewBox box
+        @svg.viewbox box
         
     moveViewBox: (delta) ->
 

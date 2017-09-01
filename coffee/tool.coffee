@@ -27,7 +27,7 @@ class Tool
         if @cfg.svg?
             @setSVG @cfg.svg
         else if not @cfg.class?
-            @element.appendChild elem 'div', class: 'title', text: @cfg.name
+            @element.appendChild elem 'div', class: 'title', text: _.capitalize @cfg.name
         
         @drag = new drag
             handle:  @element

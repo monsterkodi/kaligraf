@@ -183,7 +183,7 @@ class Stage
     
     save: -> 
         
-        svg = @getSVG @svg.children(), x:0, y:0, width:@viewSize().width, height:@viewSize().height
+        svg = @getSVG @svg.children(), x:0, y:0, width:@viewSize().x, height:@viewSize().y
         fs.writeFileSync resolve('~/Desktop/kaligraf.svg'), svg
         
     load: ->
@@ -202,7 +202,7 @@ class Stage
     localPos: (event) -> @eventPos(event).minus @viewPos()
     stagePos: (event) -> @stageForView @localPos event
     viewPos:  -> r = @element.getBoundingClientRect(); pos r.left, r.top
-    viewSize: -> r = @element.getBoundingClientRect(); width:r.width, height:r.height
+    viewSize: -> r = @element.getBoundingClientRect(); pos r.width, r.height
     stageForView: (viewPos) -> pos(viewPos).scale(1.0/@zoom).plus @panPos()
     viewForStage: (stagePos) -> pos(stagePos).sub(@panPos()).scale @zoom
     
@@ -212,7 +212,7 @@ class Stage
     # 000       000       000  0000     000     000       000   000  
     #  0000000  00000000  000   000     000     00000000  000   000  
     
-    viewCenter:  -> pos(0,0).mid pos @viewSize().width, @viewSize().height 
+    viewCenter:  -> pos(0,0).mid @viewSize()
     stageCenter: -> boxCenter @svg.viewbox()
     stageOffset: -> boxOffset @svg.viewbox()
     itemsCenter: -> @stageForView boxCenter boxForItems @items(), @viewPos()
@@ -295,14 +295,20 @@ class Stage
             if @zoom > Stage.zoomLevels[i]
                 @setZoom Stage.zoomLevels[i], @stageCenter()
                 return
-                
-    resetView: -> @setZoom 1, pos 0,0
+
+    toolCenter: (zoom) ->
+        
+        vc = @viewCenter()
+        vc.x = 560.5 if @viewSize().x > 1120
+        vc.minus(pos(60.5,30.5)).scale(1/zoom)
+        
+    resetView: -> @setZoom 1, @toolCenter 1
     
     centerSelection: -> 
     
         items = @selection.empty() and @items() or @selection.items
         if items.length <= 0
-            @centerAtStagePos pos 0,0
+            @centerAtStagePos @toolCenter @zoom
             return
         
         b = boxForItems items, @viewPos()
@@ -341,8 +347,8 @@ class Stage
         
         box = @svg.viewbox()
 
-        box.width  = @viewSize().width  / @zoom
-        box.height = @viewSize().height / @zoom
+        box.width  = @viewSize().x / @zoom
+        box.height = @viewSize().y / @zoom
         
         @svg.viewbox box
         

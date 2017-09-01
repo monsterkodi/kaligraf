@@ -51,7 +51,7 @@ class Grid extends Tool
             yn = Math.ceil vh / s
 
             style =
-                stroke: '#888'
+                stroke: '#444'
                 'stroke-width': 1
                 'stroke-opacity': 0.05 + a * 0.5
 
@@ -86,8 +86,8 @@ class Grid extends Tool
             draw 1000, z
 
         style = 
-            stroke: '#888'
-            'stroke-opacity': 0.2
+            stroke: '#282828'
+            'stroke-opacity': 1
             
         if vx < 0 and vx+vw > 0
             v = -vx*z
@@ -96,6 +96,10 @@ class Grid extends Tool
         if vy < 0 and vy+vh > 0
             v = -vy*z
             @grid.line(sx,v,sw,v).style style
+            
+        if vx < 0 and vx+vw > 0 and vy < 0 and vy+vh > 0
+            style.fill = '#181818'
+            @grid.circle(10).style(style).cx(-vx*z).cy(-vy*z)
             
     onStage: (prop, value) => if prop == 'viewbox' and @gridVisible() then @drawGrid()
 

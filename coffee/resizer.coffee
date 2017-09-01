@@ -32,90 +32,12 @@ class Resizer
         post.on 'selection', @onSelection
         post.on 'stage',     @onStage
 
-    # 00000000   00000000   0000000  000000000  
-    # 000   000  000       000          000     
-    # 0000000    0000000   000          000     
-    # 000   000  000       000          000     
-    # 000   000  00000000   0000000     000     
+    # 00     00   0000000   000   000  00000000  
+    # 000   000  000   000  000   000  000       
+    # 000000000  000   000   000 000   0000000   
+    # 000 0 000  000   000     000     000       
+    # 000   000   0000000       0      00000000  
     
-    createRect: ->
-        
-        @g = @svg.nested()
-        @g.addClass 'resizerGroup'
-        
-        @rect = @g.rect().addClass 'resizerRect'
-        @rect.attr width: '100%', height: '100%'
-
-        addBorder = (x, y, w, h, cursor, id) =>
-            border = @g.rect().addClass 'resizerBorder'
-            border.attr x:x, y:y, width:w, height:h
-            border.style cursor: cursor
-            @borderDrag[id] = new drag
-                target:  border.node 
-                onStart: @onBorderStart
-                onMove:  @onBorderMove
-                onStop:  @onBorderStop
-            @borderDrag[id].id = id
-
-        addBorder -5,     0, 5, '100%', 'ew-resize', 'left'
-        addBorder '100%', 0, 5, '100%', 'ew-resize', 'right'
-        addBorder 0,     -5, '100%', 5, 'ns-resize', 'top'
-        addBorder 0, '100%', '100%', 5, 'ns-resize', 'bot'
-
-        addCorner = (x, y, cursor, id) =>
-            corner = @g.circle(10).addClass 'resizerCorner'
-            corner.attr cx:x, cy:y
-            corner.style cursor:cursor
-            @cornerDrag[id] = new drag 
-                target:  corner.node
-                onStart: @onCornerStart
-                onMove:  @onCornerMove
-                onStop:  @onCornerStop
-            @cornerDrag[id].id = id
-                
-        addCorner 0,           0, 'nw-resize', 'top left'
-        addCorner '100%',      0, 'ne-resize', 'top right'
-        addCorner 0,      '100%', 'sw-resize', 'bot left'
-        addCorner '100%', '100%', 'se-resize', 'bot right'
-
-        @drag = new drag
-            target:  @rect.node
-            onStart: @onDragStart
-            onMove:  @onDragMove
-            onStop:  @onDragStop
-
-    #  0000000    0000000  000000000  000  000   000   0000000   000000000  00000000  
-    # 000   000  000          000     000  000   000  000   000     000     000       
-    # 000000000  000          000     000   000 000   000000000     000     0000000   
-    # 000   000  000          000     000     000     000   000     000     000       
-    # 000   000   0000000     000     000      0      000   000     000     00000000  
-    
-    deactivate: -> @activate false
-    
-    activate: (active=true) ->
-        if active
-            @drag?.activate()
-            @g?.removeClass 'resizerInactive'
-            @svg?.removeClass 'resizerInactive'
-        else
-            @drag?.deactivate()
-            @g?.addClass 'resizerInactive'
-            @svg?.addClass 'resizerInactive'
-            
-    # 00000000   00000000   0000000  000  0000000  00000000    
-    # 000   000  000       000       000     000   000         
-    # 0000000    0000000   0000000   000    000    0000000     
-    # 000   000  000            000  000   000     000         
-    # 000   000  00000000  0000000   000  0000000  00000000    
-    
-    onCornerStart: (drag, event) => #log "corner #{drag.id} onStart"
-    onCornerStop:  (drag, event) => #log "corner #{drag.id} onStop"
-    onCornerMove:  (drag, event) => @onResizeMove drag, event
-
-    onBorderStart: (drag, event) => #log "border #{drag.id} onStart"
-    onBorderStop:  (drag, event) => #log "border #{drag.id} onStop"
-    onBorderMove:  (drag, event) => @onResizeMove drag, event
-        
     onResizeMove:  (drag, event) =>
         # log "border #{drag.id} onMove"
         
@@ -207,7 +129,91 @@ class Resizer
                     if left  then item.x x2 - fx * (x2 - item.x())
                     if top   then item.y y2 - fy * (y2 - item.y())
                                                         
-        @calcBox()         
+        @calcBox()   
+        
+    # 00000000   00000000   0000000  000000000  
+    # 000   000  000       000          000     
+    # 0000000    0000000   000          000     
+    # 000   000  000       000          000     
+    # 000   000  00000000   0000000     000     
+    
+    createRect: ->
+        
+        @g = @svg.nested()
+        @g.addClass 'resizerGroup'
+        
+        @rect = @g.rect().addClass 'resizerRect'
+        @rect.attr width: '100%', height: '100%'
+
+        addBorder = (x, y, w, h, cursor, id) =>
+            border = @g.rect().addClass 'resizerBorder'
+            border.attr x:x, y:y, width:w, height:h
+            border.style cursor: cursor
+            @borderDrag[id] = new drag
+                target:  border.node 
+                onStart: @onBorderStart
+                onMove:  @onBorderMove
+                onStop:  @onBorderStop
+            @borderDrag[id].id = id
+
+        addBorder -5,     0, 5, '100%', 'ew-resize', 'left'
+        addBorder '100%', 0, 5, '100%', 'ew-resize', 'right'
+        addBorder 0,     -5, '100%', 5, 'ns-resize', 'top'
+        addBorder 0, '100%', '100%', 5, 'ns-resize', 'bot'
+
+        addCorner = (x, y, cursor, id) =>
+            corner = @g.circle(10).addClass 'resizerCorner'
+            corner.attr cx:x, cy:y
+            corner.style cursor:cursor
+            @cornerDrag[id] = new drag 
+                target:  corner.node
+                onStart: @onCornerStart
+                onMove:  @onCornerMove
+                onStop:  @onCornerStop
+            @cornerDrag[id].id = id
+                
+        addCorner 0,           0, 'nw-resize', 'top left'
+        addCorner '100%',      0, 'ne-resize', 'top right'
+        addCorner 0,      '100%', 'sw-resize', 'bot left'
+        addCorner '100%', '100%', 'se-resize', 'bot right'
+
+        @drag = new drag
+            target:  @rect.node
+            onStart: @onDragStart
+            onMove:  @onDragMove
+            onStop:  @onDragStop
+
+    #  0000000    0000000  000000000  000  000   000   0000000   000000000  00000000  
+    # 000   000  000          000     000  000   000  000   000     000     000       
+    # 000000000  000          000     000   000 000   000000000     000     0000000   
+    # 000   000  000          000     000     000     000   000     000     000       
+    # 000   000   0000000     000     000      0      000   000     000     00000000  
+    
+    deactivate: -> @activate false
+    
+    activate: (active=true) ->
+        if active
+            @drag?.activate()
+            @g?.removeClass 'resizerInactive'
+            @svg?.removeClass 'resizerInactive'
+        else
+            @drag?.deactivate()
+            @g?.addClass 'resizerInactive'
+            @svg?.addClass 'resizerInactive'
+            
+    # 00000000   00000000   0000000  000  0000000  00000000    
+    # 000   000  000       000       000     000   000         
+    # 0000000    0000000   0000000   000    000    0000000     
+    # 000   000  000            000  000   000     000         
+    # 000   000  00000000  0000000   000  0000000  00000000    
+    
+    onCornerStart: (drag, event) => #log "corner #{drag.id} onStart"
+    onCornerStop:  (drag, event) => #log "corner #{drag.id} onStop"
+    onCornerMove:  (drag, event) => @onResizeMove drag, event
+
+    onBorderStart: (drag, event) => #log "border #{drag.id} onStart"
+    onBorderStop:  (drag, event) => #log "border #{drag.id} onStop"
+    onBorderMove:  (drag, event) => @onResizeMove drag, event              
                         
     # 0000000     0000000   000   000  
     # 000   000  000   000   000 000   
@@ -325,19 +331,16 @@ class Resizer
     delRectForItem: (item) ->
         
         if rectID = item.remember 'itemRect' 
-            # if rectID.startsWith 'SvgjsRect'
-                # log '--', rectID, SVG.get(rectID)?
             SVG.get(rectID)?.remove()
             item.forget 'itemRect'
-        # else
-            # log '??', item.id()
         
     updateItems: ->
-        # log "updateItems @box: #{@box.x} #{@box.y} #{@box.w} #{@box.h}"
+
         for item in @selection.items
             @updateItem item
         
     updateItem: (item) ->
+        
         @setItemBox item, boxForItems [item], @viewPos()
         
     setItemBox: (item, box) ->
@@ -358,7 +361,7 @@ class Resizer
     #     0      000  00000000  00     00  
     
     viewPos:  -> r = @element.getBoundingClientRect(); pos r.left, r.top
-    viewSize: -> r = @element.getBoundingClientRect(); width:r.width, height:r.height
+    viewSize: -> r = @element.getBoundingClientRect(); pos r.width, r.height
     
     onStage: (action, box) =>
         
@@ -376,7 +379,7 @@ class Resizer
         if not @empty() and down
             switch combo
                 when 'left', 'right', 'up', 'down'
-                    p = pos 0, 0
+                    p = pos 0,0
                     switch key
                         when 'left'  then p.x = -1
                         when 'right' then p.x =  1

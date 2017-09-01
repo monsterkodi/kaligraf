@@ -138,7 +138,7 @@ class Resizer
         fx = (@sbox.w + dx)/@sbox.w
         fy = (@sbox.h + dy)/@sbox.h
         
-        log "fx #{fx} fy #{fy} sbox #{@sbox.w} #{@sbox.h}"
+        # log "fx #{fx} fy #{fy} sbox #{@sbox.w} #{@sbox.h}"
         
         if @sbox.w <= 10 and fx < 1 then fx = 1
         if @sbox.h <= 10 and fy < 1 then fy = 1
@@ -152,7 +152,7 @@ class Resizer
                 iw = item.width()
                 ih = item.height()
                 
-            log "iw #{iw} ih #{ih}"
+            # log "iw #{iw} ih #{ih}"
 
             if item.type in ['circle', 'text']
                 
@@ -194,36 +194,21 @@ class Resizer
                     if top   then item.y @sbox.y2 - fy * (@sbox.y2 - item.y())
                     
                 else
+                    z  = @kali.stage.zoom
+                    x  = @sbox.x 
+                    y  = @sbox.y 
+                    x2 = @sbox.x2
+                    y2 = @sbox.y2
                     
-                    if right then item.x @sbox.x  + fx * (item.x() - @sbox.x) 
-                    if bot   then item.y @sbox.y  + fy * (item.y() - @sbox.y)
-                    if left  then item.x @sbox.x2 - fx * (@sbox.x2 - item.x())
-                    if top   then item.y @sbox.y2 - fy * (@sbox.y2 - item.y())
+                    log x, item.x(), z
+                    
+                    if right then item.x x  + fx * (item.x() - x) 
+                    if bot   then item.y y  + fy * (item.y() - y)
+                    if left  then item.x x2 - fx * (x2 - item.x())
+                    if top   then item.y y2 - fy * (y2 - item.y())
                                                         
         @calcBox()         
-                
-    # 0000000    00000000    0000000    0000000   
-    # 000   000  000   000  000   000  000        
-    # 000   000  0000000    000000000  000  0000  
-    # 000   000  000   000  000   000  000   000  
-    # 0000000    000   000  000   000   0000000   
-    
-    onDragStart: (drag, event) => 
-        
-        if event?.shiftKey
-            @kali.stage.shapes.handleMouseDown event
-            return 'skip'
-    
-    onDragStop: => 
-    
-    onDragMove: (drag) => @moveBy drag.delta
-            
-    moveBy: (delta) ->
-        
-        if not @selection.rect?
-            @selection.moveBy delta
-            @calcBox()
-        
+                        
     # 0000000     0000000   000   000  
     # 000   000  000   000   000 000   
     # 0000000    000   000    00000    
@@ -234,15 +219,7 @@ class Resizer
         
         @box = new SVG.RBox @rbox
         
-        dx = @viewPos().x
-        dy = @viewPos().y
-        
-        @box.x  -= dx
-        @box.cx -= dx
-        @box.x2 -= dx
-        @box.y  -= dy
-        @box.cy -= dy
-        @box.y2 -= dy
+        moveBox @box, @viewPos().scale -1
         
         @g.attr 
             x:      @box.x
@@ -265,6 +242,28 @@ class Resizer
         else
             @setBox boxForItems @selection.items
             @updateItems()
+
+    # 0000000    00000000    0000000    0000000   
+    # 000   000  000   000  000   000  000        
+    # 000   000  0000000    000000000  000  0000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000   0000000   
+    
+    onDragStart: (drag, event) => 
+        
+        if event?.shiftKey
+            @kali.stage.shapes.handleMouseDown event
+            return 'skip'
+    
+    onDragStop: => 
+    
+    onDragMove: (drag) => @moveBy drag.delta
+            
+    moveBy: (delta) ->
+        
+        if not @selection.rect?
+            @selection.moveBy delta
+            @calcBox()
             
     #  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000  
     # 000       000       000      000       000          000     000  000   000  0000  000  
@@ -358,7 +357,7 @@ class Resizer
     #    000     000  000       000   000  
     #     0      000  00000000  00     00  
     
-    viewPos:  -> r = @element.getBoundingClientRect(); x:r.left, y:r.top
+    viewPos:  -> r = @element.getBoundingClientRect(); pos r.left, r.top
     viewSize: -> r = @element.getBoundingClientRect(); width:r.width, height:r.height
     
     onStage: (action, box) =>

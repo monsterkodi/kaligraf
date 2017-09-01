@@ -22,7 +22,7 @@ class Tool
         @element.addEventListener 'mouseenter', @onMouseEnter
         @element.addEventListener 'mouseleave', @onMouseLeave
 
-        @kali.element.appendChild @element
+        @kali.toolDiv.appendChild @element
         
         if @cfg.svg?
             @setSVG @cfg.svg

@@ -38,6 +38,8 @@ class Tools extends Tool
         @fill.setAlpha 0.15
         @width.setWidth 1
         
+        @grid.showGrid()
+        
         @activateTool 'rect'
         @activateTool 'text'
         # @activateTool 'loupe'
@@ -54,7 +56,8 @@ class Tools extends Tool
 
         tools = [
             [
-                { name: 'zoom',  class: 'zoom', action: 'zoom_reset', combo: 'command+0' }
+                { name: 'grid',  class: 'grid', action: 'grid_toggle', combo: 'command+g' }
+                { name: 'zoom',  class: 'zoom', action: 'zoom_reset',  combo: 'command+0' }
                 { name: 'width', class: 'line' }
             ]
             { name: 'stroke', class: 'color' }
@@ -188,6 +191,7 @@ class Tools extends Tool
             when 'selectAll'  then @kali.stage.select 'all'
             when 'deselect'   then @kali.stage.select 'none'
             when 'center'     then @kali.stage.centerSelection()
+            when 'grid_toggle' then @grid.toggleGrid()
             
             else
                 log 'action?', action, name

@@ -5,7 +5,7 @@
 # 000  000   000   000  000      000  
 # 000   000  000   000  0000000  000  
 
-{ setStyle, keyinfo, stopEvent, log, $ } = require 'kxk'
+{ setStyle, keyinfo, stopEvent, elem, log, $ } = require 'kxk'
 
 Stage = require './stage'
 Tools = require './tools'
@@ -15,6 +15,8 @@ class Kali
     constructor: (cfg) ->
         
         @element = cfg?.element ? window
+        @toolDiv = elem 'div', id: 'tools'
+        @element.appendChild @toolDiv
         @tools   = new Tools @, name: 'tools', text: 'tools', orient: 'down'
         @stage   = new Stage @
         

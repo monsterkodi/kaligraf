@@ -299,7 +299,7 @@ class Stage
                 @setZoom Stage.zoomLevels[i]
                 return
                 
-    resetView: -> @setZoom 1, @itemsCenter()
+    resetView: -> @setZoom 1, pos(0,0) #@itemsCenter()
     
     centerSelection: -> 
     

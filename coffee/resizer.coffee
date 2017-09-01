@@ -29,8 +29,8 @@ class Resizer
         @borderDrag = {}
         @cornerDrag = {}
         
+        post.on 'stage',     @onStage        
         post.on 'selection', @onSelection
-        post.on 'stage',     @onStage
 
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
@@ -247,7 +247,6 @@ class Resizer
             @clear()
         else
             @setBox boxForItems @selection.items
-            @updateItems()
 
     # 0000000    00000000    0000000    0000000   
     # 000   000  000   000  000   000  000        
@@ -307,15 +306,10 @@ class Resizer
 
     setItems: (items) ->
         
-        for item in items
-            @addRectForItem item 
-            
         @createRect()
         @calcBox()
     
     addItem: (items, item) ->
-        
-        @addRectForItem item
         
         if items.length == 1
             @createRect()
@@ -328,42 +322,8 @@ class Resizer
             
     delItem: (items, item) ->
 
-        @delRectForItem item
         @calcBox()        
-    
-    addRectForItem: (item) ->
-        
-        r = @svg.rect()
-        r.addClass 'resizerItemRect'
-        item.remember 'itemRect', r.id()
-        @updateItem item
-
-    delRectForItem: (item) ->
-        
-        if rectID = item.remember 'itemRect' 
-            SVG.get(rectID)?.remove()
-            item.forget 'itemRect'
-        
-    updateItems: ->
-
-        for item in @selection.items
-            @updateItem item
-        
-    updateItem: (item) ->
-        
-        @setItemBox item, boxForItems [item], @viewPos()
-        
-    setItemBox: (item, box) ->
-        
-        r = SVG.get item.remember 'itemRect'
-        r?.attr
-            x:      box.x
-            y:      box.y
-            width:  box.w
-            height: box.h
-
-    itemBox: (item) -> boxForItems [item], @viewPos()
-                        
+                            
     # 000   000  000  00000000  000   000  
     # 000   000  000  000       000 0 000  
     #  000 000   000  0000000   000000000  
@@ -372,12 +332,11 @@ class Resizer
     
     viewPos:  -> r = @element.getBoundingClientRect(); pos r.left, r.top
     viewSize: -> r = @element.getBoundingClientRect(); pos r.width, r.height
-    
+
     onStage: (action, box) =>
         
-        switch action
-            when 'viewbox' then @calcBox()
-
+        if action == 'viewbox' then @calcBox()
+    
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
     # 0000000    0000000     00000    

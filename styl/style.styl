@@ -1,4 +1,10 @@
+//  0000000  000   000   0000000   
+// 000       000   000  000        
+// 0000000    000 000   000  0000  
+//      000     000     000   000  
+// 0000000       0       0000000   
 
+#selection
 #resizer
 #stage
 #grid
@@ -8,17 +14,41 @@
     top                     0
     bottom                  0
 
-tspan
-    pointer-events  none
-    
+#selection
 #resizer
 #grid
+tspan
     pointer-events          none
 
 .resizerSVG
 .stageSVG
     stroke-linecap          round
     stroke-linejoin         round
+
+//  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000  
+// 000       000       000      000       000          000     000  000   000  0000  000  
+// 0000000   0000000   000      0000000   000          000     000  000   000  000 0 000  
+//      000  000       000      000       000          000     000  000   000  000  0000  
+// 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000  
+
+.selectangle
+    pointer-events          none
+    position                absolute
+    box-sizing              border-box
+    border                  1px dotted #fff
+    padding                 0
+    overflow                hidden
+    opacity                 0.25
+
+.selectionRect
+    background-color        #888
+    
+    
+// 00000000   00000000   0000000  000  0000000  00000000  00000000   
+// 000   000  000       000       000     000   000       000   000  
+// 0000000    0000000   0000000   000    000    0000000   0000000    
+// 000   000  000            000  000   000     000       000   000  
+// 000   000  00000000  0000000   000  0000000  00000000  000   000  
 
 .resizerSVG
     opacity                 1
@@ -49,6 +79,12 @@ tspan
     stroke                  #44f
     stroke-dasharray        2,2
     
+// 000000000   0000000    0000000   000      
+//    000     000   000  000   000  000      
+//    000     000   000  000   000  000      
+//    000     000   000  000   000  000      
+//    000      0000000    0000000   0000000  
+
 .tool
     font-family             Helvetica, Arial
     font-weight             bold
@@ -97,18 +133,12 @@ tspan
     width                   80%
     height                  80%
         
-.selectangle
-    pointer-events          none
-    position                absolute
-    box-sizing              border-box
-    border                  1px dotted #fff
-    padding                 0
-    overflow                hidden
-    opacity                 0.25
+// 000       0000000   000   000  00000000   00000000  
+// 000      000   000  000   000  000   000  000       
+// 000      000   000  000   000  00000000   0000000   
+// 000      000   000  000   000  000        000       
+// 0000000   0000000    0000000   000        00000000  
 
-.selectionRect
-    background-color        #888
-    
 .loupeRect
     background-color        transparent
     opacity                 0.5
@@ -136,49 +166,3 @@ tspan
     &:hover
         background-color    #fff
         
-//  0000000  000   000   0000000   
-// 000       000   000  000        
-// 0000000    000 000   000  0000  
-//      000     000     000   000  
-// 0000000       0       0000000   
-
-.svg_select_points
-    fill    white
-    
-.svg_select_points_lt
-    cursor  nw-resize
-.svg_select_points_rt
-    cursor  ne-resize
-.svg_select_points_rb
-    cursor  se-resize
-.svg_select_points_lb
-    cursor  sw-resize
-    
-.svg_select_points_t
-    cursor  n-resize
-    fill    gray
-.svg_select_points_r
-    cursor  e-resize
-    fill    gray
-.svg_select_points_b
-    cursor  s-resize
-    fill    gray
-.svg_select_points_l
-    cursor  w-resize
-    fill    gray
-
-.svg_select_points_rot
-    cursor  pointer
-    fill    gray
-
-.svg_select_points_point
-    cursor  move
-
-.svg_select_boundingRect
-    fill            none
-    stroke          gray
-    stroke-width    1
-    stroke-opacity  0.8
-    stroke-dasharray 10 10
-    pointer-events none
-    

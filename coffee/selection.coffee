@@ -5,9 +5,9 @@
 #      000  000       000      000       000          000     000  000   000  000  0000
 # 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000
 
-{ last, pos, elem, post, log, _ } = require 'kxk'
+{ last, elem, post, pos, log, _ } = require 'kxk'
 
-{ normRect, rectsIntersect, posForRect } = require './utils'
+{ normRect, rectsIntersect, posForRect, boxForItems } = require './utils'
 
 class Selection
 
@@ -15,9 +15,17 @@ class Selection
         
         @items = []
         
+        @element = elem 'div', id: 'selection'
+        @kali.element.appendChild @element
+        
+        @svg = SVG(@element).size '100%', '100%' 
+        @svg.addClass 'selectionSVG'
+        @svg.clear()
+        
+        post.on 'stage', @onStage
         post.on 'color', @onColor
-        post.on 'line', @onLine
-
+        post.on 'line',  @onLine
+        
     # 0000000    00000000  000      00000000  000000000  00000000  
     # 000   000  000       000      000          000     000       
     # 000   000  0000000   000      0000000      000     0000000   
@@ -26,16 +34,14 @@ class Selection
     
     delete: ->  
         
-        while not @empty()
-            
-            l = last @items
-            @del l
-
-            if l.parent()?.removeElement?
-                l.remove()
-            else
-                l.clear()
-                l.node.remove()
+        if not @empty()
+            for l in @items
+                if l.parent()?.removeElement?
+                    l.remove()
+                else
+                    l.clear()
+                    l.node.remove()
+        @clear()
         
     #  0000000  00000000  000      00000000   0000000  000000000  00000000  0000000    
     # 000       000       000      000       000          000     000       000   000  
@@ -50,6 +56,9 @@ class Selection
         
         log 'set', @items.length
         
+        for e in @items
+            @addRectForItem e
+        
         post.emit 'selection', 'set', @items
     
     add: (e) ->
@@ -57,7 +66,7 @@ class Selection
         if e not in @items
             
             @items.push e
-            
+            @addRectForItem e
             # log 'add', @items.length, e.type
             
             post.emit 'selection', 'add', @items, e
@@ -66,26 +75,86 @@ class Selection
         
         if e in @items
             _.pull @items, e
+            @delRectForItem e
             post.emit 'selection', 'del', @items, e
     
     clear: () ->
 
         if not @empty()
             @items = []
+            @svg.clear()
             post.emit 'selection', 'clear'
             
     empty: -> @items.length <= 0
     contains: (e) -> e in @items
+
+    # 000  000000000  00000000  00     00   0000000    
+    # 000     000     000       000   000  000         
+    # 000     000     0000000   000000000  0000000     
+    # 000     000     000       000 0 000       000    
+    # 000     000     00000000  000   000  0000000     
+    
+    addRectForItem: (item) ->
+
+        r = @svg.rect()
+        r.addClass 'resizerItemRect'
+        item.remember 'itemRect', r.id()
+        @updateItem item
+
+    delRectForItem: (item) ->
         
+        if rectID = item.remember 'itemRect' 
+            SVG.get(rectID)?.remove()
+            item.forget 'itemRect'
+        
+    updateItems: ->
+
+        for item in @items
+            @updateItem item
+        
+    updateItem: (item) ->
+        
+        box = @itemBox item
+        
+        r = SVG.get item.remember 'itemRect'
+        r?.attr
+            x:      box.x
+            y:      box.y
+            width:  box.w
+            height: box.h
+
+    itemBox: (item) -> boxForItems [item], @viewPos()    
+
+    onStage: (action, box) =>
+        
+        if action == 'viewbox' then @updateItems()
+
+    viewPos: -> r = @element.getBoundingClientRect(); pos r.left, r.top
+    
     # 00000000   00000000   0000000  000000000    
     # 000   000  000       000          000       
     # 0000000    0000000   000          000       
     # 000   000  000       000          000       
     # 000   000  00000000   0000000     000       
       
-    start: (p,o) -> @rect = x:p.x, y:p.y, x2: p.x, y2:p.y; @updateRect(o); log 'start'; @pos = posForRect @rect
-    move: (p,o) -> @rect.x2 = p.x; @rect.y2 = p.y; delete @pos; @updateRect(o)
-    end: (p) -> @rect.element.remove(); delete @rect; delete @pos
+    start: (p,o) -> 
+        
+        @rect = x:p.x, y:p.y, x2: p.x, y2:p.y 
+        @pos = posForRect @rect
+        @updateRect o
+        
+    move: (p,o) -> 
+    
+        @rect.x2 = p.x
+        @rect.y2 = p.y
+        delete @pos
+        @updateRect o
+        
+    end: (p) -> 
+    
+        @rect.element.remove() 
+        delete @pos
+        delete @rect
 
     addRect: (clss='selectionRect') ->
         
@@ -139,6 +208,8 @@ class Selection
         
         for s in @items
             @moveElement s, delta.x, delta.y
+            
+        @updateItems()
 
     moveElement: (e, dx, dy) ->
         

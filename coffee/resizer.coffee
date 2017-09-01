@@ -280,8 +280,9 @@ class Resizer
     onSelection: (action, items, item) =>
         # log 'onSelection action:', action, 'item:', item?.id()
         switch action
-            when 'add'   then @addItem items, item
-            when 'del'   then @delItem items, item
+            when 'set'   then @setItems items
+            when 'add'   then @addItem  items, item
+            when 'del'   then @delItem  items, item
             when 'clear' then @clear()
 
     empty: -> not @box
@@ -304,6 +305,14 @@ class Resizer
     # 000     000     000       000 0 000       000  
     # 000     000     00000000  000   000  0000000   
 
+    setItems: (items) ->
+        
+        for item in items
+            @addRectForItem item 
+            
+        @createRect()
+        @calcBox()
+    
     addItem: (items, item) ->
         
         @addRectForItem item
@@ -314,6 +323,7 @@ class Resizer
         @calcBox()
         
         if @selection.pos
+            log 'drag start'
             @drag.start @selection.pos
             
     delItem: (items, item) ->

@@ -172,8 +172,7 @@ class Stage
             when 'none' 
                 @selection.clear()
             when 'all' 
-                for item in @items()
-                    @selection.add item
+                @selection.set @items()
         
     #  0000000   0000000   000   000  00000000  
     # 000       000   000  000   000  000       

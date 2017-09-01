@@ -43,13 +43,22 @@ class Selection
     #      000  000       000      000       000          000     000       000   000  
     # 0000000   00000000  0000000  00000000   0000000     000     00000000  0000000    
     
+    set: (items) ->
+        
+        @clear()
+        @items = _.clone items
+        
+        log 'set', @items.length
+        
+        post.emit 'selection', 'set', @items
+    
     add: (e) ->
         
         if e not in @items
             
             @items.push e
             
-            # log 'items', @items.length, e.type
+            # log 'add', @items.length, e.type
             
             post.emit 'selection', 'add', @items, e
             
@@ -62,11 +71,9 @@ class Selection
     clear: () ->
 
         if not @empty()
+            @items = []
             post.emit 'selection', 'clear'
             
-        while not @empty()
-            @del last @items
-                    
     empty: -> @items.length <= 0
     contains: (e) -> e in @items
         
@@ -76,8 +83,8 @@ class Selection
     # 000   000  000       000          000       
     # 000   000  00000000   0000000     000       
       
-    start: (p,o) -> @rect = x:p.x, y:p.y, x2: p.x, y2:p.y; @updateRect o
-    move: (p,o) -> @rect.x2 = p.x; @rect.y2 = p.y; @updateRect o
+    start: (p,o) -> @rect = x:p.x, y:p.y, x2: p.x, y2:p.y; @updateRect(o); log 'start'; @pos = posForRect @rect
+    move: (p,o) -> @rect.x2 = p.x; @rect.y2 = p.y; delete @pos; @updateRect(o)
     end: (p) -> @rect.element.remove(); delete @rect; delete @pos
 
     addRect: (clss='selectionRect') ->
@@ -99,8 +106,6 @@ class Selection
         if not @rect.element
             @rect.element = @addRect()
         
-        @pos = posForRect @rect
-            
         @setRect @rect.element, @rect        
         
         @selectInRect @rect, opt

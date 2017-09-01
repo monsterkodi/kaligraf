@@ -21,14 +21,11 @@ module.exports =
             
         bb = null
         for item in items
-            if item.type == 'tspan'
-                # log item.type, item.rbox(), item.parent().type, item.parent().rbox()
-                b = item.rbox()
-            else
-                b = item.rbox()
+            b = item.rbox()
             bb ?= b
             bb = bb.merge b
-        bb.transform new SVG.Matrix().translate -offset.x, -offset.y
+
+        module.exports.moveBox bb, pos -offset.x, -offset.y
 
     boxCenter: (box) -> pos box.x + box.width/2.0, box.y + box.height/2.0
     boxOffset: (box) -> pos box.x, box.y

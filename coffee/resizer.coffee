@@ -138,6 +138,11 @@ class Resizer
         fx = (@sbox.w + dx)/@sbox.w
         fy = (@sbox.h + dy)/@sbox.h
         
+        log "fx #{fx} fy #{fy} sbox #{@sbox.w} #{@sbox.h}"
+        
+        if @sbox.w <= 10 and fx < 1 then fx = 1
+        if @sbox.h <= 10 and fy < 1 then fy = 1
+        
         for item in @selection.items
             
             if item.type == 'text'
@@ -146,6 +151,8 @@ class Resizer
             else
                 iw = item.width()
                 ih = item.height()
+                
+            log "iw #{iw} ih #{ih}"
 
             if item.type in ['circle', 'text']
                 
@@ -158,14 +165,15 @@ class Resizer
                 
             if item.type == 'circle'
                 
-                item.radius (item.width() * fx)/2.0
+                item.radius (iw * fx)/2.0
                 
             else if item.type == 'text'
 
                 item.font 'size', fx * item.font 'size'
                 
             else
-                item.size item.width() * fx, item.height() * fy
+                item.size Math.max(iw * fx, 1), Math.max(ih * fy, 1)
+                item.size iw * fx, ih * fy
             
             switch item.type
                     

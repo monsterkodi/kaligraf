@@ -42,7 +42,7 @@ class Tools extends Tool
         @activateTool 'text'
         # @activateTool 'loupe'
         @activateTool 'pick'
-        @load.onClick()
+        # @load.onClick()
     
     # 000  000   000  000  000000000  
     # 000  0000  000  000     000     
@@ -85,8 +85,9 @@ class Tools extends Tool
                 { name: 'clear', action: 'clear', orient: 'down', combo: 'command+k' }
             ]
             [
-                { name: 'all',   action: 'selectAll', orient: 'down', combo: 'command+a' }
-                { name: 'none',  action: 'deselect',  orient: 'down', combo: 'command+d' }
+                { name: 'center', action: 'center',    orient: 'down', combo: 'command+e' }
+                { name: 'all',    action: 'selectAll', orient: 'down', combo: 'command+a' }
+                { name: 'none',   action: 'deselect',  orient: 'down', combo: 'command+d' }
             ]            
             [
                 { name: 'cut',   action: 'cut',   orient: 'down', combo: 'command+x' }
@@ -186,6 +187,7 @@ class Tools extends Tool
             when 'front'      then @kali.stage.order 'front'
             when 'selectAll'  then @kali.stage.select 'all'
             when 'deselect'   then @kali.stage.select 'none'
+            when 'center'     then @kali.stage.centerSelection()
             
             else
                 log 'action?', action, name

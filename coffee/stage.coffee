@@ -218,8 +218,6 @@ class Stage
         
     centerAtStagePos: (stagePos) -> @moveViewBox stagePos.minus @stageCenter()
         
-    centerItems: -> @centerAtStagePos @itemsCenter()
-
     # 000       0000000   000   000  00000000   00000000  
     # 000      000   000  000   000  000   000  000       
     # 000      000   000  000   000  00000000   0000000   
@@ -301,8 +299,17 @@ class Stage
                 @setZoom Stage.zoomLevels[i]
                 return
                 
-    resetView: -> @centerItems(); @resetZoom()
-    resetZoom: -> @setZoom 1
+    resetView: -> @setZoom 1, @itemsCenter()
+    
+    centerSelection: -> 
+    
+        items = @selection.empty() and @items() or @selection.items
+        b = boxForItems items, @viewPos()
+        v = @svg.viewbox()
+        w = (b.w / @zoom) / v.width
+        h = (b.h / @zoom) / v.height
+        z = 0.8 * @zoom / Math.max(w, h)
+        @setZoom z, @stageForView boxCenter b         
     
     setZoom: (z, sc=@stageCenter()) -> 
         
@@ -318,7 +325,7 @@ class Stage
     # 000        000   000  000  0000  
     # 000        000   000  000   000  
 
-    panPos:    -> vb = @svg.viewbox(); pos vb.x, vb.y
+    panPos: -> vb = @svg.viewbox(); pos vb.x, vb.y
     
     panBy: (delta) -> @moveViewBox pos(delta).scale -1.0/@zoom
 

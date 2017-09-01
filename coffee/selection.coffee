@@ -54,8 +54,6 @@ class Selection
         @clear()
         @items = _.clone items
         
-        log 'set', @items.length
-        
         for e in @items
             @addRectForItem e
         
@@ -67,7 +65,6 @@ class Selection
             
             @items.push e
             @addRectForItem e
-            # log 'add', @items.length, e.type
             
             post.emit 'selection', 'add', @items, e
             
@@ -123,11 +120,16 @@ class Selection
             width:  box.w
             height: box.h
 
-    itemBox: (item) -> boxForItems [item], @viewPos()    
+    itemBox: (item) -> 
+        
+        item.bbox()
+        # boxForItems [item], @viewPos()    
 
     onStage: (action, box) =>
         
-        if action == 'viewbox' then @updateItems()
+        if action == 'viewbox' 
+            @svg.viewbox box
+            # @updateItems()
 
     viewPos: -> r = @element.getBoundingClientRect(); pos r.left, r.top
     

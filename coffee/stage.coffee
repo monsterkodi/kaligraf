@@ -108,8 +108,7 @@ class Stage
             svgStr += item.svg()
         svgStr += '</svg>'
         
-        for item in selected
-            @selection.add item
+        @selection.set selected
         
         svgStr
                     
@@ -182,7 +181,14 @@ class Stage
     
     save: -> 
         
-        svg = @getSVG @svg.children(), x:0, y:0, width:@viewSize().x, height:@viewSize().y
+        if 1
+            bb = @svg.bbox()
+            growBox bb
+        else
+            bb = x:0, y:0, width:@viewSize().x, height:@viewSize().y
+        log bb
+        svg = @getSVG @items(), bb
+        
         fs.writeFileSync resolve('~/Desktop/kaligraf.svg'), svg
         
     load: ->

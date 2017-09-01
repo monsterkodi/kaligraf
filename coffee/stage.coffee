@@ -131,7 +131,7 @@ class Stage
         
         svg = @getSVG items, bb
         clipboard.writeText svg
-        log svg
+        # log svg
         
         for item in selected
             @selection.add item        
@@ -234,22 +234,27 @@ class Stage
         
         viewPos1 = pos(p1).sub @viewPos()
         viewPos2 = pos(p2).sub @viewPos()
+        viewPos  = viewPos1.mid viewPos2
         
-        sc = @stageForView viewPos1.mid viewPos2
+        sc = @stageForView viewPos
         
         sd = @stageForView(viewPos1).sub @stageForView(viewPos2)
         dw = Math.abs sd.x
         dh = Math.abs sd.y
         
+        out = @kali.tools.ctrlDown
+        
         if dw == 0 or dh == 0
-            z = 2
+            # z = 1.2
+            @zoomAtPos viewPos, sc, out and 0.75 or 1.25
+            return
         else
             vb = @svg.viewbox()
             zw = vb.width  / dw
             zh = vb.height / dh
             z = Math.min zw, zh
             
-        if @kali.tools.ctrlDown then z = 1.0/z
+        if out then z = 1.0/z
         
         @setZoom @zoom * z, sc
 
@@ -259,18 +264,12 @@ class Stage
     # 000   000  000   000  000       000       000      
     # 00     00  000   000  00000000  00000000  0000000  
     
-    onWheel: (event) => 
+    onWheel: (event) => @zoomAtPos @localPos(event), @stagePos(event), (1.0 - event.deltaY/5000.0)
         
-        oldCenter = @stageCenter()
-        viewPos = @localPos event
-        oldPos  = @stagePos event
+    zoomAtPos: (viewPos, stagePos, factor) ->
         
-        @setZoom @zoom * (1.0 - event.deltaY/5000.0)
-        
-        newPos = @viewForStage oldPos
-        viewDiff = viewPos.minus newPos
-
-        @panBy viewDiff
+        @setZoom @zoom * factor
+        @panBy viewPos.minus @viewForStage stagePos
         
     # 0000000   0000000    0000000   00     00  
     #    000   000   000  000   000  000   000  

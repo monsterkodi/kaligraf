@@ -44,7 +44,12 @@ class Tools extends Tool
         @activateTool 'text'
         # @activateTool 'loupe'
         @activateTool 'pick'
-        # @load.onClick()
+        @load.onClick()
+        
+        fuckingZoom = =>
+            @zoom.onClick()
+            @center.onClick()
+        setTimeout fuckingZoom, 100
     
     # 000  000   000  000  000000000  
     # 000  0000  000  000     000     

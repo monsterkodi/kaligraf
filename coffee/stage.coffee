@@ -301,13 +301,16 @@ class Stage
     centerSelection: -> 
     
         items = @selection.empty() and @items() or @selection.items
-        return if items.length <= 0
+        if items.length <= 0
+            @centerAtStagePos pos 0,0
+            return
         
         b = boxForItems items, @viewPos()
         v = @svg.viewbox()
         w = (b.w / @zoom) / v.width
         h = (b.h / @zoom) / v.height
         z = 0.8 * @zoom / Math.max(w, h)
+        
         @setZoom z, @stageForView boxCenter b         
     
     setZoom: (z, sc) -> 

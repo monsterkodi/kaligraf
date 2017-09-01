@@ -49,7 +49,7 @@ class Selection
             
             @items.push e
             
-            log 'items', @items.length, e.type
+            # log 'items', @items.length, e.type
             
             post.emit 'selection', 'add', @items, e
             

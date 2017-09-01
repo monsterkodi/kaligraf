@@ -200,7 +200,7 @@ class Resizer
                     x2 = @sbox.x2
                     y2 = @sbox.y2
                     
-                    log x, item.x(), z
+                    # log x, item.x(), z
                     
                     if right then item.x x  + fx * (item.x() - x) 
                     if bot   then item.y y  + fy * (item.y() - y)

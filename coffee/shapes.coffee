@@ -173,15 +173,9 @@ class Shapes
                 
             else
                 
-                @trans.width  @drawing, drag.deltaSum.x
-                @trans.height @drawing, drag.deltaSum.y
+                @trans.width  @drawing, drag.deltaSum.x / @kali.stage.zoom
+                @trans.height @drawing, drag.deltaSum.y / @kali.stage.zoom
                 
-                switch shape
-                    when 'ellipse', 'circle'
-                        s = @trans.size @drawing
-                        c = drag.startPos.minus(@stage.viewPos).plus(s.scale 0.5)
-                        @trans.center @drawing, c
-
     updateDrawing: (event) ->
                 
         if @drawing? and @drawing.remember 'isPickPoly'

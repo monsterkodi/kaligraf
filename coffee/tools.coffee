@@ -33,12 +33,11 @@ class Tools extends Tool
     loadPrefs: ->
         
         @stroke.set 
-            luminance:  1
-            alpha:      0.5
+            mode:       'gry'
+            alpha:      0.9
             
         @fill.set
-            luminance:  0
-            alpha:      0.15
+            alpha:      0.5
             
         @width.setWidth 1
         
@@ -52,6 +51,7 @@ class Tools extends Tool
         fuckingZoom = =>
             @zoom.onClick()
             @center.onClick()
+            
         setTimeout fuckingZoom, 100
     
     # 000  000   000  000  000000000  

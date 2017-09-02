@@ -38,10 +38,15 @@ class Color extends Tool
         @alpha     = 1
         @value     = 2/3
         @luminance = 0.5
-        @color     = new SVG.Color "#00f"
         
         post.on 'palette', @onPalette
 
+    set: (v) ->
+        
+        @copy v
+        
+        post.emit 'palette', 'proxy', @
+        
     # 00000000    0000000   000      00000000  000000000  000000000  00000000  
     # 000   000  000   000  000      000          000        000     000       
     # 00000000   000000000  000      0000000      000        000     0000000   
@@ -52,9 +57,9 @@ class Color extends Tool
                 
         if action == 'change' and value.proxy == @name
                 
-            @set value
+            @copy value
 
-    set: (v) ->
+    copy: (v) ->
         
         @luminance = v.luminance if v.luminance?
         @color     = v.color     if v.color?
@@ -92,7 +97,24 @@ class Color extends Tool
     # 000       000      000  000       000  000   
     #  0000000  0000000  000   0000000  000   000  
     
-    onClick: (e)  => post.emit 'palette', 'proxy', @
+    onClick: (e)  => 
+    
+        post.emit 'palette', 'proxy', @
+        
+        if  @name == 'fill'
+            
+            @element.style.left   = "10px" 
+            @element.style.top    = "10px"            
+            @element.style.width  = "40px"            
+            @element.style.height = "40px"            
+            
+        else if @name == 'stroke'
+            
+            fill = first @children
+            fill.element.style.left   = "20px" 
+            fill.element.style.top    = "20px"            
+            fill.element.style.width  = "20px"            
+            fill.element.style.height = "20px"            
     
     onMouseLeave: => log 'leave', @name
         

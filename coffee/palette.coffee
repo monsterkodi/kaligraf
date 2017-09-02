@@ -82,8 +82,8 @@ class Palette extends Tool
 
             when 'proxy'
                 
+                @setMode     value.mode
                 @proxy     = value.name
-                @mode      = value.mode
                 @alpha     = value.alpha
                 @value     = value.value
                 @luminance = value.luminance

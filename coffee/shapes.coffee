@@ -7,6 +7,8 @@
 
 { last, pos, log } = require 'kxk'
 
+{ boxCenter } = require './utils'
+
 class Shapes
 
     constructor: (@kali) ->
@@ -129,7 +131,9 @@ class Shapes
                     return
                         
                 @drawing = @addShape shape, stagePos
-                @trans.center @drawing, stagePos
+                
+                if shape not in ['line', 'polygon', 'polyline']
+                    @trans.center @drawing, stagePos
 
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
@@ -255,14 +259,22 @@ class Shapes
             
             if not @drawing.remember 'isPickPoly'
                 
-                delete @drawing
+                @endDrawing()
 
     endDrawing: ->
         
         if @drawing
-            
+
             if @drawing.width() == 0 or @drawing.height() == 0
                 @drawing.remove()
+            else
+                shape = @kali.shapeTool() 
+                switch shape
+                    when 'line', 'polygon', 'polyline'
+
+                        c = boxCenter @drawing.bbox()
+                        @drawing.center 0, 0
+                        @kali.trans.center @drawing, c
                 
             delete @drawing
 

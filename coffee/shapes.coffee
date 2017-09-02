@@ -173,8 +173,8 @@ class Shapes
                 
             else
                 
-                @drawing.width  drag.deltaSum.x
-                @drawing.height drag.deltaSum.y
+                @trans.width  @drawing, drag.deltaSum.x
+                @trans.height @drawing, drag.deltaSum.y
                 
                 switch shape
                     when 'ellipse', 'circle'
@@ -228,33 +228,34 @@ class Shapes
 
         if @drawing
             
-            if @drawing.width() == 0
-                
+            zero = false
+            
+            if @trans.width(@drawing) == 0
+
                 switch shape
+                    when 'text' then
                     when 'line', 'polygon', 'polyline'
                         @drawing.remember 'isPickPoly', true
                         return
                     when 'ellipse'
                         @drawing.width 50
-                    when 'text' then
-                    when 'rect' 
-                        @drawing.width 100
-                        stagePos.sub pos 50, 50
                     else
                         @drawing.width 100
-                    
-                @trans.center @drawing, stagePos
+                zero = true    
                 
-            if @drawing.height() == 0
-                
+            if @trans.height(@drawing) == 0
+
                 switch shape
                     when 'text' then
-                    when 'rect' 
-                        @drawing.height 100
-                        stagePos.sub pos 50, 50
                     else
                         @drawing.height 100
-                        
+                zero = true       
+                
+            if zero
+                
+                if shape == 'rect'
+                    stagePos.sub pos 50, 50
+                    
                 @trans.center @drawing, stagePos
             
             if not @drawing.remember 'isPickPoly'
@@ -265,8 +266,10 @@ class Shapes
         
         if @drawing
 
-            if @drawing.width() == 0 or @drawing.height() == 0
+            if @trans.width(@drawing) == 0 or @trans.height(@drawing) == 0
+
                 @drawing.remove()
+                
             else
                 shape = @kali.shapeTool() 
                 switch shape

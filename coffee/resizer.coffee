@@ -13,6 +13,8 @@ class Resizer
 
     constructor: (@kali) ->
 
+        @trans = @kali.trans
+        
         @selection = @kali.stage.selection
         @element = elem 'div', id: 'resizer'
         @kali.element.appendChild @element
@@ -64,56 +66,48 @@ class Resizer
 
         for item in @selection.items
 
-            if item.type == 'text'
-                iw = item.rbox().width
-                ih = item.rbox().height
-            else
-                iw = item.width()
-                ih = item.height()
+            iw = @trans.width  item
+            ih = @trans.height item
 
             if item.type in ['circle', 'text']
 
                 if Math.abs(dx) > Math.abs(dy)
-                    fy = fx
+                    fr = fx
                 else if Math.abs(dy) > Math.abs(dx)
-                    fx = fy
+                    fr = fy
                 else
-                    fx = fy = 1
+                    fr = 1
 
             if item.type == 'circle'
 
-                item.radius (iw * fx)/2.0
+                item.radius (iw * fr)/2.0
 
             else if item.type == 'text'
 
-                item.font 'size', fx * item.font 'size'
-                item.center 0,0
+                c = @trans.center item
+                item.font 'size', fr * item.font 'size'
+                @trans.center item, c
                 
             else if item.type in ['polygon', 'polyline', 'line']
                 
-                c = @kali.trans.center item
+                c = @trans.center item
                 item.size iw * fx, ih * fy
                 item.center 0,0
-                @kali.trans.center item, c
+                @trans.center item, c
                 
             else
                 item.size iw * fx, ih * fy
 
-            switch item.type
-                    
-                when 'text'
-
-                    if right then item.x @sbox.x  + fx * (item.x() - @sbox.x)
-                    if bot   then item.y @sbox.y  + fy * (item.y() - @sbox.y)
-                    if left  then item.x @sbox.x2 - fx * (@sbox.x2 - item.x())
-                    if top   then item.y @sbox.y2 - fy * (@sbox.y2 - item.y())
-
-                else
-
-                    if right then @kali.trans.center item, pos                                item.width()  / 2 + @sbox.x  + fx * ((@kali.trans.getCenter(item).x - iw/2) - @sbox.x),  @kali.trans.getCenter(item).y
-                    if bot   then @kali.trans.center item, pos @kali.trans.getCenter(item).x, item.height() / 2 + @sbox.y  + fy * ((@kali.trans.getCenter(item).y - ih/2) - @sbox.y)
-                    if left  then @kali.trans.center item, pos                                item.width()  / 2 + @sbox.x2 - fx * (@sbox.x2 - (@kali.trans.getCenter(item).x - iw/2)), @kali.trans.getCenter(item).y
-                    if top   then @kali.trans.center item, pos @kali.trans.getCenter(item).x, item.height() / 2 + @sbox.y2 - fy * (@sbox.y2 - (@kali.trans.getCenter(item).y - ih/2))
+            t = @trans
+            
+            ax=fx; ay=fy
+            if item.type in ['circle', 'text'] 
+                ax = ay = fr
+                
+            if left  then t.center item, pos                   t.width(item)  / 2 + @sbox.x2 - ax * (@sbox.x2 - (t.center(item).x - iw/2)), t.center(item).y
+            if top   then t.center item, pos t.center(item).x, t.height(item) / 2 + @sbox.y2 - ay * (@sbox.y2 - (t.center(item).y - ih/2))
+            if right then t.center item, pos                   t.width(item)  / 2 + @sbox.x  + fx * ((t.center(item).x - iw/2) - @sbox.x),  t.center(item).y
+            if bot   then t.center item, pos t.center(item).x, t.height(item) / 2 + @sbox.y  + fy * ((t.center(item).y - ih/2) - @sbox.y)
                     
         @calcBox()
 

@@ -182,6 +182,12 @@ class Shapes
                         c = drag.startPos.minus(@stage.viewPos).plus(s.scale 0.5)
                         @trans.center @drawing, c
 
+    updateDrawing: (event) ->
+                
+        if @drawing? and @drawing.remember 'isPickPoly'
+
+            @setLinePoint @stagePos event
+                        
     setLinePoint: (p) ->
         
         arr = @drawing.array().valueOf()
@@ -200,7 +206,14 @@ class Shapes
             last(arr)[0] = p.x
             last(arr)[1] = p.y
         @drawing.plot arr
-                        
+
+    updatePolyPoint: (p) ->
+        
+        arr  = @drawing.array().valueOf()
+        last(arr)[0] = p.x
+        last(arr)[1] = p.y
+        @drawing.plot arr
+        
     #  0000000  000000000   0000000   00000000   
     # 000          000     000   000  000   000  
     # 0000000      000     000   000  00000000   

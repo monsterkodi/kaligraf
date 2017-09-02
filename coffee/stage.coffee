@@ -39,7 +39,8 @@ class Stage
             onMove:  @shapes.onMove
             onStop:  @shapes.onStop
 
-        @element.addEventListener 'wheel', @onWheel
+        @element.addEventListener 'wheel',     @onWheel
+        @element.addEventListener 'mousemove', @onMouseMove
         window.area.on 'resized', @onResize
 
         @zoom = 1
@@ -375,6 +376,8 @@ class Stage
         post.emit 'stage', 'viewbox', box
         post.emit 'stage', 'zoom',    @zoom
         box
+
+    onMouseMove: (event) => @shapes.updateDrawing event
         
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   

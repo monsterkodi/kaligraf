@@ -110,6 +110,7 @@ class Resizer
             if bot   then t.center item, pos t.center(item).x, t.height(item) / 2 + @sbox.y  + fy * ((t.center(item).y - ih/2) - @sbox.y)
                     
         @calcBox()
+        @selection.updateItems()
 
     # 00000000   00000000   0000000  000000000
     # 000   000  000       000          000

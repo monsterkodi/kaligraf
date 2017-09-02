@@ -114,13 +114,13 @@ class Selection
     updateItemRect: (item, r) ->
         
         box = item.bbox()
-        r = item.remember 'itemRect' if not r?
+        r = item.remember('itemRect') if not r?
         if r?
             r.attr
                 x:      box.x
                 y:      box.y
-                width:  box.w
-                height: box.h
+                width:  box.width
+                height: box.height
             r.transform item.transform()
 
     onStage: (action, box) =>

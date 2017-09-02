@@ -13,6 +13,7 @@ class Shapes
         
         @stage = @kali.stage
         @tools = @kali.tools
+        @trans = @kali.trans
         
         @svg       = @stage.svg
         @selection = @stage.selection
@@ -127,9 +128,8 @@ class Shapes
                             delete @drawing
                     return
                         
-                @drawing = @addShape shape, stagePos 
-                @drawing.cx stagePos.x
-                @drawing.cy stagePos.y
+                @drawing = @addShape shape, stagePos
+                @trans.center @drawing, stagePos
 
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
@@ -174,8 +174,9 @@ class Shapes
                 
                 switch shape
                     when 'ellipse', 'circle'
-                        @drawing.cx drag.startPos.x - @stage.viewPos().x + @drawing.width()/2
-                        @drawing.cy drag.startPos.y - @stage.viewPos().y + @drawing.height()/2
+                        s = @trans.size @drawing
+                        c = drag.startPos.minus(@stage.viewPos).plus(s.scale 0.5)
+                        @trans.center @drawing, c
 
     setLinePoint: (p) ->
         
@@ -232,23 +233,25 @@ class Shapes
                     when 'ellipse'
                         @drawing.width 50
                     when 'text' then
+                    when 'rect' 
+                        @drawing.width 100
+                        @drawing.x -50
                     else
                         @drawing.width 100
                     
-                @drawing.cx stagePos.x
+                @trans.center @drawing, stagePos
                 
-                switch shape
-                    when 'circle'
-                        @drawing.cy stagePos.y
-                    
             if @drawing.height() == 0
                 
                 switch shape
                     when 'text' then
+                    when 'rect'
+                        @drawing.height 100
+                        @drawing.y -50
                     else
                         @drawing.height 100
                         
-                @drawing.cy stagePos.y
+                @trans.center @drawing, stagePos
             
             if not @drawing.remember 'isPickPoly'
                 

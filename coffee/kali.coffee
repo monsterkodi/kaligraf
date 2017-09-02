@@ -9,6 +9,7 @@
 
 Stage = require './stage'
 Tools = require './tools'
+Trans = require './trans'
 
 class Kali
 
@@ -17,6 +18,7 @@ class Kali
         @element = cfg?.element ? window
         @toolDiv = elem 'div', id: 'tools'
         @element.appendChild @toolDiv
+        @trans   = new Trans @
         @tools   = new Tools @, name: 'tools', text: 'tools', orient: 'down'
         @stage   = new Stage @
         

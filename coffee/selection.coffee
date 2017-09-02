@@ -115,11 +115,13 @@ class Selection
         
         box = item.bbox()
         r = item.remember 'itemRect' if not r?
-        r?.attr
-            x:      box.x
-            y:      box.y
-            width:  box.w
-            height: box.h
+        if r?
+            r.attr
+                x:      box.x
+                y:      box.y
+                width:  box.w
+                height: box.h
+            r.transform item.transform()
 
     onStage: (action, box) =>
         
@@ -213,8 +215,7 @@ class Selection
         dx /= @kali.stage.zoom
         dy /= @kali.stage.zoom
 
-        e.cx e.cx() + dx
-        e.cy e.cy() + dy
+        @kali.trans.center e, @kali.trans.center(e).plus pos dx,dy 
          
     #  0000000   0000000   000       0000000   00000000   
     # 000       000   000  000      000   000  000   000  

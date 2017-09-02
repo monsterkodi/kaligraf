@@ -311,7 +311,6 @@ class Resizer
         @updateBox()
 
         if @selection.pos
-            log 'drag start'
             @drag.start @selection.pos
 
     delItem: (items, item) -> @updateBox()

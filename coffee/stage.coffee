@@ -186,7 +186,7 @@ class Stage
             growBox bb
         else
             bb = x:0, y:0, width:@viewSize().x, height:@viewSize().y
-        log bb
+
         svg = @getSVG @items(), bb
         
         fs.writeFileSync resolve('~/Desktop/kaligraf.svg'), svg

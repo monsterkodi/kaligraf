@@ -198,8 +198,8 @@ class Tools extends Tool
             when 'center'     then @kali.stage.centerSelection()
             when 'grid_toggle' then @grid.toggleGrid()
             
-            else
-                log 'action?', action, name
+            # else
+                # log 'action?', action, name
 
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   

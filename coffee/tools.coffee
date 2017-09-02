@@ -42,7 +42,6 @@ class Tools extends Tool
         
         @activateTool 'rect'
         @activateTool 'text'
-        # @activateTool 'loupe'
         @activateTool 'pick'
         @load.onClick()
         
@@ -65,8 +64,10 @@ class Tools extends Tool
                 { name: 'zoom',  class: 'zoom', action: 'zoom_reset',  combo: 'command+0' }
                 { name: 'width', class: 'line' }
             ]
-            { name: 'stroke', class: 'color' }
-            { name: 'fill',   class: 'color' }
+            [
+                { name: 'stroke', class: 'color' }
+                { name: 'fill',   class: 'color' }
+            ]
             [
                 { name: 'pick',  group: 'shape' }
                 { name: 'pan',   group: 'shape' }

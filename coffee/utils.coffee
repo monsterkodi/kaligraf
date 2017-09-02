@@ -4,7 +4,7 @@
 # 000   000     000     000  000           000    
 #  0000000      000     000  0000000  0000000     
 
-{ empty, pos, log } = require 'kxk'
+{ empty, clamp, pos, log } = require 'kxk'
 
 module.exports = 
     
@@ -120,4 +120,42 @@ module.exports =
         if sy > ey then [sy, ey] = [ey, sy] 
         x:sx, y:sy, x2:ex, y2:ey
     
+    #  0000000   00000000    0000000   0000000    000  00000000  000   000  000000000  
+    # 000        000   000  000   000  000   000  000  000       0000  000     000     
+    # 000  0000  0000000    000000000  000   000  000  0000000   000 0 000     000     
+    # 000   000  000   000  000   000  000   000  000  000       000  0000     000     
+    #  0000000   000   000  000   000  0000000    000  00000000  000   000     000     
     
+    colorGradient: (svg, f) ->
+        
+        c = parseInt 255 * clamp 0, 1, f*2
+        h = parseInt 255 * clamp 0, 1, (f-0.5)*2
+        
+        svg.gradient 'linear', (stop) ->
+            stop.at 0.0,   new SVG.Color r:c, g:h, b:h
+            stop.at 1.0/6, new SVG.Color r:c, g:c, b:h
+            stop.at 2.0/6, new SVG.Color r:h, g:c, b:h
+            stop.at 3.0/6, new SVG.Color r:h, g:c, b:c
+            stop.at 4.0/6, new SVG.Color r:h, g:h, b:c
+            stop.at 5.0/6, new SVG.Color r:c, g:h, b:c
+            stop.at 6.0/6, new SVG.Color r:c, g:h, b:h
+
+    grayGradient: (svg) ->
+        
+        svg.gradient 'linear', (stop) ->
+            stop.at 0.0, "#000"
+            stop.at 1.0, "#fff"
+            
+    #  0000000  000   000  00000000   0000000  000   000  00000000  00000000    0000000  
+    # 000       000   000  000       000       000  000   000       000   000  000       
+    # 000       000000000  0000000   000       0000000    0000000   0000000    0000000   
+    # 000       000   000  000       000       000  000   000       000   000       000  
+    #  0000000  000   000  00000000   0000000  000   000  00000000  000   000  0000000   
+    
+    checkersPattern: (svg, c='#fff') ->
+        
+        svg.pattern 10, 10, (add) ->
+            add.rect(10,10).fill c
+            add.rect(5,5)
+            add.rect(5,5).move 5,5 
+            

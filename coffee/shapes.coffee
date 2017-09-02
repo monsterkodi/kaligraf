@@ -5,7 +5,7 @@
 #      000  000   000  000   000  000        000            000
 # 0000000   000   000  000   000  000        00000000  0000000 
 
-{ last, log } = require 'kxk'
+{ last, pos, log } = require 'kxk'
 
 class Shapes
 
@@ -235,7 +235,7 @@ class Shapes
                     when 'text' then
                     when 'rect' 
                         @drawing.width 100
-                        @drawing.x -50
+                        stagePos.sub pos 50, 50
                     else
                         @drawing.width 100
                     
@@ -245,9 +245,9 @@ class Shapes
                 
                 switch shape
                     when 'text' then
-                    when 'rect'
+                    when 'rect' 
                         @drawing.height 100
-                        @drawing.y -50
+                        stagePos.sub pos 50, 50
                     else
                         @drawing.height 100
                         

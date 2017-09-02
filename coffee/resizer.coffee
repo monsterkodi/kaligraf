@@ -89,20 +89,20 @@ class Resizer
                 item.font 'size', fx * item.font 'size'
 
             else
-                item.size Math.max(iw * fx, 1), Math.max(ih * fy, 1)
                 item.size iw * fx, ih * fy
 
             switch item.type
 
-                when 'circle', 'ellipse'
+                when 'circle', 'ellipse', 'rect', 'polygon'
 
-                    cx = item.cx(); cy = item.cy(); nw = item.width(); nh = item.height()
+                    c = @kali.trans.getCenter item
+                    nw = item.width(); nh = item.height()
 
-                    if right then item.cx nw/2 + @sbox.x  + fx * ((cx - iw/2) - @sbox.x)
-                    if bot   then item.cy nh/2 + @sbox.y  + fy * ((cy - ih/2) - @sbox.y)
-                    if left  then item.cx nw/2 + @sbox.x2 - fx * (@sbox.x2 - (cx - iw/2))
-                    if top   then item.cy nh/2 + @sbox.y2 - fy * (@sbox.y2 - (cy - ih/2))
-
+                    if right then @kali.trans.center item, pos      nw/2 + @sbox.x  + fx * ((c.x - iw/2) - @sbox.x), c.y
+                    if bot   then @kali.trans.center item, pos c.x, nh/2 + @sbox.y  + fy * ((c.y - ih/2) - @sbox.y)
+                    if left  then @kali.trans.center item, pos      nw/2 + @sbox.x2 - fx * (@sbox.x2 - (c.x - iw/2)), c.y
+                    if top   then @kali.trans.center item, pos c.x, nh/2 + @sbox.y2 - fy * (@sbox.y2 - (c.y - ih/2))
+                    
                 when 'text'
 
                     if right then item.x @sbox.x  + fx * (item.x() - @sbox.x)
@@ -111,16 +111,22 @@ class Resizer
                     if top   then item.y @sbox.y2 - fy * (@sbox.y2 - item.y())
 
                 else
+                    log 'else?'
                     z  = @kali.stage.zoom
                     x  = @sbox.x
                     y  = @sbox.y
                     x2 = @sbox.x2
                     y2 = @sbox.y2
 
-                    if right then item.x x  + fx * (item.x() - x)
-                    if bot   then item.y y  + fy * (item.y() - y)
-                    if left  then item.x x2 - fx * (x2 - item.x())
-                    if top   then item.y y2 - fy * (y2 - item.y())
+                    # if right then item.x x  + fx * (item.x() - x)
+                    # if bot   then item.y y  + fy * (item.y() - y)
+                    # if left  then item.x x2 - fx * (x2 - item.x())
+                    # if top   then item.y y2 - fy * (y2 - item.y())
+                    c = @kali.trans.center item
+                    if right then @kali.trans.center item, pos      x  + fx * (c.x - x), c.y 
+                    if bot   then @kali.trans.center item, pos c.x, y  + fy * (c.y - y)
+                    if left  then @kali.trans.center item, pos      x2 - fx * (x2 - c.x), c.y
+                    if top   then @kali.trans.center item, pos c.x, y2 - fy * (y2 - c.y)
 
         @calcBox()
 

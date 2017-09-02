@@ -7,7 +7,7 @@
 
 { elem, post, drag, first, last, pos, log, _ } = require 'kxk'
 
-{ boxForItems, posForRect, moveBox, zoomBox, scaleBox, boxOffset } = require './utils'
+{ boxForItems, posForRect, moveBox, zoomBox, scaleBox, boxOffset, boxSize } = require './utils'
 
 class Resizer
 
@@ -55,15 +55,17 @@ class Resizer
 
         return if dx == 0 and dy == 0
 
-        dx /= @kali.stage.zoom
-        dy /= @kali.stage.zoom
-
         fx = (@sbox.w + dx)/@sbox.w
         fy = (@sbox.h + dy)/@sbox.h
 
         if @sbox.w <= 10 and fx < 1 then fx = 1
         if @sbox.h <= 10 and fy < 1 then fy = 1
 
+        z = @kali.stage.zoom
+        vo = boxOffset @kali.stage.svg.viewbox()
+        tl = boxOffset(@sbox)                     .minus(vo).scale(1.0/z).plus(vo) 
+        br = boxOffset(@sbox).plus(boxSize(@sbox)).minus(vo).scale(1.0/z).plus(vo)
+        
         for item in @selection.items
 
             iw = @trans.width  item
@@ -98,16 +100,16 @@ class Resizer
             else
                 item.size iw * fx, ih * fy
 
-            t = @trans
-            
-            ax=fx; ay=fy
             if item.type in ['circle', 'text'] 
                 ax = ay = fr
-                
-            if left  then t.center item, pos                   t.width(item)  / 2 + @sbox.x2 - ax * (@sbox.x2 - (t.center(item).x - iw/2)), t.center(item).y
-            if top   then t.center item, pos t.center(item).x, t.height(item) / 2 + @sbox.y2 - ay * (@sbox.y2 - (t.center(item).y - ih/2))
-            if right then t.center item, pos                   t.width(item)  / 2 + @sbox.x  + fx * ((t.center(item).x - iw/2) - @sbox.x),  t.center(item).y
-            if bot   then t.center item, pos t.center(item).x, t.height(item) / 2 + @sbox.y  + fy * ((t.center(item).y - ih/2) - @sbox.y)
+            else
+                ax = fx
+                ay = fy
+                            
+            if left  then @trans.center item, pos                        @trans.width(item)  / 2 + br.x - ax * (br.x - (@trans.center(item).x - iw/2)), @trans.center(item).y
+            if top   then @trans.center item, pos @trans.center(item).x, @trans.height(item) / 2 + br.y - ay * (br.y - (@trans.center(item).y - ih/2))
+            if right then @trans.center item, pos                        @trans.width(item)  / 2 + tl.x + fx * ((@trans.center(item).x - iw/2) - tl.x), @trans.center(item).y
+            if bot   then @trans.center item, pos @trans.center(item).x, @trans.height(item) / 2 + tl.y + fy * ((@trans.center(item).y - ih/2) - tl.y)
                     
         @calcBox()
         @selection.updateItems()
@@ -214,7 +216,7 @@ class Resizer
             width:  @box.w
             height: @box.h
 
-        @sbox = new SVG.RBox @box
+        @sbox = new SVG.RBox @box # in view coordinates
 
         dx = @kali.stage.svg.viewbox().x
         dy = @kali.stage.svg.viewbox().y

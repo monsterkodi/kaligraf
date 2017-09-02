@@ -29,6 +29,7 @@ module.exports =
 
     boxCenter: (box) -> pos box.x + box.width/2.0, box.y + box.height/2.0
     boxOffset: (box) -> pos box.x, box.y
+    boxSize:   (box) -> pos box.width, box.height
     zoomBox:  (box, zoom)  -> module.exports.scaleBox 1.0/zoom
     scaleBox: (box, scale) ->
         

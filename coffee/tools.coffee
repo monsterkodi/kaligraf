@@ -32,10 +32,14 @@ class Tools extends Tool
     
     loadPrefs: ->
         
-        @stroke.setLuminance 1
-        @stroke.setAlpha 0.5
-        @fill.setLuminance 0
-        @fill.setAlpha 0.15
+        @stroke.set 
+            luminance:  1
+            alpha:      0.5
+            
+        @fill.set
+            luminance:  0
+            alpha:      0.15
+            
         @width.setWidth 1
         
         @grid.showGrid()

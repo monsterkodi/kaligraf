@@ -70,12 +70,14 @@ class Stage
     itemAtPos: (p) ->
         
         r = @svg.node.createSVGRect()
-        r.x      = p.x
-        r.y      = p.y
+        r.x      = p.x - @viewPos().x
+        r.y      = p.y - @viewPos().y
         r.width  = 1
         r.height = 1
         
-        for item in @svg.node.getIntersectionList r, null
+        items = @svg.node.getIntersectionList r, null 
+        items = [].slice.call(items, 0).reverse()
+        for item in items
             if item.instance in @items()
                 return item.instance
         

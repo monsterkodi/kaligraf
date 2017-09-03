@@ -5,7 +5,7 @@
 #      000  000   000  000   000  000        000            000
 # 0000000   000   000  000   000  000        00000000  0000000 
 
-{ post, last, pos, log } = require 'kxk'
+{ post, last, resolve, pos, log } = require 'kxk'
 
 { boxCenter } = require './utils'
 
@@ -44,9 +44,14 @@ class Shapes
                 e.plot [[stagePos.x, stagePos.y], [stagePos.x, stagePos.y]]
                 
             when 'text'
+                
                 e = @svg.text 'Text'
                 e.font 'size', 100
-                log 'text created', e.node.instance
+                
+            when 'image'
+                
+                e = @svg.image 'file://' + resolve '~/Desktop/kaligraf.png'
+                
             else
                 e = @svg[shape]()
                 
@@ -97,10 +102,6 @@ class Shapes
 
                 e = @stage.itemAtPos eventPos
                 
-                # if not e?
-                    # e = SVG.adopt event.target
-                    # log 'ADOPT!!!', event.target.id, event.target.instance
-                    
                 if e == @svg or not e?
                     if not event.shiftKey
                         @selection.clear()

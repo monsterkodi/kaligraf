@@ -431,7 +431,9 @@ class Stage
                 when 'command+=' then return @zoomIn()
                 when 'command+0' then return @resetView()
                 when 'enter', 'return', 'esc' 
-                    return @shapes.endDrawing()                
+                    if combo == 'esc'
+                        @shapes.removeLastPolyPoint()
+                    return @shapes.endDrawing()
         
         return if 'unhandled' != @resizer  .handleKey mod, key, combo, char, event, down
         return if 'unhandled' != @selection.handleKey mod, key, combo, char, event, down

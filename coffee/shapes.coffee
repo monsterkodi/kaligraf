@@ -190,16 +190,12 @@ class Shapes
                 @addPolyPoint stagePos
                 
             else
-                z = @kali.stage.zoom
-                @trans.setRect @drawing, 
-                    x:  drag.startPos.x / z
-                    y:  drag.startPos.y / z
-                    x2: drag.pos.x / z
-                    y2: drag.pos.y / z
+                s  = @kali.stage
+                z  = s.zoom
+                p1 = s.stageForView drag.startPos.minus s.viewPos()
+                p2 = s.stageForView drag.pos.minus s.viewPos()
+                @trans.setRect @drawing, x:p1.x, y:p1.y, x2:p2.x, y2:p2.y
                     
-                # @trans.width  @drawing, drag.deltaSum.x / z
-                # @trans.height @drawing, drag.deltaSum.y / z
-                
     updateDrawing: (event) ->
                 
         if @drawing? and @drawing.remember 'isPickPoly'
@@ -227,10 +223,16 @@ class Shapes
 
     updatePolyPoint: (p) ->
         
-        arr  = @drawing.array().valueOf()
+        arr = @drawing.array().valueOf()
         last(arr)[0] = p.x
         last(arr)[1] = p.y
         @drawing.plot arr
+        
+    removeLastPolyPoint: ->
+        
+        arr = @drawing.array().valueOf()
+        arr.pop() if arr.length > 2
+        @drawing.plot arr        
         
     #  0000000  000000000   0000000   00000000   
     # 000          000     000   000  000   000  

@@ -289,8 +289,11 @@ class Resizer
 
     setItems: (items) ->
 
-        @createRect()
-        @updateBox()
+        if items.length
+            @createRect()
+            @updateBox()
+        else
+            @clear()
 
     addItem: (items, item) ->
 

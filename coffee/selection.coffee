@@ -54,8 +54,10 @@ class Selection
         @clear()
         @items = items
         
-        if items.length
+        if @items.length
+            log "items #{@items.length}"
             for e in @items
+                log e.id()
                 @addRectForItem e
         
         post.emit 'selection', 'set', @items

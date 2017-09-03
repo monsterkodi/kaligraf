@@ -1,3 +1,4 @@
+
 //  0000000  000   000   0000000   
 // 000       000   000  000        
 // 0000000    000 000   000  0000  
@@ -85,7 +86,7 @@ tspan
 //    000     000   000  000   000  000      
 //    000      0000000    0000000   0000000  
 
-.tool
+.tool    
     font-family             Helvetica, Arial
     font-weight             bold
     font-size               13px
@@ -146,23 +147,37 @@ tspan
 .trans
     pointer-events          none
 
-.menu
+// 00     00  00000000  000   000  000   000  
+// 000   000  000       0000  000  000   000  
+// 000000000  0000000   000 0 000  000   000  
+// 000 0 000  000       000  0000  000   000  
+// 000   000  00000000  000   000   0000000   
+
+.menus  
+    font-family             Helvetica, Arial
+    font-weight             bold
+    font-size               13px
     position                absolute
-    pointer-events          none
-    left                    0  
+    left                    60px  
     top                     0
-    -webkit-margin-start    0px
-    -webkit-margin-before   0px
-    -webkit-margin-after    0px
-    -webkit-padding-start   0px
-                
-.button
+    color                   #bbb
+    
+.menu
+    float                   left
+    height                  30px
+    overflow                hidden
+    
+.item
+    display  block
+    height   22px
+    padding-top             8px
     padding-left            10px
     padding-right           10px
-    background-color        #888
+    background-color        #222
     cursor                  pointer
     border-style            hidden
                 
     &:hover
-        background-color    #fff
+        color               #ff0
+        background-color    #333
         

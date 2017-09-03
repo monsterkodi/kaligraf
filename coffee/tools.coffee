@@ -46,7 +46,6 @@ class Tools extends Tool
         @activateTool 'rect'
         @activateTool 'text'
         @activateTool 'pick'
-        @load.execute()
         
     # 000  000   000  000  000000000  
     # 000  0000  000  000     000     
@@ -86,27 +85,6 @@ class Tools extends Tool
                 { name: 'image',  group: 'shape'}
                 { name: 'text',   group: 'shape'}
             ]
-            [
-                { name: 'save',  action: 'save',  orient: 'down', combo: 'command+s' }
-                { name: 'load',  action: 'load',  orient: 'down', combo: 'command+o' }
-                { name: 'clear', action: 'clear', orient: 'down', combo: 'command+k' }
-            ]
-            [
-                { name: 'center', action: 'center',    orient: 'down', combo: 'command+e' }
-                { name: 'all',    action: 'selectAll', orient: 'down', combo: 'command+a' }
-                { name: 'none',   action: 'deselect',  orient: 'down', combo: 'command+d' }
-            ]            
-            [
-                { name: 'cut',   action: 'cut',   orient: 'down', combo: 'command+x' }
-                { name: 'copy',  action: 'copy',  orient: 'down', combo: 'command+c' }
-                { name: 'paste', action: 'paste', orient: 'down', combo: 'command+v' }
-            ]
-            [
-                { name: 'front', action: 'front', orient: 'down', combo: 'command+alt+up' }
-                { name: 'raise', action: 'raise', orient: 'down', combo: 'command+up' }
-                { name: 'lower', action: 'lower', orient: 'down', combo: 'command+down' }
-                { name: 'back',  action: 'back',  orient: 'down', combo: 'command+alt+down' }
-            ]            
         ]
         
         @element.style.zIndex = 1 

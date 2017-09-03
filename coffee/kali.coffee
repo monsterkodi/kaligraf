@@ -20,7 +20,7 @@ class Kali
         @toolDiv = elem 'div', id: 'tools'
         @element.appendChild @toolDiv
                 
-        @menu    = new Menu  @
+        @menus   = new Menu  @
         @trans   = new Trans @
         @tools   = new Tools @, name: 'tools', text: 'tools', orient: 'down'
         @stage   = new Stage @
@@ -38,12 +38,14 @@ class Kali
         
         {mod, key, combo, char} = keyinfo.forEvent event
         return stopEvent(event) if 'unhandled' != @tools.handleKey mod, key, combo, char, event, true
+        return stopEvent(event) if 'unhandled' != @menus.handleKey mod, key, combo, char, event, true
         return stopEvent(event) if 'unhandled' != @stage.handleKey mod, key, combo, char, event, true
 
     onKeyUp: (event) =>
         
         {mod, key, combo, char} = keyinfo.forEvent event
         return stopEvent(event) if 'unhandled' != @tools.handleKey mod, key, combo, char, event, false
+        return stopEvent(event) if 'unhandled' != @menus.handleKey mod, key, combo, char, event, false
         return stopEvent(event) if 'unhandled' != @stage.handleKey mod, key, combo, char, event, false
         
     shapeTool: -> @tools.getActive('shape').name

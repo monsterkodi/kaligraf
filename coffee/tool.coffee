@@ -65,10 +65,6 @@ class Tool
 
     onMouseLeave: =>
         
-        if @cfg.orient == 'down'
-            if @parent == @kali.tools.temp
-                @kali.tools.collapseTemp()
-        
     #  0000000  000   000  000  000      0000000    00000000   00000000  000   000  
     # 000       000   000  000  000      000   000  000   000  000       0000  000  
     # 000       000000000  000  000      000   000  0000000    0000000   000 0 000  

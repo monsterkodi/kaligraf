@@ -187,7 +187,7 @@ class Tools extends Tool
     handleKey: (mod, key, combo, char, event, down) ->
         # log "Tools.handleKey mod:#{mod} key:#{key} combo:#{combo} down:#{down}"
 
-        if down 
+        if down
             if mod == 'ctrl' then @ctrlDown = true
             
             for tool in @tools

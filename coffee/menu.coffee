@@ -11,39 +11,41 @@ class Button
 
     constructor: (@parent, @cfg) ->
 
+        @name   = @cfg.name
+        @group  = @cfg.group
+        @action = @cfg.action
+        
         @element = elem 'div', class: 'item'
         @element.innerHTML = _.capitalize @cfg.name
         @parent.element.appendChild @element
-        @element.addEventListener 'click', => log 'click'
+        @element.addEventListener 'click', @onClick
+        
+    onClick: (event) => post.emit 'tool', @action, @name
 
 class Menu
 
-    constructor: (@kali, @parent, buttons) ->
+    constructor: (@parent, buttons) ->
 
         @children = []
         
-        if not @parent?
-            
-            @element  = elem 'div', class: 'menus'
-            @kali.element.appendChild @element
-            
-            @init()
-            
-        else
-            
-            @element  = elem 'div', class: 'menu'
-            @parent.element.appendChild @element
-            
-            @element.addEventListener 'mouseenter', => 
-                @element.style.overflow = 'visible'
-            @element.addEventListener 'mouseleave', =>            
-                @element.style.overflow = 'hidden'
-            
-            for button in buttons
-                @children.push new Button @, button
+        @element  = elem 'div', class: 'menu'
+        @parent.element.appendChild @element
+        
+        @element.addEventListener 'mouseenter', => @element.style.overflow = 'visible'
+        @element.addEventListener 'mouseleave', => @element.style.overflow = 'hidden'
+        
+        for button in buttons
+            @children.push new Button @, button
 
-    init: () ->
-
+class Menus
+    
+    constructor: (@kali) ->
+        
+        @children = []
+        
+        @element = elem 'div', class: 'menus'
+        @kali.element.appendChild @element
+        
         menus = [
             [
                 { name: 'save',   action: 'save',      combo: 'command+s' }
@@ -69,6 +71,22 @@ class Menu
         ]
 
         for menu in menus
-            @children.push new Menu @kali, @, menu
+            @children.push new Menu @, menu
 
-module.exports = Menu
+    # 000   000  00000000  000   000  
+    # 000  000   000        000 000   
+    # 0000000    0000000     00000    
+    # 000  000   000          000     
+    # 000   000  00000000     000     
+    
+    handleKey: (mod, key, combo, char, event, down) ->
+
+        if down
+            for menu in @children
+                for button in menu.children
+                    if button.cfg.combo == combo
+                        return button.onClick()
+            
+        'unhandled'
+            
+module.exports = Menus

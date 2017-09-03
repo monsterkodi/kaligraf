@@ -72,6 +72,7 @@ class Tools extends Tool
                 { name: 'circle',   group: 'shape' }
                 { name: 'ellipse',  group: 'shape' }
                 { name: 'triangle', group: 'shape' }
+                { name: 'triangle_square', group: 'shape' }
             ]
             [
                 { name: 'polygon',  group: 'shape' }
@@ -144,7 +145,12 @@ class Tools extends Tool
         if cfg.svg = @loadSVG cfg.name
             
         else if svgs[cfg.name]?
+            
             cfg.svg = svgs[cfg.name]
+            
+        else if cfg.group == 'shape'
+            
+            cfg.svg = svgs['rect']
             
         clss = cfg.class and require("./#{cfg.class}") or Tool
         tool = new clss @kali, cfg

@@ -90,22 +90,19 @@ class Resizer
                 item.font 'size', fr * item.font 'size'
                 @trans.center item, c
                 
-            else if item.type in ['polygon', 'polyline', 'line']
+            else 
                 
                 c = @trans.center item
                 item.size iw * fx, ih * fy
                 item.center 0,0
                 @trans.center item, c
                 
-            else
-                item.size iw * fx, ih * fy
-
             if item.type in ['circle', 'text'] 
                 ax = ay = fr
             else
                 ax = fx
                 ay = fy
-                            
+               
             if left  then @trans.center item, pos                        @trans.width(item)  / 2 + br.x - ax * (br.x - (@trans.center(item).x - iw/2)), @trans.center(item).y
             if top   then @trans.center item, pos @trans.center(item).x, @trans.height(item) / 2 + br.y - ay * (br.y - (@trans.center(item).y - ih/2))
             if right then @trans.center item, pos                        @trans.width(item)  / 2 + tl.x + fx * ((@trans.center(item).x - iw/2) - tl.x), @trans.center(item).y

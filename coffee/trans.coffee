@@ -20,7 +20,17 @@ class Trans
     pos:       (item, p) -> if p? then @setPos(   item, p) else @getPos    item
     
     setCenter: (item, c) -> @setPos item, c.minus @getSize(item).scale 0.5
-    getCenter: (item)    -> @getPos(item).plus @getSize(item).scale 0.5
+    getCenter: (item)    -> 
+
+        tx = item.transform 'x'
+        ty = item.transform 'y'
+        
+        switch item.type
+            
+            when 'circle', 'ellipse' then pos tx, ty
+            else
+                bb = item.bbox()
+                pos(tx, ty).plus pos bb.cx, bb.cy
     
     setRect: (item, r) ->
         
@@ -28,26 +38,19 @@ class Trans
         
         return if rectWidth(r) == 0 or rectHeight(r) == 0
 
-        switch item.type
-            when 'ellipse'
-                item.attr 
-                    rx: rectWidth(r)/2 
-                    ry: rectHeight(r)/2
-                    
-            when 'circle'
-                item.attr r:Math.max rectWidth(r)/2, rectHeight(r)/2
-                    
-            else
-                item.width  rectWidth  r
-                item.height rectHeight r
-        
-        @setPos item, rectOffset r
+        @setWidth  item, rectWidth  r 
+        @setHeight item, rectHeight r 
+        @setPos    item, rectOffset r
     
     setPos: (item, c) -> 
         
-        p = pos(c).minus @getPos item
-        item.transform {x:p.x, y:p.y}, true
-        c
+        bb = item.bbox()
+    
+        switch item.type
+            when 'circle', 'ellipse'
+                item.transform x:c.x+bb.width/2, y:c.y+bb.height/2
+            else
+                item.transform x:c.x-bb.x, y:c.y-bb.y
         
     getPos: (item) -> 
     
@@ -61,12 +64,26 @@ class Trans
             else
                 pos tx+bb.x, ty+bb.y
 
-    setWidth:  (item, w) -> if item.type != 'text' then item.width(w)  else item.width(w)
-    setHeight: (item, h) -> if item.type != 'text' then item.height(h) else item.height(h)
+    setWidth:  (item, w) -> 
+    
+        switch item.type
+            
+            when 'ellipse' then item.attr rx: w/2 
+            when 'circle'  then item.attr r: w/2
+            else                item.width w
+    
+    setHeight: (item, h) -> 
+        
+        switch item.type
+            
+            when 'ellipse' then item.attr ry: h/2 
+            when 'circle'  then item.attr r: h/2
+            else                item.height h
+        
     setSize:   (item, s) -> @setWidth(item,s.x); @setHeight(item,s.y)
             
-    getWidth:  (item) -> if item.type != 'text' then item.width()  else item.bbox().width
-    getHeight: (item) -> if item.type != 'text' then item.height() else item.bbox().height
+    getWidth:  (item) -> item.bbox().width
+    getHeight: (item) -> item.bbox().height
     getSize:   (item) -> pos @width(item), @height(item)
     
 module.exports = Trans

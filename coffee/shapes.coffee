@@ -33,6 +33,10 @@ class Shapes
             when 'triangle'
                 
                 e = @svg.polygon '-0.50,0.50 0,-0.50 0.50,0.50'
+
+            when 'triangle_square'
+                
+                e = @svg.polygon '0,0 1,1 0,1'
                 
             when 'line', 'polyline', 'polygon'
                 

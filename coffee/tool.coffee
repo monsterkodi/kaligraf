@@ -65,6 +65,10 @@ class Tool
 
     onMouseLeave: =>
         
+        if @cfg.orient == 'down'
+            if @parent == @kali.tools.temp
+                @kali.tools.collapseTemp()
+        
     #  0000000  000   000  000  000      0000000    00000000   00000000  000   000  
     # 000       000   000  000  000      000   000  000   000  000       0000  000  
     # 000       000000000  000  000      000   000  0000000    0000000   000 0 000  
@@ -152,19 +156,8 @@ class Tool
     
     dragStart: (d,e) => @element.addEventListener    'mouseup', @onClick
     dragStop:  (d,e) => @element.removeEventListener 'mouseup', @onClick
-    dragMove:  (d,e) =>
-        
-        @element.removeEventListener 'mouseup', @onClick
-        if e.metaKey and @hasChildren()
-            @moveBy d.delta
+    dragMove:  (d,e) => @element.removeEventListener 'mouseup', @onClick
             
-    moveBy: (delta) -> 
-        
-        @setPos x:@pos().x+delta.x, y:@pos().y+delta.y
-        if @hasChildren()
-            for c in @children
-                c.moveBy delta
-        
     #  0000000  000      000   0000000  000   000  
     # 000       000      000  000       000  000   
     # 000       000      000  000       0000000    
@@ -176,10 +169,12 @@ class Tool
         if e?.metaKey and @svg?
             @kali.stage.addSVG @svg.svg()
             return
+            
         if @hasChildren() and e
             @toggleChildren()
         else if @hasParent()
-            @swapParent()
+            if @cfg.orient != 'down'
+                @swapParent()
         else 
             @hideChildren()
             

@@ -102,10 +102,10 @@ class Tools extends Tool
                 { name: 'paste', action: 'paste', orient: 'down', combo: 'command+v' }
             ]
             [
-                { name: 'back',  action: 'back',  orient: 'down', combo: 'command+alt+down' }
-                { name: 'lower', action: 'lower', orient: 'down', combo: 'command+down' }
-                { name: 'raise', action: 'raise', orient: 'down', combo: 'command+up' }
                 { name: 'front', action: 'front', orient: 'down', combo: 'command+alt+up' }
+                { name: 'raise', action: 'raise', orient: 'down', combo: 'command+up' }
+                { name: 'lower', action: 'lower', orient: 'down', combo: 'command+down' }
+                { name: 'back',  action: 'back',  orient: 'down', combo: 'command+alt+down' }
             ]            
         ]
         

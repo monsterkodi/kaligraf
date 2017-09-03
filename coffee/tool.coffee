@@ -141,6 +141,8 @@ class Tool
         top.children.push @
         delete @kali.tools.temp
         @hideChildren()
+        if @parent.visible() and @parent.childrenVisible()
+            @show()
                 
     # 0000000    00000000    0000000    0000000   
     # 000   000  000   000  000   000  000        
@@ -174,15 +176,16 @@ class Tool
         if e?.metaKey and @svg?
             @kali.stage.addSVG @svg.svg()
             return
-        
         if @hasChildren() and e
             @toggleChildren()
         else if @hasParent()
-            if not @parent.childrenVisible()
-                @parent.showChildren()
             @swapParent()
         else 
             @hideChildren()
+            
+        @execute()
+        
+    execute: ->
         
         if @group?
             post.emit 'tool', 'activate', @name

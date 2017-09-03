@@ -46,14 +46,8 @@ class Tools extends Tool
         @activateTool 'rect'
         @activateTool 'text'
         @activateTool 'pick'
-        @load.onClick()
+        @load.execute()
         
-        fuckingZoom = =>
-            @zoom.onClick()
-            @center.onClick()
-            
-        setTimeout fuckingZoom, 100
-    
     # 000  000   000  000  000000000  
     # 000  0000  000  000     000     
     # 000  000 0 000  000     000     
@@ -63,11 +57,6 @@ class Tools extends Tool
     init: () ->
 
         tools = [
-            [
-                { name: 'grid',  class: 'grid', action: 'grid_toggle', combo: 'command+g' }
-                { name: 'zoom',  class: 'zoom', action: 'zoom_reset',  combo: 'command+0' }
-                { name: 'width', class: 'line' }
-            ]
             [
                 { name: 'stroke', class: 'color' }
                 { name: 'fill',   class: 'color' }
@@ -88,6 +77,11 @@ class Tools extends Tool
                 { name: 'polyline', group: 'shape' }
                 { name: 'line',     group: 'shape' }
             ]
+            [
+                { name: 'zoom',  class: 'zoom', action: 'zoom_reset',  combo: 'command+0' }
+                { name: 'grid',  class: 'grid', action: 'grid_toggle', combo: 'command+g' }
+                { name: 'width', class: 'line' }
+            ]            
             [
                 { name: 'image',  group: 'shape'}
                 { name: 'text',   group: 'shape'}
@@ -226,7 +220,7 @@ class Tools extends Tool
             @ctrlDown = false
             
         if @kali.shapeTool() == 'loupe'
-            @kali.stage.svg.style cursor:@ctrlDown and 'zoom-out' or 'zoom-in'
+            @kali.stage.setCursor @ctrlDown and 'zoom-out' or 'zoom-in'
             
         'unhandled'
                 
@@ -253,8 +247,8 @@ class Tools extends Tool
         
         @kali.stage.resizer.activate name == 'pick'
             
-        @kali.stage.svg.style cursor: cursor
-
+        @kali.stage.setCursor cursor
+        
     collapseTemp: ->
         
         if @temp 

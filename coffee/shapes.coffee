@@ -157,6 +157,7 @@ class Shapes
                 
                 r = x:drag.startPos.x, y:drag.startPos.y, x2:drag.pos.x, y2:drag.pos.y                
                 @selection.setRect @selection.loupe, r
+                @kali.stage.setCursor 'zoom-in'
                 
             when 'pick'
                 
@@ -232,6 +233,7 @@ class Shapes
                 @selection.loupe.remove()
                 delete @selection.loupe
                 @stage.loupe drag.startPos, drag.pos
+                @stage.setCursor @kali.tools.ctrlDown and 'zoom-out' or 'zoom-in'
 
         if @drawing
             

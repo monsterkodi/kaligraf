@@ -70,10 +70,10 @@ class Palette extends Tool
     
     onPalette: (action, value) =>
 
-        log 'onPalette', action
         switch action
             
-            when 'hide' then @hide()
+            when 'toggle' then @toggleVisible()
+            when 'hide'   then @hide()
             
             when 'show'
                 
@@ -227,6 +227,7 @@ class Palette extends Tool
     # 000          000     000       000  0000     000          000
     # 00000000      0      00000000  000   000     000     0000000
 
+    onMouseEnter: => 
     moveEvents: (cb) ->
 
         @clearEvents @moveCB

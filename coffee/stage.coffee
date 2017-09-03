@@ -243,10 +243,9 @@ class Stage
         dw = Math.abs sd.x
         dh = Math.abs sd.y
         
-        out = @kali.tools.ctrlDown
         
         if dw == 0 or dh == 0
-            # z = 1.2
+            out = @kali.tools.ctrlDown
             @zoomAtPos viewPos, sc, out and 0.75 or 1.25
             return
         else
@@ -306,6 +305,8 @@ class Stage
         vc = @viewCenter()
         vc.x = 560.5 if @viewSize().x > 1120
         vc.minus(pos(60.5,30.5)).scale(1/zoom)
+
+    setCursor: (cursor) -> @svg.style cursor: cursor
         
     resetView: -> @setZoom 1, @toolCenter 1
     
@@ -377,7 +378,12 @@ class Stage
         post.emit 'stage', 'zoom',    @zoom
         box
 
-    onMouseMove: (event) => @shapes.updateDrawing event
+    onMouseMove: (event) => 
+    
+        if @kali.shapeTool() == 'loupe'
+            @kali.stage.setCursor @kali.tools.ctrlDown and 'zoom-out' or 'zoom-in'
+        
+        @shapes.updateDrawing event
         
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   

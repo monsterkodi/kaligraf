@@ -91,6 +91,8 @@ class Color extends Tool
             
             @kali.palette = new Palette @kali
     
+    hideChildren: -> post.emit 'palette', 'hide'
+            
     #  0000000  000      000   0000000  000   000  
     # 000       000      000  000       000  000   
     # 000       000      000  000       0000000    
@@ -98,6 +100,11 @@ class Color extends Tool
     #  0000000  0000000  000   0000000  000   000  
     
     onClick: (e)  => 
+        
+        if @kali.palette.proxy == @name
+            post.emit 'palette', 'toggle'
+            delete @kali.tools.temp
+            return
     
         post.emit 'palette', 'proxy', @
         
@@ -116,14 +123,25 @@ class Color extends Tool
             fill.element.style.width  = "20px"            
             fill.element.style.height = "20px"            
     
-    onMouseLeave: => log 'leave', @name
+    onMouseLeave: => #log 'leave', @name
         
     onMouseEnter: => 
+        
+        if @name == 'fill' and @kali.tools.temp?.name == 'stroke'
+            delete @kali.tools.temp
+            tempStroke = true
         
         super
         
         p = @pos()
-        p = @kali.tools.stroke.pos() if @name == 'fill'
+        
+        if @name == 'fill'
+            p = @kali.tools.stroke.pos() 
+            if tempStroke 
+                @kali.tools.temp = @kali.tools.stroke
+        
+        if @name == 'stroke' 
+            @kali.tools.temp = @
         
         post.emit 'palette', 'show', pos(60,0).plus p
         

@@ -18,6 +18,26 @@ class Trans
     height:    (item, h) -> if h? then @setHeight(item, h) else @getHeight item
     size:      (item, s) -> if s? then @setSize(  item, s) else @getSize   item
     pos:       (item, p) -> if p? then @setPos(   item, p) else @getPos    item
+    rect:      (item, r) -> if r? then @setRect(  item, r) else @getRect   item
+
+    setRect: (item, r) ->
+        
+        r = normRect   r
+        w = rectWidth  r 
+        h = rectHeight r
+        
+        return if w == 0 or h == 0
+
+        @setWidth  item, w
+        @setHeight item, h
+        
+        @setPos item, rectOffset r
+        
+    getRect: (item) ->
+        
+        p = @getPos  item
+        s = @getSize item
+        x:p.x, y:p.y, x2:p.x+s.x, y2:p.y+s.y, w:s.x, h:s.y
     
     setCenter: (item, c) -> @setPos item, c.minus @getSize(item).scale 0.5
     getCenter: (item)    -> 
@@ -31,17 +51,7 @@ class Trans
             else
                 bb = item.bbox()
                 pos(tx, ty).plus pos bb.cx, bb.cy
-    
-    setRect: (item, r) ->
         
-        r = normRect r
-        
-        return if rectWidth(r) == 0 or rectHeight(r) == 0
-
-        @setWidth  item, rectWidth  r 
-        @setHeight item, rectHeight r 
-        @setPos    item, rectOffset r
-    
     setPos: (item, c) -> 
         
         bb = item.bbox()
@@ -67,7 +77,7 @@ class Trans
     setWidth:  (item, w) -> 
     
         switch item.type
-            
+            when 'text'    then item.font 'size', item.font('size')*w/@getWidth(item)
             when 'ellipse' then item.attr rx: w/2 
             when 'circle'  then item.attr r: w/2
             else                item.width w
@@ -76,6 +86,7 @@ class Trans
         
         switch item.type
             
+            when 'text'    then item.font 'size', item.font('size')*h/@getHeight(item)
             when 'ellipse' then item.attr ry: h/2 
             when 'circle'  then item.attr r: h/2
             else                item.height h

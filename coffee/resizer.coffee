@@ -7,7 +7,7 @@
 
 { elem, post, drag, first, last, pos, log, _ } = require 'kxk'
 
-{ boxForItems, posForRect, moveBox, zoomBox, scaleBox, boxOffset, boxSize } = require './utils'
+{ boxForItems, posForRect, moveBox, zoomBox, scaleBox, boxOffset, boxSize, rectSize, rectOffset } = require './utils'
 
 class Resizer
 
@@ -42,75 +42,70 @@ class Resizer
 
     onResizeMove:  (drag, event) =>
 
+        dx = drag.delta.x
+        dy = drag.delta.y
+        
+        return if dx == 0 and dy == 0
+        
         left  = drag.id.includes 'left'
         right = drag.id.includes 'right'
         top   = drag.id.includes 'top'
         bot   = drag.id.includes 'bot'
-        dx    = 0
-        dy    = 0
-        if left  then dx = -drag.delta.x
-        if right then dx =  drag.delta.x
-        if top   then dy = -drag.delta.y
-        if bot   then dy =  drag.delta.y
+                
+        bc     = @kali.stage.stageForView pos @sbox.cx, @sbox.cy
+        stl    = @kali.stage.stageForView pos @sbox.x,  @sbox.y
+        sbr    = @kali.stage.stageForView pos @sbox.x2, @sbox.y2
 
-        return if dx == 0 and dy == 0
+        z   = @kali.stage.zoom
+        vo  = boxOffset @kali.stage.svg.viewbox()
+        stl = boxOffset(@sbox)                     .minus(vo).scale(1.0/z).plus(vo) 
+        sbr = boxOffset(@sbox).plus(boxSize(@sbox)).minus(vo).scale(1.0/z).plus(vo)
+        
+        pivot  = stl.mid sbr 
+        aspect = @sbox.w / @sbox.h
 
+        if not left and not right then dx = 0
+        if not top  and not bot   then dy = 0
+                
+        if left  then dx = -dx; pivot.x = sbr.x
+        if right then           pivot.x = stl.x
+        if top   then dy = -dy; pivot.y = sbr.y
+        if bot   then           pivot.y = stl.y
+
+        if event.shiftKey
+            if Math.abs(dx) > Math.abs(dy)
+                dy = dx / aspect
+            else
+                dx = dy * aspect
+        
         fx = (@sbox.w + dx)/@sbox.w
         fy = (@sbox.h + dy)/@sbox.h
-
+        
         if @sbox.w <= 10 and fx < 1 then fx = 1
         if @sbox.h <= 10 and fy < 1 then fy = 1
-
-        z = @kali.stage.zoom
-        vo = boxOffset @kali.stage.svg.viewbox()
-        tl = boxOffset(@sbox)                     .minus(vo).scale(1.0/z).plus(vo) 
-        br = boxOffset(@sbox).plus(boxSize(@sbox)).minus(vo).scale(1.0/z).plus(vo)
+        
+        resizeRect = (r, pivot, scale) ->
+            s  = rectSize   r
+            o  = rectOffset r
+            tl = pivot.plus o.minus(pivot).mul scale
+            br = pivot.plus o.plus(s).minus(pivot).mul scale
+            x:tl.x, y:tl.y, x2:br.x, y2:br.y
         
         for item in @selection.items
 
-            iw = @trans.width  item
-            ih = @trans.height item
-
-            if item.type in ['circle', 'text']
-
+            if item.type == 'text'
                 if Math.abs(dx) > Math.abs(dy)
-                    fr = fx
-                else if Math.abs(dy) > Math.abs(dx)
-                    fr = fy
+                    tx = fx; ty = (@sbox.h + dx / aspect)/@sbox.h
                 else
-                    fr = 1
-
-            if item.type == 'circle'
-
-                item.radius (iw * fr)/2.0
-
-            else if item.type == 'text'
-
-                c = @trans.center item
-                item.font 'size', fr * item.font 'size'
-                @trans.center item, c
-                
-            else 
-                
-                c = @trans.center item
-                item.size iw * fx, ih * fy
-                item.center 0,0
-                @trans.center item, c
-                
-            if item.type in ['circle', 'text'] 
-                ax = ay = fr
+                    ty = fy; tx = (@sbox.w + dy * aspect)/@sbox.w
+                    
+                @trans.rect item, resizeRect @trans.rect(item), pivot, pos tx, ty
             else
-                ax = fx
-                ay = fy
-               
-            if left  then @trans.center item, pos                        @trans.width(item)  / 2 + br.x - ax * (br.x - (@trans.center(item).x - iw/2)), @trans.center(item).y
-            if top   then @trans.center item, pos @trans.center(item).x, @trans.height(item) / 2 + br.y - ay * (br.y - (@trans.center(item).y - ih/2))
-            if right then @trans.center item, pos                        @trans.width(item)  / 2 + tl.x + fx * ((@trans.center(item).x - iw/2) - tl.x), @trans.center(item).y
-            if bot   then @trans.center item, pos @trans.center(item).x, @trans.height(item) / 2 + tl.y + fy * ((@trans.center(item).y - ih/2) - tl.y)
+                @trans.rect item, resizeRect @trans.rect(item), pivot, pos fx, fy
                     
         @calcBox()
         @selection.updateItems()
-
+    
     # 00000000   00000000   0000000  000000000
     # 000   000  000       000          000
     # 0000000    0000000   000          000

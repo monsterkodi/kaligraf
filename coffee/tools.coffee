@@ -160,7 +160,7 @@ class Tools extends Tool
 
     saveSVG: (name, svg) ->
         svgFile = "#{__dirname}/../svg/#{name}.svg"
-        log "#{name} #{svgFile}", svg
+        log "saveSVG #{name} #{svgFile}", svg
         fs.writeFileSync svgFile, svg, encoding: 'utf8'
             
     #  0000000    0000000  000000000  000   0000000   000   000  

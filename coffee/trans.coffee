@@ -16,54 +16,50 @@ class Trans
     center:    (item, c) -> if c? then @setCenter(item, c) else @getCenter item
     width:     (item, w) -> if w? then @setWidth( item, w) else @getWidth  item
     height:    (item, h) -> if h? then @setHeight(item, h) else @getHeight item
-    size:      (item, s) -> if s? then @setSize(  item, s) else @getSize item
+    size:      (item, s) -> if s? then @setSize(  item, s) else @getSize   item
+    pos:       (item, p) -> if p? then @setPos(   item, p) else @getPos    item
     
-    getCenter: (item) ->
-        switch item.type
-            when 'ellipse', 'circle' then @getPos item
-            else @getPos(item).plus @getSize(item).scale 0.5
-            
-    setCenter: (item, c) ->
-        switch item.type
-            when 'ellipse', 'circle' then @setPos item, c
-            else @setPos item, c.minus @getSize(item).scale 0.5
+    setCenter: (item, c) -> @setPos item, c.minus @getSize(item).scale 0.5
+    getCenter: (item)    -> @getPos(item).plus @getSize(item).scale 0.5
     
     setRect: (item, r) ->
+        
         r = normRect r
+        
+        return if rectWidth(r) == 0 or rectHeight(r) == 0
 
         switch item.type
             when 'ellipse'
                 item.attr 
-                    rx: rectWidth(r)/2
+                    rx: rectWidth(r)/2 
                     ry: rectHeight(r)/2
                     
-                @setPos item, rectCenter r
             when 'circle'
-                item.attr
-                    r: Math.max rectWidth(r)/2, rectHeight(r)/2
+                item.attr r:Math.max rectWidth(r)/2, rectHeight(r)/2
                     
-                @setPos item, rectCenter r
             else
                 item.width  rectWidth  r
                 item.height rectHeight r
         
-                @setPos item, rectOffset r
+        @setPos item, rectOffset r
     
     setPos: (item, c) -> 
         
-        if item.type == 'text'
-            p = pos(c).minus @getPos item
-            item.transform {x:p.x, y:p.y}, true
-        else
-            item.transform x:c.x, y:c.y
+        p = pos(c).minus @getPos item
+        item.transform {x:p.x, y:p.y}, true
         c
         
     getPos: (item) -> 
     
-        if item.type == 'text'
-            pos item.transform('x')+item.bbox().cx, item.transform('y')+item.bbox().cy
-        else
-            pos item.transform('x'), item.transform('y')
+        tx = item.transform 'x'
+        ty = item.transform 'y'
+        bb = item.bbox()
+    
+        switch item.type
+            when 'circle', 'ellipse'
+                pos tx-bb.width/2, ty-bb.height/2
+            else
+                pos tx+bb.x, ty+bb.y
 
     setWidth:  (item, w) -> if item.type != 'text' then item.width(w)  else item.width(w)
     setHeight: (item, h) -> if item.type != 'text' then item.height(h) else item.height(h)

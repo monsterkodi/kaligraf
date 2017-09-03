@@ -32,7 +32,7 @@ class Shapes
             
             when 'triangle'
                 
-                e = @svg.polygon '-50,50 0,-50 50,50'
+                e = @svg.polygon '-0.50,0.50 0,-0.50 0.50,0.50'
                 
             when 'line', 'polyline', 'polygon'
                 
@@ -150,7 +150,7 @@ class Shapes
                 @drawing = @addShape shape, stagePos
                 
                 if shape not in ['line', 'polygon', 'polyline']
-                    @trans.center @drawing, stagePos
+                    @trans.pos @drawing, stagePos
 
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
@@ -261,10 +261,8 @@ class Shapes
                 @stage.setCursor @kali.tools.ctrlDown and 'zoom-out' or 'zoom-in'
 
         if @drawing
-            
-            zero = false
-            
-            if @trans.width(@drawing) == 0
+
+            if drag.startPos == drag.lastPos
 
                 switch shape
                     when 'text' then
@@ -272,26 +270,12 @@ class Shapes
                         @drawing.remember 'isPickPoly', true
                         return
                     when 'ellipse'
-                        @drawing.width 50
+                        @drawing.size 50, 100
+                        @trans.center @drawing, stagePos
                     else
-                        @drawing.width 100
-                zero = true    
+                        @drawing.size 100, 100
+                        @trans.center @drawing, stagePos
                 
-            if @trans.height(@drawing) == 0
-
-                switch shape
-                    when 'text' then
-                    else
-                        @drawing.height 100
-                zero = true       
-                
-            if zero
-                
-                if shape == 'rect'
-                    stagePos.sub pos 50, 50
-                    
-                @trans.center @drawing, stagePos
-            
             if not @drawing.remember 'isPickPoly'
                 
                 @endDrawing()

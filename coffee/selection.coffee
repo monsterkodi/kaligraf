@@ -218,7 +218,7 @@ class Selection
         dx /= @kali.stage.zoom
         dy /= @kali.stage.zoom
 
-        @kali.trans.center e, @kali.trans.center(e).plus pos dx,dy 
+        @kali.trans.pos e, @kali.trans.pos(e).plus pos dx,dy 
          
     #  0000000   0000000   000       0000000   00000000   
     # 000       000   000  000      000   000  000   000  

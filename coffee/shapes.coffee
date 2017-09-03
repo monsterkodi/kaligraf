@@ -233,9 +233,10 @@ class Shapes
         
     removeLastPolyPoint: ->
         
-        arr = @drawing.array().valueOf()
-        arr.pop() if arr.length > 2
-        @drawing.plot arr        
+        if @drawing
+            arr = @drawing.array().valueOf()
+            arr.pop() if arr.length > 2
+            @drawing.plot arr        
         
     #  0000000  000000000   0000000   00000000   
     # 000          000     000   000  000   000  

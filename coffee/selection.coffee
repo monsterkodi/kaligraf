@@ -7,7 +7,7 @@
 
 { last, elem, post, pos, log, _ } = require 'kxk'
 
-{ normRect, rectsIntersect, posForRect, boxForItems } = require './utils'
+{ normRect, rectsIntersect, rectOffset, boxForItems } = require './utils'
 
 class Selection
 
@@ -139,7 +139,7 @@ class Selection
     start: (p,o) -> 
         
         @rect = x:p.x, y:p.y, x2:p.x, y2:p.y 
-        @pos = posForRect @rect
+        @pos = rectOffset @rect
         @updateRect o
         
     move: (p,o) -> 

@@ -7,7 +7,7 @@
 
 { elem, post, drag, first, last, pos, log, _ } = require 'kxk'
 
-{ boxForItems, posForRect, moveBox, zoomBox, scaleBox, boxOffset, boxSize, rectSize, rectOffset } = require './utils'
+{ boxForItems, moveBox, zoomBox, scaleBox, boxOffset, boxSize, rectSize, rectOffset } = require './utils'
 
 class Resizer
 
@@ -81,8 +81,8 @@ class Resizer
         fx = (@sbox.w + dx)/@sbox.w
         fy = (@sbox.h + dy)/@sbox.h
         
-        if @sbox.w <= 10 and fx < 1 then fx = 1
-        if @sbox.h <= 10 and fy < 1 then fy = 1
+        if @sbox.w <= 1 and fx < 1 then fx = 1
+        if @sbox.h <= 1 and fy < 1 then fy = 1
         
         resizeRect = (r, pivot, scale) ->
             s  = rectSize   r

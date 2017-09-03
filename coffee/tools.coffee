@@ -5,7 +5,7 @@
 #    000     000   000  000   000  000           000
 #    000      0000000    0000000   0000000  0000000 
 
-{ elem, stopEvent, post, first, last, log, _ } = require 'kxk'
+{ elem, stopEvent, fileExists, post, first, last, fs, path, log, _ } = require 'kxk'
 
 Tool = require './tool'
 
@@ -140,7 +140,10 @@ class Tools extends Tool
             cfg[0].list = cfg.slice 1
             cfg = cfg[0]
 
-        if svgs[cfg.name]?
+            
+        if cfg.svg = @loadSVG cfg.name
+            
+        else if svgs[cfg.name]?
             cfg.svg = svgs[cfg.name]
             
         clss = cfg.class and require("./#{cfg.class}") or Tool
@@ -149,6 +152,17 @@ class Tools extends Tool
         @tools.push tool
         tool
         
+    loadSVG: (name) ->
+        svgFile = "#{__dirname}/../svg/#{name}.svg"
+        if fileExists svgFile
+            log "loadSVG #{svgFile}"
+            return fs.readFileSync svgFile, encoding: 'utf8'
+
+    saveSVG: (name, svg) ->
+        svgFile = "#{__dirname}/../svg/#{name}.svg"
+        log "#{name} #{svgFile}", svg
+        fs.writeFileSync svgFile, svg, encoding: 'utf8'
+            
     #  0000000    0000000  000000000  000   0000000   000   000  
     # 000   000  000          000     000  000   000  0000  000  
     # 000000000  000          000     000  000   000  000 0 000  

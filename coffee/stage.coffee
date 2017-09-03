@@ -142,7 +142,7 @@ class Stage
         
         @selection.set selected
         
-        log svgStr
+        # log svgStr
         
         svgStr
                     
@@ -161,11 +161,7 @@ class Stage
         @selection.clear()
         
         bb = bboxForItems items
-        log 'bb', bb
-        # bb = boxForItems items, @viewPos().plus boxOffset @svg.viewbox()
-        # log 'bb', bb
         growBox bb
-        # log 'grow', bb
         
         svg = @getSVG items, bb
         clipboard.writeText svg

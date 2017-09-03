@@ -167,7 +167,9 @@ class Tool
             return
             
         if e?.ctrlKey and @svg?
-            @setSVG @kali.stage.copy()
+            svg = @kali.stage.copy()
+            @setSVG svg
+            @kali.tools.saveSVG @name, svg
             return
             
         if @hasChildren() and e

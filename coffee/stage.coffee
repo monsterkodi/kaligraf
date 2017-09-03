@@ -7,7 +7,7 @@
 
 { resolve, elem, post, drag, stopEvent, last, clamp, pos, fs, log, _ } = require 'kxk'
 
-{ growBox, normRect, boxForItems, boxOffset, boxCenter } = require './utils'
+{ growBox, normRect, boxForItems, bboxForItems, boxOffset, boxCenter } = require './utils'
 
 { clipboard } = require 'electron'
 
@@ -23,6 +23,7 @@ class Stage
 
         @element = elem 'div', id: 'stage'
         @kali.element.insertBefore @element, @kali.element.firstChild
+        
         @svg = SVG(@element).size '100%', '100%' 
         @svg.addClass 'stageSVG'
         @svg.clear()
@@ -41,11 +42,25 @@ class Stage
 
         @element.addEventListener 'wheel',     @onWheel
         @element.addEventListener 'mousemove', @onMouseMove
+        
         window.area.on 'resized', @onResize
 
+        post.on 'stage', @onStage
+        
         @zoom = 1
         @resetView()
 
+    onStage: (action, value) =>
+        
+        switch action
+            
+            when 'setColor' then @setColor value
+                
+    setColor: (c) ->
+        
+        @color = c
+        @kali.element.style.background = @color
+        
     # 000  000000000  00000000  00     00  
     # 000     000     000       000   000  
     # 000     000     0000000   000000000  
@@ -60,10 +75,8 @@ class Stage
                 return i.instance
 
     items: ->
+        
         @svg.children().filter (child) ->
-            if child.type != 'g' and child.id()?.startsWith 'SvgjsG'
-                log 'skip group', child.id()
-                return false
             if child.type == 'defs'
                 return false
             true
@@ -87,6 +100,9 @@ class Stage
         
         if e.firstChild.tagName == 'svg'
 
+            if e.firstChild.style.background
+                @setColor e.firstChild.style.background
+            
             svg = SVG.adopt e.firstChild
             if svg? and svg.children().length
                 
@@ -98,18 +114,35 @@ class Stage
                     if added.type != 'defs' and opt?.select != false
                         @selection.add last @svg.children() 
 
-    getSVG: (items, bb) ->
+    getSVG: (items, bb, color) ->
         
         selected = _.clone @selection.items
         @selection.clear()
         
-        svgStr = '<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" version="1.1"  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" style="stroke-linecap: round; stroke-linejoin: round;" '
-        svgStr += "viewBox=\"#{bb.x} #{bb.y} #{bb.width} #{bb.height}\">"
+        svgStr = """
+            <svg width="100%" height="100%" 
+            version="1.1" 
+            xmlns="http://www.w3.org/2000/svg" 
+            """
+            
+        if color
+            svgStr += """
+                xmlns:xlink="http://www.w3.org/1999/xlink" 
+                xmlns:svgjs="http://svgjs.com/svgjs" 
+            """
+            
+        style  = "stroke-linecap: round; stroke-linejoin: round; "
+        style += "background: #{color};" if color
+        svgStr += "\nstyle=\"#{style}\""
+        svgStr += "\nviewBox=\"#{bb.x} #{bb.y} #{bb.width} #{bb.height}\">"
         for item in items
+            svgStr += '\n'
             svgStr += item.svg()
         svgStr += '</svg>'
         
         @selection.set selected
+        
+        log svgStr
         
         svgStr
                     
@@ -127,15 +160,20 @@ class Stage
         
         @selection.clear()
         
-        bb = boxForItems items, @viewPos()
+        bb = bboxForItems items
+        log 'bb', bb
+        # bb = boxForItems items, @viewPos().plus boxOffset @svg.viewbox()
+        # log 'bb', bb
         growBox bb
+        # log 'grow', bb
         
         svg = @getSVG items, bb
         clipboard.writeText svg
-        # log svg
         
         for item in selected
-            @selection.add item        
+            @selection.add item
+            
+        svg
 
     paste: -> 
         
@@ -182,13 +220,10 @@ class Stage
     
     save: -> 
         
-        if 1
-            bb = @svg.bbox()
-            growBox bb
-        else
-            bb = x:0, y:0, width:@viewSize().x, height:@viewSize().y
+        bb = @svg.bbox()
+        growBox bb
 
-        svg = @getSVG @items(), bb
+        svg = @getSVG @items(), bb, @color
         
         fs.writeFileSync resolve('~/Desktop/kaligraf.svg'), svg
         

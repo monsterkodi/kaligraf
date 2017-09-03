@@ -43,7 +43,7 @@ class Menus
         
         @children = []
         
-        @element = elem 'div', class: 'menus'
+        @element = elem 'div', id: 'menus'
         @kali.element.appendChild @element
         
         menus = [

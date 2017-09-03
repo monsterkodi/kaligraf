@@ -101,14 +101,19 @@ class Color extends Tool
     
     onClick: (e)  => 
         
+        if @name == 'fill' and e.metaKey
+            post.emit 'stage', 'setColor', @color
+            return
+        
         if @kali.palette.proxy == @name
+            
             post.emit 'palette', 'toggle'
             delete @kali.tools.temp
             return
     
         post.emit 'palette', 'proxy', @
         
-        if  @name == 'fill'
+        if @name == 'fill'
             
             @element.style.left   = "10px" 
             @element.style.top    = "10px"            

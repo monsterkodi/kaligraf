@@ -27,6 +27,20 @@ module.exports =
 
         module.exports.moveBox bb, pos -offset.x, -offset.y
 
+    bboxForItems: (items, offset={x:0,y:0}) ->
+        
+        if empty items
+            return new SVG.BBox() 
+            
+        bb = null
+        for item in items
+            b = item.bbox()
+            b = b.transform item.transform().matrix
+            bb ?= b
+            bb = bb.merge b
+
+        module.exports.moveBox bb, pos -offset.x, -offset.y
+        
     boxCenter: (box) -> pos box.x + box.width/2.0, box.y + box.height/2.0
     boxOffset: (box) -> pos box.x, box.y
     boxSize:   (box) -> pos box.width, box.height

@@ -166,6 +166,10 @@ class Tool
             @kali.stage.addSVG @svg.svg()
             return
             
+        if e?.ctrlKey and @svg?
+            @setSVG @kali.stage.copy()
+            return
+            
         if @hasChildren() and e
             @toggleChildren()
         else if @hasParent()

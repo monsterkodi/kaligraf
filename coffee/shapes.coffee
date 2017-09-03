@@ -5,7 +5,7 @@
 #      000  000   000  000   000  000        000            000
 # 0000000   000   000  000   000  000        00000000  0000000 
 
-{ last, pos, log } = require 'kxk'
+{ post, last, pos, log } = require 'kxk'
 
 { boxCenter } = require './utils'
 
@@ -113,6 +113,23 @@ class Shapes
                         if event.shiftKey
                             @selection.del e
                             
+            when 'pipette'
+                
+                e = @stage.itemAtPos eventPos
+                if e? and e != @svg
+                    
+                    @kali.tools.fill.color = e.style('fill')
+                    @kali.tools.fill.alpha = e.style('fill-opacity')
+                    @kali.tools.fill.update()
+                    post.emit 'color', 'fill', 'color', @kali.tools.fill.color
+                    
+                    @kali.tools.stroke.color = e.style('stroke')
+                    @kali.tools.stroke.alpha = e.style('stroke-opacity')
+                    @kali.tools.stroke.update()
+                    post.emit 'color', 'stroke', 'color', @kali.tools.stroke.color
+                    
+                    @kali.tools.width.setWidth e.style('stroke-width')
+                
             when 'loupe' 
                 
                 @selection.loupe = @selection.addRect 'loupeRect'

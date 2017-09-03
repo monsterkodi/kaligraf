@@ -145,7 +145,27 @@ class Stage
         # log svgStr
         
         svgStr
-                    
+
+    #  0000000   0000000   000   000  00000000  
+    # 000       000   000  000   000  000       
+    # 0000000   000000000   000 000   0000000   
+    #      000  000   000     000     000       
+    # 0000000   000   000      0      00000000  
+    
+    save: -> 
+        
+        bb = @svg.bbox()
+        growBox bb
+
+        svg = @getSVG @items(), bb, @color
+        
+        fs.writeFileSync resolve('~/Desktop/kaligraf.svg'), svg
+        
+    load: ->
+        
+        svg = fs.readFileSync resolve('~/Desktop/kaligraf.svg'), encoding: 'utf8'
+        @setSVG svg
+                                            
     #  0000000   0000000   00000000   000   000  
     # 000       000   000  000   000   000 000   
     # 000       000   000  00000000     00000    
@@ -208,26 +228,6 @@ class Stage
             when 'all' 
                 @selection.set @items()
         
-    #  0000000   0000000   000   000  00000000  
-    # 000       000   000  000   000  000       
-    # 0000000   000000000   000 000   0000000   
-    #      000  000   000     000     000       
-    # 0000000   000   000      0      00000000  
-    
-    save: -> 
-        
-        bb = @svg.bbox()
-        growBox bb
-
-        svg = @getSVG @items(), bb, @color
-        
-        fs.writeFileSync resolve('~/Desktop/kaligraf.svg'), svg
-        
-    load: ->
-        
-        svg = fs.readFileSync resolve('~/Desktop/kaligraf.svg'), encoding: 'utf8'
-        @setSVG svg
-                                            
     # 000   000  000  00000000  000   000  
     # 000   000  000  000       000 0 000  
     #  000 000   000  0000000   000000000  

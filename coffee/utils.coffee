@@ -105,6 +105,9 @@ module.exports =
     # 000   000  00000000   0000000     000     
     
     posForRect: (r) -> pos parseInt(r.x), parseInt(r.y)
+    rectWidth:  (r) -> r.x2 - r.x
+    rectHeight: (r) -> r.y2 - r.y
+    rectCenter: (r) -> pos(r.x,r.y).mid pos(r.x2,r.y2)
         
     # 000  000   000  000000000  00000000  00000000    0000000  00000000   0000000  000000000  
     # 000  0000  000     000     000       000   000  000       000       000          000     

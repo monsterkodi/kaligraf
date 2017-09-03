@@ -7,6 +7,8 @@
 
 { pos, log, _ } = require 'kxk'
 
+{ normRect, rectWidth, rectHeight, rectCenter } = require './utils'
+
 class Trans
 
     constructor: (@kali) ->
@@ -14,6 +16,13 @@ class Trans
     center:    (item, c) -> if c? then @setCenter(item, c) else @getCenter item
     width:     (item, w) -> if w? then @setWidth( item, w) else @getWidth  item
     height:    (item, h) -> if h? then @setHeight(item, h) else @getHeight item
+    
+    setRect: (item, r) ->
+        r = normRect r
+        log 'setRect', r
+        item.width  rectWidth  r
+        item.height rectHeight r
+        @setCenter item, pos r.x,r.y
     
     setCenter: (item, c) -> 
         

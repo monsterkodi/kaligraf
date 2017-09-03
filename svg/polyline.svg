@@ -3,4 +3,4 @@ version="1.1"
 xmlns="http://www.w3.org/2000/svg" 
 style="stroke-linecap: round; stroke-linejoin: round; "
 viewBox="868.9 27 133.2 144">
-<polyline id="SvgjsPolyline4085" points="880,42 896,41 911,40 929,39 946,39 961,41 972,45 981,53 987,63 991,77 988,93 978,102 965,108 948,110 929,110 910,110 884,108 884,124 884,141 884,159" style="stroke: rgb(127, 127, 255); stroke-opacity: 1; stroke-width: 10; fill: none; fill-opacity: 0;"></polyline></svg>
+<polyline id="SvgjsPolyline4085" points="880,42 896,41 911,40 929,39 946,39 961,41 972,45 981,53 987,63 991,77 988,93 978,102 965,108 948,110 929,110 910,110 884,108 884,124 884,141 884,159" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(4, 0, 172); fill-opacity: 0;"></polyline></svg>

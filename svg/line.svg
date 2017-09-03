@@ -3,4 +3,4 @@ version="1.1"
 xmlns="http://www.w3.org/2000/svg" 
 style="stroke-linecap: round; stroke-linejoin: round; "
 viewBox="712.5 26.7 126 135.6">
-<line id="SvgjsLine2705" x1="723" y1="151" x2="828" y2="38" style="stroke: rgb(127, 127, 255); stroke-opacity: 1; stroke-width: 10; fill: none; fill-opacity: 0;"></line></svg>
+<line id="SvgjsLine2705" x1="723" y1="151" x2="828" y2="38" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(4, 0, 172); fill-opacity: 1;"></line></svg>

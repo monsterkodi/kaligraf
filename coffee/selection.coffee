@@ -54,8 +54,9 @@ class Selection
         @clear()
         @items = items
         
-        for e in @items
-            @addRectForItem e
+        if items.length
+            for e in @items
+                @addRectForItem e
         
         post.emit 'selection', 'set', @items
     
@@ -136,7 +137,7 @@ class Selection
       
     start: (p,o) -> 
         
-        @rect = x:p.x, y:p.y, x2: p.x, y2:p.y 
+        @rect = x:p.x, y:p.y, x2:p.x, y2:p.y 
         @pos = posForRect @rect
         @updateRect o
         

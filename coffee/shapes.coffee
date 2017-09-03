@@ -81,7 +81,7 @@ class Shapes
         
         shape = @kali.shapeTool()
         
-        for s,k of {pick:event.metaKey, pan:event.altKey, loupe:event.ctrlKey}
+        for s,k of {pick:event.shiftKey, pan:event.metaKey, loupe:event.ctrlKey, pipette:event.altKey}
             if k and shape != s
                 @tools[s].onClick()
                 shape = s
@@ -190,9 +190,15 @@ class Shapes
                 @addPolyPoint stagePos
                 
             else
-                
-                @trans.width  @drawing, drag.deltaSum.x / @kali.stage.zoom
-                @trans.height @drawing, drag.deltaSum.y / @kali.stage.zoom
+                z = @kali.stage.zoom
+                @trans.setRect @drawing, 
+                    x:  drag.startPos.x / z
+                    y:  drag.startPos.y / z
+                    x2: drag.pos.x / z
+                    y2: drag.pos.y / z
+                    
+                # @trans.width  @drawing, drag.deltaSum.x / z
+                # @trans.height @drawing, drag.deltaSum.y / z
                 
     updateDrawing: (event) ->
                 

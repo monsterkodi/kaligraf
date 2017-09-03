@@ -69,11 +69,16 @@ class Stage
     
     itemAtPos: (p) ->
         
-        e = document.elementsFromPoint p.x, p.y
-        for i in e
-            if i.instance? and i != @svg and i.instance in @svg.children()
-                return i.instance
-
+        r = @svg.node.createSVGRect()
+        r.x      = p.x
+        r.y      = p.y
+        r.width  = 1
+        r.height = 1
+        
+        for item in @svg.node.getIntersectionList r, null
+            if item.instance in @items()
+                return item.instance
+        
     items: ->
         
         @svg.children().filter (child) ->

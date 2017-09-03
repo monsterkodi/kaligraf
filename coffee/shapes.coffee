@@ -44,11 +44,9 @@ class Shapes
                 e.plot [[stagePos.x, stagePos.y], [stagePos.x, stagePos.y]]
                 
             when 'text'
-                # e = @svg.text 'Hy!'
-                e = @svg.text 'Hy!\nWorld\n.oOXOo.'
+                e = @svg.text 'Text'
                 e.font 'size', 100
-                # e.font 'anchor', 'middle'
-                
+                log 'text created', e.node.instance
             else
                 e = @svg[shape]()
                 
@@ -99,11 +97,11 @@ class Shapes
 
                 e = @stage.itemAtPos eventPos
                 
-                if not e?
-                    # log 'ADOPT!!!', event.target.id
-                    e = SVG.adopt event.target
+                # if not e?
+                    # e = SVG.adopt event.target
+                    # log 'ADOPT!!!', event.target.id, event.target.instance
                     
-                if e == @svg
+                if e == @svg or not e?
                     if not event.shiftKey
                         @selection.clear()
                     @selection.start @eventPos(event), join:event.shiftKey

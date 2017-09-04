@@ -51,6 +51,8 @@ class Shapes
             when 'image'
                 
                 e = @svg.image 'file://' + resolve '~/Desktop/kaligraf.png'
+                e.loaded (loader) ->
+                    @size loader.width, loader.height
                 
             else
                 e = @svg[shape]()
@@ -300,7 +302,8 @@ class Shapes
                         c = boxCenter @drawing.bbox()
                         @drawing.center 0, 0
                         @kali.trans.center @drawing, c
-                
+            
+            @stage.selection.set [@drawing]
             delete @drawing
 
     # 00000000    0000000    0000000  

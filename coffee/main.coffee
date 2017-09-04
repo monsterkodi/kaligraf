@@ -17,6 +17,15 @@ class Main
         
         @kali = new Kali element: element  
         @kali.setStyle 'style'
+        
+        window.area.on 'resized', (w, h)  => 
+            if @kali.stage.virgin
+                delete @kali.stage.virgin
+                reset = => @kali.stage.resetView @kali.stage.zoom 
+                reset()
+                setTimeout reset, 100
+            else
+                @kali.stage.resetSize()
                                 
     start: ->
                 

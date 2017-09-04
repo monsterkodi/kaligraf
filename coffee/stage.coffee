@@ -43,12 +43,11 @@ class Stage
         @element.addEventListener 'wheel',     @onWheel
         @element.addEventListener 'mousemove', @onMouseMove
         
-        window.area.on 'resized', @onResize
-
         post.on 'stage', @onStage
         
         @zoom = 1
-        @resetView()
+        @virgin = true
+        # @resetView()
 
     onStage: (action, value) =>
         
@@ -346,7 +345,7 @@ class Stage
 
     setCursor: (cursor) -> @svg.style cursor: cursor
         
-    resetView: -> @setZoom 1, @toolCenter 1
+    resetView: (zoom=1) => @setZoom zoom, @toolCenter zoom
     
     centerSelection: -> 
     
@@ -394,7 +393,7 @@ class Stage
         box.width  = @viewSize().x / @zoom
         box.height = @viewSize().y / @zoom
         
-        @svg.viewbox box
+        @setViewBox box
         
     moveViewBox: (delta) ->
 

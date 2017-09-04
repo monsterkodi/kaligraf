@@ -93,7 +93,7 @@ class Resizer
         
         for item in @selection.items
 
-            if item.type == 'text'
+            if item.type in ['text', 'image']
                 if Math.abs(dx) > Math.abs(dy)
                     tx = fx; ty = (@sbox.h + dx / aspect)/@sbox.h
                 else

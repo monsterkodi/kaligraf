@@ -40,10 +40,33 @@ module.exports =
             bb = bb.merge b
 
         module.exports.moveBox bb, pos -offset.x, -offset.y
-        
+                
     boxCenter: (box) -> pos box.x + box.width/2.0, box.y + box.height/2.0
     boxOffset: (box) -> pos box.x, box.y
     boxSize:   (box) -> pos box.width, box.height
+    
+    boxPos: (box, name='top left') ->
+        
+        p = module.exports.boxCenter box
+        if name.includes 'left'  then p.x = box.x
+        if name.includes 'right' then p.x = box.x2
+        if name.includes 'top'   then p.y = box.y
+        if name.includes 'bot'   then p.y = box.y2
+        p
+
+    opposide: (name) ->
+        
+        switch name
+            when 'left'  then 'right'
+            when 'right' then 'left'
+            when 'top'   then 'bot'
+            when 'bot'   then 'top'
+            when 'top left'  then 'bot right'
+            when 'top right' then 'bot left'
+            when 'bot left'  then 'top right'
+            when 'bot right' then 'top left'
+            else 'center'
+        
     zoomBox:  (box, zoom)  -> module.exports.scaleBox 1.0/zoom
     scaleBox: (box, scale) ->
         

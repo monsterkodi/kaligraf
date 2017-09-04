@@ -7,7 +7,7 @@
 
 { elem, post, drag, first, last, pos, log, _ } = require 'kxk'
 
-{ boxForItems, moveBox, zoomBox, scaleBox, boxOffset, boxSize, rectSize, rectOffset } = require './utils'
+{ opposide, boxForItems, moveBox, zoomBox, scaleBox, boxOffset, boxPos, boxSize, rectSize, rectOffset } = require './utils'
 
 class Resizer
 
@@ -30,17 +30,48 @@ class Resizer
 
         @borderDrag = {}
         @cornerDrag = {}
+        @rotDrag    = {}
 
         post.on 'stage',     @onStage
         post.on 'selection', @onSelection
 
-    # 00     00   0000000   000   000  00000000
-    # 000   000  000   000  000   000  000
-    # 000000000  000   000   000 000   0000000
-    # 000 0 000  000   000     000     000
-    # 000   000   0000000       0      00000000
+    # 00000000    0000000   000000000   0000000   000000000  000   0000000   000   000  
+    # 000   000  000   000     000     000   000     000     000  000   000  0000  000  
+    # 0000000    000   000     000     000000000     000     000  000   000  000 0 000  
+    # 000   000  000   000     000     000   000     000     000  000   000  000  0000  
+    # 000   000   0000000      000     000   000     000     000   0000000   000   000  
+    
+    onRotation: (drag, event) =>
+        
+        if Math.abs(drag.delta.x) > Math.abs(drag.delta.y)
+            d = drag.delta.x
+        else
+            d = drag.delta.y
 
-    onResizeMove:  (drag, event) =>
+        angle = d
+            
+        transmat = new SVG.Matrix().around @rotationCenter.x, @rotationCenter.y, new SVG.Matrix().rotate angle
+
+        for item in @selection.items
+            oldCenter = @trans.center item
+            @trans.rotation item, angle + @trans.rotation item
+            newCenter = pos new SVG.Point(oldCenter).transform transmat
+            @trans.center item, newCenter
+            
+        @selection.updateItems()
+        
+        p = boxPos @rect.bbox(), opposide drag.id
+        @gg.transform rotation:@gg.transform('rotation')+angle, cx:p.x, cy:p.y
+        # @updateBox()
+        # @gg.rotate 45
+    
+    # 00000000   00000000   0000000  000  0000000  00000000  
+    # 000   000  000       000       000     000   000       
+    # 0000000    0000000   0000000   000    000    0000000   
+    # 000   000  000            000  000   000     000       
+    # 000   000  00000000  0000000   000  0000000  00000000  
+    
+    onResize:  (drag, event) =>
 
         dx = drag.delta.x
         dy = drag.delta.y
@@ -116,42 +147,59 @@ class Resizer
 
         @g = @svg.nested()
         @g.addClass 'resizerGroup'
+        @gg = @g.group()
 
-        @rect = @g.rect().addClass 'resizerRect'
+        @rect = @gg.rect().addClass 'resizerRect'
         @rect.attr width: '100%', height: '100%'
 
+        addRot = (x, y, id) =>
+            rot = @gg.circle(20).addClass 'resizerRot'
+            rot.attr cx:x, cy:y
+            @rotDrag[id] = new drag
+                    target:  rot.node
+                    onStart: @onRotStart
+                    onMove:  @onRotMove
+                    onStop:  @onRotStop
+            @rotDrag[id].id = id
+                   
+        addRot      0,      0, 'top left'
+        addRot '100%',      0, 'top right'
+        addRot      0, '100%', 'bot left'
+        addRot '100%', '100%', 'bot right'
+
+        addRot      0,  '50%', 'left'
+        addRot '100%',  '50%', 'right'
+        addRot  '50%',      0, 'top'
+        addRot  '50%', '100%', 'bot'        
+        
         addBorder = (x, y, w, h, cursor, id) =>
-            border = @g.rect().addClass 'resizerBorder'
+            border = @gg.rect().addClass 'resizerBorder'
             border.attr x:x, y:y, width:w, height:h
             border.style cursor: cursor
             @borderDrag[id] = new drag
                 target:  border.node
-                onStart: @onBorderStart
                 onMove:  @onBorderMove
-                onStop:  @onBorderStop
             @borderDrag[id].id = id
 
         addBorder -5,     0, 5, '100%', 'ew-resize', 'left'
         addBorder '100%', 0, 5, '100%', 'ew-resize', 'right'
         addBorder 0,     -5, '100%', 5, 'ns-resize', 'top'
         addBorder 0, '100%', '100%', 5, 'ns-resize', 'bot'
-
+        
         addCorner = (x, y, cursor, id) =>
-            corner = @g.circle(10).addClass 'resizerCorner'
+            corner = @gg.circle(10).addClass 'resizerCorner'
             corner.attr cx:x, cy:y
             corner.style cursor:cursor
             @cornerDrag[id] = new drag
                 target:  corner.node
-                onStart: @onCornerStart
                 onMove:  @onCornerMove
-                onStop:  @onCornerStop
             @cornerDrag[id].id = id
-
+            
         addCorner 0,           0, 'nw-resize', 'top left'
         addCorner '100%',      0, 'ne-resize', 'top right'
         addCorner 0,      '100%', 'sw-resize', 'bot left'
         addCorner '100%', '100%', 'se-resize', 'bot right'
-
+                    
         @drag = new drag
             target:  @rect.node
             onStart: @onDragStart
@@ -182,47 +230,19 @@ class Resizer
     # 000   000  000            000  000   000     000
     # 000   000  00000000  0000000   000  0000000  00000000
 
-    onCornerStart: (drag, event) => #log "corner #{drag.id} onStart"
-    onCornerStop:  (drag, event) => #log "corner #{drag.id} onStop"
-    onCornerMove:  (drag, event) => @onResizeMove drag, event
-
-    onBorderStart: (drag, event) => #log "border #{drag.id} onStart"
-    onBorderStop:  (drag, event) => #log "border #{drag.id} onStop"
-    onBorderMove:  (drag, event) => @onResizeMove drag, event
-
-    # 0000000     0000000   000   000
-    # 000   000  000   000   000 000
-    # 0000000    000   000    00000
-    # 000   000  000   000   000 000
-    # 0000000     0000000   000   000
-
-    setBox: (@rbox) ->
-
-        @box = new SVG.RBox @rbox
-
-        moveBox @box, @viewPos().scale -1
-
-        @g.attr
-            x:      @box.x
-            y:      @box.y
-            width:  @box.w
-            height: @box.h
-
-        @sbox = new SVG.RBox @box # in view coordinates
-
-        dx = @kali.stage.svg.viewbox().x
-        dy = @kali.stage.svg.viewbox().y
-
-        zoomBox @sbox, @kali.stage.zoom
-        moveBox @sbox, pos dx, dy
-
-    calcBox: ->
-
-        if @selection.empty()
-            @clear()
-        else
-            @setBox boxForItems @selection.items
-
+    onCornerMove: (drag, event) => @onResize   drag, event
+    onBorderMove: (drag, event) => @onResize   drag, event
+    onRotMove:    (drag, event) => @onRotation drag, event
+    
+    onRotStart: (drag, event) =>
+        
+        @rotationCenter = boxPos @selection.svg.bbox(), opposide drag.id
+        
+    onRotStop: (drag, event) => 
+        @gg.transform rotation:0
+        @gg.transform x:0, y:0
+        @updateBox()
+    
     # 0000000    00000000    0000000    0000000
     # 000   000  000   000  000   000  000
     # 000   000  0000000    000000000  000  0000
@@ -273,6 +293,10 @@ class Resizer
             d.deactivate()
         @cornerDrag = {}
 
+        for k,d of @rotDrag
+            d.deactivate()
+        @rotDrag = {}
+
     # 000  000000000  00000000  00     00   0000000
     # 000     000     000       000   000  000
     # 000     000     0000000   000000000  0000000
@@ -300,6 +324,19 @@ class Resizer
 
     delItem: (items, item) -> @updateBox()
 
+    # 0000000     0000000   000   000
+    # 000   000  000   000   000 000
+    # 0000000    000   000    00000
+    # 000   000  000   000   000 000
+    # 0000000     0000000   000   000
+
+    calcBox: -> 
+
+        if @selection.empty()
+            @clear()
+        else
+            @updateBox()
+    
     updateBox: ->
         
         box = @selection.svg.bbox()
@@ -308,6 +345,23 @@ class Resizer
         moveBox  box, boxOffset @viewPos()
         @setBox  box
 
+    setBox: (@rbox) ->
+
+        @box = new SVG.RBox @rbox
+
+        moveBox @box, @viewPos().scale -1
+
+        @g.attr
+            x:      @box.x
+            y:      @box.y
+            width:  @box.w
+            height: @box.h
+            
+        @sbox = new SVG.RBox @box # in view coordinates
+
+        zoomBox @sbox, @kali.stage.zoom
+        moveBox @sbox, boxOffset @kali.stage.svg.viewbox()
+        
     # 000   000  000  00000000  000   000
     # 000   000  000  000       000 0 000
     #  000 000   000  0000000   000000000

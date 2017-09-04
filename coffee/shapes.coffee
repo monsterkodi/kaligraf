@@ -171,6 +171,8 @@ class Shapes
         
         switch shape
             
+            when 'pipette' then
+                    
             when 'pan'   
                 
                 @stage.panBy drag.delta

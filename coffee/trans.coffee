@@ -7,19 +7,31 @@
 
 { pos, log, _ } = require 'kxk'
 
-{ normRect, rectWidth, rectHeight, rectCenter, rectOffset } = require './utils'
+{ normRect, boxCenter, boxOffset, rectWidth, rectHeight, rectCenter, rectOffset } = require './utils'
 
 class Trans
 
     constructor: (@kali) ->
 
-    center:    (item, c) -> if c? then @setCenter(item, c) else @getCenter item
-    width:     (item, w) -> if w? then @setWidth( item, w) else @getWidth  item
-    height:    (item, h) -> if h? then @setHeight(item, h) else @getHeight item
-    size:      (item, s) -> if s? then @setSize(  item, s) else @getSize   item
-    pos:       (item, p) -> if p? then @setPos(   item, p) else @getPos    item
-    rect:      (item, r) -> if r? then @setRect(  item, r) else @getRect   item
+    center: (item, c) -> if c? then @setCenter(item, c) else @getCenter item
+    width:  (item, w) -> if w? then @setWidth( item, w) else @getWidth  item
+    height: (item, h) -> if h? then @setHeight(item, h) else @getHeight item
+    size:   (item, s) -> if s? then @setSize(  item, s) else @getSize   item
+    pos:    (item, p) -> if p? then @setPos(   item, p) else @getPos    item
+    rect:   (item, r) -> if r? then @setRect(  item, r) else @getRect   item
+    rotation: (item, a, c) -> if a? then @setRotation(item, a, c) else @getRotation item
 
+    transform: (item, p) ->
+    
+        pos new SVG.Point(p).transform item.transform().matrix
+    
+    getRotation: (item) -> item.transform 'rotation'
+    setRotation: (item, a, c) -> 
+        if c?
+            item.transform rotation:a, cx:c.x, cy:c.y
+        else
+            item.transform rotation:a 
+    
     setRect: (item, r) ->
         
         r = normRect   r
@@ -31,7 +43,7 @@ class Trans
         @setWidth  item, w
         @setHeight item, h
         
-        @setPos item, rectOffset r
+        @setCenter item, rectCenter r
         
     getRect: (item) ->
         
@@ -39,18 +51,18 @@ class Trans
         s = @getSize item
         x:p.x, y:p.y, x2:p.x+s.x, y2:p.y+s.y, w:s.x, h:s.y
     
-    setCenter: (item, c) -> @setPos item, c.minus @getSize(item).scale 0.5
-    getCenter: (item)    -> 
-
-        tx = item.transform 'x'
-        ty = item.transform 'y'
-        
+    setCenter: (item, c) -> 
+    
         switch item.type
-            
-            when 'circle', 'ellipse' then pos tx, ty
+            when 'circle', 'ellipse'
+                item.transform x:c.x, y:c.y
             else
-                bb = item.bbox()
-                pos(tx, ty).plus pos bb.cx, bb.cy
+                bb = item.bbox().transform new SVG.Matrix().rotate @rotation item
+                item.transform x:c.x-bb.cx, y:c.y-bb.cy
+        
+    getCenter: (item)    -> 
+    
+        @transform item, boxCenter item.bbox()
         
     setPos: (item, c) -> 
         
@@ -64,15 +76,17 @@ class Trans
         
     getPos: (item) -> 
     
-        tx = item.transform 'x'
-        ty = item.transform 'y'
-        bb = item.bbox()
-    
-        switch item.type
-            when 'circle', 'ellipse'
-                pos tx-bb.width/2, ty-bb.height/2
-            else
-                pos tx+bb.x, ty+bb.y
+        @transform item, boxOffset item.bbox()
+        
+        # tx = item.transform 'x'
+        # ty = item.transform 'y'
+        # bb = item.bbox()
+#     
+        # switch item.type
+            # when 'circle', 'ellipse'
+                # pos tx-bb.width/2, ty-bb.height/2
+            # else
+                # pos tx+bb.x, ty+bb.y
 
     setWidth:  (item, w) -> 
     
@@ -83,9 +97,9 @@ class Trans
             else                item.width w
     
     setHeight: (item, h) -> 
-        
+
         switch item.type
-            
+             
             when 'text'    then item.font 'size', item.font('size')*h/@getHeight(item)
             when 'ellipse' then item.attr ry: h/2 
             when 'circle'  then item.attr r: h/2
@@ -95,6 +109,6 @@ class Trans
             
     getWidth:  (item) -> item.bbox().width
     getHeight: (item) -> item.bbox().height
-    getSize:   (item) -> pos @width(item), @height(item)
+    getSize:   (item) -> pos @getWidth(item), @getHeight(item)
     
 module.exports = Trans

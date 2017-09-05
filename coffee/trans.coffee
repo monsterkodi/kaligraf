@@ -32,24 +32,44 @@ class Trans
         else
             item.transform rotation:a 
     
-    setRect: (item, r) ->
+    resize: (item, matrix) ->
         
+        oldCenter = @getCenter item
+        newCenter = new SVG.Point oldCenter
+        newCenter = pos newCenter.transform matrix
+
+        oldSize = @getSize item
+        newSize = new SVG.Point oldSize
+        newSize = newSize.transform new SVG.Matrix().rotate item.transform().rotation
+        newSize.x += oldCenter.x; newSize.y += oldCenter.y
+        newSize = newSize.transform matrix
+        newSize.x -= newCenter.x; newSize.y -= newCenter.y
+        newSize = newSize.transform new SVG.Matrix().rotate -item.transform().rotation
+        newSize = pos newSize
+
+        log '------'
+        log oldSize
+        log newSize
+        
+        @setSize   item, newSize
+        @setCenter item, newCenter
+        
+    setRect: (item, r) ->
+         
         r = normRect   r
         w = rectWidth  r 
         h = rectHeight r
-        
+         
         return if w == 0 or h == 0
 
         @setWidth  item, w
         @setHeight item, h
-        
+         
         @setCenter item, rectCenter r
         
     getRect: (item) ->
         
-        p = @getPos  item
-        s = @getSize item
-        x:p.x, y:p.y, x2:p.x+s.x, y2:p.y+s.y, w:s.x, h:s.y
+        item.bbox().transform item.transform().matrix
     
     setCenter: (item, c) -> 
     
@@ -78,22 +98,13 @@ class Trans
     
         @transform item, boxOffset item.bbox()
         
-        # tx = item.transform 'x'
-        # ty = item.transform 'y'
-        # bb = item.bbox()
-#     
-        # switch item.type
-            # when 'circle', 'ellipse'
-                # pos tx-bb.width/2, ty-bb.height/2
-            # else
-                # pos tx+bb.x, ty+bb.y
-
     setWidth:  (item, w) -> 
     
         switch item.type
             when 'text'    then item.font 'size', item.font('size')*w/@getWidth(item)
             when 'ellipse' then item.attr rx: w/2 
             when 'circle'  then item.attr r: w/2
+            when 'rect'    then item.attr width: w
             else                item.width w
     
     setHeight: (item, h) -> 
@@ -103,6 +114,7 @@ class Trans
             when 'text'    then item.font 'size', item.font('size')*h/@getHeight(item)
             when 'ellipse' then item.attr ry: h/2 
             when 'circle'  then item.attr r: h/2
+            when 'rect'    then item.attr height: h
             else                item.height h
         
     setSize:   (item, s) -> @setWidth(item,s.x); @setHeight(item,s.y)

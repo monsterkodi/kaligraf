@@ -62,16 +62,53 @@ class Resizer
         
         p = boxPos @rect.bbox(), opposide drag.id
         @gg.transform rotation:@gg.transform('rotation')+angle, cx:p.x, cy:p.y
-        # @updateBox()
-        # @gg.rotate 45
     
     # 00000000   00000000   0000000  000  0000000  00000000  
     # 000   000  000       000       000     000   000       
     # 0000000    0000000   0000000   000    000    0000000   
     # 000   000  000            000  000   000     000       
     # 000   000  00000000  0000000   000  0000000  00000000  
-    
-    onResize:  (drag, event) =>
+
+    onResize: (drag, event) =>
+
+        dx = drag.delta.x
+        dy = drag.delta.y
+        
+        return if dx == 0 and dy == 0
+
+        left  = drag.id.includes 'left'
+        right = drag.id.includes 'right'
+        top   = drag.id.includes 'top'
+        bot   = drag.id.includes 'bot'
+
+        if not left and not right then dx = 0
+        if not top  and not bot   then dy = 0
+                
+        if left then dx = -dx
+        if top  then dy = -dy
+
+        aspect = @sbox.w / @sbox.h
+        
+        if event.shiftKey
+            if Math.abs(dx) > Math.abs(dy)
+                dy = dx / aspect
+            else
+                dx = dy * aspect
+
+        sx = (@sbox.w + dx)/@sbox.w
+        sy = (@sbox.h + dy)/@sbox.h
+                
+        resizeCenter = boxPos @selection.svg.bbox(), opposide drag.id
+        transmat = new SVG.Matrix().around resizeCenter.x, resizeCenter.y, new SVG.Matrix().scale sx, sy
+
+        for item in @selection.items
+            
+            @trans.resize item, transmat
+            
+        @selection.updateItems()
+        @calcBox()
+        
+    onResizeOld:  (drag, event) =>
 
         dx = drag.delta.x
         dy = drag.delta.y
@@ -134,8 +171,8 @@ class Resizer
             else
                 @trans.rect item, resizeRect @trans.rect(item), pivot, pos fx, fy
                     
-        @calcBox()
         @selection.updateItems()
+        @calcBox()
     
     # 00000000   00000000   0000000  000000000
     # 000   000  000       000          000

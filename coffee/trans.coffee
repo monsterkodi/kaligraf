@@ -13,6 +13,7 @@ class Trans
 
     constructor: (@kali) ->
 
+    dot:    (a,b) -> a.x*b.x+a.y*b.y
     center: (item, c) -> if c? then @setCenter(item, c) else @getCenter item
     width:  (item, w) -> if w? then @setWidth( item, w) else @getWidth  item
     height: (item, h) -> if h? then @setHeight(item, h) else @getHeight item
@@ -32,25 +33,28 @@ class Trans
         else
             item.transform rotation:a 
     
-    resize: (item, matrix) ->
+    resize: (item, matrix, scale) ->
         
         oldCenter = @getCenter item
         newCenter = new SVG.Point oldCenter
         newCenter = pos newCenter.transform matrix
 
-        oldSize = @getSize item
-        newSize = new SVG.Point oldSize
-        newSize = newSize.transform new SVG.Matrix().rotate item.transform().rotation
-        newSize.x += oldCenter.x; newSize.y += oldCenter.y
-        newSize = newSize.transform matrix
-        newSize.x -= newCenter.x; newSize.y -= newCenter.y
+        rotMat    = new SVG.Matrix().rotate item.transform().rotation
+        oldSize   = @getSize item
+        newSize1  = new SVG.Point oldSize
+        newSize1  = newSize1.transform rotMat
+        oldSize.y = -oldSize.y
+        newSize2  = new SVG.Point oldSize
+        newSize2  = newSize2.transform rotMat
+        scaleDir  = scale.minus pos 1,1
+        if Math.abs(@dot newSize1, scaleDir) > Math.abs(@dot newSize2, scaleDir)
+            newSize = newSize1
+        else
+            newSize = newSize2
+        newSize = newSize.transform new SVG.Matrix().scale scale.x, scale.y
         newSize = newSize.transform new SVG.Matrix().rotate -item.transform().rotation
-        newSize = pos newSize
+        newSize = pos Math.abs(newSize.x), Math.abs(newSize.y)
 
-        log '------'
-        log oldSize
-        log newSize
-        
         @setSize   item, newSize
         @setCenter item, newCenter
         

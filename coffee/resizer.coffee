@@ -103,7 +103,7 @@ class Resizer
 
         for item in @selection.items
             
-            @trans.resize item, transmat
+            @trans.resize item, transmat, pos sx, sy
             
         @selection.updateItems()
         @calcBox()

@@ -95,8 +95,8 @@ class Shapes
                 @tools[s].onClick()
                 shape = s
         
-        eventPos = @eventPos event 
-        stagePos = @stagePos event
+        eventPos = pos event 
+        stagePos = @kali.stage.stageForEvent eventPos
                 
         switch shape
             
@@ -107,12 +107,12 @@ class Shapes
                 if e == @svg or not e?
                     if not event.shiftKey
                         @selection.clear()
-                    @selection.start @eventPos(event), join:event.shiftKey
+                    @selection.start eventPos, join:event.shiftKey
                 else
                     if not @selection.contains e
                         if not event.shiftKey
                             @selection.clear()
-                        @selection.pos = @eventPos(event)
+                        @selection.pos = eventPos
                         @selection.add e
                     else
                         if event.shiftKey
@@ -167,7 +167,8 @@ class Shapes
 
         shape = @kali.shapeTool()
         
-        stagePos = @stagePos event
+        eventPos = pos event
+        stagePos = @kali.stage.stageForEvent eventPos
         
         switch shape
             
@@ -186,7 +187,7 @@ class Shapes
             when 'pick'
                 
                 if @selection.rect?
-                    @selection.move @eventPos(event), join:event.shiftKey
+                    @selection.move eventPos, join:event.shiftKey
 
             when 'line' 
                 
@@ -197,10 +198,9 @@ class Shapes
                 @addPolyPoint stagePos
                 
             else
-                s  = @kali.stage
-                z  = s.zoom
-                p1 = s.stageForView drag.startPos.minus s.viewPos()
-                p2 = s.stageForView drag.pos.minus s.viewPos()
+                z  = @kali.stage.zoom
+                p1 = @kali.stage.stageForEvent drag.startPos
+                p2 = @kali.stage.stageForEvent drag.pos
                 @trans.setRect @drawing, x:p1.x, y:p1.y, x2:p2.x, y2:p2.y
                     
     updateDrawing: (event) ->
@@ -250,8 +250,8 @@ class Shapes
     
     onStop: (drag, event) =>
         
-        eventPos = @eventPos event
-        stagePos = @stagePos event
+        eventPos = pos event
+        stagePos = @kali.stage.stageForEvent eventPos
         
         if @selection.rect?
             @selection.end eventPos
@@ -308,13 +308,4 @@ class Shapes
             @stage.selection.set [@drawing]
             delete @drawing
 
-    # 00000000    0000000    0000000  
-    # 000   000  000   000  000       
-    # 00000000   000   000  0000000   
-    # 000        000   000       000  
-    # 000         0000000   0000000   
-    
-    eventPos: (event) -> @stage.eventPos event
-    stagePos: (event) -> @stage.stagePos event
-            
 module.exports = Shapes

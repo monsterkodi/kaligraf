@@ -241,13 +241,14 @@ class Stage
     #     0      000  00000000  00     00  
     
     onResize: (w, h) => @resetSize()
-    eventPos: (event) -> pos event
-    localPos: (event) -> @eventPos(event).minus @viewPos()
-    stagePos: (event) -> @stageForView @localPos event
+    
     viewPos:  -> r = @element.getBoundingClientRect(); pos r.left, r.top
     viewSize: -> r = @element.getBoundingClientRect(); pos r.width, r.height
-    stageForView: (viewPos) -> pos(viewPos).scale(1.0/@zoom).plus @panPos()
-    viewForStage: (stagePos) -> pos(stagePos).sub(@panPos()).scale @zoom
+    
+    stageForView:  (viewPos)  -> pos(viewPos).scale(1.0/@zoom).plus @panPos()
+    viewForStage:  (stagePos) -> pos(stagePos).sub(@panPos()).scale @zoom
+    viewForEvent:  (eventPos) -> eventPos.minus @viewPos()
+    stageForEvent: (eventPos) -> @stageForView @viewForEvent eventPos
     
     #  0000000  00000000  000   000  000000000  00000000  00000000   
     # 000       000       0000  000     000     000       000   000  
@@ -258,7 +259,7 @@ class Stage
     viewCenter:  -> pos(0,0).mid @viewSize()
     stageCenter: -> boxCenter @svg.viewbox()
     stageOffset: -> boxOffset @svg.viewbox()
-    itemsCenter: -> @stageForView boxCenter boxForItems @items(), @viewPos()
+    itemsCenter: -> @stageForEvent boxCenter boxForItems @items()
         
     centerAtStagePos: (stagePos) -> @moveViewBox stagePos.minus @stageCenter()
         
@@ -270,8 +271,8 @@ class Stage
     
     loupe: (p1, p2) ->
         
-        viewPos1 = pos(p1).sub @viewPos()
-        viewPos2 = pos(p2).sub @viewPos()
+        viewPos1 = @viewForEvent pos p1
+        viewPos2 = @viewForEvent pos p2
         viewPos  = viewPos1.mid viewPos2
         
         sc = @stageForView viewPos
@@ -279,7 +280,6 @@ class Stage
         sd = @stageForView(viewPos1).sub @stageForView(viewPos2)
         dw = Math.abs sd.x
         dh = Math.abs sd.y
-        
         
         if dw == 0 or dh == 0
             out = @kali.tools.ctrlDown
@@ -301,7 +301,12 @@ class Stage
     # 000   000  000   000  000       000       000      
     # 00     00  000   000  00000000  00000000  0000000  
     
-    onWheel: (event) => @zoomAtPos @localPos(event), @stagePos(event), (1.0 - event.deltaY/5000.0)
+    onWheel: (event) => 
+    
+        eventPos = pos event
+        viewPos  = @viewForEvent eventPos
+        stagePos = @stageForView viewPos 
+        @zoomAtPos viewPos, stagePos, (1.0 - event.deltaY/5000.0)
         
     zoomAtPos: (viewPos, stagePos, factor) ->
         

@@ -48,21 +48,11 @@ class Resizer
         else
             d = drag.delta.y
 
-        # log drag.pos.minus(@rotationCenter).xyangle(pos( 0,1)), drag.pos.minus(@rotationCenter).angle()
-        sp = @kali.stage.stageForEvent drag.startPos
+        sp = @kali.stage.stageForEvent drag.lastPos
         ep = @kali.stage.stageForEvent drag.pos
         v1 = sp.minus @rotationCenter 
         v2 = ep.minus @rotationCenter
-        # log drag.pos
-        # log @rotationCenter
-        log v1
-        log v2
-        a1 = v1.angle()
-        a2 = v2.angle()
-        angle = a2-a1
-        
-        log v1.angle(v2), v1.dot v2.xyperp()
-        angle = d
+        angle = v1.rotation v2
             
         transmat = new SVG.Matrix().around @rotationCenter.x, @rotationCenter.y, new SVG.Matrix().rotate angle
 

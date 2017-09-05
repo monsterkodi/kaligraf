@@ -60,7 +60,7 @@ class Resizer
             
         @selection.updateItems()
         
-        p = boxPos @rect.bbox(), opposide drag.id
+        p = boxPos @rect.bbox(), opposide @rotationCorner
         @gg.transform rotation:@gg.transform('rotation')+angle, cx:p.x, cy:p.y
     
     # 00000000   00000000   0000000  000  0000000  00000000  
@@ -76,10 +76,12 @@ class Resizer
         
         return if dx == 0 and dy == 0
 
-        left  = drag.id.includes 'left'
-        right = drag.id.includes 'right'
-        top   = drag.id.includes 'top'
-        bot   = drag.id.includes 'bot'
+        center = drag.id
+        
+        left  = center.includes 'left'
+        right = center.includes 'right'
+        top   = center.includes 'top'
+        bot   = center.includes 'bot'
 
         if not left and not right then dx = 0
         if not top  and not bot   then dy = 0
@@ -89,16 +91,21 @@ class Resizer
 
         aspect = @sbox.w / @sbox.h
         
-        if event.shiftKey
+        if not event.shiftKey
             if Math.abs(dx) > Math.abs(dy)
                 dy = dx / aspect
             else
                 dx = dy * aspect
 
+        if event.ctrlKey
+            dx *= 2
+            dy *= 2
+            center = 'center'
+            
         sx = (@sbox.w + dx)/@sbox.w
         sy = (@sbox.h + dy)/@sbox.h
                 
-        resizeCenter = boxPos @selection.svg.bbox(), opposide drag.id
+        resizeCenter = boxPos @selection.svg.bbox(), opposide center
         transmat = new SVG.Matrix().around resizeCenter.x, resizeCenter.y, new SVG.Matrix().scale sx, sy
 
         for item in @selection.items
@@ -108,72 +115,6 @@ class Resizer
         @selection.updateItems()
         @calcBox()
         
-    onResizeOld:  (drag, event) =>
-
-        dx = drag.delta.x
-        dy = drag.delta.y
-        
-        return if dx == 0 and dy == 0
-        
-        left  = drag.id.includes 'left'
-        right = drag.id.includes 'right'
-        top   = drag.id.includes 'top'
-        bot   = drag.id.includes 'bot'
-                
-        bc     = @kali.stage.stageForView pos @sbox.cx, @sbox.cy
-        stl    = @kali.stage.stageForView pos @sbox.x,  @sbox.y
-        sbr    = @kali.stage.stageForView pos @sbox.x2, @sbox.y2
-
-        z   = @kali.stage.zoom
-        vo  = boxOffset @kali.stage.svg.viewbox()
-        stl = boxOffset(@sbox)                     .minus(vo).scale(1.0/z).plus(vo) 
-        sbr = boxOffset(@sbox).plus(boxSize(@sbox)).minus(vo).scale(1.0/z).plus(vo)
-        
-        pivot  = stl.mid sbr 
-        aspect = @sbox.w / @sbox.h
-
-        if not left and not right then dx = 0
-        if not top  and not bot   then dy = 0
-                
-        if left  then dx = -dx; pivot.x = sbr.x
-        if right then           pivot.x = stl.x
-        if top   then dy = -dy; pivot.y = sbr.y
-        if bot   then           pivot.y = stl.y
-
-        if event.shiftKey
-            if Math.abs(dx) > Math.abs(dy)
-                dy = dx / aspect
-            else
-                dx = dy * aspect
-        
-        fx = (@sbox.w + dx)/@sbox.w
-        fy = (@sbox.h + dy)/@sbox.h
-        
-        if @sbox.w <= 1 and fx < 1 then fx = 1
-        if @sbox.h <= 1 and fy < 1 then fy = 1
-        
-        resizeRect = (r, pivot, scale) ->
-            s  = rectSize   r
-            o  = rectOffset r
-            tl = pivot.plus o.minus(pivot).mul scale
-            br = pivot.plus o.plus(s).minus(pivot).mul scale
-            x:tl.x, y:tl.y, x2:br.x, y2:br.y
-        
-        for item in @selection.items
-
-            if item.type in ['text', 'image']
-                if Math.abs(dx) > Math.abs(dy)
-                    tx = fx; ty = (@sbox.h + dx / aspect)/@sbox.h
-                else
-                    ty = fy; tx = (@sbox.w + dy * aspect)/@sbox.w
-                    
-                @trans.rect item, resizeRect @trans.rect(item), pivot, pos tx, ty
-            else
-                @trans.rect item, resizeRect @trans.rect(item), pivot, pos fx, fy
-                    
-        @selection.updateItems()
-        @calcBox()
-    
     # 00000000   00000000   0000000  000000000
     # 000   000  000       000          000
     # 0000000    0000000   000          000
@@ -215,6 +156,7 @@ class Resizer
             border.style cursor: cursor
             @borderDrag[id] = new drag
                 target:  border.node
+                onStart: @onBorderStart
                 onMove:  @onBorderMove
             @borderDrag[id].id = id
 
@@ -229,6 +171,7 @@ class Resizer
             corner.style cursor:cursor
             @cornerDrag[id] = new drag
                 target:  corner.node
+                onStart: @onCornerStart
                 onMove:  @onCornerMove
             @cornerDrag[id].id = id
             
@@ -267,19 +210,31 @@ class Resizer
     # 000   000  000            000  000   000     000
     # 000   000  00000000  0000000   000  0000000  00000000
 
-    onCornerMove: (drag, event) => @onResize   drag, event
-    onBorderMove: (drag, event) => @onResize   drag, event
-    onRotMove:    (drag, event) => @onRotation drag, event
+    onCornerStart: (drag, event) => @onStart()
+    onCornerMove:  (drag, event) => @onResize   drag, event
+    onBorderStart: (drag, event) => @onStart()
+    onBorderMove:  (drag, event) => @onResize   drag, event
+    onRotMove:     (drag, event) => @onRotation drag, event
     
     onRotStart: (drag, event) =>
         
-        @rotationCenter = boxPos @selection.svg.bbox(), opposide drag.id
+        @onStart()
+        @rotationCorner = drag.id
+        if event.ctrlKey
+            @rotationCorner = 'center'
+        @rotationCenter = boxPos @selection.svg.bbox(), opposide @rotationCorner
         
     onRotStop: (drag, event) => 
+        
         @gg.transform rotation:0
         @gg.transform x:0, y:0
         @updateBox()
-    
+
+    onStart: =>
+        
+        if @kali.shapeTool() != 'pick'
+            @kali.tools.activateTool 'pick'
+        
     # 0000000    00000000    0000000    0000000
     # 000   000  000   000  000   000  000
     # 000   000  0000000    000000000  000  0000
@@ -288,6 +243,8 @@ class Resizer
 
     onDragStart: (drag, event) =>
 
+        @onStart()
+            
         if event?.shiftKey
             @kali.stage.shapes.handleMouseDown event
             return 'skip'
@@ -344,22 +301,19 @@ class Resizer
 
         if items.length
             @createRect()
-            @updateBox()
-        else
-            @clear()
+        @calcBox()
 
     addItem: (items, item) ->
 
         if items.length == 1
             @createRect()
-            @rbox = item.rbox()
 
         @updateBox()
 
         if @selection.pos
             @drag.start @selection.pos
 
-    delItem: (items, item) -> @updateBox()
+    delItem: (items, item) -> @calcBox()
 
     # 0000000     0000000   000   000
     # 000   000  000   000   000 000
@@ -382,9 +336,9 @@ class Resizer
         moveBox  box, boxOffset @viewPos()
         @setBox  box
 
-    setBox: (@rbox) ->
+    setBox: (box) ->
 
-        @box = new SVG.RBox @rbox
+        @box = new SVG.RBox box
 
         moveBox @box, @viewPos().scale -1
 

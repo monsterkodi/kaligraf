@@ -53,6 +53,7 @@ class Resizer
         v1 = sp.minus @rotationCenter 
         v2 = ep.minus @rotationCenter
         angle = v1.rotation v2
+        return if angle == 0
             
         transmat = new SVG.Matrix().around @rotationCenter.x, @rotationCenter.y, new SVG.Matrix().rotate angle
 

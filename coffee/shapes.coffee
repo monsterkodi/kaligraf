@@ -45,7 +45,7 @@ class Shapes
                 
             when 'text'
                 
-                e = @svg.text 'Text'
+                e = @svg.text 'kaligraf'
                 e.font 'size', 100
                 
             when 'image'

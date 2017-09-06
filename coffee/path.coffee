@@ -13,43 +13,68 @@ class Path
     
     constructor: (@kali) ->
     
-    startDrawing: (@drawing, @shape, stagePos) ->
+    #  0000000  000000000   0000000   00000000   000000000  
+    # 000          000     000   000  000   000     000     
+    # 0000000      000     000000000  0000000       000     
+    #      000     000     000   000  000   000     000     
+    # 0000000      000     000   000  000   000     000     
+    
+    startDrawing: (@drawing, @shape, stagePos) -> delete @picking
                     
     handleDown: (event, stagePos) ->
         log "Path.handleDown stagePos:", stagePos
         
+        if not @drawing? then return false
+        
         switch @shape
             when 'bezier', 'bezier_quad'  then @addPoint stagePos
-            # when 'line'                 then @setLinePoint stagePos
+            
         true
         
-    handleMove: (event, stagePos) ->
-        log "Path.handleMove stagePos:", stagePos
+    # 0000000    00000000    0000000    0000000   
+    # 000   000  000   000  000   000  000        
+    # 000   000  0000000    000000000  000  0000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000   0000000   
+    
+    handleDrag: (event, stagePos) ->
+        log "Path.handleDrag stagePos:", stagePos
 
+        if not @drawing? then return false
+        
         switch @shape
             when 'pie', 'arc' then return false
-        
-        # switch @shape
-            # when 'bezier', 'bezier_quad'  then @addPoint stagePos
-            # when 'line'                 then @setLinePoint stagePos 
+
+        @setLastControlPoint stagePos
         true
         
-    handleStageMove: (stagePos) ->
-        log "Path.handleStageMove stagePos:", stagePos
+    # 00     00   0000000   000   000  00000000  
+    # 000   000  000   000  000   000  000       
+    # 000000000  000   000   000 000   0000000   
+    # 000 0 000  000   000     000     000       
+    # 000   000   0000000       0      00000000  
+    
+    handleMove: (event, stagePos) ->
                 
-        if @drawing? and @drawing.remember 'isPickPath'
+        if @drawing? and @picking
 
+            log "Path.handleMove updateLast stagePos:", stagePos
             @setLastPoint stagePos
             
         true
 
+    #  0000000  000000000   0000000   00000000   
+    # 000          000     000   000  000   000  
+    # 0000000      000     000   000  00000000   
+    #      000     000     000   000  000        
+    # 0000000      000      0000000   000        
+    
     handleStop: (event, stagePos) ->
         log "Path.handleStop stagePos:", stagePos
         
-        # if @drawing?
-#             
-            # if @drawing.remember 'isPickPath'
-                # return false
+        if @drawing? and @picking
+             
+                return false
 
             # c = boxCenter @drawing.bbox()
             # @drawing.center 0, 0
@@ -57,6 +82,12 @@ class Path
             
         true
 
+    # 00000000    0000000   000  000   000  000000000  
+    # 000   000  000   000  000  0000  000     000     
+    # 00000000   000   000  000  000 0 000     000     
+    # 000        000   000  000  000  0000     000     
+    # 000         0000000   000  000   000     000     
+    
     addPoint: (p) ->
         
         arr = @drawing.array()
@@ -79,26 +110,64 @@ class Path
         a = arr.valueOf()
         a.pop()
         @drawing.plot arr        
+
+    handleEscape: ->
         
-    continuePicking: -> true
+        if @drawing then @removeLastPoint()
+        
+    #  0000000   0000000   000   000  000000000  00000000    0000000   000      
+    # 000       000   000  0000  000     000     000   000  000   000  000      
+    # 000       000   000  000 0 000     000     0000000    000   000  000      
+    # 000       000   000  000  0000     000     000   000  000   000  000      
+    #  0000000   0000000   000   000     000     000   000   0000000   0000000  
+    
+    setLastControlPoint: (p) ->
+        
+        arr = @drawing.array()
+        a = arr.valueOf()
+        if a.length < 2
+            switch @shape
+                when 'bezier'      then a.push ['S', p.x, p.y, p.x, p.y]
+                when 'bezier_quad' then a.push ['Q', p.x, p.y, p.x, p.y]
+            
+        e = last a
+        l = e.length
+        log "control #{l}", e
+        switch e[0]
+            when 'M', 'm' then log 'convert M'
+            when 'L', 'l' then log 'convert L'
+            when 'C', 'c' then log 'move C'
+            when 'T', 't' then log 'move T'
+            when 'S', 's' then log 'move S'; e[1] = p.x; e[2] = p.y;
+            when 'Q', 'q' then log 'move Q'; e[1] = p.x; e[2] = p.y;
+        @drawing.plot arr
+        
+    # 00000000   000   0000000  000   000
+    # 000   000  000  000       000  000 
+    # 00000000   000  000       0000000  
+    # 000        000  000       000  000 
+    # 000        000   0000000  000   000
+    
+    continuePicking: -> @picking
 
     handlePick: (stagePos) ->
         log "Path.handlePick stagePos:", stagePos
         
         switch @shape
-            when 'pie', 'arc' then return false
-            
-        @drawing?.remember 'isPickPath', true
+            when 'pie', 'arc' then delete @picking
+            else @picking = true            
         
-        true
+        @picking
+    
+    # 00000000  000   000  0000000    
+    # 000       0000  000  000   000  
+    # 0000000   000 0 000  000   000  
+    # 000       000  0000  000   000  
+    # 00000000  000   000  0000000    
     
     endDrawing: -> 
         
         log "Path.endDrawing"
         delete @drawing
-            
-    handleEscape: ->
-        
-        if @drawing then @removeLastPoint()
-        
+                    
 module.exports = Path

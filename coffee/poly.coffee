@@ -13,7 +13,7 @@ class Poly
     
     constructor: (@kali) ->
     
-    startDrawing: (@drawing, @shape, stagePos) ->
+    startDrawing: (@drawing, @shape, stagePos) -> delete @picking
                     
     handleDown: (event, stagePos) ->
         
@@ -22,16 +22,16 @@ class Poly
             when 'line'                 then @setLastPoint  stagePos
         true
         
-    handleMove: (event, stagePos) ->
+    handleDrag: (event, stagePos) ->
         
         switch @shape
             when 'polygon', 'polyline'  then @addPoint      stagePos
             when 'line'                 then @setLastPoint  stagePos 
         true
         
-    handleStageMove: (stagePos) ->
+    handleMove: (event, stagePos) ->
                 
-        if @drawing? and @drawing.remember 'isPickPoly'
+        if @drawing? and @picking
 
             @setLastPoint stagePos
             
@@ -41,7 +41,7 @@ class Poly
         
         if @drawing?
             
-            if @drawing.remember 'isPickPoly'
+            if @picking
                 return false
 
             c = boxCenter @drawing.bbox()
@@ -52,12 +52,12 @@ class Poly
 
     continuePicking: -> @shape != 'line'
 
-    handlePick: (stagePos) ->
-        
-        @drawing?.remember 'isPickPoly', true
-        true
+    handlePick: (stagePos) -> @picking = @drawing?
     
-    endDrawing: -> delete @drawing
+    endDrawing: -> 
+    
+        delete @drawing
+        delete @picking
             
     addPoint: (p) ->
         

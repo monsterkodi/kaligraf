@@ -49,21 +49,11 @@ class Shapes
                 e = @svg[shape]()
                 e.plot [[stagePos.x, stagePos.y], [stagePos.x, stagePos.y]]
                 
-            when 'bezier'
+            when 'bezier', 'bezier_quad'
                 
-                a = new SVG.PathArray [ 
-                    ['M', stagePos.x, stagePos.y],
-                    ['c', 0,1, 1,1, 1,0]
-                ]
-                e = @svg.path(a.toString())
-                
-            when 'bezier_quad'
-                
-                a = new SVG.PathArray [ 
-                    ['M', stagePos.x, stagePos.y],
-                    ['q', 0.5, 1, 1, 0]
-                ]
-                e = @svg.path(a.toString())
+                a = new SVG.PathArray [ ['M', stagePos.x, stagePos.y] ]
+                e = @svg.path()
+                e.plot a
                 
             when 'pie' 
                 e = @svg.path 'M0,0 h1 a1,1 0 1,1 -1,-1,z'
@@ -200,7 +190,7 @@ class Shapes
         stagePos = @kali.stage.stageForEvent eventPos
         
         if @handler? 
-            if @handler.handleMove event, stagePos
+            if @handler.handleDrag event, stagePos
                 return
         
         switch shape

@@ -49,7 +49,7 @@ class Tools extends Tool
         @activateTool 'rect'
         @activateTool 'text'
         @activateTool 'pick'
-        @activateTool 'pie'
+        @activateTool 'bezier'
         
         # post.emit 'stage', 'setColor', '#fff'
         post.emit 'tool', 'load'
@@ -85,6 +85,8 @@ class Tools extends Tool
                 { name: 'bezier_quad', group: 'shape', draw: 'path' }
                 { name: 'pie',         group: 'shape', draw: 'path' }
                 { name: 'arc',         group: 'shape', draw: 'path' }
+            ]
+            [
                 { name: 'polygon',     group: 'shape', draw: 'poly' }
                 { name: 'polyline',    group: 'shape', draw: 'poly' }
                 { name: 'line',        group: 'shape', draw: 'poly' }
@@ -150,7 +152,6 @@ class Tools extends Tool
         if _.isArray cfg
             cfg[0].list = cfg.slice 1
             cfg = cfg[0]
-
             
         if cfg.svg = @loadSVG cfg.name
             

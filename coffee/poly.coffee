@@ -18,22 +18,22 @@ class Poly
     handleDown: (event, stagePos) ->
         
         switch @shape
-            when 'polygon', 'polyline'  then @addPolyPoint stagePos
-            when 'line'                 then @setLinePoint stagePos
+            when 'polygon', 'polyline'  then @addPoint      stagePos
+            when 'line'                 then @setLastPoint  stagePos
         true
         
     handleMove: (event, stagePos) ->
         
         switch @shape
-            when 'polygon', 'polyline'  then @addPolyPoint stagePos
-            when 'line'                 then @setLinePoint stagePos 
+            when 'polygon', 'polyline'  then @addPoint      stagePos
+            when 'line'                 then @setLastPoint  stagePos 
         true
         
     handleStageMove: (stagePos) ->
                 
         if @drawing? and @drawing.remember 'isPickPoly'
 
-            @setLinePoint stagePos
+            @setLastPoint stagePos
             
         true
 
@@ -59,14 +59,7 @@ class Poly
     
     endDrawing: -> delete @drawing
             
-    setLinePoint: (p) ->
-        
-        arr = @drawing.array().valueOf()
-        last(arr)[0] = p.x
-        last(arr)[1] = p.y
-        @drawing.plot arr
-        
-    addPolyPoint: (p) ->
+    addPoint: (p) ->
         
         arr  = @drawing.array().valueOf()
         tail = arr.length > 1 and arr[arr.length-2] or arr[arr.length-1]
@@ -78,14 +71,14 @@ class Poly
             last(arr)[1] = p.y
         @drawing.plot arr
 
-    updatePolyPoint: (p) ->
+    setLastPoint: (p) ->
         
         arr = @drawing.array().valueOf()
         last(arr)[0] = p.x
         last(arr)[1] = p.y
         @drawing.plot arr
         
-    removeLastPolyPoint: ->
+    removeLastPoint: ->
         
         arr = @drawing.array().valueOf()
         arr.pop() if arr.length > 2
@@ -93,6 +86,6 @@ class Poly
         
     handleEscape: ->
         
-        if @drawing then @removeLastPolyPoint()
+        if @drawing then @removeLastPoint()
         
 module.exports = Poly

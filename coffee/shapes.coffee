@@ -32,7 +32,7 @@ class Shapes
     #      000  000   000  000   000  000        000       
     # 0000000   000   000  000   000  000        00000000  
     
-    addShape: (shape, stagePos, attr, style) ->
+    addShape: (shape, stagePos) ->
         
         switch shape 
             
@@ -98,9 +98,6 @@ class Shapes
             e.style 
                 fill:           'none'
                 'fill-opacity': 0.0
-            
-        e.attr  attr  if attr?
-        e.style style if style?
         e
         
     #  0000000  000000000   0000000   00000000   000000000  
@@ -281,7 +278,7 @@ class Shapes
         
         if @drawing
 
-            if @trans.width(@drawing) == 0 or @trans.height(@drawing) == 0
+            if @trans.width(@drawing) == 0 and @trans.height(@drawing) == 0
 
                 @drawing.remove()
                 

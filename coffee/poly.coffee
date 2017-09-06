@@ -13,6 +13,12 @@ class Poly
     
     constructor: (@kali) ->
     
+    #  0000000  000000000   0000000   00000000   000000000  
+    # 000          000     000   000  000   000     000     
+    # 0000000      000     000000000  0000000       000     
+    #      000     000     000   000  000   000     000     
+    # 0000000      000     000   000  000   000     000     
+    
     startDrawing: (@drawing, @shape, stagePos) -> delete @picking
                     
     handleDown: (event, stagePos) ->
@@ -22,6 +28,12 @@ class Poly
             when 'line'                 then @setLastPoint  stagePos
         true
         
+    # 0000000    00000000    0000000    0000000   
+    # 000   000  000   000  000   000  000        
+    # 000   000  0000000    000000000  000  0000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000   0000000   
+    
     handleDrag: (event, stagePos) ->
         
         switch @shape
@@ -29,6 +41,12 @@ class Poly
             when 'line'                 then @setLastPoint  stagePos 
         true
         
+    # 00     00   0000000   000   000  00000000  
+    # 000   000  000   000  000   000  000       
+    # 000000000  000   000   000 000   0000000   
+    # 000 0 000  000   000     000     000       
+    # 000   000   0000000       0      00000000  
+    
     handleMove: (event, stagePos) ->
                 
         if @drawing? and @picking
@@ -37,6 +55,12 @@ class Poly
             
         true
 
+    #  0000000  000000000   0000000   00000000   
+    # 000          000     000   000  000   000  
+    # 0000000      000     000   000  00000000   
+    #      000     000     000   000  000        
+    # 0000000      000      0000000   000        
+    
     handleStop: (event, stagePos) ->
         
         if @drawing?
@@ -50,15 +74,17 @@ class Poly
             
         true
 
-    continuePicking: -> @shape != 'line'
-
-    handlePick: (stagePos) -> @picking = @drawing?
-    
     endDrawing: -> 
     
         delete @drawing
         delete @picking
-            
+
+    # 00000000    0000000   000  000   000  000000000  
+    # 000   000  000   000  000  0000  000     000     
+    # 00000000   000   000  000  000 0 000     000     
+    # 000        000   000  000  000  0000     000     
+    # 000         0000000   000  000   000     000     
+    
     addPoint: (p) ->
         
         arr  = @drawing.array().valueOf()
@@ -88,4 +114,9 @@ class Poly
         
         if @drawing then @removeLastPoint()
         
+    continuePicking: -> @shape != 'line'
+
+    handlePick: (stagePos) -> @picking = @drawing?
+        
+                    
 module.exports = Poly

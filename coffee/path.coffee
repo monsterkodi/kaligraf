@@ -19,17 +19,26 @@ class Path
     #      000     000     000   000  000   000     000     
     # 0000000      000     000   000  000   000     000     
     
-    startDrawing: (@drawing, @shape, stagePos) -> delete @picking
+    startDrawing: (@drawing, @shape, stagePos) -> 
+        
+         switch @shape
+            when 'pie', 'arc' 
+                delete @picking
+                delete @command
+            else 
+                @command = @shape == 'bezier' and 'S' or 'Q'
+                @picking = true
                     
     handleDown: (event, stagePos) ->
         log "Path.handleDown stagePos:", stagePos
-        
+
         if not @drawing? then return false
         
         switch @shape
-            when 'bezier', 'bezier_quad'  then @addPoint stagePos
-            
-        true
+            when 'pie', 'arc' then return false
+            when 'bezier', 'bezier_quad' then @addPoint stagePos
+          
+        @picking
         
     # 0000000    00000000    0000000    0000000   
     # 000   000  000   000  000   000  000        
@@ -127,19 +136,19 @@ class Path
         a = arr.valueOf()
         if a.length < 2
             switch @shape
-                when 'bezier'      then a.push ['S', p.x, p.y, p.x, p.y]
-                when 'bezier_quad' then a.push ['Q', p.x, p.y, p.x, p.y]
+                when 'bezier', 'bezier_quad' then a.push [@command, p.x, p.y, p.x, p.y]
             
         e = last a
         l = e.length
-        log "control #{l}", e
+        # log "control #{l}", e
         switch e[0]
-            when 'M', 'm' then log 'convert M'
-            when 'L', 'l' then log 'convert L'
-            when 'C', 'c' then log 'move C'
-            when 'T', 't' then log 'move T'
-            when 'S', 's' then log 'move S'; e[1] = p.x; e[2] = p.y;
-            when 'Q', 'q' then log 'move Q'; e[1] = p.x; e[2] = p.y;
+            when 'M', 'm', 'L', 'l' 
+                a.pop()
+                a.push [@command, p.x, p.y, p.x, p.y]
+            when 'C', 'c', 'T', 't', 'S', 's', 'Q', 'q'
+                e[1] = p.x
+                e[2] = p.y
+            
         @drawing.plot arr
         
     # 00000000   000   0000000  000   000

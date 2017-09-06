@@ -32,8 +32,19 @@ class Kali
         @tools.init()
         @tools.loadPrefs()
 
-    focus: -> @element.focus()
+    items: -> @stage.items()
+
+    shapeTool:    -> @tools.getActive('shape').name
+    shapeHandler: -> @tools.getActive('shape').draw
         
+    # 000   000  00000000  000   000  
+    # 000  000   000        000 000   
+    # 0000000    0000000     00000    
+    # 000  000   000          000     
+    # 000   000  00000000     000     
+    
+    focus: -> @element.focus()
+    
     onKeyDown: (event) =>
         
         {mod, key, combo, char} = keyinfo.forEvent event
@@ -47,12 +58,13 @@ class Kali
         return stopEvent(event) if 'unhandled' != @tools.handleKey mod, key, combo, char, event, false
         return stopEvent(event) if 'unhandled' != @menus.handleKey mod, key, combo, char, event, false
         return stopEvent(event) if 'unhandled' != @stage.handleKey mod, key, combo, char, event, false
-        
-    shapeTool:    -> @tools.getActive('shape').name
-    shapeHandler: -> @tools.getActive('shape').draw
+                
+    #  0000000  000000000  000   000  000      00000000  
+    # 000          000      000 000   000      000       
+    # 0000000      000       00000    000      0000000   
+    #      000     000        000     000      000       
+    # 0000000      000        000     0000000  00000000  
     
-    items: -> @stage.items()
-            
     setStyle: (name) ->
         
         if not $('kali-style')

@@ -52,28 +52,19 @@ class Poly extends Draw
     addPoint: (p) ->
         
         points = @points()
-        tail = arr.length > 1 and arr[arr.length-2] or arr[arr.length-1]
+        tail = points.length > 1 and points[points.length-2] or points[points.length-1]
         dist = Math.abs(tail[0]-p.x) + Math.abs(tail[1]-p.y)
-        if arr.length < 2 or dist > 20
-            arr.push [p.x, p.y]
+        if points.length < 2 or dist > 20
+            @append [p.x, p.y]
         else
-            last(arr)[0] = p.x
-            last(arr)[1] = p.y
-        @plot()
+            @set -1, [p.x, p.y]
 
-    setLastPoint: (p) ->
-        
-        point = @lastPoint()
-        point[0] = p.x
-        point[1] = p.y
-        @plot()
-        
+    setLastPoint: (p) -> @set -1, [p.x, p.y]
+                
     removeLastPoint: ->
         
-        points = @points()
-        if points.length > 2
-            points.pop() 
-            @plot() 
+        if @points().length > 2
+            super
                 
     continuePicking: -> @shape != 'line'
 

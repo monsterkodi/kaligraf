@@ -66,10 +66,24 @@ class Draw
     
         delete @drawing
         delete @picking
-      
+
+    continuePicking: -> @picking
+    
     points:    -> @drawing.array().valueOf()
     lastPoint: -> last @points()
+
+    removeLastPoint: ->
+        @points().pop() 
+        @plot() 
     
     plot: -> @drawing.plot @drawing.array()
+    
+    append: (l) -> 
+        @points().push l
+        @plot()
+        
+    set: (i, l) ->
+        @points().splice i, 1, l
+        @plot()
 
 module.exports = Draw

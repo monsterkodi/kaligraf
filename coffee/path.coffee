@@ -69,24 +69,15 @@ class Path extends Draw
     # 000        000   000  000  000  0000     000     
     # 000         0000000   000  000   000     000     
     
-    addPoint: (p) ->
-        
-        @points().push ['L', p.x, p.y]
-        @plot()
-        
+    addPoint: (p) -> @append ['L', p.x, p.y]
+                
     setLastPoint: (p) ->
         
         point = @lastPoint()
-        l = point.length
-        point[l-2] = p.x
-        point[l-1] = p.y
+        point[point.length-2] = p.x
+        point[point.length-1] = p.y
         @plot()
-        
-    removeLastPoint: ->
-        
-        @points().pop()
-        @plot()
-        
+                
     #  0000000   0000000   000   000  000000000  00000000    0000000   000      
     # 000       000   000  0000  000     000     000   000  000   000  000      
     # 000       000   000  000 0 000     000     0000000    000   000  000      
@@ -95,24 +86,20 @@ class Path extends Draw
     
     setLastControlPoint: (p) ->
         
-        arr = @drawing.array()
-        a = arr.valueOf()
-        if a.length < 2
+        points = @points()
+        
+        if points.length < 2
             switch @shape
-                when 'bezier', 'bezier_quad' then a.push [@command, p.x, p.y, p.x, p.y]
+                when 'bezier', 'bezier_quad' then return @append [@command, p.x, p.y, p.x, p.y]
             
-        e = last a
-        l = e.length
-        # log "control #{l}", e
-        switch e[0]
+        point = last points
+        switch point[0]
             when 'M', 'm', 'L', 'l' 
-                a.pop()
-                a.push [@command, p.x, p.y, p.x, p.y]
+                @set -1, [@command, p.x, p.y, p.x, p.y]
             when 'C', 'c', 'T', 't', 'S', 's', 'Q', 'q'
-                e[1] = p.x
-                e[2] = p.y
-            
-        @drawing.plot arr
+                point[1] = p.x
+                point[2] = p.y
+                @plot()
         
     # 00000000   000   0000000  000   000
     # 000   000  000  000       000  000 
@@ -120,10 +107,7 @@ class Path extends Draw
     # 000        000  000       000  000 
     # 000        000   0000000  000   000
     
-    continuePicking: -> @picking
-
     handlePick: (stagePos) ->
-        log "Path.handlePick stagePos:", stagePos
         
         switch @shape
             when 'pie', 'arc' then delete @picking

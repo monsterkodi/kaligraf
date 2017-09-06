@@ -12,6 +12,7 @@ class Tool
     constructor: (@kali, @cfg) ->
 
         @name   = @cfg.name
+        @draw   = @cfg.draw
         @group  = @cfg.group
         @action = @cfg.action
         @active = false

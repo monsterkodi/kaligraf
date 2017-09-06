@@ -9,6 +9,9 @@
 
 { boxCenter } = require './utils'
 
+Poly = require './poly'
+Path = require './path'
+
 class Shapes
 
     constructor: (@kali) ->
@@ -16,6 +19,9 @@ class Shapes
         @stage = @kali.stage
         @tools = @kali.tools
         @trans = @kali.trans
+        
+        @poly = new Poly @kali
+        @path = new Path @kali
         
         @svg       = @stage.svg
         @selection = @stage.selection
@@ -42,6 +48,28 @@ class Shapes
                 
                 e = @svg[shape]()
                 e.plot [[stagePos.x, stagePos.y], [stagePos.x, stagePos.y]]
+                
+            when 'bezier'
+                
+                a = new SVG.PathArray [ 
+                    ['M', stagePos.x, stagePos.y],
+                    ['c', 0,1, 1,1, 1,0]
+                ]
+                e = @svg.path(a.toString())
+                
+            when 'bezier_quad'
+                
+                a = new SVG.PathArray [ 
+                    ['M', stagePos.x, stagePos.y],
+                    ['q', 0.5, 1, 1, 0]
+                ]
+                e = @svg.path(a.toString())
+                
+            when 'pie' 
+                e = @svg.path 'M0,0 h1 a1,1 0 1,1 -1,-1,z'
+                
+            when 'arc'
+                e = @svg.path 'M0,0 a1,1 0 0,0 -1,-1'
                 
             when 'text'
                 
@@ -89,6 +117,12 @@ class Shapes
         @tools.collapseTemp()
         
         shape = @kali.shapeTool()
+        
+        @handler = switch @kali.shapeHandler()
+            
+            when 'poly' then @poly
+            when 'path' then @path
+            else null
         
         for s,k of {pick:event.shiftKey, pan:event.metaKey, loupe:event.ctrlKey, pipette:event.altKey}
             if k and shape != s
@@ -142,19 +176,17 @@ class Shapes
             when 'pan' then
             else
                 @selection.clear()
-                
-                if @drawing? and shape in ['line', 'polygon', 'polyline']
-                    switch shape
-                        when 'polygon', 'polyline' 
-                            @addPolyPoint stagePos
-                        when 'line'                
-                            @setLinePoint stagePos
-                            delete @drawing
+  
+                if @drawing? and @handler?.handleDown event, stagePos
+                    if not @handler.continuePicking()
+                        @endDrawing()
                     return
                         
                 @drawing = @addShape shape, stagePos
                 
-                if shape not in ['line', 'polygon', 'polyline']
+                if @handler
+                    @handler.startDrawing @drawing, shape, stagePos
+                else
                     @trans.pos @drawing, stagePos
 
     # 00     00   0000000   000   000  00000000  
@@ -169,6 +201,10 @@ class Shapes
         
         eventPos = pos event
         stagePos = @kali.stage.stageForEvent eventPos
+        
+        if @handler? 
+            if @handler.handleMove event, stagePos
+                return
         
         switch shape
             
@@ -188,60 +224,13 @@ class Shapes
                 
                 if @selection.rect?
                     @selection.move eventPos, join:event.shiftKey
-
-            when 'line' 
-                
-                @setLinePoint stagePos
-                                
-            when 'polygon', 'polyline'
-                
-                @addPolyPoint stagePos
                 
             else
                 z  = @kali.stage.zoom
                 p1 = @kali.stage.stageForEvent drag.startPos
                 p2 = @kali.stage.stageForEvent drag.pos
                 @trans.setRect @drawing, x:p1.x, y:p1.y, x2:p2.x, y2:p2.y
-                    
-    updateDrawing: (event) ->
-                
-        if @drawing? and @drawing.remember 'isPickPoly'
-
-            @setLinePoint @stagePos event
-                        
-    setLinePoint: (p) ->
-        
-        arr = @drawing.array().valueOf()
-        last(arr)[0] = p.x
-        last(arr)[1] = p.y
-        @drawing.plot arr
-        
-    addPolyPoint: (p) ->
-        
-        arr  = @drawing.array().valueOf()
-        tail = arr.length > 1 and arr[arr.length-2] or arr[arr.length-1]
-        dist = Math.abs(tail[0]-p.x) + Math.abs(tail[1]-p.y)
-        if arr.length < 2 or dist > 20
-            arr.push [p.x, p.y]
-        else
-            last(arr)[0] = p.x
-            last(arr)[1] = p.y
-        @drawing.plot arr
-
-    updatePolyPoint: (p) ->
-        
-        arr = @drawing.array().valueOf()
-        last(arr)[0] = p.x
-        last(arr)[1] = p.y
-        @drawing.plot arr
-        
-    removeLastPolyPoint: ->
-        
-        if @drawing
-            arr = @drawing.array().valueOf()
-            arr.pop() if arr.length > 2
-            @drawing.plot arr        
-        
+                                            
     #  0000000  000000000   0000000   00000000   
     # 000          000     000   000  000   000  
     # 0000000      000     000   000  00000000   
@@ -271,12 +260,12 @@ class Shapes
         if @drawing
 
             if drag.startPos == drag.lastPos
+                
+                if @handler?.handlePick stagePos
+                    return
 
                 switch shape
                     when 'text' then
-                    when 'line', 'polygon', 'polyline'
-                        @drawing.remember 'isPickPoly', true
-                        return
                     when 'ellipse'
                         @drawing.size 50, 100
                         @trans.center @drawing, stagePos
@@ -284,9 +273,9 @@ class Shapes
                         @drawing.size 100, 100
                         @trans.center @drawing, stagePos
                 
-            if not @drawing.remember 'isPickPoly'
+            if not @handler? or @handler.handleStop event, stagePos 
                 
-                @endDrawing()
+                @endDrawing drag, event, stagePos
 
     endDrawing: ->
         
@@ -296,16 +285,11 @@ class Shapes
 
                 @drawing.remove()
                 
-            else
-                shape = @kali.shapeTool() 
-                switch shape
-                    when 'line', 'polygon', 'polyline'
-
-                        c = boxCenter @drawing.bbox()
-                        @drawing.center 0, 0
-                        @kali.trans.center @drawing, c
-            
-            @stage.selection.set [@drawing]
+            else            
+                @stage.selection.set [@drawing]
+                
+            @handler?.endDrawing()
+            @handler = null
             delete @drawing
 
 module.exports = Shapes

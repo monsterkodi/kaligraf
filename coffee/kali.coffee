@@ -48,7 +48,8 @@ class Kali
         return stopEvent(event) if 'unhandled' != @menus.handleKey mod, key, combo, char, event, false
         return stopEvent(event) if 'unhandled' != @stage.handleKey mod, key, combo, char, event, false
         
-    shapeTool: -> @tools.getActive('shape').name
+    shapeTool:    -> @tools.getActive('shape').name
+    shapeHandler: -> @tools.getActive('shape').draw
     
     items: -> @stage.items()
             

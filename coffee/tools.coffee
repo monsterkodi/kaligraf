@@ -33,10 +33,14 @@ class Tools extends Tool
     loadPrefs: ->
         
         @stroke.set 
-            mode:       'gry'
-            alpha:      0.9
+            mode:  'gry'
+            alpha: 0.9
             
-        @fill.set alpha: 0.5
+        @fill.set 
+            mode:  'gry'
+            value: 0.1
+            # luminance: 0.2
+            alpha: 0.5
             
         @width.setWidth 1
         
@@ -45,8 +49,10 @@ class Tools extends Tool
         @activateTool 'rect'
         @activateTool 'text'
         @activateTool 'pick'
+        @activateTool 'pie'
         
-        post.emit 'stage', 'setColor', '#fff'
+        # post.emit 'stage', 'setColor', '#fff'
+        post.emit 'tool', 'load'
         
     # 000  000   000  000  000000000  
     # 000  0000  000  000     000     
@@ -75,9 +81,13 @@ class Tools extends Tool
                 { name: 'triangle_square', group: 'shape' }
             ]
             [
-                { name: 'polygon',  group: 'shape' }
-                { name: 'polyline', group: 'shape' }
-                { name: 'line',     group: 'shape' }
+                { name: 'bezier',      group: 'shape', draw: 'path' }
+                { name: 'bezier_quad', group: 'shape', draw: 'path' }
+                { name: 'pie',         group: 'shape', draw: 'path' }
+                { name: 'arc',         group: 'shape', draw: 'path' }
+                { name: 'polygon',     group: 'shape', draw: 'poly' }
+                { name: 'polyline',    group: 'shape', draw: 'poly' }
+                { name: 'line',        group: 'shape', draw: 'poly' }
             ]
             [
                 { name: 'zoom',  class: 'zoom', action: 'zoom_reset',  combo: 'command+0' }

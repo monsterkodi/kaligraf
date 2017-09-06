@@ -423,9 +423,9 @@ class Stage
     onMouseMove: (event) => 
     
         if @kali.shapeTool() == 'loupe'
-            @kali.stage.setCursor @kali.tools.ctrlDown and 'zoom-out' or 'zoom-in'
+            @setCursor @kali.tools.ctrlDown and 'zoom-out' or 'zoom-in'
         
-        @shapes.updateDrawing event
+        @shapes.handler?.handleStageMove @stageForEvent pos event 
         
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
@@ -443,7 +443,7 @@ class Stage
                 when 'command+0' then return @resetView()
                 when 'enter', 'return', 'esc' 
                     if combo == 'esc'
-                        @shapes.removeLastPolyPoint()
+                        @shapes.handler?.handleEscape?()
                     return @shapes.endDrawing()
         
         return if 'unhandled' != @resizer  .handleKey mod, key, combo, char, event, down

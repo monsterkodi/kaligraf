@@ -5,20 +5,25 @@
 # 000   000  000   000  000   000  000   000
 # 0000000    000   000  000   000  00     00
 
-{ last, log, _ } = require 'kxk'
+{ post, last, log, _ } = require 'kxk'
 { boxCenter } = require './utils'
+
+Edit = require './edit'
 
 class Draw
 
-    constructor: (@kali) -> 
-
+    constructor: (@kali) ->
+    
     #  0000000  000000000   0000000   00000000   000000000  
     # 000          000     000   000  000   000     000     
     # 0000000      000     000000000  0000000       000     
     #      000     000     000   000  000   000     000     
     # 0000000      000     000   000  000   000     000     
     
-    startDrawing: (@drawing, @shape, stagePos) -> delete @picking
+    startDrawing: (@drawing, @shape, stagePos) -> 
+    
+        delete @picking
+        @edit = new Edit @kali
 
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
@@ -63,7 +68,8 @@ class Draw
     # 00000000  000   000  0000000    
     
     endDrawing: -> 
-    
+        @edit?.del()
+        delete @edit
         delete @drawing
         delete @picking
 
@@ -71,19 +77,34 @@ class Draw
     
     points:    -> @drawing.array().valueOf()
     lastPoint: -> last @points()
+    index: (i) -> if i < 0 then i + @points().length else i
+    
+    posAt: (i) ->
+        points = @points()
+        i = @index i
+        if i < points.length
+            # log "#{i}", points[i]
+            @pos points[i]
+        else
+            log "wrong index? #{i}/#{points.length}"
+            null
 
     removeLastPoint: ->
+        post.emit 'draw', @, 'delete', @index -1
         @points().pop() 
         @plot() 
     
-    plot: -> @drawing.plot @drawing.array()
-    
-    append: (l) -> 
+    append: (l) ->
         @points().push l
+        post.emit 'draw', @, 'append', @index -1
         @plot()
         
     set: (i, l) ->
         @points().splice i, 1, l
+        post.emit 'draw', @, 'change', @index i
         @plot()
 
+    plot: -> @drawing.plot @drawing.array()
+    
+    
 module.exports = Draw

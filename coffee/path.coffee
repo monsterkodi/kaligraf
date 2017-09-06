@@ -5,7 +5,7 @@
 # 000        000   000     000     000   000  
 # 000        000   000     000     000   000  
 
-{ last, log, _ } = require 'kxk'
+{ last, pos, log, _ } = require 'kxk'
 
 { boxCenter } = require './utils'
 
@@ -77,6 +77,8 @@ class Path extends Draw
         point[point.length-2] = p.x
         point[point.length-1] = p.y
         @plot()
+        
+    pos: (l) -> pos l[1], l[2]                
                 
     #  0000000   0000000   000   000  000000000  00000000    0000000   000      
     # 000       000   000  0000  000     000     000   000  000   000  000      

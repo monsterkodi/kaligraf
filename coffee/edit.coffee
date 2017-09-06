@@ -29,6 +29,8 @@ class Edit
 
     setItem: (item) ->
         
+        return if not _.isFunction item.array?
+        
         points = item.array().valueOf()
         for i in [0...points.length]
             p = switch item.type
@@ -45,7 +47,7 @@ class Edit
         if action == 'viewbox' then @svg.viewbox box
         
     del: ->
-        
+
         for d in @drags
             d.deactivate()
             

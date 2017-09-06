@@ -5,7 +5,7 @@
 # 000   000  000   000  000   000  000   000
 # 0000000    000   000  000   000  00     00
 
-{ post, last, log, _ } = require 'kxk'
+{ post, first, last, log, _ } = require 'kxk'
 { boxCenter } = require './utils'
 
 Edit = require './edit'
@@ -28,7 +28,6 @@ class Draw
         switch @shape 
             when 'arc', 'pie' then
             else
-                log "emit points #{@points().length}"
                 for i in [0...@points().length]
                     post.emit 'draw', @, 'append', i
 
@@ -85,6 +84,7 @@ class Draw
     plot: (points=@drawing.array()) -> @drawing.plot points
     points:    -> @drawing.array().valueOf()
     lastPoint: -> last @points()
+    firstPoint: -> first @points()
     index: (i) -> if i < 0 then i + @points().length else i
     
     posAt: (i) ->

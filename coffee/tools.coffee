@@ -69,6 +69,7 @@ class Tools extends Tool
             ]
             [
                 { name: 'pick',    group: 'shape' }
+                { name: 'edit',    group: 'shape' }
                 { name: 'pan',     group: 'shape' }
                 { name: 'loupe',   group: 'shape' }
                 { name: 'pipette', group: 'shape' }

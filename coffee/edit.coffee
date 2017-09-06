@@ -5,7 +5,7 @@
 # 000       000   000  000     000   
 # 00000000  0000000    000     000  
 
-{ post, drag, elem, log, _ } = require 'kxk'
+{ post, drag, elem, pos, log, _ } = require 'kxk'
 
 class Edit
 
@@ -24,25 +24,60 @@ class Edit
         @ctrls  = []
         
         post.on 'draw',  @onDraw
+        post.on 'ctrl',  @onCtrl
         post.on 'stage', @onStage
 
+    setItem: (item) ->
+        
+        points = item.array().valueOf()
+        for i in [0...points.length]
+            p = switch item.type
+                when 'polygon', 'polyline', 'line'
+                    pos points[i][0], points[i][1]
+                else
+                    point = points[i]
+                    pos point[point.length-2], point[point.length-1]
+            p = pos new SVG.Point(p).transform item.transform().matrix
+            @addPoint i, p
+        
     onStage: (action, box) =>
         
-        if action == 'viewbox' 
-            @svg.viewbox box
+        if action == 'viewbox' then @svg.viewbox box
         
     del: ->
         
         for d in @drags
             d.deactivate()
-        @drags = []
+            
+        @drags  = []
+        @points = []
+        @ctrls  = []
         
         post.removeListener 'stage', @onStage
+        post.removeListener 'ctrl',  @onCtrl
         post.removeListener 'draw',  @onDraw
         
         @svg.clear()
         @svg.remove()
         @element.remove()
+        
+    addCtrl: (index, p) ->
+        
+        ctrl = @svg.circle(4).addClass 'editCtrl'
+        ctrl.attr cx:p.x, cy:p.y
+        ctrl.style cursor: 'pointer'
+        @ctrls[index] = ctrl
+        @drags.push = new drag
+            target:  ctrl.node
+            onStart: @onCtrlStart
+            onMove:  @onCtrlMove
+
+    updateCtrl: (index, p) ->
+        
+        @ctrls[index]?.attr cx:p.x, cy:p.y
+            
+    onCtrlStart: ->
+    onCtrlMove:  ->
         
     addPoint: (index, p) ->
         
@@ -61,11 +96,19 @@ class Edit
             
     onPointStart: ->
     onPointMove:  ->
+         
+    onCtrl: (draw, action, index, p) =>
+        
+        switch action
             
+            when 'append' then @addCtrl    index, p
+            when 'change' then @updateCtrl index, p
+        
+        
     onDraw: (draw, action, index) =>
         
         p = draw.posAt index
-        log "Edit.onDraw action:#{action} index:#{index}", p
+        # log "Edit.onDraw action:#{action} index:#{index}", p
         switch action
             
             when 'append' then @addPoint    index, p

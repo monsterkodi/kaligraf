@@ -7,9 +7,9 @@
 
 { elem, post, drag, first, last, pos, log, _ } = require 'kxk'
 
-{   opposide, rectSize, rectOffset, 
-    moveBox, zoomBox, scaleBox,
-    boxOffset, boxForItems, boxPos, boxSize } = require './utils'
+{   opposide,  rectSize, rectOffset, 
+    moveBox,   zoomBox,  scaleBox,
+    boxOffset, boxPos,   boxSize, boxForItems } = require './utils'
 
 class Resizer
 

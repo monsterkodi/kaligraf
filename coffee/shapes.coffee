@@ -11,6 +11,7 @@
 
 Poly = require './poly'
 Path = require './path'
+Edit = require './edit'
 
 class Shapes
 
@@ -119,42 +120,52 @@ class Shapes
         eventPos = pos event 
         stagePos = @kali.stage.stageForEvent eventPos
                 
+        @edit?.del()
+        delete @edit
+        
         switch shape
             
             when 'pick'
 
-                e = @stage.itemAtPos eventPos
+                item = @stage.itemAtPos eventPos
                 
-                if e == @svg or not e?
+                if item == @svg or not item?
                     if not event.shiftKey
                         @selection.clear()
                     @selection.start eventPos, join:event.shiftKey
                 else
-                    if not @selection.contains e
+                    if not @selection.contains item
                         if not event.shiftKey
                             @selection.clear()
                         @selection.pos = eventPos
-                        @selection.add e
+                        @selection.add item
                     else
                         if event.shiftKey
-                            @selection.del e
+                            @selection.del item
+
+            when 'edit'
+                
+                item = @stage.itemAtPos eventPos
+                if item? and item != @svg
+                    @edit = new Edit @kali
+                    @edit.setItem item
                             
             when 'pipette'
                 
-                e = @stage.itemAtPos eventPos
-                if e? and e != @svg
+                item = @stage.itemAtPos eventPos
+                if item? and item != @svg
                     
-                    @kali.tools.fill.color = e.style('fill')
-                    @kali.tools.fill.alpha = e.style('fill-opacity')
+                    @kali.tools.fill.color = item.style('fill')
+                    @kali.tools.fill.alpha = item.style('fill-opacity')
                     @kali.tools.fill.update()
                     post.emit 'color', 'fill', 'color', @kali.tools.fill.color
                     
-                    @kali.tools.stroke.color = e.style('stroke')
-                    @kali.tools.stroke.alpha = e.style('stroke-opacity')
+                    @kali.tools.stroke.color = item.style('stroke')
+                    @kali.tools.stroke.alpha = item.style('stroke-opacity')
                     @kali.tools.stroke.update()
                     post.emit 'color', 'stroke', 'color', @kali.tools.stroke.color
                     
-                    @kali.tools.width.setWidth e.style('stroke-width')
+                    @kali.tools.width.setWidth item.style('stroke-width')
                 
             when 'loupe' 
                 

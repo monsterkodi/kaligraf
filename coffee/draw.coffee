@@ -25,9 +25,12 @@ class Draw
         delete @picking
         @edit = new Edit @kali
         
-        if not @shape in ['arc', 'pie']
-            for i in [0...@points().length]
-                post.emit 'draw', @, 'append', i
+        switch @shape 
+            when 'arc', 'pie' then
+            else
+                log "emit points #{@points().length}"
+                for i in [0...@points().length]
+                    post.emit 'draw', @, 'append', i
 
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
@@ -79,6 +82,7 @@ class Draw
 
     continuePicking: -> @picking
     
+    plot: (points=@drawing.array()) -> @drawing.plot points
     points:    -> @drawing.array().valueOf()
     lastPoint: -> last @points()
     index: (i) -> if i < 0 then i + @points().length else i
@@ -87,7 +91,6 @@ class Draw
         points = @points()
         i = @index i
         if i < points.length
-            # log "#{i}", points[i]
             @pos points[i]
         else
             log "wrong index? #{i}/#{points.length}"
@@ -96,7 +99,7 @@ class Draw
     removeLastPoint: ->
         post.emit 'draw', @, 'delete', @index -1
         @points().pop() 
-        @plot() 
+        @plot()
     
     append: (l) ->
         @points().push l
@@ -104,11 +107,9 @@ class Draw
         @plot()
         
     set: (i, l) ->
-        @points().splice i, 1, l
+        points = @points()
+        points.splice i, 1, l
+        @plot points
         post.emit 'draw', @, 'change', @index i
-        @plot()
-
-    plot: -> @drawing.plot @drawing.array()
-    
     
 module.exports = Draw

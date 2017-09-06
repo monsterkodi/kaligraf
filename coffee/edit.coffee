@@ -37,7 +37,9 @@ class Edit
             d.deactivate()
         @drags = []
         
-        post.removeListener 'draw', @onDraw
+        post.removeListener 'stage', @onStage
+        post.removeListener 'draw',  @onDraw
+        
         @svg.clear()
         @svg.remove()
         @element.remove()
@@ -47,21 +49,27 @@ class Edit
         point = @svg.circle(4).addClass 'editPoint'
         point.attr cx:p.x, cy:p.y
         point.style cursor: 'pointer'
+        @points.push point
         @drags.push = new drag
             target:  point.node
             onStart: @onPointStart
             onMove:  @onPointMove
+
+    updatePoint: (index, p) ->
+        
+        @points[index].attr cx:p.x, cy:p.y
             
     onPointStart: ->
     onPointMove:  ->
             
     onDraw: (draw, action, index) =>
         
-        log "Edit.onDraw action:#{action} index:#{index}", draw.posAt index
-        
+        p = draw.posAt index
+        log "Edit.onDraw action:#{action} index:#{index}", p
         switch action
             
-            when 'append' then @addPoint index, draw.posAt index
+            when 'append' then @addPoint    index, p
+            when 'change' then @updatePoint index, p
         
         
 module.exports = Edit

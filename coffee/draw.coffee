@@ -24,6 +24,10 @@ class Draw
     
         delete @picking
         @edit = new Edit @kali
+        
+        if not @shape in ['arc', 'pie']
+            for i in [0...@points().length]
+                post.emit 'draw', @, 'append', i
 
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       

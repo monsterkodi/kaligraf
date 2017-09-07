@@ -50,9 +50,10 @@ class Tools extends Tool
         @activateTool 'text'
         @activateTool 'pick'
         @activateTool 'bezier'
+        @activateTool 'edit'
         
-        # post.emit 'stage', 'setColor', '#fff'
         post.emit 'tool', 'load'
+        post.emit 'stage', 'setColor', '#666'
         
     # 000  000   000  000  000000000  
     # 000  0000  000  000     000     

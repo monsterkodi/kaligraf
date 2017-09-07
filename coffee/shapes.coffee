@@ -146,8 +146,10 @@ class Shapes
             when 'edit'
                 
                 item = @stage.itemAtPos eventPos
+                # log "itemAtPos #{item?}", eventPos
                 if item? and item != @svg
                     @edit = new Edit @kali
+                    @edit.dotSize = 10
                     @edit.setItem item
                             
             when 'pipette'
@@ -206,6 +208,7 @@ class Shapes
         
         switch shape
             
+            when 'edit'    then
             when 'pipette' then
                     
             when 'pan'   
@@ -248,6 +251,7 @@ class Shapes
             
         switch shape
             
+            when 'edit' then return
             when 'loupe' 
                 
                 @selection.loupe.remove()

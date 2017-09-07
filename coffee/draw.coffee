@@ -97,19 +97,22 @@ class Draw
             null
 
     removeLastPoint: ->
-        post.emit 'draw', @, 'delete', @index -1
+        index = @index -1
+        post.emit 'ctrl', @, 'delete', 'point', index, @posAt index
         @points().pop() 
         @plot()
     
     append: (l) ->
+        index = @index -1
         @points().push l
-        post.emit 'draw', @, 'append', @index -1
+        post.emit 'ctrl', @, 'append', 'point', index, @posAt index
         @plot()
         
     set: (i, l) ->
+        index = @index i 
         points = @points()
         points.splice i, 1, l
         @plot points
-        post.emit 'draw', @, 'change', @index i
+        post.emit 'ctrl', @, 'change', 'point', index, @posAt index
     
 module.exports = Draw

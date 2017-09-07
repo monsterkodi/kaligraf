@@ -22,9 +22,8 @@ class Trans
     rect:   (item, r) -> if r? then @setRect(  item, r) else @getRect   item
     rotation: (item, a, c) -> if a? then @setRotation(item, a, c) else @getRotation item
 
-    transform: (item, p) ->
-    
-        pos new SVG.Point(p).transform item.transform().matrix
+    transform: (item, p) -> pos new SVG.Point(p).transform item.transform().matrix
+    inverse:   (item, p) -> pos new SVG.Point(p).transform item.transform().matrix.inverse()
     
     getRotation: (item) -> item.transform 'rotation'
     setRotation: (item, a, c) -> 

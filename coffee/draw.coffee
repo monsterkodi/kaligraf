@@ -24,12 +24,12 @@ class Draw
     
         delete @picking
         @edit = new Edit @kali
+        @edit.dotSize = 5
         
         switch @shape 
             when 'arc', 'pie' then
             else
-                for i in [0...@points().length]
-                    post.emit 'draw', @, 'append', i
+                @edit.addItem @drawing
 
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
@@ -97,14 +97,14 @@ class Draw
 
     removeLastPoint: ->
         index = @index -1
-        post.emit 'ctrl', 'delete', 'point', index, @posAt(index), @pointAt(index)
+        post.emit 'ctrl', @drawing, 'delete', 'point', index, @posAt(index), @pointAt(index)
         @points().pop() 
         @plot()
     
     append: (l) ->
         @points().push l
         index = @index -1
-        post.emit 'ctrl', 'append', 'point', index, @posAt(index), @pointAt(index)
+        post.emit 'ctrl', @drawing, 'append', 'point', index, @posAt(index), @pointAt(index)
         @plot()
         
     set: (i, l) ->
@@ -112,6 +112,6 @@ class Draw
         points = @points()
         points.splice i, 1, l
         @plot points
-        post.emit 'ctrl', 'change', 'point', index, @posAt(index), @pointAt(index)
+        post.emit 'ctrl', @drawing, 'change', 'point', index, @posAt(index), @pointAt(index)
     
 module.exports = Draw

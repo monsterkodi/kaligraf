@@ -21,6 +21,8 @@ class Selection
         @svg = SVG(@element).size '100%', '100%' 
         @svg.addClass 'selectionSVG'
         @svg.clear()
+
+        @stage = @kali.stage
         
         post.on 'stage', @onStage
         post.on 'color', @onColor
@@ -56,26 +58,26 @@ class Selection
         
         if @items.length
 
-            for e in @items
-                @addRectForItem e
+            for item in @items
+                @addRectForItem item
         
         post.emit 'selection', 'set', @items
     
-    add: (e) ->
+    addItem: (item) ->
         
-        if e not in @items
+        if item not in @items
             
-            @items.push e
-            @addRectForItem e
+            @items.push item
+            @addRectForItem item
             
-            post.emit 'selection', 'add', @items, e
+            post.emit 'selection', 'add', @items, item
             
-    del: (e) ->
+    delItem: (item) ->
         
-        if e in @items
-            _.pull @items, e
-            @delRectForItem e
-            post.emit 'selection', 'del', @items, e
+        if item in @items
+            _.pull @items, item
+            @delRectForItem item
+            post.emit 'selection', 'del', @items, item
     
     clear: () ->
 
@@ -87,7 +89,7 @@ class Selection
             post.emit 'selection', 'clear'
             
     empty: -> @items.length <= 0
-    contains: (e) -> e in @items
+    contains: (item) -> item in @items
 
     # 000  000000000  00000000  00     00   0000000    
     # 000     000     000       000   000  000         
@@ -136,20 +138,20 @@ class Selection
     # 000   000  000       000          000       
     # 000   000  00000000   0000000     000       
       
-    start: (p,o) -> 
+    startRect: (p,o) -> 
         
         @rect = x:p.x, y:p.y, x2:p.x, y2:p.y 
         @pos = rectOffset @rect
         @updateRect o
         
-    move: (p,o) -> 
+    moveRect: (p,o) -> 
     
         @rect.x2 = p.x
         @rect.y2 = p.y
         delete @pos
         @updateRect o
         
-    end: (p) -> 
+    endRect: (p) -> 
     
         @rect.element.remove() 
         delete @pos
@@ -186,9 +188,9 @@ class Selection
 
             rb = child.rbox()
             if rectsIntersect r, rb
-                @add child
+                @addItem child
             else if not opt.join
-                @del child
+                @delItem child
         
     offsetRect: (r) ->
         
@@ -205,20 +207,10 @@ class Selection
     # 000 0 000  000   000     000     000       
     # 000   000   0000000       0      00000000  
     
-    moveBy: (delta) ->
-        
-        for s in @items
-            @moveElement s, delta.x, delta.y
-            
+    moveBy: (delta) -> 
+    
+        @stage.moveItems @items, delta
         @updateItems()
-
-    moveElement: (e, dx, dy) ->
-        
-        dx /= @kali.stage.zoom
-        dy /= @kali.stage.zoom
-
-        # @kali.trans.pos e, @kali.trans.pos(e).plus pos dx,dy 
-        @kali.trans.center e, @kali.trans.center(e).plus pos dx,dy 
          
     #  0000000   0000000   000       0000000   00000000   
     # 000       000   000  000      000   000  000   000  

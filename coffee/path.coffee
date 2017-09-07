@@ -93,27 +93,28 @@ class Path extends Draw
         if points.length < 2
             switch @shape
                 when 'bezier', 'bezier_quad' 
-                    @append [@command, p.x, p.y, p.x, p.y]
-                    post.emit 'ctrl1', 'append', 'ctrl', @index(-1), p
+                    point = [@command, p.x, p.y, p.x, p.y]
+                    @append point
+                    post.emit 'ctrl', @drawing, 'append', 'ctrl1', @index(-1), p, point
                     return 
             
         point = last points
         switch point[0]
             when 'M', 'm', 'L', 'l' 
                 @set -1, [@command, p.x, p.y, p.x, p.y]
-                post.emit 'ctrl1', 'append', 'ctrl', @index(-1), p
+                post.emit 'ctrl', @drawing, 'append', 'ctrl1', @index(-1), p, point
                 
             when 'C', 'c', 'T', 't', 'S', 's', 'Q', 'q'
                 point[1] = p.x
                 point[2] = p.y
                 @plot()
-                post.emit 'ctrl1', 'change', 'ctrl', @index(-1), p
+                post.emit 'ctrl', @drawing, 'change', 'ctrl1', @index(-1), p, point
         switch point[0]
             when 'C', 'c'
                 point[3] = p.x
                 point[4] = p.y
                 @plot()
-                post.emit 'ctrl2', 'change', 'ctrl', @index(-1), p
+                post.emit 'ctrl', @drawing, 'change', 'ctrl2', @index(-1), p, point
         
     # 00000000   000   0000000  000   000
     # 000   000  000  000       000  000 
@@ -131,11 +132,10 @@ class Path extends Draw
 
     handleEscape: ->
         
-        if @drawing 
+        if @drawing?
             switch @shape 
                 when 'bezier', 'bezier_quad'
                     @setLastPoint @pos @firstPoint()
-                    @append ['Z']
                     @plot()
                 else
                     super

@@ -105,6 +105,22 @@ class Shapes
     # 0000000      000     000   000  000   000     000     
     
     onStart: (drag, event) => @handleMouseDown event
+
+    autoSwitch: (event) ->
+        
+        toolKeys = 
+            edit:        event.ctrlKey and not event.altKey and not event.metaKey
+            pan:     not event.ctrlKey and     event.altKey and not event.metaKey
+            pick:    not event.ctrlKey and not event.altKey and     event.metaKey
+            pipette: not event.ctrlKey and     event.altKey and     event.metaKey
+            loupe:       event.ctrlKey and     event.altKey and not event.metaKey
+            
+        shape = @kali.shapeTool()
+        for s,k of toolKeys
+            if k and shape != s
+                @tools[s].onClick()
+                return s
+        shape
     
     handleMouseDown: (event) =>
         
@@ -119,46 +135,43 @@ class Shapes
             when 'path' then @path
             else null
         
-        for s,k of {pick:event.shiftKey, edit:event.ctrlKey, pan:event.metaKey, loupe:event.ctrlKey and event.shiftKey, pipette:event.altKey}
-            if k and shape != s
-                switched = true
-                @tools[s].onClick()
-                shape = s
+        newShape = @autoSwitch event
+        switched = newShape != shape
+        shape    = newShape
         
         eventPos = pos event 
         stagePos = @kali.stage.stageForEvent eventPos
-                
-        @edit?.del()
-        delete @edit
+                        
+        item = @stage.itemAtPos eventPos
+
+        doSel = (sel) ->
+            if item?
+                if not sel.contains item
+                    if not event.shiftKey then sel.clear()
+                    sel.pos = eventPos
+                    sel.addItem item
+                else if not switched
+                    if event.shiftKey then sel.delItem item
+            else
+                if not event.shiftKey then sel.clear()
+                sel.startRect eventPos, join:event.shiftKey
         
         switch shape
             
             when 'pick'
 
-                item = @stage.itemAtPos eventPos
-                
-                if item == @svg or not item?
-                    if not event.shiftKey
-                        @selection.clear()
-                    @selection.start eventPos, join:event.shiftKey
-                else
-                    if not @selection.contains item
-                        if not event.shiftKey
-                            @selection.clear()
-                        @selection.pos = eventPos
-                        @selection.add item
-                    else if not switched
-                        if event.shiftKey
-                            @selection.del item
+                @edit?.del()
+                delete @edit
 
+                doSel @selection
+                    
             when 'edit'
+
+                @selection.clear()
                 
-                item = @stage.itemAtPos eventPos
-                if item? and item != @svg
-                    @selection.clear()
-                    @edit = new Edit @kali
-                    @edit.dotSize = 10
-                    @edit.setItem item
+                @edit ?= new Edit @kali
+
+                doSel @edit
                             
             when 'pipette'
                 
@@ -205,7 +218,7 @@ class Shapes
     
     onMove: (drag, event) =>
 
-        shape = @kali.shapeTool()
+        shape = @autoSwitch event
         
         eventPos = pos event
         stagePos = @kali.stage.stageForEvent eventPos
@@ -216,7 +229,6 @@ class Shapes
         
         switch shape
             
-            when 'edit'    then
             when 'pipette' then
                     
             when 'pan'   
@@ -232,9 +244,21 @@ class Shapes
             when 'pick'
                 
                 if @selection.rect?
-                    @selection.move eventPos, join:event.shiftKey
+                    @selection.moveRect eventPos, join:event.shiftKey
                 else if not @resizer.empty()
                     @resizer.moveBy drag.delta
+                    
+            when 'edit' 
+                
+                
+                @edit ?= new Edit @kali
+                if @edit.rect?
+                    @edit.moveRect eventPos, join:event.shiftKey
+                else 
+                    if @edit.empty()
+                        @edit.addItem @stage.itemAtPos eventPos
+                    else
+                        @edit.moveBy drag.delta                
                 
             else
                 z  = @kali.stage.zoom
@@ -254,7 +278,11 @@ class Shapes
         stagePos = @kali.stage.stageForEvent eventPos
         
         if @selection.rect?
-            @selection.end eventPos
+            @selection.endRect eventPos
+            return
+            
+        if @edit?.rect?
+            @edit.endRect eventPos
             return
         
         shape = @kali.shapeTool() 

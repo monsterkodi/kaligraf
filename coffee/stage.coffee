@@ -80,7 +80,14 @@ class Stage
             if child.type == 'defs'
                 return false
             true
-                
+
+    moveItems: (items, delta) ->
+        
+        offset = delta.times 1.0/@zoom
+        for item in items
+            center = @kali.trans.center item
+            @kali.trans.center item, center.plus offset
+                    
     #  0000000  000   000   0000000   
     # 000       000   000  000        
     # 0000000    000 000   000  0000  
@@ -112,7 +119,7 @@ class Stage
                     @svg.svg child.svg()
                     added = last @svg.children() 
                     if added.type != 'defs' and opt?.select != false
-                        @selection.add last @svg.children() 
+                        @selection.addItem last @svg.children() 
 
     getSVG: (items, bb, color) ->
         
@@ -187,7 +194,7 @@ class Stage
         clipboard.writeText svg
         
         for item in selected
-            @selection.add item
+            @selection.addItem item
             
         svg
 

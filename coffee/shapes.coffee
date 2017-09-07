@@ -112,7 +112,7 @@ class Shapes
             when 'path' then @path
             else null
         
-        for s,k of {pick:event.shiftKey, pan:event.metaKey, loupe:event.ctrlKey, pipette:event.altKey}
+        for s,k of {pick:event.shiftKey, edit:event.ctrlKey, pan:event.metaKey, loupe:event.ctrlKey and event.shiftKey, pipette:event.altKey}
             if k and shape != s
                 @tools[s].onClick()
                 shape = s

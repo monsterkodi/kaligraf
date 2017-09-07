@@ -332,4 +332,19 @@ class Shapes
             @handler = null
             delete @drawing
 
+    # 000   000  00000000  000   000  
+    # 000  000   000        000 000   
+    # 0000000    0000000     00000    
+    # 000  000   000          000     
+    # 000   000  00000000     000     
+    
+    handleKey: (mod, key, combo, char, event, down) ->
+        
+        if @edit? and down
+            switch combo
+                when 'backspace', 'delete'
+                    return @edit.delete()
+                    
+        'unhandled'
+            
 module.exports = Shapes

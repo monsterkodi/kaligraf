@@ -72,6 +72,23 @@ class Edit
 
     onStage: (action, box) => if action == 'viewbox' then @svg.viewbox box
 
+    # 0000000    00000000  000      00000000  000000000  00000000  
+    # 000   000  000       000      000          000     000       
+    # 000   000  0000000   000      0000000      000     0000000   
+    # 000   000  000       000      000          000     000       
+    # 0000000    00000000  0000000  00000000     000     00000000  
+    
+    delete: ->
+        
+        if not @empty()
+            for item in @items
+                if item.parent()?.removeElement?
+                    item.remove()
+                else
+                    item.clear()
+                    item.node.remove()
+        @clear()
+    
     # 000  000000000  00000000  00     00
     # 000     000     000       000   000
     # 000     000     0000000   000000000
@@ -168,16 +185,6 @@ class Edit
 
     getCtrls: (item) -> @ctrls.filter (ctrl) -> ctrl.item == item
 
-    # getCtrls: ->
-#
-        # types = [].slice.call arguments, 0
-        # ctrls = []
-        # for ctrl in @ctrls
-            # for type in types
-                # c = ctrl[type]
-                # ctrls.push c if c?
-        # ctrls
-
     # 00000000  0000000    000  000000000
     # 000       000   000  000     000
     # 0000000   000   000  000     000
@@ -189,7 +196,9 @@ class Edit
         ctrls = @getCtrls item
 
         switch action
+            
             when 'append'
+                
                 if index < ctrls.length
                     ctrl = ctrls[index]
                 else
@@ -201,8 +210,13 @@ class Edit
             when 'change'
 
                 ctrl = ctrls[index]
+                if not ctrl?
+                    log "no ctrl? item:#{item.id()} index:#{index} type:#{type}"
                 dot  = ctrl[type]
 
+        if not dot?
+            log action, type, index
+                
         dot.cx p.x
         dot.cy p.y
 
@@ -272,7 +286,7 @@ class Edit
         type  = @dragItem.remember 'type'
         ctrl  = @dragItem.remember 'ctrl'
 
-        item = ctrl.item
+        item  = ctrl.item
 
         # log "Edit.onCtrlMove index:#{index} type:#{type}"
 
@@ -283,6 +297,8 @@ class Edit
         points = item.array().valueOf()
         point  = points[index]
 
+        log "Edit.onCtrlMove index:#{index} type:#{type} p[0]:#{point[0]}", stagePos, inverse
+                            
         if item.type in ['polygon', 'polyline', 'line']
 
             point[0] = inverse.x
@@ -292,7 +308,7 @@ class Edit
             switch type
 
                 when 'ctrl1', 'ctrl2'
-
+                                        
                     switch point[0]
                         when 'C', 'c', 'S', 's', 'Q', 'q'
 
@@ -301,7 +317,7 @@ class Edit
 
                             line = ctrl["#{type}_line"]
                             pp   = ctrl['point']
-                            line.plot [[pp.cx(), pp.cy()], [point[1], point[2]]]
+                            line.plot [[pp.cx(), pp.cy()], [stagePos.x, stagePos.y]]
 
                 when 'point'
 
@@ -320,11 +336,12 @@ class Edit
                             pp   = ctrl['point']
                             cp   = ctrl['ctrl1']
 
-                            if event.shiftKey
+                            if not event.shiftKey
                                 np = @getPos(ctrl, 'ctrl1').plus pos dx, dy
                                 @setPos ctrl, 'ctrl1', np
-                                point[1] = np.x
-                                point[2] = np.y
+                                ip = @trans.inverse item, np
+                                point[1] = ip.x
+                                point[2] = ip.y
 
                             line.plot [[pp.cx(), pp.cy()], [cp.cx(), cp.cy()]]
 

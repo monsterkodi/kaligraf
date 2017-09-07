@@ -37,12 +37,12 @@ class Selection
     delete: ->  
         
         if not @empty()
-            for l in @items
-                if l.parent()?.removeElement?
-                    l.remove()
+            for item in @items
+                if item.parent()?.removeElement?
+                    item.remove()
                 else
-                    l.clear()
-                    l.node.remove()
+                    item.clear()
+                    item.node.remove()
         @clear()
         
     #  0000000  00000000  000      00000000   0000000  000000000  00000000  0000000    

@@ -449,6 +449,7 @@ class Stage
         
         return if 'unhandled' != @resizer  .handleKey mod, key, combo, char, event, down
         return if 'unhandled' != @selection.handleKey mod, key, combo, char, event, down
+        return if 'unhandled' != @shapes   .handleKey mod, key, combo, char, event, down
                 
         'unhandled'
         

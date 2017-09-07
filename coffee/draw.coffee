@@ -86,26 +86,25 @@ class Draw
     lastPoint: -> last @points()
     firstPoint: -> first @points()
     index: (i) -> if i < 0 then i + @points().length else i
-    
-    posAt: (i) ->
+    posAt: (i) -> if p = @pointAt i then @pos p
+    pointAt: (i) -> 
         points = @points()
-        i = @index i
-        if i < points.length
-            @pos points[i]
-        else
+        i = @index i;
+        if i < points.length then points[i]
+        else 
             log "wrong index? #{i}/#{points.length}"
             null
 
     removeLastPoint: ->
         index = @index -1
-        post.emit 'ctrl', @, 'delete', 'point', index, @posAt index
+        post.emit 'ctrl', 'delete', 'point', index, @posAt(index), @pointAt(index)
         @points().pop() 
         @plot()
     
     append: (l) ->
-        index = @index -1
         @points().push l
-        post.emit 'ctrl', @, 'append', 'point', index, @posAt index
+        index = @index -1
+        post.emit 'ctrl', 'append', 'point', index, @posAt(index), @pointAt(index)
         @plot()
         
     set: (i, l) ->
@@ -113,6 +112,6 @@ class Draw
         points = @points()
         points.splice i, 1, l
         @plot points
-        post.emit 'ctrl', @, 'change', 'point', index, @posAt index
+        post.emit 'ctrl', 'change', 'point', index, @posAt(index), @pointAt(index)
     
 module.exports = Draw

@@ -204,11 +204,11 @@ class Resizer
     activate: (active=true) ->
         if active
             @drag?.activate()
-            @g?.removeClass 'resizerInactive'
+            # @g?.removeClass 'resizerInactive'
             @svg?.removeClass 'resizerInactive'
         else
             @drag?.deactivate()
-            @g?.addClass 'resizerInactive'
+            # @g?.addClass 'resizerInactive'
             @svg?.addClass 'resizerInactive'
 
     # 00000000   00000000   0000000  000  0000000  00000000

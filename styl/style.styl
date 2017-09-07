@@ -79,9 +79,6 @@
     
 .resizerGroup
     cursor                  -webkit-grab
-    pointer-events          all
-    &.resizerInactive
-        pointer-events      none
         
 .resizerRect
     fill                    rgba(0,0,0,0.1)
@@ -92,14 +89,17 @@
     fill                    #88f
     fill-opacity            0.3
     stroke                  none
+    pointer-events          all
     
 .resizerCorner
     fill                    #88f
+    pointer-events          all
 
 .resizerRot
     fill                    #88f
     fill-opacity            0.3
     cursor:                 url(file:///Users/kodi/s/kaligraf/svg/rot.svg) 18 12, auto;
+    pointer-events          all
     
 .resizerItemRect
     fill                    none

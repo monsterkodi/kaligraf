@@ -34,12 +34,6 @@ class Stage
         @resizer   = new Resizer   @kali
         @shapes    = new Shapes    @kali
         
-        @drag = new drag
-            target:  @element
-            onStart: @shapes.onStart
-            onMove:  @shapes.onMove
-            onStop:  @shapes.onStop
-
         @element.addEventListener 'wheel',     @onWheel
         @element.addEventListener 'mousemove', @onMouseMove
         

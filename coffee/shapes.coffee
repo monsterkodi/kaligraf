@@ -5,7 +5,7 @@
 #      000  000   000  000   000  000        000            000
 # 0000000   000   000  000   000  000        00000000  0000000 
 
-{ post, last, resolve, pos, log } = require 'kxk'
+{ post, drag, last, resolve, pos, log } = require 'kxk'
 
 { boxCenter } = require './utils'
 
@@ -26,7 +26,14 @@ class Shapes
         
         @svg       = @stage.svg
         @selection = @stage.selection
+        @resizer   = @stage.resizer
 
+        @drag = new drag
+            target:  @stage.element
+            onStart: @onStart
+            onMove:  @onMove
+            onStop:  @onStop
+        
     #  0000000  000   000   0000000   00000000   00000000  
     # 000       000   000  000   000  000   000  000       
     # 0000000   000000000  000000000  00000000   0000000   
@@ -114,6 +121,7 @@ class Shapes
         
         for s,k of {pick:event.shiftKey, edit:event.ctrlKey, pan:event.metaKey, loupe:event.ctrlKey and event.shiftKey, pipette:event.altKey}
             if k and shape != s
+                switched = true
                 @tools[s].onClick()
                 shape = s
         
@@ -139,15 +147,15 @@ class Shapes
                             @selection.clear()
                         @selection.pos = eventPos
                         @selection.add item
-                    else
+                    else if not switched
                         if event.shiftKey
                             @selection.del item
 
             when 'edit'
                 
                 item = @stage.itemAtPos eventPos
-                # log "itemAtPos #{item?}", eventPos
                 if item? and item != @svg
+                    @selection.clear()
                     @edit = new Edit @kali
                     @edit.dotSize = 10
                     @edit.setItem item
@@ -225,6 +233,8 @@ class Shapes
                 
                 if @selection.rect?
                     @selection.move eventPos, join:event.shiftKey
+                else if not @resizer.empty()
+                    @resizer.moveBy drag.delta
                 
             else
                 z  = @kali.stage.zoom

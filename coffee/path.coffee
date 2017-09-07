@@ -94,26 +94,26 @@ class Path extends Draw
             switch @shape
                 when 'bezier', 'bezier_quad' 
                     @append [@command, p.x, p.y, p.x, p.y]
-                    post.emit 'ctrl1', @, 'append', 'ctrl', @index(-1), p
+                    post.emit 'ctrl1', 'append', 'ctrl', @index(-1), p
                     return 
             
         point = last points
         switch point[0]
             when 'M', 'm', 'L', 'l' 
                 @set -1, [@command, p.x, p.y, p.x, p.y]
-                post.emit 'ctrl1', @, 'append', 'ctrl', @index(-1), p
+                post.emit 'ctrl1', 'append', 'ctrl', @index(-1), p
                 
             when 'C', 'c', 'T', 't', 'S', 's', 'Q', 'q'
                 point[1] = p.x
                 point[2] = p.y
                 @plot()
-                post.emit 'ctrl1', @, 'change', 'ctrl', @index(-1), p
+                post.emit 'ctrl1', 'change', 'ctrl', @index(-1), p
         switch point[0]
             when 'C', 'c'
                 point[3] = p.x
                 point[4] = p.y
                 @plot()
-                post.emit 'ctrl2', @, 'change', 'ctrl', @index(-1), p
+                post.emit 'ctrl2', 'change', 'ctrl', @index(-1), p
         
     # 00000000   000   0000000  000   000
     # 000   000  000  000       000  000 

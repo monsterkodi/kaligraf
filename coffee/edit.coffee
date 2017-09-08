@@ -58,7 +58,7 @@ class Edit
 
     clear: ->
 
-        log "clear #{@items.length}"
+        # log "clear #{@items.length}"
         while @items.length
             @delItem last @items
 
@@ -126,7 +126,7 @@ class Edit
 
         if item in @items
 
-            log "delItem #{item.id()}"
+            # log "delItem #{item.id()}"
 
             for ctrl in @getCtrls item
 
@@ -144,7 +144,7 @@ class Edit
 
         if item in @items then return
 
-        log "addItem #{@items.length} #{item.id()}"
+        # log "addItem #{@items.length} #{item.id()}"
 
         @items.push item
 
@@ -206,7 +206,10 @@ class Edit
                     @ctrls.push ctrl
 
                 dot = @createDot ctrl, type, index, p
-
+                
+                if type == 'ctrl1' and point[0] in ['S', 's']
+                    dotr = @createDot ctrl, 'ctrl1r', index, p
+                
             when 'change'
 
                 ctrl = ctrls[index]
@@ -215,10 +218,16 @@ class Edit
                 dot  = ctrl[type]
 
         if not dot?
-            log action, type, index
-                
-        dot.cx p.x
-        dot.cy p.y
+            log 'no dot?', action, type, index
+        else
+            dot.cx p.x
+            dot.cy p.y
+            
+            if dotr?
+                pp = @getPos ctrl, 'point', index
+                r = pp.minus p.minus pp
+                dotr.cx r.x
+                dotr.cy r.y
 
     createDot: (ctrl, type, index, p) ->
 
@@ -231,11 +240,14 @@ class Edit
 
         ctrl[type] = dot
 
-        if type in ['ctrl1', 'ctrl2']
+        if type in ['ctrl1', 'ctrl1r', 'ctrl2']
 
             line = @svg.line().addClass "#{clss}Line"
             pp   = ctrl['point']
-            line.plot [[pp.cx(), pp.cy()], [p.x, p.y]]
+            if not pp?
+                log 'no point?', ctrl
+            else
+                line.plot [[pp.cx(), pp.cy()], [p.x, p.y]]
             line.back()
             ctrl["#{type}_line"] = line
 
@@ -297,7 +309,7 @@ class Edit
         points = item.array().valueOf()
         point  = points[index]
 
-        log "Edit.onCtrlMove index:#{index} type:#{type} p[0]:#{point[0]}", stagePos, inverse
+        # log "Edit.onCtrlMove index:#{index} type:#{type} p[0]:#{point[0]}", stagePos, inverse
                             
         if item.type in ['polygon', 'polyline', 'line']
 
@@ -315,10 +327,32 @@ class Edit
                             point[1] = inverse.x
                             point[2] = inverse.y
 
+                            pp = @getPos ctrl, 'point', index
+                            pr = pp.minus stagePos.minus pp
                             line = ctrl["#{type}_line"]
-                            pp   = ctrl['point']
-                            line.plot [[pp.cx(), pp.cy()], [stagePos.x, stagePos.y]]
+                            line.plot [[pp.x, pp.y], [stagePos.x, stagePos.y]]
+                            
+                            if type == 'ctrl1' and ctrl.ctrl1r?
+                                pr = pp.minus stagePos.minus pp
+                                @setPos ctrl, 'ctrl1r', pr
 
+                when 'ctrl1r'
+                    
+                    pp = @getPos ctrl, 'point', index
+                    pi = @trans.inverse item, pp
+                    pr = pp.minus stagePos.minus pp
+                    reflected = pi.minus inverse.minus pi
+                    
+                    point[1] = reflected.x
+                    point[2] = reflected.y
+
+                    line = ctrl["ctrl1r_line"]
+                    line.plot [[pp.x, pp.y], [stagePos.x, stagePos.y]]
+                    
+                    @setPos ctrl, 'ctrl1', pr
+                    line = ctrl["ctrl1_line"]
+                    line.plot [[pp.x, pp.y], [pr.x, pr.y]]
+                            
                 when 'point'
 
                     switch point[0]
@@ -346,6 +380,17 @@ class Edit
                             line.plot [[pp.cx(), pp.cy()], [cp.cx(), cp.cy()]]
 
                     switch point[0]
+                        when 'S', 's'
+                            line = ctrl["ctrl1r_line"]
+                            pp   = ctrl['point']
+                            cp   = ctrl['ctrl1r']
+
+                            if not event.shiftKey
+                                np = @getPos(ctrl, 'ctrl1r').plus pos dx, dy
+                                @setPos ctrl, 'ctrl1r', np
+
+                            line.plot [[pp.cx(), pp.cy()], [cp.cx(), cp.cy()]]
+                            
                         when 'C', 'c'
                             line = ctrl["ctrl2_line"]
                             pp   = ctrl['point']

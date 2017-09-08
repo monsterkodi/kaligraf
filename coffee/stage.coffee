@@ -34,7 +34,7 @@ class Stage
         @resizer   = new Resizer   @kali
         @shapes    = new Shapes    @kali
         
-        @element.addEventListener 'wheel',     @onWheel
+        @kali.element.addEventListener 'wheel',     @onWheel
         @element.addEventListener 'mousemove', @onMouseMove
         
         post.on 'stage', @onStage
@@ -230,7 +230,8 @@ class Stage
     select: (select) ->
         
         switch select
-            when 'none' 
+            when 'none'
+                @shapes.edit?.clear()
                 @selection.clear()
             when 'all' 
                 @selection.set @items()

@@ -13,6 +13,7 @@ class Main
 
     constructor: (element) ->
 
+        post.setMaxListeners 100
         post.on 'slog', (t) -> window.logview.appendText t
         
         @kali = new Kali element: element  

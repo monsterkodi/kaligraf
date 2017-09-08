@@ -9,7 +9,7 @@
 
 class Ctrl
 
-    constructor: (@item, @index) ->
+    constructor: (@item) ->
                 
         @dots  = {}
         @lines = {}
@@ -40,18 +40,6 @@ class Ctrl
         @lines = {}
         @drags = []
 
-    #  0000000   0000000    0000000        000000000  000   000  00000000   00000000  
-    # 000   000  000   000  000   000         000      000 000   000   000  000       
-    # 000000000  000   000  000   000         000       00000    00000000   0000000   
-    # 000   000  000   000  000   000         000        000     000        000       
-    # 000   000  0000000    0000000           000        000     000        00000000  
-    
-    addType: (type, stagePos) -> 
-        
-        @createDot type
-        
-        if stagePos? then @setPos type, stagePos
-        
     # 0000000     0000000   000000000  
     # 000   000  000   000     000     
     # 000   000  000   000     000     
@@ -100,6 +88,10 @@ class Ctrl
             cpos = @getPos type
             ppos = @getPos 'point'
             line.plot [[ppos.x, ppos.y], [cpos.x, cpos.y]]
+        else if type == 'point'
+            @updateLine 'ctrl1'
+            @updateLine 'ctrl2'
+            @updateLine 'ctrlr'
          
     # 00     00   0000000   000   000  00000000
     # 000   000  000   000  000   000  000
@@ -117,20 +109,18 @@ class Ctrl
         
         @setPos type, stagePos, not event.shiftKey
         
-        @item.elem.plot @item.elem.array()        
+        @item.plot()
 
-    moveBy: (delta) ->  
-    
-        @setPos 'point', @getPos('point').plus(delta), true
-        @item.elem.plot @item.elem.array()
-        
+    moveBy: (delta) -> @setPos 'point', @getPos('point').plus(delta), true
+
     # 00000000    0000000   000  000   000  000000000  
     # 000   000  000   000  000  0000  000     000     
     # 00000000   000   000  000  000 0 000     000     
     # 000        000   000  000  000  0000     000     
     # 000         0000000   000  000   000     000     
     
-    itemPoint: -> @item.elem.array().valueOf()[@index]        
+    index:     -> @item.ctrls.indexOf @
+    itemPoint: -> @item.elem.array().valueOf()[@index()]        
         
     # 00000000    0000000    0000000  
     # 000   000  000   000  000       
@@ -151,17 +141,18 @@ class Ctrl
             log 'no dot?', type
             return
 
-        if moveAll and type == 'point' and @dots['ctrl1']
-            delta = stagePos.minus @getPos 'point' 
-            @setPos 'ctrl1', stagePos.plus delta
-
+        oldPos = @getPos 'point'
+        
         dot.cx stagePos.x
         dot.cy stagePos.y
-            
-        @setElemPos   type, @trans.inverse @item.elem, stagePos
-        @updateLine   type, stagePos
+
         @setSmoothPos type, stagePos
-                
+        @updateLine   type, stagePos
+        @setElemPos   type, @trans.inverse @item.elem, stagePos
+        
+        if moveAll and type == 'point' and @dots['ctrl1']
+            @setPos 'ctrl1', @getPos('ctrl1').plus oldPos.to stagePos
+                        
     #  0000000  00     00   0000000    0000000   000000000  000   000  
     # 000       000   000  000   000  000   000     000     000   000  
     # 0000000   000000000  000   000  000   000     000     000000000  
@@ -173,15 +164,18 @@ class Ctrl
         switch type
             when 'ctrl1' then sibling = 'ctrlr'
             when 'ctrlr' then sibling = 'ctrl1'
+            when 'point' then sibling = 'ctrlr'; stagePos = @getPos 'ctrl1'
             else 
                 return
-                    
+
         if dot = @dots[sibling]
-            pp = @getPos 'point'
-            reflected = pp.plus pp.minus stagePos
-            dot.cx reflected.x
-            dot.cy reflected.y
-            @updateLine sibling, reflected
+            
+            refl = @item.reflPos @index(), sibling
+            
+            dot.cx refl.x
+            dot.cy refl.y
+                
+            @updateLine sibling, refl
                     
     # 00000000  000      00000000  00     00  
     # 000       000      000       000   000  
@@ -191,7 +185,7 @@ class Ctrl
     
     setElemPos: (type, elemPos) ->
         
-        if @item.type in ['polygon', 'polyline', 'line']
+        if @item.elem.type in ['polygon', 'polyline', 'line']
 
             @setPolyPos type, elemPos
         
@@ -199,8 +193,12 @@ class Ctrl
             
             switch type
                 
-                when 'ctrl1', 'ctrl2' then @setCtrlPos  type, elemPos
                 when 'point'          then @setPointPos type, elemPos
+                when 'ctrl1', 'ctrl2' then @setCtrlPos  type, elemPos
+                when 'ctrlr'
+                    stageRefl = @item.reflPos @index(), 'ctrl1'
+                    refl = @trans.inverse @item.elem, stageRefl
+                    @setCtrlPos  'ctrl1', refl 
                 
     # 00000000    0000000   000      000   000  
     # 000   000  000   000  000       000 000   
@@ -209,7 +207,7 @@ class Ctrl
     # 000         0000000   0000000     000     
     
     setPolyPos: (type, elemPos) ->
-        
+
         point  = @itemPoint()
         point[0] = elemPos.x
         point[1] = elemPos.y
@@ -221,6 +219,8 @@ class Ctrl
     #  0000000     000     000   000  0000000  
     
     setCtrlPos:  (type, elemPos) ->  
+        
+        return if not elemPos?
         
         point = @itemPoint()
         

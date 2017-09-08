@@ -109,8 +109,8 @@ class Shapes
     autoSwitch: (event) ->
         
         toolKeys = 
-            edit:        event.ctrlKey and not event.altKey and not event.metaKey
-            pan:     not event.ctrlKey and     event.altKey and not event.metaKey
+            edit:    not event.ctrlKey and     event.altKey and not event.metaKey
+            pan:         event.ctrlKey and not event.altKey and not event.metaKey
             pick:    not event.ctrlKey and not event.altKey and     event.metaKey
             pipette: not event.ctrlKey and     event.altKey and     event.metaKey
             loupe:       event.ctrlKey and     event.altKey and not event.metaKey
@@ -168,7 +168,6 @@ class Shapes
             when 'edit'
 
                 @selection.clear()
-                # log 'start edit', @edit?
                 @edit ?= new Edit @kali
 
                 doSel @edit
@@ -250,7 +249,6 @@ class Shapes
                     
             when 'edit' 
                 
-                log 'move edit', @edit?
                 @edit ?= new Edit @kali
                 if @edit.rect?
                     @edit.moveRect eventPos, join:event.shiftKey
@@ -317,6 +315,12 @@ class Shapes
                 
                 @endDrawing drag, event, stagePos
 
+    # 00000000  000   000  0000000        0000000    00000000    0000000   000   000  
+    # 000       0000  000  000   000      000   000  000   000  000   000  000 0 000  
+    # 0000000   000 0 000  000   000      000   000  0000000    000000000  000000000  
+    # 000       000  0000  000   000      000   000  000   000  000   000  000   000  
+    # 00000000  000   000  0000000        0000000    000   000  000   000  00     00  
+    
     endDrawing: ->
         
         if @drawing
@@ -326,7 +330,10 @@ class Shapes
                 @drawing.remove()
                 
             else            
-                @stage.selection.set [@drawing]
+                # @stage.selection.set [@drawing]
+                @edit ?= new Edit @kali
+                @edit.clear()
+                @edit.addItem @drawing
                 
             @handler?.endDrawing()
             @handler = null

@@ -48,8 +48,9 @@ class Ctrl
 
     createDot: (type, stagePos) ->
 
-        clss = type == 'point' and 'editPoint' or 'editCtrl'
-        dot = @edit.svg.circle(@edit.dotSize).addClass clss
+        dot = @edit.svg.circle(@edit.dotSize)
+        dot.addClass 'editDot'
+        dot.addClass "#{type}Dot"
         dot.style cursor: 'pointer'
         dot.remember 'ctrl',  @
 
@@ -80,7 +81,11 @@ class Ctrl
         line.addClass "editLine"
         line.addClass "#{type}Line"
         line.back()
+        
         @lines[type] = line
+        
+        if type in ['ctrl1', 'ctrl2', 'ctrlr']
+            @createLine "#{type}_"
 
     updateLine: (type) ->
 
@@ -88,6 +93,10 @@ class Ctrl
             cpos = @stage.viewForStage @getPos type
             ppos = @stage.viewForStage @getPos 'point'
             line.plot [[ppos.x, ppos.y], [cpos.x, cpos.y]]
+            
+            if type in ['ctrl1', 'ctrl2', 'ctrlr']
+                @lines["#{type}_"].plot [[ppos.x, ppos.y], [cpos.x, cpos.y]]
+                
         else if type == 'point'
             @updateLine 'ctrl1'
             @updateLine 'ctrl2'

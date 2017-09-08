@@ -51,10 +51,10 @@ class Selection
     #      000  000       000      000       000          000     000       000   000  
     # 0000000   00000000  0000000  00000000   0000000     000     00000000  0000000    
     
-    set: (items) ->
+    setItems: (items) ->
         
         @clear()
-        @items = items
+        @items = items ? []
         
         if @items.length
 

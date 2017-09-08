@@ -96,6 +96,7 @@ class Edit
     objectForItem: (item) -> @objects.find (o) -> o.item == item
 
     items: -> @objects.map (o) -> o.item
+    setItems: (items) -> @clear(); @addItem item for item in items
     
     # 0000000    00000000  000
     # 000   000  000       000

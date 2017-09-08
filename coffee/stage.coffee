@@ -82,6 +82,16 @@ class Stage
         else if @shapes.edit? and not @shapes.edit.empty() 
             @shapes.edit.items()
             
+    swapSelection: ->
+        
+        switch @kali.shapeTool()
+            when 'edit'
+                @shapes.editItems @selection.items
+                @selection.clear()
+            when 'pick'
+                @selection.setItems @shapes.edit?.items()
+                @shapes.stopEdit()
+            
     moveItems: (items, delta) ->
 
         for item in items
@@ -151,9 +161,7 @@ class Stage
             svgStr += item.svg()
         svgStr += '</svg>'
 
-        @selection.set selected
-
-        # log svgStr
+        @selection.setItems selected
 
         svgStr
 
@@ -228,9 +236,8 @@ class Stage
 
     order: (order) ->
 
-        if not @selection.empty()
-            for item in @selection.items
-                item[order]()
+        for item in @selectedItems()
+            item[order]()
 
     select: (select) ->
 
@@ -239,7 +246,7 @@ class Stage
                 @shapes.edit?.clear()
                 @selection.clear()
             when 'all'
-                @selection.set @items()
+                @selection.setItems @items()
 
     # 000   000  000  00000000  000   000
     # 000   000  000  000       000 0 000

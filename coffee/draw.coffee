@@ -54,16 +54,8 @@ class Draw
     
     handleStop: (event, stagePos) ->
         
-        if @drawing?
+        not (@drawing? and @picking)
             
-            if @picking then return false
-
-            # c = boxCenter @drawing.bbox()
-            # @drawing.center 0, 0
-            # @kali.trans.center @drawing, c
-            
-        true
-
     handleEscape: ->
         
         if @drawing then @removeLastPoint()

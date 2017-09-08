@@ -63,6 +63,8 @@ class Tools extends Tool
     
     init: () ->
 
+        @stage = @kali.stage
+        
         tools = [
             [
                 { name: 'stroke', class: 'color' }
@@ -193,22 +195,22 @@ class Tools extends Tool
         
         switch action
             when 'activate'   then @activateTool name
-            when 'cut'        then @kali.stage.cut()
-            when 'copy'       then @kali.stage.copy()
-            when 'paste'      then @kali.stage.paste()
-            when 'save'       then @kali.stage.save()
-            when 'clear'      then @kali.stage.clear()
-            when 'load'       then @kali.stage.load()
-            when 'zoom_reset' then @kali.stage.resetView()
-            when 'zoom_in'    then @kali.stage.zoomIn()
-            when 'zoom_out'   then @kali.stage.zoomOut()
-            when 'lower'      then @kali.stage.order  'backward'
-            when 'raise'      then @kali.stage.order  'forward'
-            when 'back'       then @kali.stage.order  'back'
-            when 'front'      then @kali.stage.order  'front'
-            when 'selectAll'  then @kali.stage.select 'all'
-            when 'deselect'   then @kali.stage.select 'none'
-            when 'center'     then @kali.stage.centerSelection()
+            when 'cut'        then @stage.cut()
+            when 'copy'       then @stage.copy()
+            when 'paste'      then @stage.paste()
+            when 'save'       then @stage.save()
+            when 'clear'      then @stage.clear()
+            when 'load'       then @stage.load()
+            when 'zoom_reset' then @stage.resetView()
+            when 'zoom_in'    then @stage.zoomIn()
+            when 'zoom_out'   then @stage.zoomOut()
+            when 'lower'      then @stage.order  'backward'
+            when 'raise'      then @stage.order  'forward'
+            when 'back'       then @stage.order  'back'
+            when 'front'      then @stage.order  'front'
+            when 'selectAll'  then @stage.select 'all'
+            when 'deselect'   then @stage.select 'none'
+            when 'center'     then @stage.centerSelection()
             when 'grid_toggle' then @grid.toggleGrid()
             
             # else
@@ -234,7 +236,7 @@ class Tools extends Tool
             @ctrlDown = false
             
         if @kali.shapeTool() == 'loupe'
-            @kali.stage.setCursor @ctrlDown and 'zoom-out' or 'zoom-in'
+            @stage.setCursor @ctrlDown and 'zoom-out' or 'zoom-in'
             
         'unhandled'
                 
@@ -254,15 +256,18 @@ class Tools extends Tool
             
         tool.activate()
         
+        switch name
+            when 'edit', 'pick' then @stage.swapSelection()
+        
         cursor = switch name
             when 'pan'      then '-webkit-grab'
             when 'loupe'    then @ctrlDown and 'zoom-out' or 'zoom-in'
             when 'pipette'  then 'alias'
             else 'default'
         
-        @kali.stage.resizer.activate name == 'pick'
+        @stage.resizer.activate name == 'pick'
             
-        @kali.stage.setCursor cursor
+        @stage.setCursor cursor
         
     collapseTemp: ->
         

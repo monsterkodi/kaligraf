@@ -378,16 +378,22 @@ class Shapes
                     @edit.addItem @drawing
                 else
                     @stopEdit()
-                    @stage.selection.set [@drawing]
+                    @stage.selection.setItems [@drawing]
                 
             @handler?.endDrawing()
             @handler = null
             delete @drawing
 
+    editItems: (items) ->
+        
+        @stopEdit()
+        @edit = new Edit @kali
+        @edit.setItems items
+            
     stopEdit: ->
         
         @edit?.clear()
-        delete @edit
+        delete @edit    
             
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   

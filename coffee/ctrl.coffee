@@ -48,7 +48,10 @@ class Ctrl
 
     createDot: (type, stagePos) ->
 
-        dot = @edit.svg.circle(@edit.dotSize)
+        if @itemPoint()[0] in ['L', 'M']
+            dot = @edit.svg.rect @edit.dotSize, @edit.dotSize 
+        else
+            dot = @edit.svg.circle @edit.dotSize 
         dot.addClass 'editDot'
         dot.addClass "#{type}Dot"
         dot.style cursor: 'pointer'

@@ -5,7 +5,7 @@
 #      000  000   000  000   000  000        000            000
 # 0000000   000   000  000   000  000        00000000  0000000 
 
-{ post, drag, last, resolve, pos, log } = require 'kxk'
+{ post, drag, last, resolve, pos, log, _ } = require 'kxk'
 
 { boxCenter } = require './utils'
 
@@ -329,11 +329,15 @@ class Shapes
 
                 @drawing.remove()
                 
-            else            
-                # @stage.selection.set [@drawing]
-                @edit ?= new Edit @kali
-                @edit.clear()
-                @edit.addItem @drawing
+            else 
+                if _.isFunction @drawing.array
+                    @edit ?= new Edit @kali
+                    @edit.clear()
+                    @edit.addItem @drawing
+                else
+                    @edit?.clear()
+                    delete @edit
+                    @stage.selection.set [@drawing]
                 
             @handler?.endDrawing()
             @handler = null

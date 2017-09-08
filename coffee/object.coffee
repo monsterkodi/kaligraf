@@ -1,17 +1,17 @@
 
-# 000  000000000  00000000  00     00
-# 000     000     000       000   000
-# 000     000     0000000   000000000
-# 000     000     000       000 0 000
-# 000     000     00000000  000   000
+#  0000000   0000000          000  00000000   0000000  000000000  
+# 000   000  000   000        000  000       000          000     
+# 000   000  0000000          000  0000000   000          000     
+# 000   000  000   000  000   000  000       000          000     
+#  0000000   0000000     0000000   00000000   0000000     000     
 
 { pos, log, _ } = require 'kxk'
 
 Ctrl = require './ctrl'
 
-class Item
+class Object
 
-    constructor: (@edit, elem) ->
+    constructor: (@edit, item) ->
         
         @svg   = @edit.svg
         @kali  = @edit.kali
@@ -19,7 +19,7 @@ class Item
         
         @ctrls = []
         
-        if elem? then @setElem elem
+        if item? then @setItem item
        
     # 0000000    00000000  000      
     # 000   000  000       000      
@@ -34,25 +34,25 @@ class Item
             
         @ctrls = []
 
-    #  0000000  00000000  000000000     00000000  000      00000000  00     00  
-    # 000       000          000        000       000      000       000   000  
-    # 0000000   0000000      000        0000000   000      0000000   000000000  
-    #      000  000          000        000       000      000       000 0 000  
-    # 0000000   00000000     000        00000000  0000000  00000000  000   000  
+    #  0000000  00000000  000000000     000  000000000  00000000  00     00  
+    # 000       000          000        000     000     000       000   000  
+    # 0000000   0000000      000        000     000     0000000   000000000  
+    #      000  000          000        000     000     000       000 0 000  
+    # 0000000   00000000     000        000     000     00000000  000   000  
     
-    setElem: (elem) ->
+    setItem: (item) ->
         
         @del()
         
-        @elem = elem
+        @item = item
 
-        points = @elem.array().valueOf()
+        points = @item.array().valueOf()
 
         for i in [0...points.length]
 
             point = points[i]
             
-            p = switch @elem.type
+            p = switch @item.type
 
                 when 'polygon', 'polyline', 'line'
                     pos point[0], point[1]
@@ -61,7 +61,7 @@ class Item
 
             @editCtrl 'append', 'point', i, p
 
-            switch @elem.type
+            switch @item.type
                 
                 when 'polygon', 'polyline', 'line' then
                         
@@ -72,7 +72,7 @@ class Item
 
                     switch point[0]
                         when 'S', 's'
-                            @editCtrl 'append', 'ctrlr', i, @trans.inverse @elem, @reflPos i, 'ctrlr' 
+                            @editCtrl 'append', 'ctrlr', i, @trans.inverse @item, @reflPos i, 'ctrlr' 
                         when 'C', 'c'
                             @editCtrl 'append', 'ctrl2', i, pos point[3], point[4]
 
@@ -84,7 +84,7 @@ class Item
     
     editCtrl: (action, type, index, stagePos) =>
 
-        elemPos = @trans.transform @elem, stagePos
+        elemPos = @trans.transform @item, stagePos
         
         switch action
             
@@ -137,7 +137,7 @@ class Item
     # 000        000      000   000     000     
     # 000        0000000   0000000      000     
     
-    plot: -> @elem.plot @elem.array()
+    plot: -> @item.plot @item.array()
 
     # 00000000   00000000  00000000  000    
     # 000   000  000       000       000    
@@ -154,4 +154,4 @@ class Item
                             
     getPos: (index, type='point') -> @ctrls[index]?.getPos type
     
-module.exports = Item
+module.exports = Object

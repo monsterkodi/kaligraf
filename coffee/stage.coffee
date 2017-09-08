@@ -41,7 +41,6 @@ class Stage
 
         @zoom = 1
         @virgin = true
-        # @resetView()
 
     onStage: (action, value) =>
 
@@ -74,19 +73,21 @@ class Stage
             if item.instance in @items()
                 return item.instance
 
-    items: ->
+    items: -> @svg.children().filter (child) -> child.type != 'defs'
+    selectedOrAllItems: -> @selectedItems() ? @items()
+    selectedItems: ->
 
-        @svg.children().filter (child) ->
-            if child.type == 'defs'
-                return false
-            true
-
+        if not @selection.empty()
+            @selection.items
+        else if @edit? and not @edit.empty() 
+            @edit.items()
+            
     moveItems: (items, delta) ->
 
         for item in items
-            @moveElem item, delta
+            @moveItem item, delta
 
-    moveElem: (elem, delta) ->
+    moveItem: (elem, delta) ->
 
         center = @kali.trans.center elem
         @kali.trans.center elem, center.plus delta.times 1.0/@zoom
@@ -360,7 +361,7 @@ class Stage
 
     centerSelection: ->
 
-        items = @selection.empty() and @items() or @selection.items
+        items = @selectedOrAllItems()
         if items.length <= 0
             @centerAtStagePos @toolCenter @zoom
             return

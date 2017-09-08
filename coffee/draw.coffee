@@ -26,7 +26,7 @@ class Draw
         @edit = new Edit @kali
         @edit.dotSize = 5
         
-        switch @shape 
+        switch @shape
             when 'arc', 'pie' then
             else
                 @edit.addItem @drawing

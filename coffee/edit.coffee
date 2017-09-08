@@ -9,7 +9,7 @@
 
 { rectOffset, normRect, rectsIntersect } = require './utils'
 
-Item = require './item'
+Object = require './object'
 
 class Edit
 
@@ -20,7 +20,6 @@ class Edit
 
         @svg = SVG(@element).size '100%', '100%'
         @svg.addClass 'editSVG'
-        # @svg.viewbox @kali.stage.svg.viewbox()
         @svg.clear()
 
         @stage     = @kali.stage
@@ -29,7 +28,7 @@ class Edit
 
         @dotSize = 10
 
-        @items = []
+        @objects = []
 
         post.on 'ctrl',  @onCtrl
         post.on 'stage', @onStage
@@ -58,16 +57,15 @@ class Edit
 
     clear: ->
 
-        while @items.length
-            @delItem last @items
+        while @objects.length
+            @delObject last @objects
 
         @svg.clear()
 
     onStage: (action, box) => 
         
-        # if action == 'viewbox' then @svg.viewbox box
-        for item in @items
-            item.updatePos()
+        for object in @objects
+            object.updatePos()
 
     # 0000000    00000000  000      00000000  000000000  00000000  
     # 000   000  000       000      000          000     000       
@@ -78,12 +76,12 @@ class Edit
     delete: ->
         
         if not @empty()
-            for item in @items
-                if item.elem.parent()?.removeElement?
-                    item.elem.remove()
+            for object in @objects
+                if object.item.parent()?.removeElement?
+                    object.item.remove()
                 else
-                    item.elem.clear()
-                    item.elem.node.remove()
+                    object.item.clear()
+                    object.item.node.remove()
         @clear()
     
     # 000  000000000  00000000  00     00
@@ -92,10 +90,10 @@ class Edit
     # 000     000     000       000 0 000
     # 000     000     00000000  000   000
 
-    empty: -> @items.length <= 0
+    empty: -> @objects.length <= 0
     
-    contains:    (elem) -> @itemForElem elem
-    itemForElem: (elem) -> @items.find (i) -> i.elem == elem
+    contains:      (item) -> @objectForItem item
+    objectForItem: (item) -> @objects.find (o) -> o.item == item
 
     # 0000000    00000000  000
     # 000   000  000       000
@@ -105,12 +103,13 @@ class Edit
 
     delItem: (item) ->
 
-        if not item.elem?
-            item = @itemForElem item
+        @delObject @objectForItem item
         
-        if item in @items
-            item.del()
-            _.pull @items, item
+    delObject: (object) ->
+        
+        if object in @objects
+            object.del()
+            _.pull @objects, object
 
     #  0000000   0000000    0000000
     # 000   000  000   000  000   000
@@ -118,13 +117,15 @@ class Edit
     # 000   000  000   000  000   000
     # 000   000  0000000    0000000
 
-    addItem: (elem) ->
+    addItem: (item) ->
 
-        if item = @itemForElem item then return item
-        # log 'addItem', elem.id()
-        item = new Item @, elem
-        @items.push item 
-        item
+        if object = @objectForItem item 
+            return object
+            
+        if _.isFunction item.array
+            object = new Object @, item
+            @objects.push object 
+            return object
 
     #  0000000   000   000         0000000  000000000  00000000   000      
     # 000   000  0000  000        000          000     000   000  000      
@@ -132,11 +133,11 @@ class Edit
     # 000   000  000  0000        000          000     000   000  000      
     #  0000000   000   000         0000000     000     000   000  0000000  
 
-    onCtrl: (elem, action, type, index, p, point) =>
+    onCtrl: (item, action, type, index, p, point) =>
 
-        if item = @itemForElem elem
+        if object = @objectForItem item
         
-            item.editCtrl action, type, index, p, point
+            object.editCtrl action, type, index, p, point
 
     # 00     00   0000000   000   000  00000000
     # 000   000  000   000  000   000  000
@@ -146,9 +147,9 @@ class Edit
 
     moveBy: (delta) ->
 
-        for item in @items
-            @stage.moveElem item.elem, delta
-            item.moveBy delta
+        for object in @objects
+            @stage.moveItem object.item, delta
+            object.moveBy delta
             
     # 00000000   00000000   0000000  000000000
     # 000   000  000       000          000
@@ -187,12 +188,12 @@ class Edit
 
         r = normRect rect
 
-        for child in @kali.items()
+        for item in @kali.items()
 
-            rb = child.rbox()
+            rb = item.rbox()
             if rectsIntersect r, rb
-                @addItem child
+                @addItem item
             else if not opt.join
-                @delItem child
+                @delItem item
 
 module.exports = Edit

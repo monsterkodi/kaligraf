@@ -202,10 +202,10 @@ class Tools extends Tool
             when 'zoom_reset' then @kali.stage.resetView()
             when 'zoom_in'    then @kali.stage.zoomIn()
             when 'zoom_out'   then @kali.stage.zoomOut()
-            when 'lower'      then @kali.stage.order 'backward'
-            when 'raise'      then @kali.stage.order 'forward'
-            when 'back'       then @kali.stage.order 'back'
-            when 'front'      then @kali.stage.order 'front'
+            when 'lower'      then @kali.stage.order  'backward'
+            when 'raise'      then @kali.stage.order  'forward'
+            when 'back'       then @kali.stage.order  'back'
+            when 'front'      then @kali.stage.order  'front'
             when 'selectAll'  then @kali.stage.select 'all'
             when 'deselect'   then @kali.stage.select 'none'
             when 'center'     then @kali.stage.centerSelection()

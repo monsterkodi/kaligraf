@@ -168,7 +168,7 @@ class Shapes
             when 'edit'
 
                 @selection.clear()
-                
+                # log 'start edit', @edit?
                 @edit ?= new Edit @kali
 
                 doSel @edit
@@ -250,7 +250,7 @@ class Shapes
                     
             when 'edit' 
                 
-                
+                log 'move edit', @edit?
                 @edit ?= new Edit @kali
                 if @edit.rect?
                     @edit.moveRect eventPos, join:event.shiftKey

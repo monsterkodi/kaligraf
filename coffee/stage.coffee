@@ -83,10 +83,13 @@ class Stage
 
     moveItems: (items, delta) ->
         
-        offset = delta.times 1.0/@zoom
         for item in items
-            center = @kali.trans.center item
-            @kali.trans.center item, center.plus offset
+            @moveElem item, delta
+            
+    moveElem: (elem, delta) ->
+        
+        center = @kali.trans.center elem
+        @kali.trans.center elem, center.plus delta.times 1.0/@zoom
                     
     #  0000000  000   000   0000000   
     # 000       000   000  000        

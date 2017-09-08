@@ -122,6 +122,12 @@ class Shapes
                 return s
         shape
     
+    # 0000000     0000000   000   000  000   000  
+    # 000   000  000   000  000 0 000  0000  000  
+    # 000   000  000   000  000000000  000 0 000  
+    # 000   000  000   000  000   000  000  0000  
+    # 0000000     0000000   00     00  000   000  
+    
     handleMouseDown: (event) =>
         
         @kali.focus()
@@ -144,6 +150,12 @@ class Shapes
                         
         item = @stage.itemAtPos eventPos
 
+        #  0000000  00000000  000      
+        # 000       000       000      
+        # 0000000   0000000   000      
+        #      000  000       000      
+        # 0000000   00000000  0000000  
+        
         doSel = (sel) ->
             if item?
                 if not sel.contains item
@@ -158,13 +170,23 @@ class Shapes
         
         switch shape
             
+            # 00000000   000   0000000  000   000  
+            # 000   000  000  000       000  000   
+            # 00000000   000  000       0000000    
+            # 000        000  000       000  000   
+            # 000        000   0000000  000   000  
+            
             when 'pick'
 
-                @edit?.del()
-                delete @edit
-
+                @stopEdit()
                 doSel @selection
                     
+            # 00000000  0000000    000  000000000  
+            # 000       000   000  000     000     
+            # 0000000   000   000  000     000     
+            # 000       000   000  000     000     
+            # 00000000  0000000    000     000     
+            
             when 'edit'
 
                 @selection.clear()
@@ -172,6 +194,12 @@ class Shapes
 
                 doSel @edit
                             
+            # 00000000   000  00000000   00000000  000000000  000000000  00000000  
+            # 000   000  000  000   000  000          000        000     000       
+            # 00000000   000  00000000   0000000      000        000     0000000   
+            # 000        000  000        000          000        000     000       
+            # 000        000  000        00000000     000        000     00000000  
+            
             when 'pipette'
                 
                 item = @stage.itemAtPos eventPos
@@ -189,19 +217,33 @@ class Shapes
                     
                     @kali.tools.width.setWidth item.style('stroke-width')
                 
+            # 000       0000000   000   000  00000000   00000000  
+            # 000      000   000  000   000  000   000  000       
+            # 000      000   000  000   000  00000000   0000000   
+            # 000      000   000  000   000  000        000       
+            # 0000000   0000000    0000000   000        00000000  
+            
             when 'loupe' 
                 
                 @selection.loupe = @selection.addRect 'loupeRect'
                 
             when 'pan' then
             else
+                #  0000000  000   000   0000000   00000000   00000000  
+                # 000       000   000  000   000  000   000  000       
+                # 0000000   000000000  000000000  00000000   0000000   
+                #      000  000   000  000   000  000        000       
+                # 0000000   000   000  000   000  000        00000000  
+                
                 @selection.clear()
   
+                # log "shape start #{@drawing?} #{@handler?}"
+                
                 if @drawing? and @handler?.handleDown event, stagePos
                     if not @handler.continuePicking()
                         @endDrawing()
                     return
-                        
+                    
                 @drawing = @addShape shape, stagePos
                 
                 if @handler
@@ -331,18 +373,22 @@ class Shapes
                 
             else 
                 if _.isFunction @drawing.array
-                    @edit ?= new Edit @kali
-                    @edit.clear()
+                    @stopEdit()
+                    @edit = new Edit @kali
                     @edit.addItem @drawing
                 else
-                    @edit?.clear()
-                    delete @edit
+                    @stopEdit()
                     @stage.selection.set [@drawing]
                 
             @handler?.endDrawing()
             @handler = null
             delete @drawing
 
+    stopEdit: ->
+        
+        @edit?.clear()
+        delete @edit
+            
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
     # 0000000    0000000     00000    

@@ -18,7 +18,7 @@ class Poly extends Draw
     # 0000000     0000000   00     00  000   000  
     
     handleDown: (event, stagePos) ->
-        
+
         if not @drawing? then return false
         
         switch @shape
@@ -50,7 +50,7 @@ class Poly extends Draw
     # 000         0000000   000  000   000     000     
     
     addPoint: (p) ->
-        
+
         points = @points()
         tail = points.length > 1 and points[points.length-2] or points[points.length-1]
         dist = Math.abs(tail[0]-p.x) + Math.abs(tail[1]-p.y)

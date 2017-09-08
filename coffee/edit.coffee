@@ -13,9 +13,10 @@ Object = require './object'
 
 class Edit
 
-    constructor: (@kali) ->
+    constructor: (@kali, @passive) ->
 
         @element = elem 'div', id: 'edit'
+        @element.classList.add 'passive' if @passive
         @kali.element.appendChild @element
 
         @svg = SVG(@element).size '100%', '100%'
@@ -26,8 +27,7 @@ class Edit
         @trans     = @kali.trans
         @selection = @stage.selection
 
-        @dotSize = 10
-
+        @dotSize = @passive and 5 or 10
         @objects = []
 
         post.on 'ctrl',  @onCtrl
@@ -95,6 +95,8 @@ class Edit
     contains:      (item) -> @objectForItem item
     objectForItem: (item) -> @objects.find (o) -> o.item == item
 
+    items: -> @objects.map (o) -> o.item
+    
     # 0000000    00000000  000
     # 000   000  000       000
     # 000   000  0000000   000

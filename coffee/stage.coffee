@@ -79,8 +79,8 @@ class Stage
 
         if not @selection.empty()
             @selection.items
-        else if @edit? and not @edit.empty() 
-            @edit.items()
+        else if @shapes.edit? and not @shapes.edit.empty() 
+            @shapes.edit.items()
             
     moveItems: (items, delta) ->
 

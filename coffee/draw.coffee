@@ -22,9 +22,10 @@ class Draw
     
     startDrawing: (@drawing, @shape, stagePos) -> 
     
+        @kali.stage.shapes.stopEdit()
+        
         delete @picking
-        @edit = new Edit @kali
-        @edit.dotSize = 5
+        @edit = new Edit @kali, true
         
         switch @shape
             when 'arc', 'pie' then

@@ -20,7 +20,7 @@ class Edit
 
         @svg = SVG(@element).size '100%', '100%'
         @svg.addClass 'editSVG'
-        @svg.viewbox @kali.stage.svg.viewbox()
+        # @svg.viewbox @kali.stage.svg.viewbox()
         @svg.clear()
 
         @stage     = @kali.stage
@@ -63,7 +63,11 @@ class Edit
 
         @svg.clear()
 
-    onStage: (action, box) => if action == 'viewbox' then @svg.viewbox box
+    onStage: (action, box) => 
+        
+        # if action == 'viewbox' then @svg.viewbox box
+        for item in @items
+            item.updatePos()
 
     # 0000000    00000000  000      00000000  000000000  00000000  
     # 000   000  000       000      000          000     000       

@@ -52,7 +52,7 @@ class Tools extends Tool
         @activateTool 'bezier'
         @activateTool 'edit'
         
-        # post.emit 'stage', 'setColor', '#666'
+        post.emit 'stage', 'setColor', '#666'
         post.emit 'tool', 'load'
         
     # 000  000   000  000  000000000  
@@ -139,33 +139,16 @@ class Tools extends Tool
     # 000   000  00000000  00     00  
     
     newTool: (cfg) ->
-        
-        svgs = 
-            pick:     '<svg width="100%" height="100%" version="1.1" xmlns="http://www.w3.org/2000/svg" style="stroke-linecap: round; stroke-linejoin: round; " viewBox="503.9285034179687 15.768192481994628 119.086962890625 152.9327293395996"> <polygon id="SvgjsPolygon1336" points="-49.61958233405517,-63.72197021851464 -33.950245963631005,39.69564982628458 -9.923930195647358,11.490844359521148 22.459364969895773,63.72196559426823 49.6195480119643,37.60640497689468 8.879273448861568,-4.1784920109029855 44.39643588848958,-19.847828381327105" transform="matrix(1,0,0,1,563.4719848632812,92.23455619812012)" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;"></polygon></svg>'
-            pan:      '<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-linejoin: round;" viewBox="1128.69462890625 204.01193237304688 219.6 204"><polygon id="SvgjsPolygon7348" points="1228,291 1217,282 1208,275 1201,271 1186,264 1166,262 1158,272 1157,290 1162,299 1172,307 1181,312 1183,315 1194,322 1203,328 1212,336 1217,346 1224,351 1231,359 1240,362 1249,363 1265,365 1278,368 1292,369 1303,366 1313,359 1322,350 1329,342 1335,331 1339,317 1340,307 1340,294 1340,282 1340,272 1340,257 1339,249 1336,230 1332,217 1323,205 1313,200 1297,199 1280,199 1260,199 1247,205 1240,214 1235,227 1232,242 1229,259" transform="matrix(1,0,0,1,-10.005420918367347,22.011926020408165)" style="stroke: rgb(127, 127, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(50, 50, 255); fill-opacity: 0.5;"></polygon></svg>'
-            loupe:    '<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-linejoin: round;" viewBox="935.8024169921875 197.1119171142578 146.39736328125 190.78699951171876"><circle id="SvgjsCircle7199" r="48" cx="992" cy="241" style="stroke: rgb(127, 127, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(50, 50, 255); fill-opacity: 0.5;" transform="matrix(1,0,0,1,4.002168367346939,20.010841836734695)"></circle><line id="SvgjsLine7211" x1="1070" y1="372" x2="1024" y2="305" style="stroke: rgb(127, 127, 255); stroke-opacity: 1; stroke-width: 10; fill: none; fill-opacity: 0;"></line></svg>'
-            rect:     '<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-linejoin: round;" viewBox="117.3 23.1 128.4 130.8"><rect id="SvgjsRect1667" width="107" height="109" style="stroke: rgb(127, 127, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(50, 50, 255); fill-opacity: 0.5;" x="128" y="34"></rect></svg>'
-            ellipse:  '<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-linejoin: round;" viewBox="415.6 23.4 52.8 133.2"><ellipse id="SvgjsEllipse1152" rx="22" ry="55.5" cx="446" cy="44" style="stroke: rgb(127, 127, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(50, 50, 255); fill-opacity: 0.5;" transform="matrix(1,0,0,1,-4,46)"></ellipse></svg>'
-            circle:   '<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-linejoin: round;" viewBox="260 22 132 132"><circle id="SvgjsCircle1415" r="55" cx="326" cy="89" style="stroke: rgb(127, 127, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(50, 50, 255); fill-opacity: 0.5;" transform="matrix(1,0,0,1,0,-1)"></circle></svg>'
-            polygon:  '<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-linejoin: round;" viewBox="1026.7 27.6 135.6 148.8"><polygon id="SvgjsPolygon5719" points="1045,40 1060,40 1077,40 1093,40 1109,40 1123,41 1137,45 1147,53 1151,67 1150,86 1142,97 1130,104 1115,108 1098,110 1079,110 1077,127 1077,145 1075,163 1038,164" style="stroke: rgb(127, 127, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(50, 50, 255); fill-opacity: 0.5;"></polygon></svg>'
-            polyline: '<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-linejoin: round;" viewBox="868.9 27 133.2 144"><polyline id="SvgjsPolyline4085" points="880,42 896,41 911,40 929,39 946,39 961,41 972,45 981,53 987,63 991,77 988,93 978,102 965,108 948,110 929,110 910,110 884,108 884,124 884,141 884,159" style="stroke: rgb(127, 127, 255); stroke-opacity: 1; stroke-width: 10; fill: none; fill-opacity: 0;"></polyline></svg>'
-            line:     '<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-linejoin: round;" viewBox="712.5 26.7 126 135.6"><line id="SvgjsLine2705" x1="723" y1="151" x2="828" y2="38" style="stroke: rgb(127, 127, 255); stroke-opacity: 1; stroke-width: 10; fill: none; fill-opacity: 0;"></line></svg>'
-            triangle: '<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-linejoin: round;" viewBox="553.068017578125 22.470184326171875 154.8 138"><polygon id="SvgjsPolygon2686" points="50,-63 112,52 -17,52" transform="matrix(1,0,0,1,582.968016581634,96.97018494897958)" style="stroke: rgb(127, 127, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(50, 50, 255); fill-opacity: 0.5;"></polygon></svg>'
-            pipette:  '<svg width="100%" height="100%" version="1.1" xmlns="http://www.w3.org/2000/svg" style="stroke-linecap: round; stroke-linejoin: round; " viewBox="206.6 -8.8 226.8 195.6"> <polygon id="SvgjsPolygon1610" points="-17.5,-5.5 -86.5,45.5 -94.5,81.5 -57.5,76.5 9.5,28.5 35.5,55.5 73.5,32.5 40.5,7.5 94.5,-23.5 47.5,-81.5 2.5,-27.5 -5.5,-69.5 -45.5,-36.5" transform="matrix(1,0,0,1,320,89)" style="stroke: rgb(127, 127, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(50, 50, 255); fill-opacity: 0.5;"></polygon></svg>'
-                        
+                                
         if _.isArray cfg
             cfg[0].list = cfg.slice 1
             cfg = cfg[0]
             
         if cfg.svg = @loadSVG cfg.name
             
-        else if svgs[cfg.name]?
-            
-            cfg.svg = svgs[cfg.name]
-            
         else if cfg.group == 'shape'
             
-            cfg.svg = svgs['rect']
+            cfg.svg = @loadSVG 'rect'
             
         clss = cfg.class and require("./#{cfg.class}") or Tool
         tool = new clss @kali, cfg
@@ -176,12 +159,10 @@ class Tools extends Tool
     loadSVG: (name) ->
         svgFile = "#{__dirname}/../svg/#{name}.svg"
         if fileExists svgFile
-            # log "loadSVG #{svgFile}"
             return fs.readFileSync svgFile, encoding: 'utf8'
 
     saveSVG: (name, svg) ->
         svgFile = "#{__dirname}/../svg/#{name}.svg"
-        # log "saveSVG #{name} #{svgFile}", svg
         fs.writeFileSync svgFile, svg, encoding: 'utf8'
             
     #  0000000    0000000  000000000  000   0000000   000   000  
@@ -191,7 +172,6 @@ class Tools extends Tool
     # 000   000   0000000     000     000   0000000   000   000  
     
     onAction: (action, name) =>
-        # log "Tools.onAction action:#{action} name:#{name}"
         
         switch action
             when 'activate'   then @activateTool name
@@ -212,9 +192,6 @@ class Tools extends Tool
             when 'deselect'   then @stage.select 'none'
             when 'center'     then @stage.centerSelection()
             when 'grid_toggle' then @grid.toggleGrid()
-            
-            # else
-                # log 'action?', action, name
 
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   

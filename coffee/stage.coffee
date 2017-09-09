@@ -38,6 +38,8 @@ class Stage
         @element.addEventListener 'mousemove', @onMouseMove
 
         post.on 'stage', @onStage
+        post.on 'color', @onColor
+        post.on 'line',  @onLine
 
         @zoom = 1
         @virgin = true
@@ -81,6 +83,8 @@ class Stage
             @selection.items
         else if @shapes.edit? and not @shapes.edit.empty() 
             @shapes.edit.items()
+        else
+            []
             
     swapSelection: ->
         
@@ -102,6 +106,38 @@ class Stage
         center = @kali.trans.center elem
         @kali.trans.center elem, center.plus delta.times 1.0/@zoom
 
+    #  0000000   0000000   000       0000000   00000000   
+    # 000       000   000  000      000   000  000   000  
+    # 000       000   000  000      000   000  0000000    
+    # 000       000   000  000      000   000  000   000  
+    #  0000000   0000000   0000000   0000000   000   000  
+    
+    onColor: (color, prop, value) =>
+        
+        attr = {}
+        
+        switch prop
+            when 'alpha'
+                attr[color + '-opacity'] = value
+            when 'color'
+                attr[color] = new SVG.Color value
+                
+        if not _.isEmpty attr
+            for item in @selectedItems()
+                item.style attr
+                
+    # 000      000  000   000  00000000  
+    # 000      000  0000  000  000       
+    # 000      000  000 0 000  0000000   
+    # 000      000  000  0000  000       
+    # 0000000  000  000   000  00000000  
+    
+    onLine: (prop, value) =>
+        
+        for item in @selectedItems()
+            item.style switch prop
+                when 'width' then 'stroke-width': value
+        
     #  0000000  000   000   0000000
     # 000       000   000  000
     # 0000000    000 000   000  0000
@@ -243,10 +279,13 @@ class Stage
 
         switch select
             when 'none'
-                @shapes.edit?.clear()
+                @shapes.stopEdit()
                 @selection.clear()
             when 'all'
-                @selection.setItems @items()
+                if @shapes.edit? or @kali.shapeTool() == 'edit'
+                    @shapes.editItems @items()
+                else
+                    @selection.setItems @items()
 
     # 000   000  000  00000000  000   000
     # 000   000  000  000       000 0 000

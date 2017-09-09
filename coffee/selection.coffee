@@ -25,8 +25,6 @@ class Selection
         @stage = @kali.stage
         
         post.on 'stage', @onStage
-        post.on 'color', @onColor
-        post.on 'line',  @onLine
         
     # 0000000    00000000  000      00000000  000000000  00000000  
     # 000   000  000       000      000          000     000       
@@ -236,30 +234,6 @@ class Selection
         post.emit 'setColor', 'fill',   fill
         post.emit 'setColor', 'stroke', stroke
     
-    onColor: (color, prop, value) =>
-        
-        return if @empty()
-        
-        attr = {}
-        
-        switch prop
-            when 'alpha'
-                attr[color + '-opacity'] = value
-            when 'color'
-                attr[color] = new SVG.Color value
-                
-        if not _.isEmpty attr
-            for s in @items
-                s.style attr
-                
-    onLine: (prop, value) =>
-        
-        return if @empty()
-        
-        for s in @items
-            s.style switch prop
-                when 'width' then 'stroke-width': value
-
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
     # 0000000    0000000     00000    

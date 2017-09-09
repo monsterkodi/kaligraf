@@ -58,19 +58,20 @@ class Object
             else
                 p = pos point[0], point[1]
 
-            @editCtrl 'append', 'point', i, p
+            @editCtrl 'append', 'point', i, @trans.transform @item, p
 
             if isPath
 
                 switch point[0]
                     when 'C', 'c', 'S', 's', 'Q', 'q'
-                        @editCtrl 'append', 'ctrl1', i, pos point[1], point[2]
+                        @editCtrl 'append', 'ctrl1', i, @trans.transform @item, pos point[1], point[2]
 
                 switch point[0]
                     when 'S', 's'
-                        @editCtrl 'append', 'ctrlr', i, @trans.inverse @item, @reflPos i, 'ctrlr'
+                        @editCtrl 'append', 'ctrlr', i, @reflPos i, 'ctrlr'
+                        
                     when 'C', 'c'
-                        @editCtrl 'append', 'ctrl2', i, pos point[3], point[4]
+                        @editCtrl 'append', 'ctrl2', i, @trans.transform @item, pos point[3], point[4]
 
     # 00000000  0000000    000  000000000
     # 000       000   000  000     000
@@ -79,8 +80,6 @@ class Object
     # 00000000  0000000    000     000
 
     editCtrl: (action, type, index, stagePos) =>
-
-        elemPos = @trans.transform @item, stagePos
 
         switch action
 
@@ -97,11 +96,18 @@ class Object
             when 'change'
 
                 ctrl = @ctrls[index]
+                
+            when 'delete'
+                
+                ctrl = @ctrls[index]
+                _.pull @ctrls, ctrl
+                ctrl.del()
+                return
 
         if not ctrl?
             log "no ctrl? item:#{@item.id()} action: #{action} type:#{type} index:#{index}"
         else
-            ctrl.setPos type, elemPos
+            ctrl.setPos type, stagePos
 
     # 00     00   0000000   000   000  00000000
     # 000   000  000   000  000   000  000
@@ -150,6 +156,7 @@ class Object
 
     getPos: (index, type='point') -> @ctrls[index]?.getPos type
 
+    points: -> @item.array().valueOf()
 
     isPoly: -> @item.type in ['polygon', 'polyline', 'line']
     isPath: -> not @isPoly()

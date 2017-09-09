@@ -30,7 +30,7 @@ class Trans
         if c?
             item.transform rotation:a, cx:c.x, cy:c.y
         else
-            item.transform rotation:a 
+            item.transform rotation:a
     
     resize: (item, matrix, scale) ->
         

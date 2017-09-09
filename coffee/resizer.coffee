@@ -379,16 +379,16 @@ class Resizer
 
     handleKey: (mod, key, combo, char, event, down) ->
 
-        if not @empty() and down
-            switch combo
-                when 'left', 'right', 'up', 'down'
-                    p = pos 0,0
-                    switch key
-                        when 'left'  then p.x = -1
-                        when 'right' then p.x =  1
-                        when 'up'    then p.y = -1
-                        when 'down'  then p.y =  1
-                    return @moveBy p
+        # if not @empty() and down
+            # switch combo
+                # when 'left', 'right', 'up', 'down'
+                    # p = pos 0,0
+                    # switch key
+                        # when 'left'  then p.x = -1
+                        # when 'right' then p.x =  1
+                        # when 'up'    then p.y = -1
+                        # when 'down'  then p.y =  1
+                    # return @moveBy p
 
         'unhandled'
 

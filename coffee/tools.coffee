@@ -34,6 +34,7 @@ class Tools extends Tool
         
         @stroke.set 
             mode:  'gry'
+            value: 0.2
             alpha: 0.9
             
         @fill.set 
@@ -42,15 +43,15 @@ class Tools extends Tool
             # luminance: 0.2
             alpha: 0.5
             
-        @width.setWidth 1
+        @width.setWidth 4
         
         @grid.showGrid()
         
         @activateTool 'rect'
         @activateTool 'text'
         @activateTool 'pick'
-        @activateTool 'bezier'
         @activateTool 'edit'
+        @activateTool 'bezier'
         
         post.emit 'stage', 'setColor', '#666'
         post.emit 'tool', 'load'

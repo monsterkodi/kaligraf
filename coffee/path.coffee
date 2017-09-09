@@ -59,63 +59,60 @@ class Path extends Draw
         switch @shape
             when 'pie', 'arc' then return false
 
-        @setLastControlPoint stagePos
+        @setLastPoint   stagePos
+        @setLastControl stagePos
         
         true
-        
-    # 00000000    0000000   000  000   000  000000000  
-    # 000   000  000   000  000  0000  000     000     
-    # 00000000   000   000  000  000 0 000     000     
-    # 000        000   000  000  000  0000     000     
-    # 000         0000000   000  000   000     000     
-    
-    addPoint: (p) -> @append ['L', p.x, p.y]
-                
-    setLastPoint: (p) ->
-        
-        point = @lastPoint()
-        point[point.length-2] = p.x
-        point[point.length-1] = p.y
-        @plot()
-        
-    pos: (l) -> pos l[1], l[2]              
-                
+
     #  0000000   0000000   000   000  000000000  00000000    0000000   000      
     # 000       000   000  0000  000     000     000   000  000   000  000      
     # 000       000   000  000 0 000     000     0000000    000   000  000      
     # 000       000   000  000  0000     000     000   000  000   000  000      
     #  0000000   0000000   000   000     000     000   000   0000000   0000000  
     
-    setLastControlPoint: (p) ->
-        
+    setLastControl: (p) ->
+        index = @index -1
         points = @points()
-        
-        if points.length < 2
-            switch @shape
-                when 'bezier', 'bezier_quad' 
-                    point = [@command, p.x, p.y, p.x, p.y]
-                    @append point
-                    post.emit 'ctrl', @drawing, 'append', 'ctrl1', @index(-1), p, point
-                    return 
-            
-        point = last points
+        point = points[index]
         switch point[0]
-            when 'M', 'm', 'L', 'l' 
-                @set -1, [@command, p.x, p.y, p.x, p.y]
-                post.emit 'ctrl', @drawing, 'append', 'ctrl1', @index(-1), p, point
                 
-            when 'C', 'c', 'T', 't', 'S', 's', 'Q', 'q'
-                point[1] = p.x
+            when 'Q', 'S'
+                point[1] = p.x                
                 point[2] = p.y
-                @plot()
-                post.emit 'ctrl', @drawing, 'change', 'ctrl1', @index(-1), p, point
-        switch point[0]
-            when 'C', 'c'
-                point[3] = p.x
-                point[4] = p.y
-                @plot()
-                post.emit 'ctrl', @drawing, 'change', 'ctrl2', @index(-1), p, point
+                @plot points
+                post.emit 'ctrl', @drawing, 'change', 'ctrl1', index, p
+                
+    # 00000000    0000000   000  000   000  000000000  
+    # 000   000  000   000  000  0000  000     000     
+    # 00000000   000   000  000  000 0 000     000     
+    # 000        000   000  000  000  0000     000     
+    # 000         0000000   000  000   000     000     
+    
+    addPoint: (p) -> 
         
+        @append [@command, p.x, p.y, p.x, p.y]
+        post.emit 'ctrl', @drawing, 'append', 'ctrl1', @index(-1), p
+        if @command == 'S'
+            post.emit 'ctrl', @drawing, 'append', 'ctrlr', @index(-1), p
+
+    moveLastPoint: (p) ->
+        super p
+            
+    closeLoop: ->
+        
+        @setLastPoint @pos @firstPoint()
+        @append ['Z']
+        
+    pos: (point) -> 
+        switch point[0]
+            when 'S', 'Q' then pos point[3], point[4]
+            else               pos point[1], point[2]
+            
+    setPos: (point, p) -> 
+        switch point[0]
+            when 'S', 'Q' then point[3] = p.x; point[4] = p.y
+            else               point[1] = p.x; point[2] = p.y
+                
     # 00000000   000   0000000  000   000
     # 000   000  000  000       000  000 
     # 00000000   000  000       0000000  
@@ -135,8 +132,7 @@ class Path extends Draw
         if @drawing?
             switch @shape 
                 when 'bezier', 'bezier_quad'
-                    @setLastPoint @pos @firstPoint()
-                    @plot()
+                    @closeLoop()
                 else
                     super
         

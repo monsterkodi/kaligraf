@@ -58,7 +58,6 @@ class Ctrl
         dot.addClass 'editDot'
         dot.addClass "#{type}Dot"
         dot.style cursor: 'pointer'
-        dot.remember 'ctrl',  @
 
         @dots[type] = dot
 
@@ -123,7 +122,7 @@ class Ctrl
         type = drag.type
 
         @setPos type, stagePos, not event.shiftKey
-
+        # log "onMove #{type} index:#{@index()} ", stagePos, @object.item.array().valueOf()
         @object.plot()
 
     moveBy: (delta) -> @setPos 'point', @getPos('point').plus(delta), true
@@ -136,7 +135,7 @@ class Ctrl
 
     index:     -> @object.ctrls.indexOf @
     itemPoint: -> @object.item.array().valueOf()[@index()]
-    pointType: -> 
+    pointType: ->
         if @object.isPoly()
             'P'
         else
@@ -216,11 +215,11 @@ class Ctrl
             @setDotPos  dot, @object.reflPos @index(), sibling
             @updateLine sibling
 
-    # 00000000  000      00000000  00     00
-    # 000       000      000       000   000
-    # 0000000   000      0000000   000000000
-    # 000       000      000       000 0 000
-    # 00000000  0000000  00000000  000   000
+    # 000  000000000  00000000  00     00  
+    # 000     000     000       000   000  
+    # 000     000     0000000   000000000  
+    # 000     000     000       000 0 000  
+    # 000     000     00000000  000   000  
 
     setItemPos: (type, itemPos) ->
 
@@ -267,10 +266,17 @@ class Ctrl
         pos point[0], point[1]
     
     setPolyPos: (type, itemPos) ->
-
-        point  = @itemPoint()
-        point[0] = itemPos.x
-        point[1] = itemPos.y
+        
+        if @object.item.type == 'line'
+            points = @object.points()
+            point  = points[@index()]
+            point[0] = itemPos.x
+            point[1] = itemPos.y            
+            @object.item.plot points
+        else
+            point    = @itemPoint()
+            point[0] = itemPos.x
+            point[1] = itemPos.y            
 
     #  0000000  000000000  00000000   000
     # 000          000     000   000  000

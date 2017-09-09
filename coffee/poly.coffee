@@ -57,20 +57,17 @@ class Poly extends Draw
         if points.length < 2 or dist > 20
             @append [p.x, p.y]
         else
-            @set -1, [p.x, p.y]
+            @setLastPoint p
 
-    setLastPoint: (p) -> @set -1, [p.x, p.y]
-                
-    removeLastPoint: ->
-        
-        if @points().length > 2
-            super
+    removeLastPoint: -> if @points().length > 2 then super
 
-    pos: (l) -> pos l[0], l[1]
+    pos: (point) -> pos point[0], point[1]
+    setPos: (point, p) -> 
+        point[0] = p.x
+        point[1] = p.y
             
     continuePicking: -> @shape != 'line'
 
     handlePick: (stagePos) -> @picking = @drawing?
-        
                     
 module.exports = Poly

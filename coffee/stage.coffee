@@ -101,10 +101,10 @@ class Stage
         for item in items
             @moveItem item, delta
 
-    moveItem: (elem, delta) ->
+    moveItem: (item, delta) ->
 
-        center = @kali.trans.center elem
-        @kali.trans.center elem, center.plus delta.times 1.0/@zoom
+        center = @kali.trans.center item
+        @kali.trans.center item, center.plus delta.times 1.0/@zoom
 
     #  0000000   0000000   000       0000000   00000000   
     # 000       000   000  000      000   000  000   000  
@@ -499,6 +499,19 @@ class Stage
                         @shapes.handler?.handleEscape?()
                     return @shapes.endDrawing()
 
+                when 'left', 'right', 'up', 'down'
+                    if @selectedItems().length
+                        p = pos 0,0
+                        switch key
+                            when 'left'  then p.x = -1
+                            when 'right' then p.x =  1
+                            when 'up'    then p.y = -1
+                            when 'down'  then p.y =  1
+                        if @shapes.edit?
+                            @shapes.edit.moveBy p
+                        else
+                            @resizer.moveBy p
+                    
         return if 'unhandled' != @resizer  .handleKey mod, key, combo, char, event, down
         return if 'unhandled' != @selection.handleKey mod, key, combo, char, event, down
         return if 'unhandled' != @shapes   .handleKey mod, key, combo, char, event, down

@@ -136,11 +136,11 @@ class Edit
     # 000   000  000  0000        000          000     000   000  000      
     #  0000000   000   000         0000000     000     000   000  0000000  
 
-    onCtrl: (item, action, type, index, p, point) =>
+    onCtrl: (item, action, type, index, p) =>
 
         if object = @objectForItem item
         
-            object.editCtrl action, type, index, p, point
+            object.editCtrl action, type, index, p
 
     # 00     00   0000000   000   000  00000000
     # 000   000  000   000  000   000  000
@@ -150,9 +150,9 @@ class Edit
 
     moveBy: (delta) ->
 
+        stageDelta = delta.times 1.0/@stage.zoom
         for object in @objects
-            @stage.moveItem object.item, delta
-            object.moveBy delta
+            object.moveBy stageDelta
             
     # 00000000   00000000   0000000  000000000
     # 000   000  000       000          000

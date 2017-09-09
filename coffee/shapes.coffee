@@ -58,11 +58,13 @@ class Shapes
                 e.plot [[stagePos.x, stagePos.y], [stagePos.x, stagePos.y]]
                 
             when 'bezier', 'bezier_quad'
-                
-                a = new SVG.PathArray [ ['M', stagePos.x, stagePos.y] ]
+
+                arr = [ ['M', stagePos.x, stagePos.y] ]
+                arr.push [(shape == 'bezier' and 'S' or 'Q'), stagePos.x, stagePos.y, stagePos.x, stagePos.y]
+                a = new SVG.PathArray arr
                 e = @svg.path()
                 e.plot a
-                
+
             when 'pie' 
                 e = @svg.path 'M0,0 h1 a1,1 0 1,1 -1,-1,z'
                 

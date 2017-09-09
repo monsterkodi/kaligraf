@@ -42,7 +42,7 @@ class Draw
                 
         if @drawing? and @picking
 
-            @setLastPoint stagePos
+            @moveLastPoint stagePos
             
         true
 
@@ -56,9 +56,7 @@ class Draw
         
         not (@drawing? and @picking)
             
-    handleEscape: ->
-        
-        if @drawing then @removeLastPoint()
+    handleEscape: -> if @drawing then @removeLastPoint()
         
     # 00000000  000   000  0000000    
     # 000       0000  000  000   000  
@@ -79,7 +77,7 @@ class Draw
     lastPoint: -> last @points()
     firstPoint: -> first @points()
     index: (i) -> if i < 0 then i + @points().length else i
-    posAt: (i) -> if p = @pointAt i then @pos p
+    posAt: (i) -> if p = @pointAt(i) then @pos p
     pointAt: (i) -> 
         points = @points()
         i = @index i;
@@ -88,23 +86,38 @@ class Draw
             log "wrong index? #{i}/#{points.length}"
             null
 
-    removeLastPoint: ->
-        index = @index -1
-        post.emit 'ctrl', @drawing, 'delete', 'point', index, @posAt(index), @pointAt(index)
-        @points().pop() 
-        @plot()
-    
-    append: (l) ->
-        @points().push l
-        index = @index -1
-        post.emit 'ctrl', @drawing, 'append', 'point', index, @posAt(index), @pointAt(index)
-        @plot()
+    removeLastPoint: -> @delete -1
+    moveLastPoint: (p) -> @setLastPoint p
+    setLastPoint:  (p) -> @setPoint -1, p
         
-    set: (i, l) ->
+    setPoint: (i, p) ->
+        index = @index -1
+        points = @points()
+        point = points[index]
+        @setPos point, p
+        @plot points
+        post.emit 'ctrl', @drawing, 'change', 'point', index, @posAt(index)
+    
+    delete: (i) ->
+        index = @index i
+        points = @points()
+        post.emit 'ctrl', @drawing, 'delete', 'point', index, @posAt(index)
+        _.pull points, points[index]
+        @plot points
+        
+    append: (l) ->
+        points = @points()
+        points.push l
+        @plot points
+        index = @index -1
+        if l[0] != 'Z'
+            post.emit 'ctrl', @drawing, 'append', 'point', index, @posAt(index)
+        
+    change: (i, l) ->
         index = @index i 
         points = @points()
         points.splice i, 1, l
         @plot points
-        post.emit 'ctrl', @drawing, 'change', 'point', index, @posAt(index), @pointAt(index)
+        post.emit 'ctrl', @drawing, 'change', 'point', index, @posAt(index)
     
 module.exports = Draw

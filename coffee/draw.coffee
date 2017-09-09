@@ -5,14 +5,15 @@
 # 000   000  000   000  000   000  000   000
 # 0000000    000   000  000   000  00     00
 
-{ post, first, last, log, _ } = require 'kxk'
-{ boxCenter } = require './utils'
+{ post, first, last, pos, log, _ } = require 'kxk'
 
 Edit = require './edit'
 
 class Draw
 
     constructor: (@kali) ->
+        
+        @stage = @kali.stage
     
     #  0000000  000000000   0000000   00000000   000000000  
     # 000          000     000   000  000   000     000     
@@ -20,104 +21,175 @@ class Draw
     #      000     000     000   000  000   000     000     
     # 0000000      000     000   000  000   000     000     
     
-    startDrawing: (@drawing, @shape, stagePos) -> 
+    startDrawing: (@drawing, @shape) -> 
     
         @kali.stage.shapes.stopEdit()
         
-        delete @picking
         @edit = new Edit @kali, true
         
         switch @shape
             when 'arc', 'pie' then
             else
                 @edit.addItem @drawing
+                
+        switch @shape
+            when 'line', 'polyline', 'polygon'
+                @picking = true
+            else
+                delete @picking
 
+    # 0000000     0000000   000   000  000   000  
+    # 000   000  000   000  000 0 000  0000  000  
+    # 000   000  000   000  000000000  000 0 000  
+    # 000   000  000   000  000   000  000  0000  
+    # 0000000     0000000   00     00  000   000  
+    
+    handleDown: (event) ->
+
+        if not @drawing? then return false
+
+        viewPos = @stage.viewForEvent pos event
+        
+        switch @shape
+            when 'pie', 'arc'            then return false
+            when 'polygon', 'polyline'   then @addPoint  viewPos
+            when 'bezier', 'bezier_quad' then @addPoint  viewPos
+            when 'line'                  then @movePoint viewPos
+            
+        true
+        
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
     # 000000000  000   000   000 000   0000000   
     # 000 0 000  000   000     000     000       
     # 000   000   0000000       0      00000000  
     
-    handleMove: (event, stagePos) ->
+    handleMove: (event) ->
                 
         if @drawing? and @picking
 
-            @moveLastPoint stagePos
+            @movePoint @stage.viewForEvent pos event
             
         true
 
+    # 0000000    00000000    0000000    0000000   
+    # 000   000  000   000  000   000  000        
+    # 000   000  0000000    000000000  000  0000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000   0000000   
+    
+    handleDrag: (event) ->
+        
+        if not @drawing? then return false
+        
+        viewPos = @stage.viewForEvent pos event
+        
+        switch @shape
+            
+            when 'pie', 'arc' then return false
+            
+            when 'polygon', 'polyline'  
+                
+                dist = viewPos.dist @pointPosAt @drawing.array().valueOf().length-2
+                if dist < 10
+                    @movePoint viewPos
+                else
+                    @addPoint  viewPos
+            else
+                @movePoint viewPos
+            
+        true
+
+    # 00000000   000   0000000  000   000  
+    # 000   000  000  000       000  000   
+    # 00000000   000  000       0000000    
+    # 000        000  000       000  000   
+    # 000        000   0000000  000   000  
+    
+    handlePick: () ->
+        
+        switch @shape
+            when 'pie', 'arc'          then delete @picking
+            when 'bezier', 'bezier_quad' then @picking = true
+            when 'line'                  then @picking = true
+            else         
+                @picking = @drawing?
+                
+        @picking
+        
     #  0000000  000000000   0000000   00000000   
     # 000          000     000   000  000   000  
     # 0000000      000     000   000  00000000   
     #      000     000     000   000  000        
     # 0000000      000      0000000   000        
     
-    handleStop: (event, stagePos) ->
+    handleStop: (event) -> 
         
+        return true if @shape == 'line'
         not (@drawing? and @picking)
             
-    handleEscape: -> if @drawing then @removeLastPoint()
+    # 00000000   0000000   0000000   0000000   00000000   00000000  
+    # 000       000       000       000   000  000   000  000       
+    # 0000000   0000000   000       000000000  00000000   0000000   
+    # 000            000  000       000   000  000        000       
+    # 00000000  0000000    0000000  000   000  000        00000000  
+    
+    handleEscape: -> 
         
+        return if not @drawing?
+        
+        object = @edit.objectForItem @drawing
+        
+        if object.points().length <= 2 
+            log 'delete?'
+        
+        switch @shape 
+            when 'bezier', 'bezier_quad'
+                @movePoint @pointPosAt 0
+            else 
+                object.delPoint object.ctrls.length-1
+
     # 00000000  000   000  0000000    
     # 000       0000  000  000   000  
     # 0000000   000 0 000  000   000  
     # 000       000  0000  000   000  
     # 00000000  000   000  0000000    
     
-    endDrawing: -> 
+    endDrawing: ->
+        
         @edit?.del()
         delete @edit
         delete @drawing
         delete @picking
 
-    continuePicking: -> @picking
-    
-    plot: (points=@drawing.array()) -> @drawing.plot points
-    points:    -> @drawing.array().valueOf()
-    lastPoint: -> last @points()
-    firstPoint: -> first @points()
-    index: (i) -> if i < 0 then i + @points().length else i
-    posAt: (i) -> if p = @pointAt(i) then @pos p
-    pointAt: (i) -> 
-        points = @points()
-        i = @index i;
-        if i < points.length then points[i]
-        else 
-            log "wrong index? #{i}/#{points.length}"
-            null
+    continuePicking: -> @picking and @shape != 'line'
 
-    removeLastPoint: -> @delete -1
-    moveLastPoint: (p) -> @setLastPoint p
-    setLastPoint:  (p) -> @setPoint -1, p
-        
-    setPoint: (i, p) ->
-        index = @index -1
-        points = @points()
-        point = points[index]
-        @setPos point, p
-        @plot points
-        post.emit 'ctrl', @drawing, 'change', 'point', index, @posAt(index)
+    # 00000000    0000000   000  000   000  000000000  
+    # 000   000  000   000  000  0000  000     000     
+    # 00000000   000   000  000  000 0 000     000     
+    # 000        000   000  000  000  0000     000     
+    # 000         0000000   000  000   000     000     
     
-    delete: (i) ->
-        index = @index i
-        points = @points()
-        post.emit 'ctrl', @drawing, 'delete', 'point', index, @posAt(index)
-        _.pull points, points[index]
-        @plot points
+    addPoint: (p) ->
+
+        viewPos = @stage.viewForEvent pos event 
+        object  = @edit.objectForItem @drawing
+        types   = ['point']
+        object.addPoint object.ctrls.length, viewPos, types
+        object.plot()
+
+    movePoint: (viewPos) ->
         
-    append: (l) ->
-        points = @points()
-        points.push l
-        @plot points
-        index = @index -1
-        if l[0] != 'Z'
-            post.emit 'ctrl', @drawing, 'append', 'point', index, @posAt(index)
+        object  = @edit.objectForItem @drawing
+        types   = ['point']
+        object.movePoint object.ctrls.length-1, viewPos, types
+        object.plot()
+       
+    pointPosAt: (index) ->
         
-    change: (i, l) ->
-        index = @index i 
-        points = @points()
-        points.splice i, 1, l
-        @plot points
-        post.emit 'ctrl', @drawing, 'change', 'point', index, @posAt(index)
-    
+        if pointDot = @edit.objectForItem(@drawing).ctrls[index]?.dots.point
+            pos pointDot.cx(), pointDot.cy()
+        else
+            log "no point dot at index #{index}?"
+        
 module.exports = Draw

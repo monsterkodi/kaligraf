@@ -9,8 +9,7 @@
 
 { boxCenter } = require './utils'
 
-Poly = require './poly'
-Path = require './path'
+Draw = require './draw'
 Edit = require './edit'
 
 class Shapes
@@ -21,8 +20,7 @@ class Shapes
         @tools = @kali.tools
         @trans = @kali.trans
         
-        @poly = new Poly @kali
-        @path = new Path @kali
+        @draw  = new Draw @kali
         
         @svg       = @stage.svg
         @selection = @stage.selection
@@ -137,11 +135,10 @@ class Shapes
         
         shape = @kali.shapeTool()
         
-        @handler = switch @kali.shapeHandler()
-            
-            when 'poly' then @poly
-            when 'path' then @path
-            else null
+        if @kali.tools.getActive('shape').draw
+            @handler = @draw
+        else
+            delete @handler
         
         newShape = @autoSwitch event
         switched = newShape != shape
@@ -241,15 +238,15 @@ class Shapes
   
                 # log "shape start #{@drawing?} #{@handler?}"
                 
-                if @drawing? and @handler?.handleDown event, stagePos
+                if @drawing? and @handler?.handleDown event
                     if not @handler.continuePicking()
                         @endDrawing()
                     return
                     
                 @drawing = @addShape shape, stagePos
                 
-                if @handler
-                    @handler.startDrawing @drawing, shape, stagePos
+                if @handler?
+                    @handler.startDrawing @drawing, shape
                 else
                     @trans.pos @drawing, stagePos
 
@@ -266,9 +263,8 @@ class Shapes
         eventPos = pos event
         stagePos = @kali.stage.stageForEvent eventPos
         
-        if @handler? 
-            if @handler.handleDrag event, stagePos
-                return
+        if @handler?.handleDrag event
+            return
         
         switch shape
             
@@ -355,7 +351,7 @@ class Shapes
                         @drawing.size 100, 100
                         @trans.center @drawing, stagePos
                 
-            if not @handler? or @handler.handleStop event, stagePos 
+            if not @handler? or @handler.handleStop event
                 
                 @endDrawing drag, event, stagePos
 

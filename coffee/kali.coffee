@@ -35,7 +35,6 @@ class Kali
     items: -> @stage.items()
 
     shapeTool:    -> @tools.getActive('shape').name
-    shapeHandler: -> @tools.getActive('shape').draw
         
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   

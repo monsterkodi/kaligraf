@@ -478,7 +478,7 @@ class Stage
         if @kali.shapeTool() == 'loupe'
             @setCursor @kali.tools.ctrlDown and 'zoom-out' or 'zoom-in'
 
-        @shapes.handler?.handleMove event, @stageForEvent pos event
+        @shapes.handler?.handleMove event #, @stageForEvent pos event
 
     # 000   000  00000000  000   000
     # 000  000   000        000 000

@@ -271,7 +271,7 @@ class Resizer
     # 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000
 
     onSelection: (action, items, item) =>
-        # log 'onSelection action:', action, 'item:', item?.id()
+
         switch action
             when 'set'   then @setItems items
             when 'add'   then @addItem  items, item

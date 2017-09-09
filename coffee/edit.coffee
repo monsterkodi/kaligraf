@@ -150,9 +150,9 @@ class Edit
 
     moveBy: (delta) ->
 
-        stageDelta = delta.times 1.0/@stage.zoom
+        @stage.moveItems @items(), delta
         for object in @objects
-            object.moveBy stageDelta
+            object.moveCtrlsBy delta
             
     # 00000000   00000000   0000000  000000000
     # 000   000  000       000          000

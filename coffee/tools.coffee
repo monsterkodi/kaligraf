@@ -86,15 +86,15 @@ class Tools extends Tool
                 { name: 'triangle_square', group: 'shape' }
             ]
             [
-                { name: 'bezier',      group: 'shape', draw: 'path' }
-                { name: 'bezier_quad', group: 'shape', draw: 'path' }
-                { name: 'pie',         group: 'shape', draw: 'path' }
-                { name: 'arc',         group: 'shape', draw: 'path' }
+                { name: 'bezier',      group: 'shape', draw: true }
+                { name: 'bezier_quad', group: 'shape', draw: true }
+                { name: 'pie',         group: 'shape', draw: true }
+                { name: 'arc',         group: 'shape', draw: true }
             ]
             [
-                { name: 'polygon',     group: 'shape', draw: 'poly' }
-                { name: 'polyline',    group: 'shape', draw: 'poly' }
-                { name: 'line',        group: 'shape', draw: 'poly' }
+                { name: 'polygon',     group: 'shape', draw: true }
+                { name: 'polyline',    group: 'shape', draw: true }
+                { name: 'line',        group: 'shape', draw: true }
             ]
             [
                 { name: 'zoom',  class: 'zoom', action: 'zoom_reset',  combo: 'command+0' }

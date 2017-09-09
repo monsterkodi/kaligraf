@@ -48,7 +48,10 @@ class Ctrl
 
     createDot: (type, stagePos) ->
 
-        if @itemPoint()[0] in ['L', 'M']
+        if @object.isPoly()
+            s = @edit.dotSize/2
+            dot = @edit.svg.polygon [[0,s], [s,0], [0,-s], [-s,0]]
+        else if @pointType() in ['L', 'M']
             dot = @edit.svg.rect @edit.dotSize, @edit.dotSize 
         else
             dot = @edit.svg.circle @edit.dotSize 
@@ -133,6 +136,11 @@ class Ctrl
 
     index:     -> @object.ctrls.indexOf @
     itemPoint: -> @object.item.array().valueOf()[@index()]
+    pointType: -> 
+        if @object.isPoly()
+            'P'
+        else
+            @itemPoint()[0]
 
     # 00000000    0000000    0000000
     # 000   000  000   000  000
@@ -216,7 +224,7 @@ class Ctrl
 
     setItemPos: (type, itemPos) ->
 
-        if @object.item.type in ['polygon', 'polyline', 'line']
+        if @object.isPoly()
 
             @setPolyPos type, itemPos
 
@@ -233,7 +241,7 @@ class Ctrl
 
     getItemPos: (type) ->
 
-        if @object.item.type in ['polygon', 'polyline', 'line']
+        if @object.isPoly()
 
             @getPolyPos type
 

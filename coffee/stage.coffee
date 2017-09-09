@@ -143,13 +143,13 @@ class Stage
         svgStr = """
             <svg width="100%" height="100%"
             version="1.1"
-            xmlns="http://www.w3.org/2000/svg"
+            xmlns="http://www.w3.org/2000/svg" 
             """
 
         if color
             svgStr += """
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-                xmlns:svgjs="http://svgjs.com/svgjs"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            xmlns:svgjs="http://svgjs.com/svgjs"
             """
 
         style  = "stroke-linecap: round; stroke-linejoin: round; "

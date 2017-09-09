@@ -1,9 +1,9 @@
 
-#  0000000   0000000          000  00000000   0000000  000000000  
-# 000   000  000   000        000  000       000          000     
-# 000   000  0000000          000  0000000   000          000     
-# 000   000  000   000  000   000  000       000          000     
-#  0000000   0000000     0000000   00000000   0000000     000     
+#  0000000   0000000          000  00000000   0000000  000000000
+# 000   000  000   000        000  000       000          000
+# 000   000  0000000          000  0000000   000          000
+# 000   000  000   000  000   000  000       000          000
+#  0000000   0000000     0000000   00000000   0000000     000
 
 { pos, log, _ } = require 'kxk'
 
@@ -12,146 +12,146 @@ Ctrl = require './ctrl'
 class Object
 
     constructor: (@edit, item) ->
-        
+
         @svg   = @edit.svg
         @kali  = @edit.kali
         @trans = @kali.trans
-        
-        @ctrls = []
-        
-        if item? then @setItem item
-       
-    # 0000000    00000000  000      
-    # 000   000  000       000      
-    # 000   000  0000000   000      
-    # 000   000  000       000      
-    # 0000000    00000000  0000000  
-    
-    del: ->
-                
-        for ctrl in @ctrls
-            ctrl.del()
-            
+
         @ctrls = []
 
-    #  0000000  00000000  000000000     000  000000000  00000000  00     00  
-    # 000       000          000        000     000     000       000   000  
-    # 0000000   0000000      000        000     000     0000000   000000000  
-    #      000  000          000        000     000     000       000 0 000  
-    # 0000000   00000000     000        000     000     00000000  000   000  
-    
+        if item? then @setItem item
+
+    # 0000000    00000000  000
+    # 000   000  000       000
+    # 000   000  0000000   000
+    # 000   000  000       000
+    # 0000000    00000000  0000000
+
+    del: ->
+
+        for ctrl in @ctrls
+            ctrl.del()
+
+        @ctrls = []
+
+    #  0000000  00000000  000000000     000  000000000  00000000  00     00
+    # 000       000          000        000     000     000       000   000
+    # 0000000   0000000      000        000     000     0000000   000000000
+    #      000  000          000        000     000     000       000 0 000
+    # 0000000   00000000     000        000     000     00000000  000   000
+
     setItem: (item) ->
-        
+
         @del()
-        
+
         @item = item
 
         points = @item.array().valueOf()
+        isPath = @isPath()
 
         for i in [0...points.length]
 
             point = points[i]
-            
-            p = switch @item.type
 
-                when 'polygon', 'polyline', 'line'
-                    pos point[0], point[1]
-                else
-                    pos point[point.length-2], point[point.length-1]
+            if isPath
+                p = pos point[point.length-2], point[point.length-1]
+            else
+                p = pos point[0], point[1]
 
             @editCtrl 'append', 'point', i, p
 
-            switch @item.type
-                
-                when 'polygon', 'polyline', 'line' then
-                        
-                else
-                    switch point[0]
-                        when 'C', 'c', 'S', 's', 'Q', 'q'
-                            @editCtrl 'append', 'ctrl1', i, pos point[1], point[2]
+            if isPath
 
-                    switch point[0]
-                        when 'S', 's'
-                            @editCtrl 'append', 'ctrlr', i, @trans.inverse @item, @reflPos i, 'ctrlr' 
-                        when 'C', 'c'
-                            @editCtrl 'append', 'ctrl2', i, pos point[3], point[4]
+                switch point[0]
+                    when 'C', 'c', 'S', 's', 'Q', 'q'
+                        @editCtrl 'append', 'ctrl1', i, pos point[1], point[2]
 
-    # 00000000  0000000    000  000000000  
-    # 000       000   000  000     000     
-    # 0000000   000   000  000     000     
-    # 000       000   000  000     000     
-    # 00000000  0000000    000     000     
-    
+                switch point[0]
+                    when 'S', 's'
+                        @editCtrl 'append', 'ctrlr', i, @trans.inverse @item, @reflPos i, 'ctrlr'
+                    when 'C', 'c'
+                        @editCtrl 'append', 'ctrl2', i, pos point[3], point[4]
+
+    # 00000000  0000000    000  000000000
+    # 000       000   000  000     000
+    # 0000000   000   000  000     000
+    # 000       000   000  000     000
+    # 00000000  0000000    000     000
+
     editCtrl: (action, type, index, stagePos) =>
 
         elemPos = @trans.transform @item, stagePos
-        
+
         switch action
-            
+
             when 'append'
-                
+
                 if index < @ctrls.length
                     ctrl = @ctrls[index]
-                else 
+                else
                     ctrl = new Ctrl @
                     @ctrls.push ctrl
-                    
+
                 ctrl.createDot type
-                
+
             when 'change'
 
                 ctrl = @ctrls[index]
-                
+
         if not ctrl?
             log "no ctrl? item:#{@item.id()} action: #{action} type:#{type} index:#{index}"
         else
             ctrl.setPos type, elemPos
 
-    # 00     00   0000000   000   000  00000000  
-    # 000   000  000   000  000   000  000       
-    # 000000000  000   000   000 000   0000000   
-    # 000 0 000  000   000     000     000       
-    # 000   000   0000000       0      00000000  
-    
+    # 00     00   0000000   000   000  00000000
+    # 000   000  000   000  000   000  000
+    # 000000000  000   000   000 000   0000000
+    # 000 0 000  000   000     000     000
+    # 000   000   0000000       0      00000000
+
     moveBy: (delta) ->
-        
+
         for ctrl in @ctrls
             ctrl.moveBy delta
-            
+
         @plot()
 
-    # 000   000  00000000   0000000     0000000   000000000  00000000  
-    # 000   000  000   000  000   000  000   000     000     000       
-    # 000   000  00000000   000   000  000000000     000     0000000   
-    # 000   000  000        000   000  000   000     000     000       
-    #  0000000   000        0000000    000   000     000     00000000  
-    
-    updatePos: -> 
-        
+    # 000   000  00000000   0000000     0000000   000000000  00000000
+    # 000   000  000   000  000   000  000   000     000     000
+    # 000   000  00000000   000   000  000000000     000     0000000
+    # 000   000  000        000   000  000   000     000     000
+    #  0000000   000        0000000    000   000     000     00000000
+
+    updatePos: ->
+
         for ctrl in @ctrls
             ctrl.updatePos()
-        
-    # 00000000   000       0000000   000000000  
-    # 000   000  000      000   000     000     
-    # 00000000   000      000   000     000     
-    # 000        000      000   000     000     
-    # 000        0000000   0000000      000     
-    
+
+    # 00000000   000       0000000   000000000
+    # 000   000  000      000   000     000
+    # 00000000   000      000   000     000
+    # 000        000      000   000     000
+    # 000        0000000   0000000      000
+
     plot: -> @item.plot @item.array()
 
-    # 00000000   00000000  00000000  000    
-    # 000   000  000       000       000    
-    # 0000000    0000000   000000    000    
-    # 000   000  000       000       000    
+    # 00000000   00000000  00000000  000
+    # 000   000  000       000       000
+    # 0000000    0000000   000000    000
+    # 000   000  000       000       000
     # 000   000  00000000  000       0000000
-    
+
     reflPos: (index, type) ->
-        
+
         pp = @getPos index, 'point'
         cp = @getPos index, type == 'ctrl1' and 'ctrlr' or 'ctrl1'
         if pp? and cp?
             pp.plus pp.minus cp
-                            
+
     getPos: (index, type='point') -> @ctrls[index]?.getPos type
-    
+
+
+    isPoly: -> @item.type in ['polygon', 'polyline', 'line']
+    isPath: -> not @isPoly()
+
 module.exports = Object

@@ -33,7 +33,7 @@ class Draw
                 @edit.addItem @drawing
                 
         switch @shape
-            when 'line', 'polyline', 'polygon', 'bezier', 'bezier_quad'
+            when 'line', 'polyline', 'polygon', 'bezier', 'bezier_quad', 'bezier_cube'
                 @picking = true
             else
                 log 'startDrawing delete @picking'
@@ -53,9 +53,9 @@ class Draw
         
         switch @shape
             when 'pie', 'arc'            then return false
-            when 'polygon', 'polyline'   then @addPoint  viewPos
-            when 'bezier', 'bezier_quad' then @addPoint  viewPos
             when 'line'                  then @movePoint viewPos
+            when 'polygon', 'polyline', 'bezier', 'bezier_quad', 'bezier_cube'  
+                @addPoint  viewPos
             
         true
         
@@ -129,7 +129,7 @@ class Draw
         
         return true  if not @drawing?
         return true  if @shape == 'line'
-        return false if @shape in ['bezier', 'bezier_quad']
+        return false if @shape in ['bezier', 'bezier_quad', 'bezier_cube']
         return not @picking
             
     # 00000000   0000000   0000000   0000000   00000000   00000000  
@@ -148,7 +148,7 @@ class Draw
             log 'delete?'
         
         switch @shape 
-            when 'bezier', 'bezier_quad'
+            when 'bezier', 'bezier_quad', 'bezier_cube'
                 @movePoint @dotPos 0
             else 
                 object.delPoint object.ctrls.length-1
@@ -160,7 +160,7 @@ class Draw
     # 00000000  000   000  0000000    
     
     endDrawing: ->
-        log 'endDrawing'
+        # log 'endDrawing'
         @edit?.del()
         delete @edit
         delete @drawing
@@ -178,8 +178,12 @@ class Draw
 
         viewPos = @stage.viewForEvent pos event 
         object  = @edit.objectForItem @drawing
-        types   = ['point']
-        object.addPoint object.ctrls.length, viewPos, types
+        code    = switch @shape
+            when 'bezier'      then 'S'
+            when 'bezier_quad' then 'Q'
+            when 'bezier_cube' then 'C'
+            else 'P'
+        object.addPoint object.numPoints(), viewPos, code
         object.plot()
 
     movePoint: (viewPos, action) ->
@@ -190,6 +194,7 @@ class Draw
             switch @shape
                 when 'bezier'      then types.push 'ctrl1'
                 when 'bezier_quad' then types.push 'ctrlq'
+                when 'bezier_cube' then types.push 'ctrl1'; types.push 'ctrl2'
         object.movePoint object.ctrls.length-1, viewPos, types
         object.plot()
        

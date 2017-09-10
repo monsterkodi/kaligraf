@@ -88,6 +88,7 @@ class Tools extends Tool
             [
                 { name: 'bezier',      group: 'shape', draw: true }
                 { name: 'bezier_quad', group: 'shape', draw: true }
+                { name: 'bezier_cube', group: 'shape', draw: true }
                 { name: 'pie',         group: 'shape', draw: true }
                 { name: 'arc',         group: 'shape', draw: true }
             ]

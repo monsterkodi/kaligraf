@@ -136,30 +136,15 @@ class Resizer
 
         @rect = @gg.rect().addClass 'resizerRect'
         @rect.attr width: '100%', height: '100%'
-
-        addRot = (x, y, id) =>
-            rot = @gg.circle(20).addClass 'resizerRot'
-            rot.attr cx:x, cy:y
-            @rotDrag[id] = new drag
-                    target:  rot.node
-                    onStart: @onRotStart
-                    onMove:  @onRotMove
-                    onStop:  @onRotStop
-            @rotDrag[id].id = id
-                   
-        addRot      0,      0, 'top left'
-        addRot '100%',      0, 'top right'
-        addRot      0, '100%', 'bot left'
-        addRot '100%', '100%', 'bot right'
-
-        addRot      0,  '50%', 'left'
-        addRot '100%',  '50%', 'right'
-        addRot  '50%',      0, 'top'
-        addRot  '50%', '100%', 'bot'        
+        
         
         addBorder = (x, y, w, h, cursor, id) =>
-            border = @gg.rect().addClass 'resizerBorder'
-            border.attr x:x, y:y, width:w, height:h
+            group  = @gg.nested() 
+            group.attr   x:x, y:y
+            border = group.rect()
+            border.addClass 'resizerBorder'
+            border.attr  x:-3, y:-3
+            border.attr  width:w, height:h
             border.style cursor: cursor
             @borderDrag[id] = new drag
                 target:  border.node
@@ -167,14 +152,18 @@ class Resizer
                 onMove:  @onBorderMove
             @borderDrag[id].id = id
 
-        addBorder -5,     0, 5, '100%', 'ew-resize', 'left'
-        addBorder '100%', 0, 5, '100%', 'ew-resize', 'right'
-        addBorder 0,     -5, '100%', 5, 'ns-resize', 'top'
-        addBorder 0, '100%', '100%', 5, 'ns-resize', 'bot'
+        addBorder 0,      0, 6, '100%', 'ew-resize', 'left'
+        addBorder '100%', 0, 6, '100%', 'ew-resize', 'right'
+        addBorder 0,      0, '100%', 6, 'ns-resize', 'top'
+        addBorder 0, '100%', '100%', 6, 'ns-resize', 'bot'
+
         
         addCorner = (x, y, cursor, id) =>
-            corner = @gg.circle(10).addClass 'resizerCorner'
-            corner.attr cx:x, cy:y
+            group  = @gg.nested() 
+            group.attr x:x, y:y
+            # corner = @gg.circle(10).addClass 'resizerCorner'
+            corner = group.rect(20,20).addClass 'resizerCorner'
+            corner.attr x:-10, y:-10
             corner.style cursor:cursor
             @cornerDrag[id] = new drag
                 target:  corner.node
@@ -186,7 +175,31 @@ class Resizer
         addCorner '100%',      0, 'ne-resize', 'top right'
         addCorner 0,      '100%', 'sw-resize', 'bot left'
         addCorner '100%', '100%', 'se-resize', 'bot right'
-                    
+
+        
+        addRot = (x, y, r, id) =>
+            rot = @gg.circle(r).addClass 'resizerRot'
+            rot.attr cx:x, cy:y
+            cursor = "file://#{__dirname}/../svg/rot.svg"
+            rot.style cursor: "url(#{cursor}) 18 12, auto"
+            @rotDrag[id] = new drag
+                    target:  rot.node
+                    onStart: @onRotStart
+                    onMove:  @onRotMove
+                    onStop:  @onRotStop
+            @rotDrag[id].id = id
+                   
+        addRot      0,      0, 10, 'top left'
+        addRot '100%',      0, 10, 'top right'
+        addRot      0, '100%', 10, 'bot left'
+        addRot '100%', '100%', 10, 'bot right'
+
+        addRot      0,  '50%', 10, 'left'
+        addRot '100%',  '50%', 10, 'right'
+        addRot  '50%',      0, 10, 'top'
+        addRot  '50%', '100%', 10, 'bot'        
+        
+                            
         @drag = new drag
             target:  @rect.node
             onStart: @onDragStart

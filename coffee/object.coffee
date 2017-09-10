@@ -114,12 +114,14 @@ class Object
         
         point = @pointAt index
         
+        # log "movePoint #{index} #{point[0]}"
+        
         if _.isString types then types = [types]
         for type in types
             switch type
                 when 'point'
                     switch point[0]
-                        when 'S', 'Q', 'C'
+                        when 'S', 'Q', 'C', 'M', 'L'
                             point[point.length-2] = itemPos.x
                             point[point.length-1] = itemPos.y
                         else
@@ -147,6 +149,9 @@ class Object
                     @movePoint index, refl, 'ctrl1'
                     
         @updateCtrlDots index, point
+        
+        if point[0] in ['Q', 'M'] and index < @numPoints()-1
+            @updateCtrlDots index+1, @pointAt index+1
          
     #  0000000   0000000    0000000    00000000    0000000   000  000   000  000000000  
     # 000   000  000   000  000   000  000   000  000   000  000  0000  000     000     
@@ -205,6 +210,7 @@ class Object
             log "no dot #{dot} at index #{index}?"
     
     points: -> @item.array().valueOf()
+    numPoints: -> @points().length
     pointAt: (i) -> @points()[i]
 
     isPoly: -> @item.type in ['polygon', 'polyline', 'line']

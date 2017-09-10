@@ -71,11 +71,14 @@ class Object
         ctrl.createDot 'point'
         
         switch point[0]
-            when 'S', 'Q', 'C'
-                ctrl.createDot 'ctrl1' if point[0] != 'Q'
-                ctrl.createDot 'ctrlr' if point[0] == 'S'
-                ctrl.createDot 'ctrlq' if point[0] == 'Q'
-                ctrl.createDot 'ctrl2' if point[0] == 'C'
+            when 'S' 
+                ctrl.createDot 'ctrls'
+                ctrl.createDot 'ctrlr'
+            when 'C'
+                ctrl.createDot 'ctrl1'
+                ctrl.createDot 'ctrl2'
+            when 'Q'
+                ctrl.createDot 'ctrlq'
 
     # 000   000  00000000   0000000     0000000   000000000  00000000  
     # 000   000  000   000  000   000  000   000     000     000       
@@ -87,13 +90,17 @@ class Object
         
         ctrl = @ctrls[index]
         ctrl.updateDot 'point', point
+        
         switch point[0]
-            when 'S', 'Q', 'C'
-                ctrl.updateDot 'ctrl1', point if point[0] != 'Q'
-                ctrl.updateDot 'ctrlr', point if point[0] == 'S'
-                ctrl.updateDot 'ctrlq', point if point[0] == 'Q'
-                ctrl.updateDot 'ctrl2', point if point[0] == 'C'
-
+            when 'S' 
+                ctrl.updateDot 'ctrls', point
+                ctrl.updateDot 'ctrlr', point
+            when 'C'
+                ctrl.updateDot 'ctrl1', point
+                ctrl.updateDot 'ctrl2', point
+            when 'Q'
+                ctrl.updateDot 'ctrlq', point
+                
     updatePos: ->
 
         points = @item.array().valueOf()
@@ -135,7 +142,7 @@ class Object
                                 point[0] = itemPos.x
                                 point[1] = itemPos.y
 
-                when 'ctrl1', 'ctrlq'
+                when 'ctrl1', 'ctrlq', 'ctrls'
                     point[1] = itemPos.x
                     point[2] = itemPos.y
 
@@ -146,11 +153,11 @@ class Object
                 when 'ctrlr'
                     ppos = @dotPos index
                     refl = ppos.minus ppos.to viewPos
-                    @movePoint index, refl, 'ctrl1'
+                    @movePoint index, refl, 'ctrls'
                     
         @updateCtrlDots index, point
         
-        if point[0] in ['Q', 'M'] and index < @numPoints()-1
+        if point[0] in ['Q', 'M', 'C'] and index < @numPoints()-1
             @updateCtrlDots index+1, @pointAt index+1
          
     #  0000000   0000000    0000000    00000000    0000000   000  000   000  000000000  

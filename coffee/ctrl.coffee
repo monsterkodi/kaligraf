@@ -67,7 +67,7 @@ class Ctrl
 
         @dots[type] = dot
 
-        if type in ['ctrl1', 'ctrl2', 'ctrlr', 'ctrlq']
+        if type in ['ctrl1', 'ctrl2', 'ctrlq', 'ctrlr', 'ctrls']
             @createLine type
         if type == 'ctrlq'
             @createLine 'ctrlq2'
@@ -97,8 +97,8 @@ class Ctrl
             return
         
         itemPos = switch type
-            when 'ctrl1', 'ctrlq' then pos point[1], point[2]
-            when 'ctrl2'          then pos point[3], point[4]
+            when 'ctrl1', 'ctrlq', 'ctrls' then pos point[1], point[2]
+            when 'ctrl2'                   then pos point[3], point[4]
             when 'ctrlr'          
                 pp = pos point[point.length-2], point[point.length-1]
                 cp = pos point[1], point[2]
@@ -114,13 +114,17 @@ class Ctrl
         dot.cx dotPos.x
         dot.cy dotPos.y
 
-        if type in ['ctrl1', 'ctrl2', 'ctrlr', 'ctrlq']
-            pointPos = @stage.viewForStage @trans.transform @object.item, pos point[point.length-2], point[point.length-1]
+        pointPos = @stage.viewForStage @trans.transform @object.item, pos point[point.length-2], point[point.length-1]
+        
+        if type in ['ctrl2', 'ctrls', 'ctrlr', 'ctrlq']
             @plotLine type, dotPos, pointPos
             
-            if type == 'ctrlq'
-                point2 = @object.dotPos @index()-1
-                @plotLine 'ctrlq2', dotPos, point2
+        if type == 'ctrl1'
+            prevPoint = @object.dotPos @index()-1
+            @plotLine 'ctrl1', dotPos, prevPoint
+        else if type == 'ctrlq'
+            prevPoint = @object.dotPos @index()-1
+            @plotLine 'ctrlq2', dotPos, prevPoint
         
     # 000      000  000   000  00000000
     # 000      000  0000  000  000
@@ -172,10 +176,10 @@ class Ctrl
                 newPos = dotPos.plus drag.delta
                 @object.movePoint index, newPos, [ctrl]
             
-            code = @pointType()
-            if code in ['S', 'C'] then moveDelta 'ctrl1'
-            if code == 'C'        then moveDelta 'ctrl2'
-            else if code == 'Q'   then moveDelta 'ctrlq'
+            switch @pointType()
+                when 'S' then moveDelta 'ctrls'
+                when 'Q' then moveDelta 'ctrlq'
+                when 'C' then moveDelta 'ctrl1'; moveDelta 'ctrl2'
         
         @object.plot()
 

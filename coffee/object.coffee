@@ -5,7 +5,7 @@
 # 000   000  000   000  000   000  000       000          000
 #  0000000   0000000     0000000   00000000   0000000     000
 
-{ pos, log, _ } = require 'kxk'
+{ pos, empty, log, _ } = require 'kxk'
 
 Ctrl = require './ctrl'
 
@@ -166,33 +166,65 @@ class Object
     # 0000000    00000000  0000000  000         0000000   000  000   000     000     
     
     delPoint: (index) ->
-        
+    
         @ctrls[index].del()
         @ctrls.splice index, 1
         points = @points()
         points.splice index, 1
-        @plot()
-        @updateCtrlDots index, @pointAt index
-        @updateCtrlDots index+1, @pointAt index+1 if index < @numPoints()-1
+        
+        if empty points
+            @edit.delItem @item
+        else
+            @plot()
+            @updateCtrlDots index,   @pointAt index   if index < @numPoints()
+            @updateCtrlDots index+1, @pointAt index+1 if index < @numPoints()-1
     
-    delDot: (dot) ->
-        log "delDot #{dot.dot}"
-        index = dot.ctrl.index()
-        if dot.dot == 'point' 
+    # 0000000    00000000  000      0000000     0000000   000000000  
+    # 000   000  000       000      000   000  000   000     000     
+    # 000   000  0000000   000      000   000  000   000     000     
+    # 000   000  000       000      000   000  000   000     000     
+    # 0000000    00000000  0000000  0000000     0000000      000     
+    
+    delDots: (dots) ->
+        
+        for i in [@numPoints()-1..0]
+            idots = dots.filter (dot) -> dot.ctrl?.index() == i
+            if not empty idots
+                @delIndexDots i, idots
+        
+    delIndexDots: (index, dots) ->
+        
+        dotNames = dots.map (dot) -> dot.dot
+        
+        if 'point' in dotNames
             @delPoint index
             return
-
-        point = @pointAt index
-        switch point[0]
-            when 'ctrl1', 'ctrlq', 'ctrls'
-                point[1] = itemPos.x
-                point[2] = itemPos.y
-
-            when 'ctrl2'
-                point[3] = itemPos.x
-                point[4] = itemPos.y
+            
+        points = @points()
+        point = points[index]
+        
+        if dotNames.length > 1
+            if 'ctrl1' in dotNames and 'ctrl2' in dotNames
+                point[0] = 'L'
+                point.splice 1, 4
+            else if 'ctrlr' in dotNames
+                log 'handle ctrlr'
+        else
+            switch dotNames[0]
+                when 'ctrlq', 'ctrls' 
+                    point[0] = 'L'
+                    point.splice 1, 2
+                when 'ctrl1' 
+                    point[0] = 'Q'
+                    point.splice 1,2
+                when 'ctrl2' 
+                    point[0] = 'Q'
+                    point.splice 3,2
                 
+        @initCtrlDots   index, point
+        @updateCtrlDots index, point
         @plot()
+        @updateCtrlDots index+1, @pointAt index+1 if index < @numPoints()-1
         
     # 00     00   0000000   000   000  00000000
     # 000   000  000   000  000   000  000
@@ -205,7 +237,7 @@ class Object
         for ctrl in @ctrls
             ctrl.moveBy delta
 
-    plot: -> @item.plot @item.array()
+    plot: (points=@item.array()) -> @item.plot points
 
     dots: -> 
         dots = []

@@ -16,6 +16,24 @@ class DotSel
         @stage = @edit.stage
         @dots = []
 
+    #  0000000   0000000          000  0000000     0000000   000000000   0000000  
+    # 000   000  000   000        000  000   000  000   000     000     000       
+    # 000   000  0000000          000  000   000  000   000     000     0000000   
+    # 000   000  000   000  000   000  000   000  000   000     000          000  
+    #  0000000   0000000     0000000   0000000     0000000      000     0000000   
+    
+    objectDots: ->
+        
+        objectDots = []
+        for i in [0...@edit.objects.length]
+            object = @edit.objects[i]
+            dots = object.dots().filter (dot) => dot in @dots
+            if not empty dots
+                objectDots.push 
+                    object: object
+                    dots:   dots
+        objectDots
+        
     #  0000000  000      00000000   0000000   00000000   
     # 000       000      000       000   000  000   000  
     # 000       000      0000000   000000000  0000000    
@@ -25,7 +43,7 @@ class DotSel
     clear: ->
         
         for dot in @dots
-            dot.ctrl.setSelected dot.dot, false
+            dot.ctrl?.setSelected dot.dot, false
             
         @dots = []
 

@@ -31,8 +31,10 @@ class Ctrl
             d.deactivate()
 
         for k,d of @dots
+            delete d.ctrl
+            delete d.dot
             d.remove()
-
+            
         for k,l of @lines
             l.remove()
 

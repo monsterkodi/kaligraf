@@ -80,8 +80,8 @@ class Edit
     delete: ->
         
         if not @dotsel.empty()
-            for dot in @dotsel.dots
-                dot.ctrl.object.delDot dot
+            for objectDot in @dotsel.objectDots()
+                objectDot.object.delDots objectDot.dots
             @dotsel.clear()
             return
         

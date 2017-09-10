@@ -48,7 +48,16 @@ class DotSel
         @dots = []
 
     empty: -> empty @dots
-            
+
+    invert: ->
+        
+        for object in @edit.objects
+            for dot in object.dots()
+                if dot.hasClass 'selected'
+                    @del dot
+                else
+                    @add dot, true
+    
     #  0000000   0000000    0000000    
     # 000   000  000   000  000   000  
     # 000000000  000   000  000   000  
@@ -63,6 +72,20 @@ class DotSel
         
         if dot not in @dots then @dots.push dot
 
+    addInRect: (r, o) ->
+
+        for object in @edit.objects
+            for dot in object.dots()
+                if rectsIntersect r, dot.rbox()
+                    @add dot, true
+                else if not o.join
+                    @del dot
+    addAll: ->
+        
+        for object in @edit.objects
+            for dot in object.dots()
+                @add dot, true
+        
     # 0000000    00000000  000      
     # 000   000  000       000      
     # 000   000  0000000   000      
@@ -90,7 +113,7 @@ class DotSel
             oldPos = object.dotPos index, dot.dot
             newPos = oldPos.plus delta
             object.movePoint index, newPos, dot.dot
-        object.plot()
+            object.plot()
 
     # 00000000   00000000   0000000  000000000
     # 000   000  000       000          000
@@ -123,28 +146,5 @@ class DotSel
         @stage.selection.setRect @rect.element, @rect
         
         @addInRect normRect(@rect), o
-
-    addInRect: (r, o) ->
-
-        for object in @edit.objects
-            for dot in object.dots()
-                if rectsIntersect r, dot.rbox()
-                    @add dot, true
-                else if not o.join
-                    @del dot
-    addAll: ->
-        
-        for object in @edit.objects
-            for dot in object.dots()
-                @add dot, true
-                
-    invert: ->
-        
-        for object in @edit.objects
-            for dot in object.dots()
-                if dot.hasClass 'selected'
-                    @del dot
-                else
-                    @add dot, true
-                    
+                                    
 module.exports = DotSel

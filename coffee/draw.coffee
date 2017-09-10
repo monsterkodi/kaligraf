@@ -68,7 +68,6 @@ class Draw
     
     handleMove: (event) ->
              
-        # log 'handleMove', @drawing?, @picking
         if @drawing? and @picking
 
             @movePoint @stage.viewForEvent(pos event), 'move'

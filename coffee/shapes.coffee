@@ -291,7 +291,7 @@ class Shapes
                         @trans.center @drawing, stagePos
                 
             if not @draw? or @draw.handleStop event
-                log 'endDrawing'
+                # log 'endDrawing'
                 @endDrawing()
 
     # 00000000  000   000  0000000        0000000    00000000    0000000   000   000  

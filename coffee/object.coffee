@@ -102,7 +102,9 @@ class Object
         point  = points[index]
         
         if _.isString dots then dots = [dots]
+        
         for dot in dots
+            
             switch dot
                 when 'point'
                     switch point[0]
@@ -115,6 +117,7 @@ class Object
                                 point[1] = itemPos.y            
                                 @item.plot points
                             else
+                                # log 'movePoint', index, dot
                                 point[0] = itemPos.x
                                 point[1] = itemPos.y
                                 
@@ -165,7 +168,8 @@ class Object
                 [itemPos.x, itemPos.y]
         points.splice index, 0, point
         
-        @initCtrlDots index, point
+        @initCtrlDots   index, point
+        @updateCtrlDots index, point
     
     # 0000000    00000000  000      00000000    0000000   000  000   000  000000000  
     # 000   000  000       000      000   000  000   000  000  0000  000     000     

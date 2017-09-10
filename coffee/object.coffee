@@ -98,7 +98,8 @@ class Object
         
         itemPos = @trans.inverse @item, @stage.stageForView viewPos
         
-        point = @pointAt index
+        points = @points()
+        point  = points[index]
         
         if _.isString dots then dots = [dots]
         for dot in dots
@@ -110,14 +111,21 @@ class Object
                             point[point.length-1] = itemPos.y
                         else
                             if @item.type == 'line'
-                                points = @points()
-                                point  = points[index]
                                 point[0] = itemPos.x
                                 point[1] = itemPos.y            
                                 @item.plot points
                             else
                                 point[0] = itemPos.x
                                 point[1] = itemPos.y
+                                
+                    if @isPath() and not @edit.passive and index == @numPoints()-1
+                        
+                        firstPoint = @pointAt 0
+                        firstPoint[1] = itemPos.x
+                        firstPoint[2] = itemPos.y
+                        
+                        @updateCtrlDots 0, firstPoint
+                        @updateCtrlDots 1, @pointAt 1 if points.length>1
 
                 when 'ctrl1', 'ctrlq', 'ctrls'
                     point[1] = itemPos.x
@@ -134,7 +142,7 @@ class Object
                     
         @updateCtrlDots index, point
         
-        if point[0] in ['Q', 'M', 'C'] and index < @numPoints()-1
+        if point[0] in ['Q', 'M', 'L', 'C'] and index < @numPoints()-1
             @updateCtrlDots index+1, @pointAt index+1
          
     #  0000000   0000000    0000000    00000000    0000000   000  000   000  000000000  

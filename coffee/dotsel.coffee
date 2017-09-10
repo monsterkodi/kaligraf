@@ -86,16 +86,11 @@ class DotSel
         for dot in @dots
             ctrl   = dot.ctrl
             index  = ctrl.index()
-            if index < 0
-                log 'selected ctrl not in object?', index
-                continue 
             object = ctrl.object
             oldPos = object.dotPos index, dot.dot
-            if not oldPos.plus?
-                log "dafuk? #{index} #{dot.dot}"
             newPos = oldPos.plus delta
             object.movePoint index, newPos, dot.dot
-            object.plot()
+        object.plot()
 
     # 00000000   00000000   0000000  000000000
     # 000   000  000       000          000

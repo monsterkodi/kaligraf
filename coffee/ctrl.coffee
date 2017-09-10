@@ -231,30 +231,10 @@ class Ctrl
 
     onMove: (drag, event) =>
 
-        if @object.edit.dotsel.dots.length > 1
+        if not @object.edit.dotsel.empty()
             @object.edit.dotsel.moveBy drag.delta
-            return
         
-        index   = @index()
-        viewPos = @stage.viewForEvent pos event
-
-        @object.movePoint index, viewPos, drag.dot
-        
-        if @object.isPath() and drag.dot == 'point' and not event.shiftKey
-            
-            moveDelta = (ctrl) =>
-                dotPos = @object.dotPos index, ctrl
-                newPos = dotPos.plus drag.delta
-                @object.movePoint index, newPos, ctrl
-            
-            switch @pointCode()
-                when 'S' then moveDelta 'ctrls'
-                when 'Q' then moveDelta 'ctrlq'
-                when 'C' then moveDelta 'ctrl1'; moveDelta 'ctrl2'
-        
-        @object.plot()
-
-    moveBy: (delta) -> 
+    moveBy: (delta) ->
 
         for k,dot of @dots
             dot.cx dot.cx() + delta.x

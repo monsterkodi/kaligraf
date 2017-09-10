@@ -13,7 +13,7 @@ class Ctrl
 
         @dots  = {}
         @lines = {}
-        @drags = []
+        @drags = {}
 
         @edit  = @object.edit
         @stage = @edit.stage
@@ -27,7 +27,7 @@ class Ctrl
 
     del: ->
 
-        for d in @drags
+        for k,d of @drags
             d.deactivate()
 
         for k,d of @dots
@@ -38,7 +38,7 @@ class Ctrl
 
         @dots  = {}
         @lines = {}
-        @drags = []
+        @drags = {}
 
     # 0000000     0000000   000000000
     # 000   000  000   000     000
@@ -46,6 +46,35 @@ class Ctrl
     # 000   000  000   000     000
     # 0000000     0000000      000
 
+    initDots: (point) ->
+        
+        @del()
+        @createDot 'point'
+        
+        switch point[0]
+            when 'S' 
+                @createDot 'ctrls'
+                @createDot 'ctrlr'
+            when 'C'
+                @createDot 'ctrl1'
+                @createDot 'ctrl2'
+            when 'Q'
+                @createDot 'ctrlq'
+
+    updateDots: (point) ->
+        
+        @updateDot 'point', point
+        
+        switch point[0]
+            when 'S' 
+                @updateDot 'ctrls', point
+                @updateDot 'ctrlr', point
+            when 'C'
+                @updateDot 'ctrl1', point
+                @updateDot 'ctrl2', point
+            when 'Q'
+                @updateDot 'ctrlq', point
+        
     #  0000000  00000000   00000000   0000000   000000000  00000000  
     # 000       000   000  000       000   000     000     000       
     # 000       0000000    0000000   000000000     000     0000000   
@@ -74,13 +103,13 @@ class Ctrl
         if dot == 'ctrlq'
             @createLine 'ctrlq2'
 
-        @drags.push new drag
+        @drags[dot] = new drag
             target:  svg.node
             onStart: @onStart
             onMove:  @onMove
             onStop:  @onStop
 
-        last(@drags).dot = dot
+        @drags[dot].dot = dot
 
         svg
 
@@ -127,7 +156,7 @@ class Ctrl
         else if dot == 'ctrlq'
             prevPoint = @object.dotPos @index()-1
             @plotLine 'ctrlq2', dotPos, prevPoint
-        
+            
     # 000      000  000   000  00000000
     # 000      000  0000  000  000
     # 000      000  000 0 000  0000000
@@ -164,11 +193,11 @@ class Ctrl
     setSelected: (dot, selected) ->
         
         if selected
-            @dots[dot].addClass 'selected'
+            @dots[dot]?.addClass 'selected'
         else
-            @dots[dot].removeClass 'selected'
+            @dots[dot]?.removeClass 'selected'
             
-    isSelected: (dot) -> @dots[dot].hasClass 'selected'
+    isSelected: (dot) -> @dots[dot]?.hasClass 'selected'
         
     #  0000000  000000000   0000000   00000000   000000000  
     # 000          000     000   000  000   000     000     

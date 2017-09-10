@@ -26,12 +26,16 @@ class Menu
 
     constructor: (@parent, buttons) ->
 
+        @kali = @parent.kali
         @children = []
         
         @element  = elem 'div', class: 'menu'
         @parent.element.appendChild @element
         
-        @element.addEventListener 'mouseenter', => @element.style.overflow = 'visible'
+        @element.addEventListener 'mouseenter', => 
+            @element.style.overflow = 'visible'
+            @kali.tools.collapseTemp()
+            @element.style.zIndex = 1000
         @element.addEventListener 'mouseleave', => @element.style.overflow = 'hidden'
         
         for button in buttons

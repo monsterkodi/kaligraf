@@ -14,7 +14,9 @@ class Tools extends Tool
     constructor: (@kali, cfg) ->
                 
         super @kali, cfg
-                
+        
+        @element.style.zIndex = 9999
+        
         @tools    = []
         @children = []
         @setPos x:0, y:0

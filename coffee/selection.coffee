@@ -16,7 +16,7 @@ class Selection
         @items = []
         
         @element = elem 'div', id: 'selection'
-        @kali.element.appendChild @element
+        @kali.insertBelowTools @element
         
         @svg = SVG(@element).size '100%', '100%' 
         @svg.addClass 'selectionSVG'

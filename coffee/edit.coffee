@@ -18,7 +18,7 @@ class Edit
 
         @element = elem 'div', id: 'edit'
         @element.classList.add 'passive' if @passive
-        @kali.element.appendChild @element
+        @kali.insertBelowTools @element
 
         @svg = SVG(@element).size '100%', '100%'
         @svg.addClass 'editSVG'
@@ -81,7 +81,7 @@ class Edit
         
         if not @dotsel.empty()
             for dot in @dotsel.dots
-                dot.ctrl.object.delPoint dot.ctrl.index()
+                dot.ctrl.object.delDot dot
             @dotsel.clear()
             return
         

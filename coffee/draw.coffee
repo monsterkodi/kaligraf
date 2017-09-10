@@ -25,7 +25,8 @@ class Draw
     
         @stage.shapes.stopEdit()
         
-        @edit = new Edit @kali, true
+        @edit ?= new Edit @kali, true
+        @edit.clear()
         
         switch @shape
             when 'arc', 'pie' then

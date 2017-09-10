@@ -19,7 +19,7 @@ class Resizer
         
         @selection = @kali.stage.selection
         @element = elem 'div', id: 'resizer'
-        @kali.element.appendChild @element
+        @kali.insertBelowTools @element
 
         @svg = SVG(@element).size '100%', '100%'
         @svg.addClass 'resizerSVG'

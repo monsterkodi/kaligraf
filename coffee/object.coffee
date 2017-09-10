@@ -68,17 +68,7 @@ class Object
             ctrl = new Ctrl @
             @ctrls.push ctrl
         
-        ctrl.createDot 'point'
-        
-        switch point[0]
-            when 'S' 
-                ctrl.createDot 'ctrls'
-                ctrl.createDot 'ctrlr'
-            when 'C'
-                ctrl.createDot 'ctrl1'
-                ctrl.createDot 'ctrl2'
-            when 'Q'
-                ctrl.createDot 'ctrlq'
+        ctrl.initDots point
 
     # 000   000  00000000   0000000     0000000   000000000  00000000  
     # 000   000  000   000  000   000  000   000     000     000       
@@ -88,18 +78,7 @@ class Object
     
     updateCtrlDots: (index, point) ->
         
-        ctrl = @ctrls[index]
-        ctrl.updateDot 'point', point
-        
-        switch point[0]
-            when 'S' 
-                ctrl.updateDot 'ctrls', point
-                ctrl.updateDot 'ctrlr', point
-            when 'C'
-                ctrl.updateDot 'ctrl1', point
-                ctrl.updateDot 'ctrl2', point
-            when 'Q'
-                ctrl.updateDot 'ctrlq', point
+        @ctrls[index].updateDots point
                 
     updatePos: ->
 
@@ -192,6 +171,27 @@ class Object
         @ctrls.splice index, 1
         points = @points()
         points.splice index, 1
+        @plot()
+        @updateCtrlDots index, @pointAt index
+        @updateCtrlDots index+1, @pointAt index+1 if index < @numPoints()-1
+    
+    delDot: (dot) ->
+        log "delDot #{dot.dot}"
+        index = dot.ctrl.index()
+        if dot.dot == 'point' 
+            @delPoint index
+            return
+
+        point = @pointAt index
+        switch point[0]
+            when 'ctrl1', 'ctrlq', 'ctrls'
+                point[1] = itemPos.x
+                point[2] = itemPos.y
+
+            when 'ctrl2'
+                point[3] = itemPos.x
+                point[4] = itemPos.y
+                
         @plot()
         
     # 00     00   0000000   000   000  00000000

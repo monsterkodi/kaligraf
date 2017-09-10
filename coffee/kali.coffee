@@ -33,6 +33,8 @@ class Kali
         @tools.loadPrefs()
 
     items: -> @stage.items()
+    
+    insertBelowTools: (child) -> @element.insertBefore child, @toolDiv
 
     shapeTool:    -> @tools.getActive('shape').name
         

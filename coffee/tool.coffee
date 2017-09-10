@@ -207,7 +207,7 @@ class Tool
     #    000     000   000  000   000  000   000  000      000       
     #    000      0000000    0000000    0000000   0000000  00000000  
     
-    show:    => @element.style.display = 'block'
+    show:    => @element.style.display = 'block'; @element.style.zIndex = 100
     hide:    => @element.style.display = 'none'
     visible: => @element.style.display != 'none'
     toggleVisible: => if @visible() then @hide() else @show()

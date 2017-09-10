@@ -159,7 +159,6 @@ class Shapes
         doSel = (sel) ->
             if item?
                 if not sel.contains item
-                    # if not event.shiftKey then sel.clear()
                     sel.pos = eventPos
                     sel.addItem item, join:event.shiftKey
                 else if not switched
@@ -190,9 +189,8 @@ class Shapes
 
                 @selection.clear()
                 @edit ?= new Edit @kali
-
-                doSel @edit
-                            
+                @edit.stageStart drag, event
+                                            
             # 00000000   000  00000000   00000000  000000000  000000000  00000000  
             # 000   000  000  000   000  000          000        000     000       
             # 00000000   000  00000000   0000000      000        000     0000000   
@@ -287,16 +285,10 @@ class Shapes
                 else if not @resizer.empty()
                     @resizer.moveBy drag.delta
                     
-            when 'edit' 
+            when 'edit'
                 
                 @edit ?= new Edit @kali
-                if @edit.rect?
-                    @edit.moveRect eventPos, join:event.shiftKey
-                else 
-                    if @edit.empty()
-                        @edit.addItem @stage.itemAtPos eventPos
-                    else
-                        @edit.moveBy drag.delta                
+                @edit.stageDrag drag, event
                 
             else
                 z  = @kali.stage.zoom
@@ -319,15 +311,15 @@ class Shapes
             @selection.endRect eventPos
             return
             
-        if @edit?.rect?
-            @edit.endRect eventPos
+        if @edit?
+            @edit.stageStop drag, event
             return
-        
+            
         shape = @kali.shapeTool() 
             
         switch shape
             
-            when 'edit' then return
+            when 'edit' then return 
             when 'loupe' 
                 
                 @selection.loupe.remove()

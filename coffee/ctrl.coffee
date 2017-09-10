@@ -179,7 +179,7 @@ class Ctrl
     onStart: (drag, event) =>
 
         @wasSelected = @isSelected drag.dot
-        @object.edit.selectDot @dots[drag.dot], true
+        @object.edit.dotsel.add @dots[drag.dot], true
                 
     #  0000000  000000000   0000000   00000000   
     # 000          000     000   000  000   000  
@@ -191,9 +191,9 @@ class Ctrl
         
         if drag.startPos == drag.lastPos
             if @wasSelected and event.shiftKey
-                @object.edit.deselectDot @dots[drag.dot]
+                @object.edit.dotsel.del @dots[drag.dot]
             else
-                @object.edit.selectDot @dots[drag.dot], event.shiftKey
+                @object.edit.dotsel.add @dots[drag.dot], event.shiftKey
         delete @wasSelected
 
     # 00     00   0000000   000   000  00000000

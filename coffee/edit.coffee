@@ -10,6 +10,7 @@
 { rectOffset, normRect, rectsIntersect } = require './utils'
 
 Object = require './object'
+DotSel = require './dotsel'
 
 class Edit
 
@@ -23,69 +24,16 @@ class Edit
         @svg.addClass 'editSVG'
         @svg.clear()
 
-        @stage     = @kali.stage
-        @trans     = @kali.trans
-        @selection = @stage.selection
+        @stage   = @kali.stage
+        @trans   = @kali.trans
 
         @dotSize = @passive and 5 or 10
         @objects = []
         
-        @selectedDots = []
+        @dotsel  = new DotSel @
 
         post.on 'ctrl',  @onCtrl
         post.on 'stage', @onStage
-
-    #  0000000  00000000  000      00000000   0000000  000000000  
-    # 000       000       000      000       000          000     
-    # 0000000   0000000   000      0000000   000          000     
-    #      000  000       000      000       000          000     
-    # 0000000   00000000  0000000  00000000   0000000     000     
-    
-    selectDot: (dot, keep) ->
-        
-        if not keep
-            for selected in @selectedDots
-                selected.ctrl.setSelected selected.dot, false
-            @selectedDots = []
-                
-        dot.ctrl.setSelected dot.dot, true
-        if dot not in @selectedDots
-            @selectedDots.push dot
-
-    selectDotsInRect: (object, r, o) ->
-        
-        for dot in object.dots()
-            rb = dot.rbox()
-            if rectsIntersect r, rb
-                @selectDot dot, o.join
-            
-    deselectDots: ->
-        
-        for dot in @selectedDots
-            dot.ctrl.setSelected dot.dot, false
-        @selectedDots = []
-                
-    deselectDot: (dot) ->
-        
-        if dot in @selectedDots
-            dot.ctrl.setSelected dot.dot, false
-            _.pull @selectedDots, dot
-        
-    moveDotsBy: (delta) ->
-        
-        for selected in @selectedDots
-            ctrl   = selected.ctrl
-            index  = ctrl.index()
-            if index < 0
-                log 'selected ctrl not in object?', index
-                continue 
-            object = ctrl.object
-            oldPos = object.dotPos index, selected.dot
-            if not oldPos.plus?
-                log "dafuk? #{index} #{selected.dot}"
-            newPos = oldPos.plus delta
-            object.movePoint index, newPos, selected.dot
-            object.plot()
         
     # 0000000    00000000  000
     # 000   000  000       000
@@ -111,7 +59,7 @@ class Edit
 
     clear: ->
 
-        @deselectDots()
+        @dotsel.clear()
         
         while @objects.length
             @delObject last @objects
@@ -131,10 +79,10 @@ class Edit
     
     delete: ->
         
-        if not empty @selectedDots
-            for dot in @selectedDots
+        if not @dotsel.empty()
+            for dot in @dotsel.dots
                 dot.ctrl.object.delPoint dot.ctrl.index()
-            @selectedDots = []
+            @dotsel.clear()
             return
         
         if not @empty()
@@ -152,7 +100,7 @@ class Edit
     # 000     000     000       000 0 000
     # 000     000     00000000  000   000
 
-    empty: -> @objects.length <= 0
+    empty: -> empty @objects
     
     contains:      (item) -> @objectForItem item
     objectForItem: (item) -> @objects.find (o) -> o.item == item
@@ -174,7 +122,7 @@ class Edit
         
         if object in @objects
             for dot in object.dots()
-                @deselectDot dot
+                @dotsel.del dot
             object.del()
             _.pull @objects, object
 
@@ -186,7 +134,7 @@ class Edit
 
     addItem: (item, o = join:true) ->
 
-        if not o.join and empty @selectedDots then @clear()
+        if not o.join and @dotsel.empty() then @clear()
         
         if object = @objectForItem item 
             return object
@@ -208,6 +156,40 @@ class Edit
         
             object.editCtrl action, dot, index, p
 
+    # 0000000    00000000    0000000    0000000   
+    # 000   000  000   000  000   000  000        
+    # 000   000  0000000    000000000  000  0000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000   0000000   
+    
+    stageStart: (drag, event) ->
+        
+        eventPos = pos event
+        
+        item = @stage.itemAtPos eventPos
+        
+        if @empty()
+            if item?
+                @addItem item, join:event.shiftKey
+            else
+                @startRect eventPos, join:event.shiftKey
+    
+    stageDrag: (drag, event) ->
+        
+        eventPos = pos event
+        
+        if @rect?
+            @moveRect eventPos, join:event.shiftKey
+        else 
+            if @empty()
+                @addItem @stage.itemAtPos eventPos
+            else
+                @moveBy drag.delta                
+
+    stageStop: (drag, event) ->
+        
+        if @rect? then @endRect pos event
+                
     # 00     00   0000000   000   000  00000000
     # 000   000  000   000  000   000  000
     # 000000000  000   000   000 000   0000000
@@ -216,8 +198,8 @@ class Edit
 
     moveBy: (delta) ->
 
-        if not empty @selectedDots
-            @moveDotsBy delta
+        if not @dotsel.empty()
+            @dotsel.moveBy delta
         else
             @stage.moveItems @items(), delta
             for object in @objects
@@ -230,7 +212,7 @@ class Edit
     # 000   000  00000000   0000000     000
 
     startRect: (p,o) ->
-        if not o.join and empty @selectedDots then @clear()
+        
         @rect = x:p.x, y:p.y, x2:p.x, y2:p.y
         @updateRect o
 
@@ -248,12 +230,8 @@ class Edit
     updateRect: (opt={}) ->
 
         if not @rect.element
-            @rect.element = @selection.addRect 'editRect'
-        @selection.setRect @rect.element, @rect
-        
-        # if not empty @selectedDots
-            # opt.join = true
-        if not opt.join then @deselectDots()
+            @rect.element = @stage.selection.addRect 'editRect'
+        @stage.selection.setRect @rect.element, @rect
         
         @addInRect @rect, opt
 
@@ -266,13 +244,7 @@ class Edit
             rb = item.rbox()
             if rectsIntersect r, rb
                 
-                if object = @objectForItem item 
-                    
-                    log 'select item dots'
-                    @selectDotsInRect object, r, join:true
-                    
-                else
-                    @addItem item
+                @addItem item
                 
             else if not opt.join
                 

@@ -498,7 +498,7 @@ class Stage
                 when 'enter', 'return', 'esc'
                     if combo == 'esc'
                         if @shapes.edit?
-                            @shapes.edit.deselectDots()
+                            @shapes.edit.dotsel.clear()
                         @shapes.handler?.handleEscape?()
                     return @shapes.endDrawing()
 

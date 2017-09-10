@@ -280,13 +280,26 @@ class Stage
 
         switch select
             when 'none'
-                @shapes.stopEdit()
-                @selection.clear()
+                if @shapes.edit? and not @shapes.edit.dotsel.empty()
+                    @shapes.edit.dotsel.clear()
+                else
+                    @shapes.stopEdit()
+                    @selection.clear()
             when 'all'
-                if @shapes.edit? or @kali.shapeTool() == 'edit'
+                if @shapes.edit? and not @shapes.edit.empty()
+                    @shapes.edit.dotsel.addAll()
+                else if @shapes.edit? or @kali.shapeTool() == 'edit'
                     @shapes.editItems @items()
                 else
                     @selection.setItems @items()
+            when 'invert'
+                if @shapes.edit? and not @shapes.edit.empty()
+                    @shapes.edit.dotsel.invert()
+                else if @shapes.edit? or @kali.shapeTool() == 'edit'
+                    @shapes.editItems @items().filter (item) => not @shapes.edit? or item not in @shapes.edit.items()
+                else
+                    @selection.setItems @items().filter (item) => item not in @selection.items
+                
 
     # 000   000  000  00000000  000   000
     # 000   000  000  000       000 0 000

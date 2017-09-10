@@ -192,6 +192,7 @@ class Tools extends Tool
             when 'front'      then @stage.order  'front'
             when 'selectAll'  then @stage.select 'all'
             when 'deselect'   then @stage.select 'none'
+            when 'invert'     then @stage.select 'invert'
             when 'center'     then @stage.centerSelection()
             when 'grid_toggle' then @grid.toggleGrid()
 

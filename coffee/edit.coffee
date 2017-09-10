@@ -156,11 +156,11 @@ class Edit
         
             object.editCtrl action, dot, index, p
 
-    # 0000000    00000000    0000000    0000000   
-    # 000   000  000   000  000   000  000        
-    # 000   000  0000000    000000000  000  0000  
-    # 000   000  000   000  000   000  000   000  
-    # 0000000    000   000  000   000   0000000   
+    #  0000000  000000000   0000000   00000000   000000000  
+    # 000          000     000   000  000   000     000     
+    # 0000000      000     000000000  0000000       000     
+    #      000     000     000   000  000   000     000     
+    # 0000000      000     000   000  000   000     000     
     
     stageStart: (drag, event) ->
         
@@ -173,6 +173,14 @@ class Edit
                 @addItem item, join:event.shiftKey
             else
                 @startRect eventPos, join:event.shiftKey
+        else
+            @dotsel.startRect eventPos, join:event.shiftKey
+    
+    # 0000000    00000000    0000000    0000000   
+    # 000   000  000   000  000   000  000        
+    # 000   000  0000000    000000000  000  0000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000   0000000   
     
     stageDrag: (drag, event) ->
         
@@ -184,11 +192,28 @@ class Edit
             if @empty()
                 @addItem @stage.itemAtPos eventPos
             else
-                @moveBy drag.delta                
+                @dotsel.moveRect eventPos, join:event.shiftKey
 
+    #  0000000  000000000   0000000   00000000   
+    # 000          000     000   000  000   000  
+    # 0000000      000     000   000  00000000   
+    #      000     000     000   000  000        
+    # 0000000      000      0000000   000        
+    
     stageStop: (drag, event) ->
         
-        if @rect? then @endRect pos event
+        if @rect? 
+            @endRect pos event
+        else
+            @dotsel.endRect pos event
+            
+            if drag.startPos == drag.lastPos
+                eventPos = pos event
+                if item = @stage.itemAtPos eventPos
+                    if event.shiftKey and @objectForItem item
+                        @delItem item
+                    else
+                        @addItem item, join:event.shiftKey
                 
     # 00     00   0000000   000   000  00000000
     # 000   000  000   000  000   000  000

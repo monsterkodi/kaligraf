@@ -56,6 +56,7 @@ class Menus
                 { name: 'center', action: 'center',    combo: 'command+e' }
                 { name: 'all',    action: 'selectAll', combo: 'command+a' }
                 { name: 'none',   action: 'deselect',  combo: 'command+d' }
+                { name: 'invert', action: 'invert',    combo: 'command+i' }
             ]
             [
                 { name: 'cut',    action: 'cut',       combo: 'command+x' }

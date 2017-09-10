@@ -178,8 +178,11 @@ class Ctrl
     
     onStart: (drag, event) =>
 
-        @wasSelected = @isSelected drag.dot
-        @object.edit.dotsel.add @dots[drag.dot], true
+        if event.shiftKey and @isSelected drag.dot
+            @object.edit.dotsel.del @dots[drag.dot]
+        else
+            keep = event.shiftKey or @isSelected drag.dot
+            @object.edit.dotsel.add @dots[drag.dot], keep
                 
     #  0000000  000000000   0000000   00000000   
     # 000          000     000   000  000   000  
@@ -189,13 +192,6 @@ class Ctrl
     
     onStop: (drag, event) =>
         
-        if drag.startPos == drag.lastPos
-            if @wasSelected and event.shiftKey
-                @object.edit.dotsel.del @dots[drag.dot]
-            else
-                @object.edit.dotsel.add @dots[drag.dot], event.shiftKey
-        delete @wasSelected
-
     # 00     00   0000000   000   000  00000000
     # 000   000  000   000  000   000  000
     # 000000000  000   000   000 000   0000000
@@ -204,8 +200,8 @@ class Ctrl
 
     onMove: (drag, event) =>
 
-        if @object.edit.selectedDots.length > 1
-            @object.edit.moveDotsBy drag.delta
+        if @object.edit.dotsel.dots.length > 1
+            @object.edit.dotsel.moveBy drag.delta
             return
         
         index   = @index()

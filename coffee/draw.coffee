@@ -23,7 +23,7 @@ class Draw
     
     startDrawing: (@drawing, @shape) -> 
     
-        @kali.stage.shapes.stopEdit()
+        @stage.shapes.stopEdit()
         
         @edit = new Edit @kali, true
         

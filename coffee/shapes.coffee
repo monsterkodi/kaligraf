@@ -18,8 +18,6 @@ class Shapes
         @tools = @kali.tools
         @trans = @kali.trans
         
-        @draw  = new Draw @kali
-        
         @svg       = @stage.svg
         @selection = @stage.selection
         @resizer   = @stage.resizer
@@ -136,115 +134,64 @@ class Shapes
         
         shape = @kali.shapeTool()
         
-        if @kali.tools.getActive('shape').draw
-            @handler = @draw
+        if @tools.getActive('shape').draw
+            @draw = new Draw @kali
         else
-            delete @handler
+            delete @draw
         
         newShape = @autoSwitch event
-        switched = newShape != shape
         shape    = newShape
         
         eventPos = pos event 
-        stagePos = @kali.stage.stageForEvent eventPos
+        stagePos = @stage.stageForEvent eventPos
                         
-        item = @stage.itemAtPos eventPos
-
-        #  0000000  00000000  000      
-        # 000       000       000      
-        # 0000000   0000000   000      
-        #      000  000       000      
-        # 0000000   00000000  0000000  
-        
-        doSel = (sel) ->
-            if item?
-                if not sel.contains item
-                    sel.pos = eventPos
-                    sel.addItem item, join:event.shiftKey
-                else if not switched
-                    if event.shiftKey then sel.delItem item
-            else
-                sel.startRect eventPos, join:event.shiftKey
-        
         switch shape
-            
-            # 00000000   000   0000000  000   000  
-            # 000   000  000  000       000  000   
-            # 00000000   000  000       0000000    
-            # 000        000  000       000  000   
-            # 000        000   0000000  000   000  
             
             when 'pick'
 
                 @stopEdit()
-                doSel @selection
+                @selection.stageStart drag, event
                     
-            # 00000000  0000000    000  000000000  
-            # 000       000   000  000     000     
-            # 0000000   000   000  000     000     
-            # 000       000   000  000     000     
-            # 00000000  0000000    000     000     
-            
             when 'edit'
 
                 @selection.clear()
                 @edit ?= new Edit @kali
                 @edit.stageStart drag, event
-                                            
-            # 00000000   000  00000000   00000000  000000000  000000000  00000000  
-            # 000   000  000  000   000  000          000        000     000       
-            # 00000000   000  00000000   0000000      000        000     0000000   
-            # 000        000  000        000          000        000     000       
-            # 000        000  000        00000000     000        000     00000000  
-            
+
             when 'pipette'
                 
                 item = @stage.itemAtPos eventPos
                 if item? and item != @svg
                     
-                    @kali.tools.fill.color = item.style('fill')
-                    @kali.tools.fill.alpha = item.style('fill-opacity')
-                    @kali.tools.fill.update()
-                    post.emit 'color', 'fill', 'color', @kali.tools.fill.color
+                    @tools.fill.color = item.style('fill')
+                    @tools.fill.alpha = item.style('fill-opacity')
+                    @tools.fill.update()
+                    post.emit 'color', 'fill', 'color', @tools.fill.color
                     
-                    @kali.tools.stroke.color = item.style('stroke')
-                    @kali.tools.stroke.alpha = item.style('stroke-opacity')
-                    @kali.tools.stroke.update()
-                    post.emit 'color', 'stroke', 'color', @kali.tools.stroke.color
+                    @tools.stroke.color = item.style('stroke')
+                    @tools.stroke.alpha = item.style('stroke-opacity')
+                    @tools.stroke.update()
+                    post.emit 'color', 'stroke', 'color', @tools.stroke.color
                     
-                    @kali.tools.width.setWidth item.style('stroke-width')
+                    @tools.width.setWidth item.style('stroke-width')
                 
-            # 000       0000000   000   000  00000000   00000000  
-            # 000      000   000  000   000  000   000  000       
-            # 000      000   000  000   000  00000000   0000000   
-            # 000      000   000  000   000  000        000       
-            # 0000000   0000000    0000000   000        00000000  
-            
             when 'loupe' 
                 
                 @selection.loupe = @selection.addRect 'loupeRect'
                 
             when 'pan' then
             else
-                #  0000000  000   000   0000000   00000000   00000000  
-                # 000       000   000  000   000  000   000  000       
-                # 0000000   000000000  000000000  00000000   0000000   
-                #      000  000   000  000   000  000        000       
-                # 0000000   000   000  000   000  000        00000000  
-                
                 @selection.clear()
   
-                # log "shape start #{@drawing?} #{@handler?}"
-                
-                if @drawing? and @handler?.handleDown event
-                    if not @handler.continuePicking()
+                if @drawing? and @draw?.handleDown event
+                    if not @draw.continuePicking()
                         @endDrawing()
                     return
                     
                 @drawing = @addShape shape, stagePos
                 
-                if @handler?
-                    @handler.startDrawing @drawing, shape
+                if @draw?
+                    @draw.startDrawing @drawing, shape
                 else
                     @trans.pos @drawing, stagePos
 
@@ -259,9 +206,9 @@ class Shapes
         shape = @autoSwitch event
         
         eventPos = pos event
-        stagePos = @kali.stage.stageForEvent eventPos
+        stagePos = @stage.stageForEvent eventPos
         
-        if @handler?.handleDrag event
+        if @draw?.handleDrag event
             return
         
         switch shape
@@ -276,7 +223,7 @@ class Shapes
                 
                 r = x:drag.startPos.x, y:drag.startPos.y, x2:drag.pos.x, y2:drag.pos.y                
                 @selection.setRect @selection.loupe, r
-                @kali.stage.setCursor 'zoom-in'
+                @stage.setCursor 'zoom-in'
                 
             when 'pick'
                 
@@ -291,9 +238,9 @@ class Shapes
                 @edit.stageDrag drag, event
                 
             else
-                z  = @kali.stage.zoom
-                p1 = @kali.stage.stageForEvent drag.startPos
-                p2 = @kali.stage.stageForEvent drag.pos
+                z  = @stage.zoom
+                p1 = @stage.stageForEvent drag.startPos
+                p2 = @stage.stageForEvent drag.pos
                 @trans.setRect @drawing, x:p1.x, y:p1.y, x2:p2.x, y2:p2.y
                                             
     #  0000000  000000000   0000000   00000000   
@@ -305,7 +252,7 @@ class Shapes
     onStop: (drag, event) =>
         
         eventPos = pos event
-        stagePos = @kali.stage.stageForEvent eventPos
+        stagePos = @stage.stageForEvent eventPos
         
         if @selection.rect?
             @selection.endRect eventPos
@@ -325,13 +272,13 @@ class Shapes
                 @selection.loupe.remove()
                 delete @selection.loupe
                 @stage.loupe drag.startPos, drag.pos
-                @stage.setCursor @kali.tools.ctrlDown and 'zoom-out' or 'zoom-in'
+                @stage.setCursor @tools.ctrlDown and 'zoom-out' or 'zoom-in'
 
         if @drawing
 
             if drag.startPos == drag.lastPos
                 
-                if @handler?.handlePick stagePos
+                if @draw?.handlePick stagePos
                     return
 
                 switch shape
@@ -343,7 +290,7 @@ class Shapes
                         @drawing.size 100, 100
                         @trans.center @drawing, stagePos
                 
-            if not @handler? or @handler.handleStop event
+            if not @draw? or @draw.handleStop event
                 log 'endDrawing'
                 @endDrawing()
 
@@ -368,10 +315,10 @@ class Shapes
                     @edit.addItem @drawing
                 else
                     @stopEdit()
-                    @stage.selection.setItems [@drawing]
+                    @selection.setItems [@drawing]
                 
-            @handler?.endDrawing()
-            @handler = null
+            @draw?.endDrawing()
+            delete @draw
             delete @drawing
 
     editItems: (items) ->

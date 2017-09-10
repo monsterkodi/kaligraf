@@ -158,11 +158,11 @@ class Resizer
         addBorder 0, '100%', '100%', 6, 'ns-resize', 'bot'
 
         
-        addCorner = (x, y, cursor, id) =>
+        addCorner = (x, y, cursor, id, path) =>
             group  = @gg.nested() 
             group.attr x:x, y:y
-            # corner = @gg.circle(10).addClass 'resizerCorner'
-            corner = group.rect(20,20).addClass 'resizerCorner'
+            # corner = group.rect(20,20).addClass 'resizerCorner'
+            corner = group.path(path).addClass 'resizerCorner'
             corner.attr x:-10, y:-10
             corner.style cursor:cursor
             @cornerDrag[id] = new drag
@@ -171,10 +171,10 @@ class Resizer
                 onMove:  @onCornerMove
             @cornerDrag[id].id = id
             
-        addCorner 0,           0, 'nw-resize', 'top left'
-        addCorner '100%',      0, 'ne-resize', 'top right'
-        addCorner 0,      '100%', 'sw-resize', 'bot left'
-        addCorner '100%', '100%', 'se-resize', 'bot right'
+        addCorner '100%',      0, 'ne-resize', 'top right', 'M10,-10L10,10L0,10L0,0L-10,0L-10,-10Z'
+        addCorner 0,      '100%', 'sw-resize', 'bot left',  'M-10,10L-10,-10L0,-10L0,0L10,0L10,10Z'
+        addCorner 0,           0, 'nw-resize', 'top left',  'M-10,-10L-10,10L0,10L0,0L10,0L10,-10Z'
+        addCorner '100%', '100%', 'se-resize', 'bot right', 'M10,10L10,-10L0,-10L0,0L-10,0L-10,10Z'
 
         
         addRot = (x, y, r, id) =>

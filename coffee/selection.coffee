@@ -200,7 +200,26 @@ class Selection
         x:r.x-x, x2:r.x2-x, y:r.y-y, y2:r.y2-y
 
     viewPos: -> r = @element.getBoundingClientRect(); pos r.left, r.top
-            
+    
+    # 0000000    00000000    0000000    0000000     
+    # 000   000  000   000  000   000  000          
+    # 000   000  0000000    000000000  000  0000    
+    # 000   000  000   000  000   000  000   000    
+    # 0000000    000   000  000   000   0000000     
+
+    stageStart: (drag, event) ->
+        
+        eventPos = pos event
+        
+        if item = @stage.itemAtPos eventPos
+            if not @contains item
+                @pos = eventPos
+                @addItem item, join:event.shiftKey
+            else # if not switched
+                if event.shiftKey then @delItem item
+        else
+            @startRect eventPos, join:event.shiftKey
+    
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
     # 000000000  000   000   000 000   0000000   

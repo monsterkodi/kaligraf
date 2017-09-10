@@ -161,7 +161,6 @@ class Resizer
         addCorner = (x, y, cursor, id, path) =>
             group  = @gg.nested() 
             group.attr x:x, y:y
-            # corner = group.rect(20,20).addClass 'resizerCorner'
             corner = group.path(path).addClass 'resizerCorner'
             corner.attr x:-10, y:-10
             corner.style cursor:cursor
@@ -199,7 +198,6 @@ class Resizer
         addRot  '50%',      0, 10, 'top'
         addRot  '50%', '100%', 10, 'bot'        
         
-                            
         @drag = new drag
             target:  @rect.node
             onStart: @onDragStart
@@ -328,9 +326,6 @@ class Resizer
 
         @updateBox()
 
-        if @selection.pos
-            @drag.start @selection.pos
-
     delItem: (items, item) -> @calcBox()
 
     # 0000000     0000000   000   000
@@ -391,17 +386,6 @@ class Resizer
     # 000   000  00000000     000
 
     handleKey: (mod, key, combo, char, event, down) ->
-
-        # if not @empty() and down
-            # switch combo
-                # when 'left', 'right', 'up', 'down'
-                    # p = pos 0,0
-                    # switch key
-                        # when 'left'  then p.x = -1
-                        # when 'right' then p.x =  1
-                        # when 'up'    then p.y = -1
-                        # when 'down'  then p.y =  1
-                    # return @moveBy p
 
         'unhandled'
 

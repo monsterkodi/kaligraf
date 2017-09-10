@@ -114,6 +114,7 @@ class Object
         
         point = @pointAt index
         
+        if _.isString types then types = [types]
         for type in types
             switch type
                 when 'point'
@@ -139,6 +140,11 @@ class Object
                 when 'ctrl2'
                     point[3] = itemPos.x
                     point[4] = itemPos.y
+                    
+                when 'ctrlr'
+                    ppos = @dotPos index
+                    refl = ppos.minus ppos.to viewPos
+                    @movePoint index, refl, 'ctrl1'
                     
         @updateCtrlDots index, point
          
@@ -189,16 +195,15 @@ class Object
         for ctrl in @ctrls
             ctrl.moveBy delta
 
-    # 00000000   000       0000000   000000000
-    # 000   000  000      000   000     000
-    # 00000000   000      000   000     000
-    # 000        000      000   000     000
-    # 000        0000000   0000000      000
-
     plot: -> @item.plot @item.array()
 
-    getPos: (index, type='point') -> @ctrls[index]?.getPos type
-
+    dotPos: (index, dot='point') ->
+        
+        if d = @ctrls[index]?.dots[dot]
+            pos d.cx(), d.cy()
+        else
+            log "no dot #{dot} at index #{index}?"
+    
     points: -> @item.array().valueOf()
     pointAt: (i) -> @points()[i]
 

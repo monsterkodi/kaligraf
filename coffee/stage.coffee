@@ -34,7 +34,7 @@ class Stage
         @resizer   = new Resizer   @kali
         @shapes    = new Shapes    @kali
 
-        @kali.element.addEventListener 'wheel',     @onWheel
+        @kali.element.addEventListener 'wheel', @onWheel
         @element.addEventListener 'mousemove', @onMouseMove
 
         post.on 'stage', @onStage
@@ -478,7 +478,7 @@ class Stage
         if @kali.shapeTool() == 'loupe'
             @setCursor @kali.tools.ctrlDown and 'zoom-out' or 'zoom-in'
 
-        @shapes.handler?.handleMove event #, @stageForEvent pos event
+        @shapes.handler?.handleMove event
 
     # 000   000  00000000  000   000
     # 000  000   000        000 000

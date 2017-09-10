@@ -70,7 +70,7 @@ class Ctrl
         if type in ['ctrl1', 'ctrl2', 'ctrlr', 'ctrlq']
             @createLine type
         if type == 'ctrlq'
-            @createLine 'qtrlQ'
+            @createLine 'ctrlq2'
 
         @drags.push new drag
             target:  dot.node
@@ -119,8 +119,8 @@ class Ctrl
             @plotLine type, dotPos, pointPos
             
             if type == 'ctrlq'
-                point = @object.points()[@index()-1]
-                @plotLine point, pointPos
+                point2 = @object.dotPos @index()-1
+                @plotLine 'ctrlq2', dotPos, point2
         
     # 000      000  000   000  00000000
     # 000      000  0000  000  000
@@ -159,8 +159,24 @@ class Ctrl
     onStop:  (drag, event) =>
     onMove:  (drag, event) =>
 
+        index = @index()
         viewPos = @stage.viewForEvent pos event
-        @object.movePoint @index(), viewPos, [drag.type]
+        types = [drag.type]
+
+        @object.movePoint index, viewPos, types
+        
+        if @object.isPath() and drag.type == 'point' and not event.shiftKey
+            
+            moveDelta = (ctrl) =>
+                dotPos = @object.dotPos index, ctrl
+                newPos = dotPos.plus drag.delta
+                @object.movePoint index, newPos, [ctrl]
+            
+            code = @pointType()
+            if code in ['S', 'C'] then moveDelta 'ctrl1'
+            if code == 'C'        then moveDelta 'ctrl2'
+            else if code == 'Q'   then moveDelta 'ctrlq'
+        
         @object.plot()
 
     moveBy: (delta) -> 
@@ -180,7 +196,7 @@ class Ctrl
     # 000         0000000   000  000   000     000
 
     index:     -> @object.ctrls.indexOf @
-    itemPoint: -> @object.item.array().valueOf()[@index()]
+    itemPoint: -> @object.points()[@index()]
     pointType: ->
         if @object.isPoly()
             'P'

@@ -33,9 +33,10 @@ class Draw
                 @edit.addItem @drawing
                 
         switch @shape
-            when 'line', 'polyline', 'polygon'
+            when 'line', 'polyline', 'polygon', 'bezier', 'bezier_quad'
                 @picking = true
             else
+                log 'startDrawing delete @picking'
                 delete @picking
 
     # 0000000     0000000   000   000  000   000  
@@ -65,10 +66,11 @@ class Draw
     # 000   000   0000000       0      00000000  
     
     handleMove: (event) ->
-                
+             
+        # log 'handleMove', @drawing?, @picking
         if @drawing? and @picking
 
-            @movePoint @stage.viewForEvent pos event
+            @movePoint @stage.viewForEvent(pos event), 'move'
             
         true
 
@@ -90,13 +92,13 @@ class Draw
             
             when 'polygon', 'polyline'  
                 
-                dist = viewPos.dist @pointPosAt @drawing.array().valueOf().length-2
+                dist = viewPos.dist @dotPos @drawing.array().valueOf().length-2
                 if dist < 10
-                    @movePoint viewPos
+                    @movePoint viewPos, 'drag'
                 else
                     @addPoint  viewPos
             else
-                @movePoint viewPos
+                @movePoint viewPos, 'drag'
             
         true
 
@@ -109,7 +111,7 @@ class Draw
     handlePick: () ->
         
         switch @shape
-            when 'pie', 'arc'          then delete @picking
+            when 'pie', 'arc'            then delete @picking
             when 'bezier', 'bezier_quad' then @picking = true
             when 'line'                  then @picking = true
             else         
@@ -125,8 +127,10 @@ class Draw
     
     handleStop: (event) -> 
         
-        return true if @shape == 'line'
-        not (@drawing? and @picking)
+        return true  if not @drawing?
+        return true  if @shape == 'line'
+        return false if @shape in ['bezier', 'bezier_quad']
+        return not @picking
             
     # 00000000   0000000   0000000   0000000   00000000   00000000  
     # 000       000       000       000   000  000   000  000       
@@ -145,7 +149,7 @@ class Draw
         
         switch @shape 
             when 'bezier', 'bezier_quad'
-                @movePoint @pointPosAt 0
+                @movePoint @dotPos 0
             else 
                 object.delPoint object.ctrls.length-1
 
@@ -156,7 +160,7 @@ class Draw
     # 00000000  000   000  0000000    
     
     endDrawing: ->
-        
+        log 'endDrawing'
         @edit?.del()
         delete @edit
         delete @drawing
@@ -178,18 +182,20 @@ class Draw
         object.addPoint object.ctrls.length, viewPos, types
         object.plot()
 
-    movePoint: (viewPos) ->
-        
+    movePoint: (viewPos, action) ->
+        # log "movePoint #{action}"
         object  = @edit.objectForItem @drawing
         types   = ['point']
+        if action == 'drag'
+            switch @shape
+                when 'bezier'      then types.push 'ctrl1'
+                when 'bezier_quad' then types.push 'ctrlq'
         object.movePoint object.ctrls.length-1, viewPos, types
         object.plot()
        
-    pointPosAt: (index) ->
+    dotPos: (index, dot='point') ->
         
-        if pointDot = @edit.objectForItem(@drawing).ctrls[index]?.dots.point
-            pos pointDot.cx(), pointDot.cy()
-        else
-            log "no point dot at index #{index}?"
+        object = @edit.objectForItem(@drawing)
+        object.dotPos index, dot       
         
 module.exports = Draw

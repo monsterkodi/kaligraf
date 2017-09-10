@@ -7,8 +7,6 @@
 
 { post, drag, last, resolve, pos, log, _ } = require 'kxk'
 
-{ boxCenter } = require './utils'
-
 Draw = require './draw'
 Edit = require './edit'
 
@@ -352,8 +350,8 @@ class Shapes
                         @trans.center @drawing, stagePos
                 
             if not @handler? or @handler.handleStop event
-                
-                @endDrawing drag, event, stagePos
+                log 'endDrawing'
+                @endDrawing()
 
     # 00000000  000   000  0000000        0000000    00000000    0000000   000   000  
     # 000       0000  000  000   000      000   000  000   000  000   000  000 0 000  

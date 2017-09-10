@@ -14,7 +14,7 @@ class Tools extends Tool
     constructor: (@kali, cfg) ->
                 
         super @kali, cfg
-        
+                
         @element.style.zIndex = 9999
         
         @tools    = []
@@ -66,7 +66,9 @@ class Tools extends Tool
     
     init: () ->
 
-        @stage = @kali.stage
+        @stage     = @kali.stage
+        @selection = @stage.selection
+        @shapes    = @stage.shapes
         
         tools = [
             [
@@ -221,7 +223,7 @@ class Tools extends Tool
             @stage.setCursor @ctrlDown and 'zoom-out' or 'zoom-in'
             
         'unhandled'
-                
+
     #  0000000    0000000  000000000  000  000   000   0000000   000000000  00000000  
     # 000   000  000          000     000  000   000  000   000     000     000       
     # 000000000  000          000     000   000 000   000000000     000     0000000   
@@ -240,11 +242,13 @@ class Tools extends Tool
         
         switch name
             when 'edit'
-                if not @stage.selection.empty() 
-                    @stage.swapSelection()
+                if not @selection.empty() 
+                    @shapes.editItems @selection.items
+                    @selection.clear()
             when 'pick' 
-                if @stage.shapes.edit? and not @stage.shapes.edit.empty()
-                    @stage.swapSelection()
+                if @shapes.edit? and not @shapes.edit.empty()
+                    @selection.setItems @shapes.edit?.items()
+                    @shapes.stopEdit()
         
         cursor = switch name
             when 'pan'      then '-webkit-grab'

@@ -85,17 +85,7 @@ class Stage
             @shapes.edit.items()
         else
             []
-            
-    swapSelection: ->
-        
-        switch @kali.shapeTool()
-            when 'edit'
-                @shapes.editItems @selection.items
-                @selection.clear()
-            when 'pick'
-                @selection.setItems @shapes.edit?.items()
-                @shapes.stopEdit()
-            
+                        
     moveItems: (items, delta) ->
 
         for item in items

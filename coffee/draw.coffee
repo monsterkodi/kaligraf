@@ -187,15 +187,15 @@ class Draw
         object.plot()
 
     movePoint: (viewPos, action) ->
-        # log "movePoint #{action}"
-        object  = @edit.objectForItem @drawing
-        types   = ['point']
+
+        object = @edit.objectForItem @drawing
+        dots   = ['point']
         if action == 'drag'
             switch @shape
-                when 'bezier'      then types.push 'ctrls'
-                when 'bezier_quad' then types.push 'ctrlq'
-                when 'bezier_cube' then types.push 'ctrl1'; types.push 'ctrl2'
-        object.movePoint object.ctrls.length-1, viewPos, types
+                when 'bezier'      then dots.push 'ctrls'
+                when 'bezier_quad' then dots.push 'ctrlq'
+                when 'bezier_cube' then dots.push 'ctrl1'; dots.push 'ctrl2'
+        object.movePoint object.ctrls.length-1, viewPos, dots
         object.plot()
        
     dotPos: (index, dot='point') ->

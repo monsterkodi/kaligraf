@@ -115,17 +115,15 @@ class Object
     # 000 0 000  000   000     000     000       000        000   000  000  000  0000     000     
     # 000   000   0000000       0      00000000  000         0000000   000  000   000     000     
     
-    movePoint: (index, viewPos, types=['point']) ->
+    movePoint: (index, viewPos, dots=['point']) ->
         
         itemPos = @trans.inverse @item, @stage.stageForView viewPos
         
         point = @pointAt index
         
-        # log "movePoint #{index} #{point[0]}"
-        
-        if _.isString types then types = [types]
-        for type in types
-            switch type
+        if _.isString dots then dots = [dots]
+        for dot in dots
+            switch dot
                 when 'point'
                     switch point[0]
                         when 'S', 'Q', 'C', 'M', 'L'

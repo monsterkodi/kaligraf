@@ -29,10 +29,46 @@ class Edit
 
         @dotSize = @passive and 5 or 10
         @objects = []
+        
+        @selectedDots = []
 
         post.on 'ctrl',  @onCtrl
         post.on 'stage', @onStage
 
+    #  0000000  00000000  000      00000000   0000000  000000000  
+    # 000       000       000      000       000          000     
+    # 0000000   0000000   000      0000000   000          000     
+    #      000  000       000      000       000          000     
+    # 0000000   00000000  0000000  00000000   0000000     000     
+    
+    selectDot: (dot, keep) ->
+        
+        if not keep
+            for selected in @selectedDots
+                selected.ctrl.setSelected selected.dot, false
+            @selectedDots = []
+                
+        dot.ctrl.setSelected dot.dot, true
+        if dot not in @selectedDots
+            @selectedDots.push dot
+
+    deselectDot: (dot) ->
+        
+        if dot in @selectedDots
+            dot.ctrl.setSelected dot.dot, false
+            _.pull @selectedDots, dot
+        
+    moveDotsBy: (delta) ->
+        
+        for selected in @selectedDots
+            ctrl   = selected.ctrl
+            index  = ctrl.index()
+            object = ctrl.object
+            oldPos = object.dotPos index, selected.dot
+            newPos = oldPos.plus delta
+            object.movePoint index, newPos, selected.dot
+            object.plot()
+        
     # 0000000    00000000  000
     # 000   000  000       000
     # 000   000  0000000   000
@@ -57,6 +93,8 @@ class Edit
 
     clear: ->
 
+        @selectedDots = []
+        
         while @objects.length
             @delObject last @objects
 
@@ -136,11 +174,11 @@ class Edit
     # 000   000  000  0000        000          000     000   000  000      
     #  0000000   000   000         0000000     000     000   000  0000000  
 
-    onCtrl: (item, action, type, index, p) =>
+    onCtrl: (item, action, dot, index, p) =>
 
         if object = @objectForItem item
         
-            object.editCtrl action, type, index, p
+            object.editCtrl action, dot, index, p
 
     # 00     00   0000000   000   000  00000000
     # 000   000  000   000  000   000  000
@@ -150,9 +188,12 @@ class Edit
 
     moveBy: (delta) ->
 
-        @stage.moveItems @items(), delta
-        for object in @objects
-            object.moveCtrlsBy delta
+        if @selectedDots.length
+            @moveDotsBy delta
+        else
+            @stage.moveItems @items(), delta
+            for object in @objects
+                object.moveCtrlsBy delta
             
     # 00000000   00000000   0000000  000000000
     # 000   000  000       000          000

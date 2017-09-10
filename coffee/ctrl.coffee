@@ -52,35 +52,37 @@ class Ctrl
     # 000       000   000  000       000   000     000     000       
     #  0000000  000   000  00000000  000   000     000     00000000  
     
-    createDot: (type) ->
+    createDot: (dot) ->
 
         if @object.isPoly()
             s = @edit.dotSize/2
-            dot = @edit.svg.polygon [[0,s], [s,0], [0,-s], [-s,0]]
-        else if @pointType() in ['L', 'M']
-            dot = @edit.svg.rect @edit.dotSize, @edit.dotSize 
+            svg = @edit.svg.polygon [[0,s], [s,0], [0,-s], [-s,0]]
+        else if @pointCode() in ['L', 'M']
+            svg = @edit.svg.rect @edit.dotSize, @edit.dotSize 
         else
-            dot = @edit.svg.circle @edit.dotSize 
-        dot.addClass 'editDot'
-        dot.addClass "#{type}Dot"
-        dot.style cursor: 'pointer'
+            svg = @edit.svg.circle @edit.dotSize 
+        svg.addClass 'editDot'
+        svg.addClass "#{dot}Dot"
+        svg.style cursor: 'pointer'
+        svg.ctrl = @
+        svg.dot  = dot
 
-        @dots[type] = dot
+        @dots[dot] = svg
 
-        if type in ['ctrl1', 'ctrl2', 'ctrlq', 'ctrlr', 'ctrls']
-            @createLine type
-        if type == 'ctrlq'
+        if dot in ['ctrl1', 'ctrl2', 'ctrlq', 'ctrlr', 'ctrls']
+            @createLine dot
+        if dot == 'ctrlq'
             @createLine 'ctrlq2'
 
         @drags.push new drag
-            target:  dot.node
+            target:  svg.node
             onStart: @onStart
             onMove:  @onMove
             onStop:  @onStop
 
-        last(@drags).type = type
+        last(@drags).dot = dot
 
-        dot
+        svg
 
     # 000   000  00000000   0000000     0000000   000000000  00000000  
     # 000   000  000   000  000   000  000   000     000     000       
@@ -88,15 +90,15 @@ class Ctrl
     # 000   000  000        000   000  000   000     000     000       
     #  0000000   000        0000000    000   000     000     00000000  
     
-    updateDot: (type, point) ->
+    updateDot: (dot, point) ->
         
-        dot = @dots[type]
+        svg = @dots[dot]
         
-        if not dot?
-            log 'updateDot no dot?', type
+        if not svg?
+            log 'updateDot no svg?', dot
             return
         
-        itemPos = switch type
+        itemPos = switch dot
             when 'ctrl1', 'ctrlq', 'ctrls' then pos point[1], point[2]
             when 'ctrl2'                   then pos point[3], point[4]
             when 'ctrlr'          
@@ -111,18 +113,18 @@ class Ctrl
         
         dotPos = @stage.viewForStage @trans.transform @object.item, itemPos
         
-        dot.cx dotPos.x
-        dot.cy dotPos.y
+        svg.cx dotPos.x
+        svg.cy dotPos.y
 
         pointPos = @stage.viewForStage @trans.transform @object.item, pos point[point.length-2], point[point.length-1]
         
-        if type in ['ctrl2', 'ctrls', 'ctrlr', 'ctrlq']
-            @plotLine type, dotPos, pointPos
+        if dot in ['ctrl2', 'ctrls', 'ctrlr', 'ctrlq']
+            @plotLine dot, dotPos, pointPos
             
-        if type == 'ctrl1'
+        if dot == 'ctrl1'
             prevPoint = @object.dotPos @index()-1
             @plotLine 'ctrl1', dotPos, prevPoint
-        else if type == 'ctrlq'
+        else if dot == 'ctrlq'
             prevPoint = @object.dotPos @index()-1
             @plotLine 'ctrlq2', dotPos, prevPoint
         
@@ -132,51 +134,93 @@ class Ctrl
     # 000      000  000  0000  000
     # 0000000  000  000   000  00000000
 
-    createLine: (type) ->
+    createLine: (dot) ->
 
         line = @edit.svg.line()
         line.addClass "editLine"
-        line.addClass "#{type}Line"
+        line.addClass "#{dot}Line"
         line.back()
 
-        @lines[type] = line
+        @lines[dot] = line
         
         line = @edit.svg.line()
         line.addClass "editLine"
-        line.addClass "#{type}_Line"
+        line.addClass "#{dot}_Line"
         line.back()
         
-        @lines["#{type}_"] = line
+        @lines["#{dot}_"] = line
         
-    plotLine: (type, pos1, pos2) ->
+    plotLine: (dot, pos1, pos2) ->
         
-        @lines[type    ]?.plot [[pos1.x, pos1.y], [pos2.x, pos2.y]]
-        @lines[type+'_']?.plot [[pos1.x, pos1.y], [pos2.x, pos2.y]]
+        @lines[dot    ]?.plot [[pos1.x, pos1.y], [pos2.x, pos2.y]]
+        @lines[dot+'_']?.plot [[pos1.x, pos1.y], [pos2.x, pos2.y]]
+
+    #  0000000  00000000  000      00000000   0000000  000000000  00000000  0000000    
+    # 000       000       000      000       000          000     000       000   000  
+    # 0000000   0000000   000      0000000   000          000     0000000   000   000  
+    #      000  000       000      000       000          000     000       000   000  
+    # 0000000   00000000  0000000  00000000   0000000     000     00000000  0000000    
+    
+    setSelected: (dot, selected) ->
         
+        if selected
+            @dots[dot].addClass 'selected'
+        else
+            @dots[dot].removeClass 'selected'
+            
+    isSelected: (dot) -> @dots[dot].hasClass 'selected'
+        
+    #  0000000  000000000   0000000   00000000   000000000  
+    # 000          000     000   000  000   000     000     
+    # 0000000      000     000000000  0000000       000     
+    #      000     000     000   000  000   000     000     
+    # 0000000      000     000   000  000   000     000     
+    
+    onStart: (drag, event) =>
+
+        @wasSelected = @isSelected drag.dot
+        @object.edit.selectDot @dots[drag.dot], true
+                
+    #  0000000  000000000   0000000   00000000   
+    # 000          000     000   000  000   000  
+    # 0000000      000     000   000  00000000   
+    #      000     000     000   000  000        
+    # 0000000      000      0000000   000        
+    
+    onStop: (drag, event) =>
+        
+        if drag.startPos == drag.lastPos
+            if @wasSelected and event.shiftKey
+                @object.edit.deselectDot @dots[drag.dot]
+            else
+                @object.edit.selectDot @dots[drag.dot], event.shiftKey
+        delete @wasSelected
+
     # 00     00   0000000   000   000  00000000
     # 000   000  000   000  000   000  000
     # 000000000  000   000   000 000   0000000
     # 000 0 000  000   000     000     000
     # 000   000   0000000       0      00000000
 
-    onStart: (drag, event) =>
-    onStop:  (drag, event) =>
-    onMove:  (drag, event) =>
+    onMove: (drag, event) =>
 
-        index = @index()
-        viewPos = @stage.viewForEvent pos event
-        types = [drag.type]
-
-        @object.movePoint index, viewPos, types
+        if @object.edit.selectedDots.length > 1
+            @object.edit.moveDotsBy drag.delta
+            return
         
-        if @object.isPath() and drag.type == 'point' and not event.shiftKey
+        index   = @index()
+        viewPos = @stage.viewForEvent pos event
+
+        @object.movePoint index, viewPos, drag.dot
+        
+        if @object.isPath() and drag.dot == 'point' and not event.shiftKey
             
             moveDelta = (ctrl) =>
                 dotPos = @object.dotPos index, ctrl
                 newPos = dotPos.plus drag.delta
-                @object.movePoint index, newPos, [ctrl]
+                @object.movePoint index, newPos, ctrl
             
-            switch @pointType()
+            switch @pointCode()
                 when 'S' then moveDelta 'ctrls'
                 when 'Q' then moveDelta 'ctrlq'
                 when 'C' then moveDelta 'ctrl1'; moveDelta 'ctrl2'
@@ -201,7 +245,7 @@ class Ctrl
 
     index:     -> @object.ctrls.indexOf @
     itemPoint: -> @object.points()[@index()]
-    pointType: ->
+    pointCode: ->
         if @object.isPoly()
             'P'
         else

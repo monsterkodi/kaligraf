@@ -5,7 +5,7 @@
 #    000     000   000  000   000  000           000
 #    000      0000000    0000000   0000000  0000000 
 
-{ elem, stopEvent, fileExists, post, first, last, fs, path, log, _ } = require 'kxk'
+{ elem, stopEvent, fileExists, post, first, last, empty, fs, path, log, _ } = require 'kxk'
 
 Tool = require './tool'
 
@@ -50,8 +50,8 @@ class Tools extends Tool
         @activateTool 'rect'
         @activateTool 'text'
         @activateTool 'pick'
-        @activateTool 'edit'
         @activateTool 'bezier'
+        @activateTool 'edit'
         
         post.emit 'stage', 'setColor', '#666'
         post.emit 'tool', 'load'
@@ -236,7 +236,12 @@ class Tools extends Tool
         tool.activate()
         
         switch name
-            when 'edit', 'pick' then @stage.swapSelection()
+            when 'edit'
+                if not @stage.selection.empty() 
+                    @stage.swapSelection()
+            when 'pick' 
+                if @stage.shapes.edit? and not @stage.shapes.edit.empty()
+                    @stage.swapSelection()
         
         cursor = switch name
             when 'pan'      then '-webkit-grab'

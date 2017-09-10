@@ -241,6 +241,7 @@ class Stage
         svg = @getSVG items, bb
         clipboard.writeText svg
 
+        delete @selection.pos
         for item in selected
             @selection.addItem item
 
@@ -496,6 +497,8 @@ class Stage
                 when 'command+0' then return @resetView()
                 when 'enter', 'return', 'esc'
                     if combo == 'esc'
+                        if @shapes.edit?
+                            @shapes.edit.deselectDots()
                         @shapes.handler?.handleEscape?()
                     return @shapes.endDrawing()
 

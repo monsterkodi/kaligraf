@@ -61,8 +61,10 @@ class Selection
         
         post.emit 'selection', 'set', @items
     
-    addItem: (item) ->
+    addItem: (item, o = join:true) ->
         
+        if not o.join then @clear()
+            
         if item not in @items
             
             @items.push item
@@ -137,7 +139,7 @@ class Selection
     # 000   000  00000000   0000000     000       
       
     startRect: (p,o) -> 
-        
+        if not o.join then @clear()
         @rect = x:p.x, y:p.y, x2:p.x, y2:p.y 
         @pos = rectOffset @rect
         @updateRect o

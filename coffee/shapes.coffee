@@ -159,13 +159,12 @@ class Shapes
         doSel = (sel) ->
             if item?
                 if not sel.contains item
-                    if not event.shiftKey then sel.clear()
+                    # if not event.shiftKey then sel.clear()
                     sel.pos = eventPos
-                    sel.addItem item
+                    sel.addItem item, join:event.shiftKey
                 else if not switched
                     if event.shiftKey then sel.delItem item
             else
-                if not event.shiftKey then sel.clear()
                 sel.startRect eventPos, join:event.shiftKey
         
         switch shape

@@ -207,7 +207,15 @@ class Object
 
     plot: -> @item.plot @item.array()
 
+    dots: -> 
+        dots = []
+        for ctrl in @ctrls 
+            dots = dots.concat _.values ctrl.dots
+        dots
+        
     dotPos: (index, dot='point') ->
+        
+        index = @numPoints() + index if index < 0
         
         if d = @ctrls[index]?.dots[dot]
             pos d.cx(), d.cy()

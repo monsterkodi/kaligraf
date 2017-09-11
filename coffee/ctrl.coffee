@@ -232,7 +232,7 @@ class Ctrl
     onDrag: (drag, event) =>
 
         if not @object.edit.dotsel.empty()
-            @object.edit.dotsel.moveBy drag.delta
+            @object.edit.dotsel.moveBy drag.delta, event
         
     moveBy: (delta) ->
 
@@ -252,10 +252,6 @@ class Ctrl
 
     index:     -> @object.ctrls.indexOf @
     itemPoint: -> @object.points()[@index()]
-    pointCode: ->
-        if @object.isPoly()
-            'P'
-        else
-            @itemPoint()[0]
+    pointCode: -> @object.pointCode @index()
 
 module.exports = Ctrl

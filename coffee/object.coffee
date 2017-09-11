@@ -47,7 +47,7 @@ class Object
 
         @item = item
         
-        points = @item.array().valueOf()
+        points = @points()
 
         for i in [0...points.length]
             
@@ -82,17 +82,50 @@ class Object
                 
     updatePos: ->
 
-        points = @item.array().valueOf()
+        points = @points()
 
         for i in [0...points.length]
             
             @updateCtrlDots i, points[i]
                 
+    # 00     00   0000000   000   000  00000000  0000000     0000000   000000000   0000000  
+    # 000   000  000   000  000   000  000       000   000  000   000     000     000       
+    # 000000000  000   000   000 000   0000000   000   000  000   000     000     0000000   
+    # 000 0 000  000   000     000     000       000   000  000   000     000          000  
+    # 000   000   0000000       0      00000000  0000000     0000000      000     0000000   
+    
+    moveDotsBy: (dots, delta, event) ->
+
+        indexDots = @indexDots dots
+        
+        if not event? or not event.ctrlKey
+            
+            for idots in indexDots
+                
+                has = (type) -> not empty idots.dots.filter (dot) -> dot.dot == type
+                add = (type) => dot = @ctrls[idots.index].dots[type]; idots.dots.push dot if dot not in idots.dots 
+                    
+                if has 'point'
+                    switch @pointCode idots.index
+                        when 'S' then add 'ctrls'
+                        when 'Q' then add 'ctrlq'
+                        when 'C' then add 'ctrl2'
+        
+        for idots in indexDots
+            
+            for dot in idots.dots
+                oldPos = @dotPos idots.index, dot.dot
+                newPos = oldPos.plus delta
+                @movePoint idots.index, newPos, dot.dot
+            
+        @plot()
+                            
     # 00     00   0000000   000   000  00000000  00000000    0000000   000  000   000  000000000  
     # 000   000  000   000  000   000  000       000   000  000   000  000  0000  000     000     
     # 000000000  000   000   000 000   0000000   00000000   000   000  000  000 0 000     000     
     # 000 0 000  000   000     000     000       000        000   000  000  000  0000     000     
     # 000   000   0000000       0      00000000  000         0000000   000  000   000     000     
+
     
     movePoint: (index, viewPos, dots=['point']) ->
         
@@ -117,7 +150,6 @@ class Object
                                 point[1] = itemPos.y            
                                 @item.plot points
                             else
-                                # log 'movePoint', index, dot
                                 point[0] = itemPos.x
                                 point[1] = itemPos.y
                                 
@@ -199,10 +231,8 @@ class Object
     
     delDots: (dots) ->
         
-        for i in [@numPoints()-1..0]
-            idots = dots.filter (dot) -> dot.ctrl?.index() == i
-            if not empty idots
-                @delIndexDots i, idots
+        for indexDots in @indexDots dots
+            @delIndexDots indexDots.index, indexDots.dots
         
     delIndexDots: (index, dots) ->
         
@@ -259,6 +289,15 @@ class Object
         for ctrl in @ctrls 
             dots = dots.concat _.values ctrl.dots
         dots
+     
+    indexDots: (dots) ->
+        
+        indexDots = []
+        for index in [@numPoints()-1..0]
+            idots = dots.filter (dot) -> dot.ctrl?.index() == index
+            if not empty idots
+                indexDots.push index:index, dots:idots
+        indexDots
         
     dotPos: (index, dot='point') ->
         
@@ -271,8 +310,13 @@ class Object
     
     points: -> @item.array().valueOf()
     numPoints: -> @points().length
-    pointAt: (i) -> @points()[i]
-
+    pointAt: (index) -> @points()[index]
+    pointCode: (index) ->
+        if @isPoly()
+            'P'
+        else
+            @pointAt(index)[0]
+                
     isPoly: -> @item.type in ['polygon', 'polyline', 'line']
     isPath: -> not @isPoly()
 

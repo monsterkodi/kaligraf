@@ -152,16 +152,26 @@
 //    000     000   000  000   000  000      
 //    000      0000000    0000000   0000000  
 
+// .tool
+// .item
+    // color                   #888
+    // background              #f8f8f8
+    // &.active
+        // color               #f00
+    // &:hover
+        // color               #000
+        // background-color    #eee
+
 .tool
 .item
-    color                   #888
-    background              #f8f8f8
+    color                   #bbb
+    background              #222
     &.active
-        color               #f00
+        color               #fff
     &:hover
-        color               #000
-        background-color    #eee
-    
+        color               #ff0
+        background-color    #333
+        
 .tool    
     font-family             Helvetica, Arial
     font-weight             bold
@@ -169,13 +179,7 @@
     position                absolute
     width                   60px
     height                  60px    
-    // color                   #bbb
-    // background              #222
     cursor                  pointer
-    // &.active
-        // color               #fff
-    // &:hover
-        // color               #ff0
     &.down
             height          30px
             
@@ -237,7 +241,6 @@
     position                absolute
     left                    60px  
     top                     0
-    // color                   #bbb
     
 .menu
     float                   left
@@ -250,11 +253,6 @@
     padding-top             8px
     padding-left            10px
     padding-right           10px
-    // background-color        #222
     cursor                  pointer
     border-style            hidden
                 
-    // &:hover
-        // color               #ff0
-        // background-color    #333
-        

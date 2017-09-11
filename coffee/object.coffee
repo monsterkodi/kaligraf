@@ -99,17 +99,43 @@ class Object
         indexDots = @indexDots dots
         
         if not event? or not event.ctrlKey
-            
+            # log 'before:', indexDots.map (id) -> "index: #{id.index}" + (id.dots.map (d) -> d.dot).join(',')
             for idots in indexDots
                 
-                has = (type) -> not empty idots.dots.filter (dot) -> dot.dot == type
-                add = (type) => dot = @ctrls[idots.index].dots[type]; idots.dots.push dot if dot not in idots.dots 
+                add = (type, index) => 
+
+                    dot  = @ctrls[index].dots[type]
+                    idts = indexDots.find (i) -> i.index == index 
+                    if not idts?
+                        idts = index:index, dots:[]
+                        indexDots.push idts
+
+                    if dot not in idts.dots 
+                        idts.dots.push dot
+                        
+                if not empty idots.dots.filter((dot) -> dot.dot == 'point')
                     
-                if has 'point'
                     switch @pointCode idots.index
-                        when 'S' then add 'ctrls'
-                        when 'Q' then add 'ctrlq'
-                        when 'C' then add 'ctrl2'
+                        
+                        when 'S' then add 'ctrls', idots.index
+                        when 'Q' then add 'ctrlq', idots.index
+                        when 'C' then add 'ctrl2', idots.index
+
+                    if idots.index < @numPoints()-1
+                        nextIndex = idots.index+1
+                    else
+                        nextIndex = 1
+
+                    switch @pointCode nextIndex
+                        when 'Q' then add 'ctrlq', nextIndex
+                        when 'C' then add 'ctrl1', nextIndex
+                  
+            
+        for idots in indexDots
+            if idots.dots.length > 1
+                idots.dots = idots.dots.filter (dot) -> dot.dot != 'ctrlr' 
+            
+        # log 'after:', indexDots.map (id) -> "index: #{id.index}" + (id.dots.map (d) -> d.dot).join ','
         
         for idots in indexDots
             

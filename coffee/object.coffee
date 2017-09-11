@@ -220,10 +220,13 @@ class Object
                 point[0] = 'L'
                 point.splice 1, 4
             else if 'ctrlr' in dotNames
-                log 'handle ctrlr'
+                point[0] = 'L'
+                point.splice 1, 2
+            else
+                log '???', dotNames
         else
             switch dotNames[0]
-                when 'ctrlq', 'ctrls' 
+                when 'ctrlq', 'ctrls', 'ctrlr'
                     point[0] = 'L'
                     point.splice 1, 2
                 when 'ctrl1' 

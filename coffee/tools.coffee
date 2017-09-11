@@ -36,13 +36,12 @@ class Tools extends Tool
         
         @stroke.set 
             mode:  'gry'
-            value: 0.2
+            value: 0.7
             alpha: 0.9
             
         @fill.set 
             mode:  'gry'
-            value: 0.1
-            # luminance: 0.2
+            value: 0.9
             alpha: 0.5
             
         @width.setWidth 4

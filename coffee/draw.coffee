@@ -12,9 +12,11 @@ Edit = require './edit'
 class Draw
 
     constructor: (@kali) ->
-        
+
         @stage = @kali.stage
     
+    del: -> @endDrawing()
+        
     #  0000000  000000000   0000000   00000000   000000000  
     # 000          000     000   000  000   000     000     
     # 0000000      000     000000000  0000000       000     
@@ -34,7 +36,8 @@ class Draw
                 @edit.addItem @drawing
                 
         switch @shape
-            when 'line', 'polyline', 'polygon', 'bezier', 'bezier_quad', 'bezier_cube'
+            when 'line', 'polyline', 'polygon' then
+            when 'bezier', 'bezier_quad', 'bezier_cube' 
                 @picking = true
             else
                 log 'startDrawing delete @picking'
@@ -144,7 +147,7 @@ class Draw
         
         object = @edit.objectForItem @drawing
         
-        if object.points().length <= 2 
+        if object.points().length < 2 
             log 'delete?'
         
         switch @shape 
@@ -160,9 +163,10 @@ class Draw
     # 00000000  000   000  0000000    
     
     endDrawing: ->
-        # log 'endDrawing'
+    
         @edit?.del()
         delete @edit
+        
         delete @drawing
         delete @picking
 
@@ -189,6 +193,10 @@ class Draw
     movePoint: (viewPos, action) ->
 
         object = @edit.objectForItem @drawing
+        if not object?
+            log 'no object in edit?', @edit?, @drawing?
+            return
+        
         dots   = ['point']
         if action == 'drag'
             switch @shape

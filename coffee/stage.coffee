@@ -35,7 +35,7 @@ class Stage
         @shapes    = new Shapes    @kali
 
         @kali.element.addEventListener 'wheel', @onWheel
-        @element.addEventListener 'mousemove', @onMouseMove
+        @element.addEventListener 'mousemove', @onMove
 
         post.on 'stage', @onStage
         post.on 'color', @onColor
@@ -85,7 +85,20 @@ class Stage
             @shapes.edit.items()
         else
             []
-                        
+
+    # 00     00   0000000   000   000  00000000  
+    # 000   000  000   000  000   000  000       
+    # 000000000  000   000   000 000   0000000   
+    # 000 0 000  000   000     000     000       
+    # 000   000   0000000       0      00000000  
+    
+    onMove: (event) =>
+
+        if @kali.shapeTool() == 'loupe'
+            @setCursor @kali.tools.ctrlDown and 'zoom-out' or 'zoom-in'
+
+        @shapes.onMove event
+            
     moveItems: (items, delta) ->
 
         for item in items
@@ -477,13 +490,6 @@ class Stage
         post.emit 'stage', 'zoom',    @zoom
         box
 
-    onMouseMove: (event) =>
-
-        if @kali.shapeTool() == 'loupe'
-            @setCursor @kali.tools.ctrlDown and 'zoom-out' or 'zoom-in'
-
-        @shapes.handler?.handleMove event
-
     # 000   000  00000000  000   000
     # 000  000   000        000 000
     # 0000000    0000000     00000
@@ -499,10 +505,7 @@ class Stage
                 when 'command+=' then return @zoomIn()
                 when 'command+0' then return @resetView()
                 when 'enter', 'return', 'esc'
-                    if combo == 'esc'
-                        if @shapes.edit?
-                            @shapes.edit.dotsel.clear()
-                        @shapes.handler?.handleEscape?()
+                    if combo == 'esc' then @shapes.handleEscape()
                     return @shapes.endDrawing()
 
                 when 'left', 'right', 'up', 'down'

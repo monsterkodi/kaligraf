@@ -25,7 +25,7 @@ class Shapes
         @drag = new drag
             target:  @stage.element
             onStart: @onStart
-            onMove:  @onMove
+            onMove:  @onDrag
             onStop:  @onStop
         
     #  0000000  000   000   0000000   00000000   00000000  
@@ -135,8 +135,9 @@ class Shapes
         shape = @kali.shapeTool()
         
         if @tools.getActive('shape').draw
-            @draw = new Draw @kali
+            @draw ?= new Draw @kali
         else
+            @draw?.del()
             delete @draw
         
         newShape = @autoSwitch event
@@ -185,6 +186,7 @@ class Shapes
   
                 if @drawing? and @draw?.handleDown event
                     if not @draw.continuePicking()
+                        log 'down endDrawing'
                         @endDrawing()
                     return
                     
@@ -195,13 +197,13 @@ class Shapes
                 else
                     @trans.pos @drawing, stagePos
 
-    # 00     00   0000000   000   000  00000000  
-    # 000   000  000   000  000   000  000       
-    # 000000000  000   000   000 000   0000000   
-    # 000 0 000  000   000     000     000       
-    # 000   000   0000000       0      00000000  
+    # 0000000    00000000    0000000    0000000   
+    # 000   000  000   000  000   000  000        
+    # 000   000  0000000    000000000  000  0000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000   0000000   
     
-    onMove: (drag, event) =>
+    onDrag: (drag, event) =>
 
         shape = @autoSwitch event
         
@@ -242,7 +244,17 @@ class Shapes
                 p1 = @stage.stageForEvent drag.startPos
                 p2 = @stage.stageForEvent drag.pos
                 @trans.setRect @drawing, x:p1.x, y:p1.y, x2:p2.x, y2:p2.y
-                                            
+
+    # 00     00   0000000   000   000  00000000  
+    # 000   000  000   000  000   000  000       
+    # 000000000  000   000   000 000   0000000   
+    # 000 0 000  000   000     000     000       
+    # 000   000   0000000       0      00000000  
+    
+    onMove: (event) =>
+        
+        @draw?.handleMove event
+        
     #  0000000  000000000   0000000   00000000   
     # 000          000     000   000  000   000  
     # 0000000      000     000   000  00000000   
@@ -291,7 +303,6 @@ class Shapes
                         @trans.center @drawing, stagePos
                 
             if not @draw? or @draw.handleStop event
-                # log 'endDrawing'
                 @endDrawing()
 
     # 00000000  000   000  0000000        0000000    00000000    0000000   000   000  
@@ -299,28 +310,35 @@ class Shapes
     # 0000000   000 0 000  000   000      000   000  0000000    000000000  000000000  
     # 000       000  0000  000   000      000   000  000   000  000   000  000   000  
     # 00000000  000   000  0000000        0000000    000   000  000   000  00     00  
+
+    handleEscape: ->
+        
+        if @edit?
+            @edit.dotsel.clear()
+        @draw?.handleEscape()
     
     endDrawing: ->
-        
-        if @drawing
 
+        if @drawing
+            
+            @stopEdit()
+            
             if @trans.width(@drawing) == 0 and @trans.height(@drawing) == 0
 
                 @drawing.remove()
                 
             else 
-                if _.isFunction @drawing.array
-                    @stopEdit()
+                if _.isFunction(@drawing.array) and not @drawing.type == 'text'
                     @edit = new Edit @kali
                     @edit.addItem @drawing
                 else
-                    @stopEdit()
                     @selection.setItems [@drawing]
                 
-            @draw?.endDrawing()
-            delete @draw
             delete @drawing
 
+        @draw?.del()
+        delete @draw
+            
     editItems: (items) ->
         
         @stopEdit()

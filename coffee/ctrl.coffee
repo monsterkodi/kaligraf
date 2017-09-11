@@ -108,7 +108,7 @@ class Ctrl
         @drags[dot] = new drag
             target:  svg.node
             onStart: @onStart
-            onMove:  @onMove
+            onMove:  @onDrag
             onStop:  @onStop
 
         @drags[dot].dot = dot
@@ -229,7 +229,7 @@ class Ctrl
     # 000 0 000  000   000     000     000
     # 000   000   0000000       0      00000000
 
-    onMove: (drag, event) =>
+    onDrag: (drag, event) =>
 
         if not @object.edit.dotsel.empty()
             @object.edit.dotsel.moveBy drag.delta

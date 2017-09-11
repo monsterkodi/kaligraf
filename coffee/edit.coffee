@@ -139,7 +139,8 @@ class Edit
         if object = @objectForItem item 
             return object
             
-        if _.isFunction item.array
+        if _.isFunction(item.array) and item.type != 'text'
+
             object = new Object @, item
             @objects.push object 
             return object

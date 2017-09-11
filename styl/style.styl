@@ -27,6 +27,27 @@
     stroke-linecap          round
     stroke-linejoin         round
 
+// 000000000  00000000  000   000  000000000  00000000  0000000    000  000000000    
+//    000     000        000 000      000     000       000   000  000     000       
+//    000     0000000     00000       000     0000000   000   000  000     000       
+//    000     000        000 000      000     000       000   000  000     000       
+//    000     00000000  000   000     000     00000000  0000000    000     000       
+
+.textEdit
+    pointer-events          none
+    transform-origin        top left
+    position                absolute
+    // border                  1px solid red
+
+.textEditZoom
+    transform-origin        top left
+    // border                  1px solid blue
+
+.textEditInput
+    transform-origin        top left
+    pointer-events          auto
+    background-color        transparent
+
 //  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000  
 // 000       000       000      000       000          000     000  000   000  0000  000  
 // 0000000   0000000   000      0000000   000          000     000  000   000  000 0 000  

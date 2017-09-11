@@ -49,10 +49,10 @@ class Tools extends Tool
         @grid.showGrid()
         
         @activateTool 'rect'
-        @activateTool 'text'
         @activateTool 'pick'
         @activateTool 'bezier'
         @activateTool 'edit'
+        @activateTool 'text'
         
         post.emit 'stage', 'setColor', '#666'
         post.emit 'tool', 'load'

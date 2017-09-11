@@ -9,6 +9,7 @@
 
 Draw = require './draw'
 Edit = require './edit'
+Text = require './text'
 
 class Shapes
 
@@ -22,6 +23,12 @@ class Shapes
         @selection = @stage.selection
         @resizer   = @stage.resizer
 
+        post.on 'stage', (action) =>
+            if action == 'viewbox'
+                if item = @text?.item
+                    @clearText()
+                    @text = new Text @kali, item
+        
         @drag = new drag
             target:  @stage.element
             onStart: @onStart
@@ -103,8 +110,24 @@ class Shapes
     #      000     000     000   000  000   000     000     
     # 0000000      000     000   000  000   000     000     
     
-    onStart: (drag, event) => @handleMouseDown event
+    onStart: (drag, event) => 
 
+        @clearText()
+        
+        shape = @kali.shapeTool()
+        if shape == 'text'
+            if item = @stage.itemAtPos pos event
+                if item.type == 'text'
+                    @text = new Text @kali, item
+                    return
+                            
+        @handleMouseDown event
+
+    clearText: ->
+        
+        @text?.del()
+        delete @text
+        
     autoSwitch: (event) ->
         
         toolKeys = 
@@ -145,7 +168,7 @@ class Shapes
         
         eventPos = pos event 
         stagePos = @stage.stageForEvent eventPos
-                        
+                    
         switch shape
             
             when 'pick'
@@ -186,7 +209,6 @@ class Shapes
   
                 if @drawing? and @draw?.handleDown event
                     if not @draw.continuePicking()
-                        log 'down endDrawing'
                         @endDrawing()
                     return
                     

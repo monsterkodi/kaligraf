@@ -72,6 +72,7 @@ button
 
 .winTitle
     border-bottom           1px solid #333
+    
 .winTitleText
 .winTitleClose
     color                   #333
@@ -88,9 +89,10 @@ button
     pointer-events          none
 
 .winTitleClose
-    position                absolute
-    right                   6px
-    top                     6px
+.winTitleButton
+    // position                absolute
+    // right                   6px
+    // top                     6px
     cursor                  pointer
 
 // 000000000  00000000  000   000  000000000  00000000  0000000    000  000000000
@@ -123,13 +125,14 @@ button
     position                absolute
 
 .fontListScroll
-    overflow-y              auto
-    height                  400px
+    overflow                scroll
+    max-height              400px
 
 .fontElem
     height                  30px
     font-size               20px
     padding-left            10px
+    padding-right           10px
     padding-top             4px
     cursor                  pointer
 

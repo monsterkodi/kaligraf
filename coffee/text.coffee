@@ -85,7 +85,7 @@ class Text
     insertText: (text) ->
         start = @input.selectionStart
         @input.value = @input.value.slice(0, @input.selectionStart) + text + @input.value.slice @input.selectionEnd
-        @input.selectionStart = start
+        @input.selectionStart = start + text.length
         @input.selectionEnd   = start + text.length
         @setText @input.value
         

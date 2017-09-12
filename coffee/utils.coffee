@@ -220,9 +220,20 @@ module.exports =
     winTitle: (opt) ->
         
         div = elem class:'winTitle'
+        
         if opt.text?
+            
             div.appendChild elem class:'winTitleText', text: opt.text
+            
+        if opt.buttons?
+            
+            for button in opt.buttons
+                btn = elem 'button', class:'winTitleButton', text: button.text
+                btn.addEventListener 'click', button.action
+                div.appendChild btn
+            
         if _.isFunction opt.close
+            
             close = elem 'button', class:'winTitleClose', text: 'X'
             close.addEventListener 'click', opt.close
             div.appendChild close

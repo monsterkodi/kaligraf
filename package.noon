@@ -5,6 +5,7 @@ main          js/main.js
 author        monsterkodi
 license       Unlicense
 dependencies
+              font-manager    ^0.2.2
               kxk             ^0.16.12
               svg.colorat.js  ^1.0.0
               svg.js          ^2.6.3

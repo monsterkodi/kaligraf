@@ -38,7 +38,7 @@ class Kali
     
     insertBelowTools: (child) -> @element.insertBefore child, @toolDiv
 
-    shapeTool:    -> @tools.getActive('shape').name
+    shapeTool:    -> @tools.getActive('shape')?.name
         
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   

@@ -168,7 +168,7 @@ class Shapes
         
         shape = @kali.shapeTool()
         
-        if @tools.getActive('shape').draw
+        if @tools.getActive('shape')?.draw
             @draw ?= new Draw @kali
         else
             @draw?.del()

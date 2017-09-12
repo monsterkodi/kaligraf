@@ -17,6 +17,8 @@ class Kali
     constructor: (cfg) ->
         
         @element = cfg?.element ? window
+        @element.style.overflow = 'initial'
+        @element.parentNode.style.overflow = 'initial'
         @toolDiv = elem 'div', id: 'tools'
         @element.appendChild @toolDiv
                 

@@ -22,12 +22,6 @@ class Shapes
         @svg       = @stage.svg
         @selection = @stage.selection
         @resizer   = @stage.resizer
-
-        post.on 'stage', (action) =>
-            if action == 'viewbox'
-                if item = @text?.item
-                    @clearText()
-                    @text = new Text @kali, item
         
         @drag = new drag
             target:  @stage.element
@@ -263,10 +257,11 @@ class Shapes
                 @edit.stageDrag drag, event
                 
             else
-                z  = @stage.zoom
-                p1 = @stage.stageForEvent drag.startPos
-                p2 = @stage.stageForEvent drag.pos
-                @trans.setRect @drawing, x:p1.x, y:p1.y, x2:p2.x, y2:p2.y
+                if @drawing?
+                    z  = @stage.zoom
+                    p1 = @stage.stageForEvent drag.startPos
+                    p2 = @stage.stageForEvent drag.pos
+                    @trans.setRect @drawing, x:p1.x, y:p1.y, x2:p2.x, y2:p2.y
 
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       

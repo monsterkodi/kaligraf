@@ -1,9 +1,9 @@
 
-//  0000000  000   000   0000000   
-// 000       000   000  000        
-// 0000000    000 000   000  0000  
-//      000     000     000   000  
-// 0000000       0       0000000   
+//  0000000  000   000   0000000
+// 000       000   000  000
+// 0000000    000 000   000  0000
+//      000     000     000   000
+// 0000000       0       0000000
 
 #selection
 #resizer
@@ -28,13 +28,76 @@
     stroke-linejoin         round
 
 button
-    border none
-    
-// 000000000  00000000  000   000  000000000  00000000  0000000    000  000000000    
-//    000     000        000 000      000     000       000   000  000     000       
-//    000     0000000     00000       000     0000000   000   000  000     000       
-//    000     000        000 000      000     000       000   000  000     000       
-//    000     00000000  000   000     000     00000000  0000000    000     000       
+    border                  none
+
+//  0000000   0000000   000       0000000   00000000    0000000
+// 000       000   000  000      000   000  000   000  000
+// 000       000   000  000      000   000  0000000    0000000
+// 000       000   000  000      000   000  000   000       000
+//  0000000   0000000   0000000   0000000   000   000  0000000
+
+button
+.tool
+.item
+.winTitle
+.fontList
+    background              #222
+
+button
+.tool
+.item
+.winTitleClose
+    font-family             Helvetica, Arial
+    font-weight             bold
+    color                   #bbb
+    &.active
+        color               #fff
+    &:hover
+        color               #ff0
+        background-color    #333
+
+.fontElem
+    color                   #bbb
+    &:hover
+        color               #fff
+    &.active
+        color               #ff0
+        background-color    #333
+        
+// 000   000  000  000   000  000000000  000  000000000  000      00000000
+// 000 0 000  000  0000  000     000     000     000     000      000
+// 000000000  000  000 0 000     000     000     000     000      0000000
+// 000   000  000  000  0000     000     000     000     000      000
+// 00     00  000  000   000     000     000     000     0000000  00000000
+
+.winTitle
+    border-bottom           1px solid #333
+.winTitleText
+.winTitleClose
+    color                   #333
+
+.winTitle
+    height                  30px
+    overflow                hidden
+    cursor                  -webkit-grab
+
+.winTitleText
+    font-weight             bold
+    margin-top              8px
+    margin-left             10px
+    pointer-events          none
+
+.winTitleClose
+    position                absolute
+    right                   6px
+    top                     6px
+    cursor                  pointer
+
+// 000000000  00000000  000   000  000000000  00000000  0000000    000  000000000
+//    000     000        000 000      000     000       000   000  000     000
+//    000     0000000     00000       000     0000000   000   000  000     000
+//    000     000        000 000      000     000       000   000  000     000
+//    000     00000000  000   000     000     00000000  0000000    000     000
 
 .textEdit
     pointer-events          none
@@ -50,15 +113,14 @@ button
     &::selection
         background-color    rgba(128,128,128,0.2)
 
-// 00000000   0000000   000   000  000000000  000      000   0000000  000000000  
-// 000       000   000  0000  000     000     000      000  000          000     
-// 000000    000   000  000 0 000     000     000      000  0000000      000     
-// 000       000   000  000  0000     000     000      000       000     000     
-// 000        0000000   000   000     000     0000000  000  0000000      000     
+// 00000000   0000000   000   000  000000000  000      000   0000000  000000000
+// 000       000   000  0000  000     000     000      000  000          000
+// 000000    000   000  000 0 000     000     000      000  0000000      000
+// 000       000   000  000  0000     000     000      000       000     000
+// 000        0000000   000   000     000     0000000  000  0000000      000
 
 .fontList
     position                absolute
-    background              #222
 
 .fontListScroll
     overflow-y              auto
@@ -70,30 +132,12 @@ button
     padding-left            10px
     padding-top             4px
     cursor                  pointer
-  
-.winTitle 
-    height                  30px
-    background              #222
-    cursor                  -webkit-grab
-    
-.winTitleText        
-    color                   #888
-    font-weight             bold
-    margin-top              6px
-    margin-left             10px
-    pointer-events          none
-    float                   left
-    
-.winTitleClose
-    margin                  4px
-    float                   right
-    cursor                  pointer
-        
-//  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000  
-// 000       000       000      000       000          000     000  000   000  0000  000  
-// 0000000   0000000   000      0000000   000          000     000  000   000  000 0 000  
-//      000  000       000      000       000          000     000  000   000  000  0000  
-// 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000  
+
+//  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000
+// 000       000       000      000       000          000     000  000   000  0000  000
+// 0000000   0000000   000      0000000   000          000     000  000   000  000 0 000
+//      000  000       000      000       000          000     000  000   000  000  0000
+// 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000
 
 .selectangle
     pointer-events          none
@@ -107,82 +151,82 @@ button
 .selectionRect
 .editRect
     background-color        #888
-    
-    
-// 00000000  0000000    000  000000000    
-// 000       000   000  000     000       
-// 0000000   000   000  000     000       
-// 000       000   000  000     000       
-// 00000000  0000000    000     000       
+
+
+// 00000000  0000000    000  000000000
+// 000       000   000  000     000
+// 0000000   000   000  000     000
+// 000       000   000  000     000
+// 00000000  0000000    000     000
 
 .editDot
-    pointer-events all
-    
+    pointer-events          all
+
 #edit.passive .editDot
-    pointer-events none
-        
+    pointer-events          none
+
 .pointDot
-    stroke  #fff
-    fill    #000
+    stroke                  #fff
+    fill                    #000
 
     &.selected
-        stroke #ff0
-        fill   #f00
-    
+        stroke              #ff0
+        fill                #f00
+
 .ctrl1Dot
 .ctrl2Dot
 .ctrlsDot
 .ctrlqDot
-    stroke  #000
-    fill    #fff
+    stroke                  #000
+    fill                    #fff
 
     &.selected
-        stroke #f00
-        fill   #ff0
-        
+        stroke              #f00
+        fill                #ff0
+
 .ctrlrDot
-    stroke  #000
-    fill    #888
-    
+    stroke                  #000
+    fill                    #888
+
     &.selected
-        stroke #800
-        fill   #f80
-    
+        stroke              #800
+        fill                #f80
+
 .editLine
-    stroke  #000
-    stroke-dasharray 2,6
+    stroke                  #000
+    stroke-dasharray        2,6
 .ctrlrLine
 .ctrlq2Line
-    stroke-dasharray 1,4
-    
+    stroke-dasharray        1,4
+
 .ctrl1_Line
 .ctrl2_Line
 .ctrls_Line
 .ctrlq_Line
-    stroke  #fff
-    stroke-dashoffset 2
-    stroke-dasharray  2,6
-    
+    stroke                  #fff
+    stroke-dashoffset       2
+    stroke-dasharray        2,6
+
 .ctrlr_Line
 .ctrlq2_Line
-    stroke  #fff
-    stroke-dashoffset 1
-    stroke-dasharray  1,4
+    stroke                  #fff
+    stroke-dashoffset       1
+    stroke-dasharray        1,4
 
-// 00000000   00000000   0000000  000  0000000  00000000  00000000   
-// 000   000  000       000       000     000   000       000   000  
-// 0000000    0000000   0000000   000    000    0000000   0000000    
-// 000   000  000            000  000   000     000       000   000  
-// 000   000  00000000  0000000   000  0000000  00000000  000   000  
+// 00000000   00000000   0000000  000  0000000  00000000  00000000
+// 000   000  000       000       000     000   000       000   000
+// 0000000    0000000   0000000   000    000    0000000   0000000
+// 000   000  000            000  000   000     000       000   000
+// 000   000  00000000  0000000   000  0000000  00000000  000   000
 
 .resizerSVG
     opacity                 1
     &.resizerInactive
         opacity             0.3
-    
+
 .resizerGroup
     cursor                  -webkit-grab
-        
+
 .resizerRect
     fill                    rgba(128,128,128,0.1)
     cursor                  move
@@ -192,73 +236,48 @@ button
     fill                    none
     stroke                  none
     pointer-events          all
-    
+
 .resizerCorner
-    fill                    #fff    
+    fill                    #fff
     stroke                  #000
     pointer-events          all
 
 .resizerRot
-    fill                    #fff    
+    fill                    #fff
     stroke                  #000
     pointer-events          all
-    
+
 .resizerItemRect
     fill                    none
     stroke                  #000
     stroke-dasharray        2,2
-    
-// 000000000   0000000    0000000   000      
-//    000     000   000  000   000  000      
-//    000     000   000  000   000  000      
-//    000     000   000  000   000  000      
-//    000      0000000    0000000   0000000  
 
-// .tool
-// .item
-    // color                   #888
-    // background              #f8f8f8
-    // &.active
-        // color               #f00
-    // &:hover
-        // color               #000
-        // background-color    #eee
-
-button
-.tool
-.item
-.winTitleClose
-.fontElem
-    font-family             Helvetica, Arial
-    font-weight             bold
-    color                   #bbb
-    background              #222
-    &.active
-        color               #fff
-    &:hover
-        color               #ff0
-        background-color    #333
+// 000000000   0000000    0000000   000
+//    000     000   000  000   000  000
+//    000     000   000  000   000  000
+//    000     000   000  000   000  000
+//    000      0000000    0000000   0000000
 
 button
 .tool
 .item
 .winTitle
     font-size               13px
-    
-.tool    
+
+.tool
     position                absolute
     width                   60px
-    height                  60px    
+    height                  60px
     cursor                  pointer
     &.down
-            height          30px
-            
+        height              30px
+
 .tool .title
     margin-top              4px
     text-align              center
     padding-top             4px
     padding-bottom          4px
-        
+
 .toolPlus
 .toolMinus
     padding-left            8px
@@ -266,10 +285,10 @@ button
     color                   #888
     &:hover
         color               #ff0
-    
+
 .toolPlusMinus
     padding                 6px
-        
+
 .toolSVG
     position                absolute
     left                    25%
@@ -284,45 +303,44 @@ button
     width                   80%
     height                  80%
     opacity                 1
-        
-// 000       0000000   000   000  00000000   00000000  
-// 000      000   000  000   000  000   000  000       
-// 000      000   000  000   000  00000000   0000000   
-// 000      000   000  000   000  000        000       
-// 0000000   0000000    0000000   000        00000000  
+
+// 000       0000000   000   000  00000000   00000000
+// 000      000   000  000   000  000   000  000
+// 000      000   000  000   000  00000000   0000000
+// 000      000   000  000   000  000        000
+// 0000000   0000000    0000000   000        00000000
 
 .loupeRect
     background-color        transparent
     opacity                 0.5
-    
+
 .trans
     pointer-events          none
 
-// 00     00  00000000  000   000  000   000  
-// 000   000  000       0000  000  000   000  
-// 000000000  0000000   000 0 000  000   000  
-// 000 0 000  000       000  0000  000   000  
-// 000   000  00000000  000   000   0000000   
+// 00     00  00000000  000   000  000   000
+// 000   000  000       0000  000  000   000
+// 000000000  0000000   000 0 000  000   000
+// 000 0 000  000       000  0000  000   000
+// 000   000  00000000  000   000   0000000
 
-#menus  
+#menus
     font-family             Helvetica, Arial
     font-weight             bold
     font-size               13px
     position                absolute
-    left                    60px  
+    left                    60px
     top                     0
-    
+
 .menu
     float                   left
     height                  30px
     overflow                hidden
-    
+
 .item
-    display  block
-    height   22px
+    display                 block
+    height                  22px
     padding-top             8px
     padding-left            10px
     padding-right           10px
     cursor                  pointer
     border-style            hidden
-                

@@ -74,8 +74,9 @@ class Shapes
                 e = @svg.text 'text'
                 e.leading 1.15
                 e.font 'size', 100
-                e.font 'weight', @kali.tools.font.bold and 'bold'   or 'normal'
-                e.font 'style',  @kali.tools.font.ital and 'italic' or 'normal'
+                e.font 'weight', @kali.tools.font.weight
+                e.font 'style',  @kali.tools.font.style
+                e.font 'family', @kali.tools.font.family
                 
             when 'image'
                 

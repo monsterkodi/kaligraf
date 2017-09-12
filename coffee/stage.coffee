@@ -41,6 +41,7 @@ class Stage
         post.on 'stage', @onStage
         post.on 'color', @onColor
         post.on 'line',  @onLine
+        post.on 'font',  @onFont
 
         @zoom = 1
         @virgin = true
@@ -82,14 +83,18 @@ class Stage
 
     items: -> @svg.children().filter (child) -> child.type != 'defs'
     selectedOrAllItems: -> @selectedItems() ? @items()
-    selectedItems: ->
+    selectedItems: (opt) ->
 
-        if not @selection.empty()
-            @selection.items
-        else if @shapes.edit? and not @shapes.edit.empty() 
-            @shapes.edit.items()
-        else
-            []
+        items = 
+            if not @selection.empty()
+                @selection.items
+            else if @shapes.edit? and not @shapes.edit.empty() 
+                @shapes.edit.items()
+            else
+                []
+        if opt?.type?
+            items = items.filter (item) -> item.type == opt.type
+        items
 
     isEditableItem: (item) -> _.isFunction(item.array) and item.type != 'text'
             
@@ -135,6 +140,11 @@ class Stage
         if not _.isEmpty attr
             for item in @selectedItems()
                 item.style attr
+
+    onFont: (prop, value) =>
+        
+        for item in @selectedItems(type:'text')
+            item.font prop, value
                 
     # 000      000  000   000  00000000  
     # 000      000  0000  000  000       

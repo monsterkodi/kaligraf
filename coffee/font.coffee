@@ -99,9 +99,15 @@ class FontList
         @scroll.addEventListener  'click',   @onClick
                 
         @fonts = fontManager.getAvailableFontsSync()
+        @fonts = @fonts.filter (font) ->
+            return false if font.family.startsWith 'STIX'   
+            return false if font.family.endsWith ' TC'
+            return false if font.family in ['github-octicons', 'TeamViewer12', 'PingFang HK', 'Chalkboard SE', 'Diwan Kufi', 'Mishafi Gold', 'Bodoni 72 Smallcaps', 'Bodoni 72 Oldstyle']
+            true
         @fonts = _.uniqWith @fonts, (a,b) -> a.family == b.family
         @fonts.sort (a,b) -> a.family.localeCompare b.family
         for font in @fonts
+            # log font.family
             fontElem = elem 'div', class:'fontElem'
             fontElem.style.fontFamily = font.family
             fontElem.innerHTML = font.family
@@ -132,6 +138,7 @@ class FontList
         @active()?.classList.remove 'active'
         @scroll.children[index].classList.add 'active'
         @active().scrollIntoViewIfNeeded false
+        log @active().innerHTML
         post.emit 'font', 'family', @active().innerHTML
 
     onClick: (event) => @select childIndex event.target
@@ -154,7 +161,10 @@ class FontList
             when 'command+up'    then @navigate -10
             when 'command+down'  then @navigate +10
             when 'esc', 'enter'  then @hide()
-            else
-                log combo
+            when 'command+a', 'command+d' then return
+            # else
+                # log combo
+                
+        stopEvent event
     
 module.exports = Font

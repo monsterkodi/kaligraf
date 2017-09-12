@@ -7,6 +7,8 @@
 
 { keyinfo, stopEvent, post, elem, pos, log, _ } = require 'kxk'
 
+{ clipboard } = require 'electron'
+
 class Text
 
     constructor: (@kali, @item) ->
@@ -67,6 +69,12 @@ class Text
         
     onInput: (event) => @setText event.target.value
         
+    # 000000000  00000000  000   000  000000000  
+    #    000     000        000 000      000     
+    #    000     0000000     00000       000     
+    #    000     000        000 000      000     
+    #    000     00000000  000   000     000     
+    
     setText: (text) ->
         
         @item.text text
@@ -74,6 +82,19 @@ class Text
         @input.style.width  = "#{bbox.width+100}px"
         @input.style.height = "#{bbox.height+200}px"
 
+    insertText: (text) ->
+        start = @input.selectionStart
+        @input.value = @input.value.slice(0, @input.selectionStart) + text + @input.value.slice @input.selectionEnd
+        @input.selectionStart = start
+        @input.selectionEnd   = start + text.length
+        @setText @input.value
+        
+    #  0000000  00000000  000      00000000   0000000  000000000  
+    # 000       000       000      000       000          000     
+    # 0000000   0000000   000      0000000   000          000     
+    #      000  000       000      000       000          000     
+    # 0000000   00000000  0000000  00000000   0000000     000     
+    
     select: (action) ->
         
         switch action
@@ -82,7 +103,37 @@ class Text
                 @input.selectionEnd   = @input.value.length 
             when 'none'
                 @input.selectionStart = @input.selectionEnd
+
+    selectedText: -> @input.value.slice @input.selectionStart, @input.selectionEnd
+                
+    #  0000000  000   000  000000000  
+    # 000       000   000     000     
+    # 000       000   000     000     
+    # 000       000   000     000     
+    #  0000000   0000000      000     
+    
+    cutSelected: ->
         
+        start = @input.selectionStart
+        @input.value = @input.value.slice(0, @input.selectionStart) + @input.value.slice @input.selectionEnd
+        @input.selectionStart = start
+        @input.selectionEnd = start
+        @setText @input.value
+    
+    cut: ->
+        
+        clipboard.writeText @selectedText()
+        @cutSelected()
+            
+    copy: ->
+            
+        clipboard.writeText @selectedText()
+            
+    paste: -> 
+        
+        @cutSelected()
+        @insertText clipboard.readText()
+                
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
     # 0000000    0000000     00000    
@@ -107,6 +158,9 @@ class Text
                 
             when 'command+a' then stopEvent(event) and @select 'all'
             when 'command+d' then stopEvent(event) and @select 'none'
+            when 'command+x' then stopEvent(event) and @cut()
+            when 'command+c' then stopEvent(event) and @copy()
+            when 'command+v' then stopEvent(event) and @paste()
                 
             when 'esc', 'tab'
 

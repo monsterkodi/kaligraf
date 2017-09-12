@@ -46,7 +46,7 @@ class Tools extends Tool
             
         @width.setWidth 4
         
-        @grid.showGrid()
+        # @grid.showGrid()
         
         @activateTool 'rect'
         @activateTool 'pick'

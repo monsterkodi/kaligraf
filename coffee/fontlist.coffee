@@ -13,22 +13,51 @@ fontManager = require 'font-manager'
 
 fontGroups = 
     sans: [
+        'Apple SD Gothic Neo'
+        'Apple Symbols'
+        'AppleGothic'        
         'Arial'
         'Arial Black'
         'Arial Narrow'
         'Arial Rounded MT Bold'
         'Arial Unicode MS'
+        'Avenir'
+        'Avenir Next'
+        'Avenir Next Condensed'
+        'Bodoni 72'        
+        'Cousine'
+        'Futura'
+        'Geneva'
+        'Gill Sans'
         'Helvetica'
         'Helvetica Neue'
         'Impact'
+        'Lucida Grande'
+        'Microsoft Sans Serif'
+        'Optima'        
         'PT Sans'
         'PT Sans Caption'
         'PT Sans Narrow'
+        'Tahoma'
+        'Trebuchet MS'
+        'Varela Round'
         'Verdana'        
     ]
     serif: [
+        'Apple Braille'   
+        'AppleMyungjo'    
+        'Baskerville'
+        'Big Caslon'        
+        'Cochin'
+        'Copperplate'        
+        'Didot'
+        'Georgia'
+        'Hoefler Text'        
+        'Iowan Old Style'        
+        'Palatino'
         'PT Serif'
         'PT Serif Caption'
+        'Symbol'        
         'Times'
         'Times New Roman'
     ]
@@ -53,56 +82,35 @@ fontGroups =
         'Source Code Pro'
     ]
     fancy: [
+        'Apple Chancery'
+        'Baoli SC'
+        'Bradley Hand'
+        'Brush Script MT'        
         'Chalkboard'
         'Chalkduster'
         'Comic Sans MS'
-        'Herculanum'        
+        'Hannotate TC'
+        'HanziPen TC'
+        'Herculanum'
+        'Klee'
+        'Libian SC'
+        'Luminari' 
         'Marker Felt'
+        'Nanum Pen Script'
         'Noteworthy'
         'Papyrus'   
+        'Phosphate'        
+        'Savoye LET'        
         'SignPainter'                
+        'Skia'        
         'Snell Roundhand'
         'Trattatello'
+        'Wawati SC'
+        'Yuppy TC'
         'Zapfino'
     ]
     other: [
-        'Apple Braille'
-        'Apple Chancery'
-        'Apple SD Gothic Neo'
-        'Apple Symbols'
-        'AppleGothic'
-        'AppleMyungjo'
-        'Avenir'
-        'Avenir Next'
-        'Avenir Next Condensed'
-        'Baskerville'
-        'Big Caslon'
-        'Bodoni 72'
         'Bodoni Ornaments'
-        'Bradley Hand'
-        'Brush Script MT'
-        'Cochin'
-        'Copperplate'
-        'Cousine'
-        'Didot'
-        'Futura'
-        'Geneva'
-        'Georgia'
-        'Gill Sans'
-        'Hoefler Text'
-        'Iowan Old Style'
-        'Lucida Grande'
-        'Luminari'
-        'Microsoft Sans Serif'
-        'Optima'
-        'Palatino'
-        'Phosphate'
-        'Savoye LET'
-        'Skia'
-        'Symbol'
-        'Tahoma'
-        'Trebuchet MS'
-        'Varela Round'
         'Webdings'
         'Wingdings'
     ]   
@@ -116,14 +124,15 @@ class FontList
         @element.style.top  = "#{60}px"
         @element.tabIndex   = 100
         
-        title = winTitle close:@onClose, buttons: Object.keys(fontGroups).map (group) => 
+        @title = winTitle close:@onClose, buttons: Object.keys(fontGroups).map (group) => 
             text:   group
+            class: "fontListGroup_#{group}"
             action: => @showGroup group
             
-        @element.appendChild title 
+        @element.appendChild @title 
         
         @drag = new drag
-            target: title
+            target: @title
             onMove: (drag) => 
                 @element.style.left = "#{parseInt(@element.style.left) + drag.delta.x}px"
                 @element.style.top  = "#{parseInt(@element.style.top)  + drag.delta.y}px"
@@ -133,7 +142,6 @@ class FontList
                 
         fonts = fontManager.getAvailableFontsSync().map (font) -> font.family
         fonts = _.uniq fonts
-        # fonts.sort (a,b) -> a.localeCompare b
 
         #  0000000   00000000    0000000   000   000  00000000    0000000  
         # 000        000   000  000   000  000   000  000   000  000       
@@ -162,30 +170,58 @@ class FontList
                 if groupFont in fonts
                     addFont groupFont
             
-            if group == last fontGroups
+            if group == last Object.keys fontGroups
                 for font in fonts
-                    addFont font
+                    addFont font if font?
 
         @kali.insertBelowTools @element
         
         @activeGroup = 'sans'
         @showGroup 'sans'
       
+    #  0000000  000   000   0000000   000   000
+    # 000       000   000  000   000  000 0 000
+    # 0000000   000000000  000   000  000000000
+    #      000  000   000  000   000  000   000
+    # 0000000   000   000   0000000   00     00
+    
     showGroup: (group) ->
+        
+        button = @title.querySelector ".fontListGroup_#{@activeGroup}"
+        button.classList.remove 'active'
         @scrolls[@activeGroup].style.display = 'none'
         @activeGroup = group
-        @scrolls[@activeGroup].style.display = 'initial'
-        
-    show: -> @element.style.display = 'initial'; @element.focus()
-    hide: -> @element.style.display = 'none';    @element.blur()
+        @scrolls[@activeGroup].style.display = 'block'
+        button = @title.querySelector ".fontListGroup_#{@activeGroup}"
+        button.classList.add 'active'
+            
+    show: -> @element.style.display = 'block'; @element.focus()
+    hide: -> @element.style.display = 'none';  @element.blur()
     toggleDisplay: -> if @element.style.display == 'none' then @show() else @hide()
     
     onClose: => @hide()
     
-    active: -> @scroll.querySelector '.active'
-    activeIndex: -> @active() and childIndex(@active()) or 0
+    #  0000000    0000000  000000000  000  000   000  00000000  
+    # 000   000  000          000     000  000   000  000       
+    # 000000000  000          000     000   000 000   0000000   
+    # 000   000  000          000     000     000     000       
+    # 000   000   0000000     000     000      0      00000000  
+    
+    active: -> @scrolls[@activeGroup].querySelector '.active'
+    activeIndex: -> not @active() and -1 or childIndex @active()
         
+    # 000   000   0000000   000   000  000   0000000    0000000   000000000  00000000  
+    # 0000  000  000   000  000   000  000  000        000   000     000     000       
+    # 000 0 000  000000000   000 000   000  000  0000  000000000     000     0000000   
+    # 000  0000  000   000     000     000  000   000  000   000     000     000       
+    # 000   000  000   000      0      000   0000000   000   000     000     00000000  
+    
     navigate: (dir) -> @select @activeIndex() + dir
+    navigateGroup: (dir) ->
+        groups = Object.keys fontGroups 
+        index = groups.indexOf @activeGroup
+        index = clamp 0, groups.length-1, index+dir
+        @showGroup groups[index]
         
     #  0000000  00000000  000      00000000   0000000  000000000  
     # 000       000       000      000       000          000     
@@ -194,13 +230,13 @@ class FontList
     # 0000000   00000000  0000000  00000000   0000000     000     
     
     select: (index) ->
-        
-        index = clamp 0, @scroll.children.length-1, index
+        scroll = @scrolls[@activeGroup]
+        index = clamp 0, scroll.children.length-1, index
         @active()?.classList.remove 'active'
-        @scroll.children[index].classList.add 'active'
+        scroll.children[index].classList.add 'active'
         @active().scrollIntoViewIfNeeded false
-        log @active().innerHTML
         post.emit 'font', 'family', @active().innerHTML
+        # log ">#{@active().innerHTML}<"
 
     onClick: (event) => @select childIndex event.target
     
@@ -213,18 +249,20 @@ class FontList
     onKeyDown: (event) =>
         
         {mod, key, combo, char} = keyinfo.forEvent event
+        
         switch combo
             
             when 'up', 'left'    then @navigate -1
             when 'down', 'right' then @navigate +1
-            when 'command+left'  then @select 0
-            when 'command+right' then @select @scroll.children.length-1
-            when 'command+up'    then @navigate -10
-            when 'command+down'  then @navigate +10
-            when 'esc', 'enter'  then @hide()
-            when 'command+a', 'command+d', 'command+e' then return
+            when 'command+left'  then stopEvent(event); @navigateGroup -1
+            when 'command+right' then stopEvent(event); @navigateGroup +1
+            when 'command+up'    then stopEvent(event); @select 0
+            when 'command+down'  then stopEvent(event); @select @scrolls[@activeGroup].children.length-1
+            when 'esc', 'enter'  then return @hide()
             # else
                 # log combo
+                
+        if combo.startsWith 'command' then return
                 
         stopEvent event
         

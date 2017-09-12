@@ -20,7 +20,8 @@ class Grid extends Tool
         @svg = SVG(@div).size '100%', '100%'
         @svg.addClass 'gridSVG'
         @svg.clear()
-
+        @svg.hide()
+        
         @title = @element.appendChild elem 'div', class: 'title', text: '100'
 
         post.on 'stage', @onStage

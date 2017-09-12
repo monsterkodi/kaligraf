@@ -5,7 +5,7 @@
 #      000     000     000   000  000   000  000
 # 0000000      000     000   000   0000000   00000000
 
-{ resolve, elem, post, drag, stopEvent, last, clamp, pos, fs, log, _ } = require 'kxk'
+{ resolve, elem, post, drag, stopEvent, last, empty, clamp, pos, fs, log, _ } = require 'kxk'
 
 {   contrastColor, normRect, bboxForItems, 
     growBox, boxForItems, boxOffset, boxCenter } = require './utils'
@@ -82,7 +82,12 @@ class Stage
                 return item.instance
 
     items: -> @svg.children().filter (child) -> child.type != 'defs'
-    selectedOrAllItems: -> @selectedItems() ? @items()
+    selectedOrAllItems: -> 
+        
+        items = @selectedItems() 
+        items = @items() if empty items
+        items
+        
     selectedItems: (opt) ->
 
         items = 

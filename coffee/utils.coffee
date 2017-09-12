@@ -230,6 +230,8 @@ module.exports =
             for button in opt.buttons
                 btn = elem 'button', class:'winTitleButton', text: button.text
                 btn.addEventListener 'click', button.action
+                btn.classList.add 'winTitleButton'
+                btn.classList.add button['class'] if button['class']?
                 div.appendChild btn
             
         if _.isFunction opt.close

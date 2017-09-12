@@ -71,9 +71,11 @@ class Shapes
                 
             when 'text'
                 
-                e = @svg.text 'kaligraf'
+                e = @svg.text 'text'
                 e.leading 1.15
                 e.font 'size', 100
+                e.font 'weight', @kali.tools.font.bold and 'bold'   or 'normal'
+                e.font 'style',  @kali.tools.font.ital and 'italic' or 'normal'
                 
             when 'image'
                 
@@ -113,16 +115,30 @@ class Shapes
         if shape == 'text'
             if item = @stage.itemAtPos pos event
                 if item.type == 'text'
-                    @text = new Text @kali, item
+                    @editTextItem item
                     return
                             
         @handleMouseDown event
-
+        
+    # 000000000  00000000  000   000  000000000  
+    #    000     000        000 000      000     
+    #    000     0000000     00000       000     
+    #    000     000        000 000      000     
+    #    000     00000000  000   000     000     
+    
+    editTextItem: (item) -> @text = new Text @kali, item
+        
     clearText: ->
         
         @text?.del()
         delete @text
         
+    #  0000000  000   000  000  000000000   0000000  000   000  
+    # 000       000 0 000  000     000     000       000   000  
+    # 0000000   000000000  000     000     000       000000000  
+    #      000  000   000  000     000     000       000   000  
+    # 0000000   00     00  000     000      0000000  000   000  
+    
     autoSwitch: (event) ->
         
         toolKeys = 
@@ -346,9 +362,11 @@ class Shapes
                 @drawing.remove()
                 
             else 
-                if _.isFunction(@drawing.array) and not @drawing.type == 'text'
+                if @stage.isEditableItem @drawing
                     @edit = new Edit @kali
                     @edit.addItem @drawing
+                else if @drawing.type == 'text'
+                    @editTextItem @drawing
                 else
                     @selection.setItems [@drawing]
                 

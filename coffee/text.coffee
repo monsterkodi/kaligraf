@@ -5,11 +5,13 @@
 #    000     000        000 000      000   
 #    000     00000000  000   000     000   
 
-{ keyinfo, post, elem, pos, log, _ } = require 'kxk'
+{ keyinfo, stopEvent, post, elem, pos, log, _ } = require 'kxk'
 
 class Text
 
     constructor: (@kali, @item) ->
+        
+        @stage = @kali.stage
         
         font = @item.font()
         bbox = @item.bbox()
@@ -28,15 +30,17 @@ class Text
         m = @item.transform().matrix.translate bbox.x, bbox.y
         
         @input.style.transform = m.toString()
+        @input.style.caretColor = @stage.foregroundColor()
         @input.value = @item.text()
+        @select 'all'
 
-        vbox = @kali.stage.svg.viewbox()
+        vbox = @stage.svg.viewbox()
         @element.style.transform = "translate(#{-vbox.x*vbox.zoom}px, #{-vbox.y*vbox.zoom}px) scale(#{vbox.zoom})"
         
         @kali.insertBelowTools @element
         
-        @input.addEventListener 'input',  @onInput
-        @input.addEventListener 'keydown',  @onKeyDown
+        @input.addEventListener 'input',   @onInput
+        @input.addEventListener 'keydown', @onKeyDown
         
         @input.focus()
 
@@ -50,25 +54,16 @@ class Text
     del: ->
 
         post.removeListener 'stage', @onStage
+        
         @element.remove()
         @input.remove()
         delete @element
         delete @input
-     
-    onKeyDown: (event) =>
+            
+    endEditing: ->
         
-        {mod, key, combo, char} = keyinfo.forEvent event
-        switch combo
-            when 'enter'
-                v = @input.value
-                v = v.slice(0, @input.selectionStart) + '\n' + v.slice @input.selectionEnd
-                s = @input.selectionStart
-                @input.value = v
-                @input.selectionStart = s+1
-                @input.selectionEnd = s+1
-                @setText v
-            when 'esc'
-                @kali.focus()
+        @kali.focus()
+        @stage.shapes.clearText()
         
     onInput: (event) => @setText event.target.value
         
@@ -78,5 +73,43 @@ class Text
         bbox = @item.bbox()
         @input.style.width  = "#{bbox.width+100}px"
         @input.style.height = "#{bbox.height+200}px"
+
+    select: (action) ->
+        
+        switch action
+            when 'all'
+                @input.selectionStart = 0
+                @input.selectionEnd   = @input.value.length 
+            when 'none'
+                @input.selectionStart = @input.selectionEnd
+        
+    # 000   000  00000000  000   000  
+    # 000  000   000        000 000   
+    # 0000000    0000000     00000    
+    # 000  000   000          000     
+    # 000   000  00000000     000     
+    
+    onKeyDown: (event) =>
+        
+        {mod, key, combo, char} = keyinfo.forEvent event
+        
+        switch combo
+            
+            when 'enter'
+                
+                v = @input.value
+                v = v.slice(0, @input.selectionStart) + '\n' + v.slice @input.selectionEnd
+                s = @input.selectionStart
+                @input.value = v
+                @input.selectionStart = s+1
+                @input.selectionEnd   = s+1
+                @setText v
+                
+            when 'command+a' then stopEvent(event) and @select 'all'
+            when 'command+d' then stopEvent(event) and @select 'none'
+                
+            when 'esc', 'tab'
+
+                @endEditing()
         
 module.exports = Text

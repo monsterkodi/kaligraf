@@ -7,7 +7,8 @@
 
 { resolve, elem, post, drag, stopEvent, last, clamp, pos, fs, log, _ } = require 'kxk'
 
-{ growBox, normRect, boxForItems, bboxForItems, boxOffset, boxCenter } = require './utils'
+{   contrastColor, normRect, bboxForItems, 
+    growBox, boxForItems, boxOffset, boxCenter } = require './utils'
 
 { clipboard } = require 'electron'
 
@@ -43,6 +44,8 @@ class Stage
 
         @zoom = 1
         @virgin = true
+        
+        @setColor new SVG.Color '#222'
 
     onStage: (action, value) =>
 
@@ -54,6 +57,8 @@ class Stage
 
         @color = c
         @kali.element.style.background = @color
+        
+    foregroundColor: -> contrastColor @color
 
     # 000  000000000  00000000  00     00
     # 000     000     000       000   000
@@ -86,6 +91,8 @@ class Stage
         else
             []
 
+    isEditableItem: (item) -> _.isFunction(item.array) and item.type != 'text'
+            
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
     # 000000000  000   000   000 000   0000000   

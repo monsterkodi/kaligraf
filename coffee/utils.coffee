@@ -186,6 +186,15 @@ module.exports =
         svg.gradient 'linear', (stop) ->
             stop.at 0.0, "#000"
             stop.at 1.0, "#fff"
+
+    contrastColor: (c) ->
+
+        if module.exports.colorBrightness(c) < 0.5
+            new SVG.Color '#fff'
+        else
+            new SVG.Color '#000'
+            
+    colorBrightness: (c) -> c = new SVG.Color(c); (c.r + c.g + c.b)/(3*255)
             
     #  0000000  000   000  00000000   0000000  000   000  00000000  00000000    0000000  
     # 000       000   000  000       000       000  000   000       000   000  000       

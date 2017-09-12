@@ -139,7 +139,7 @@ class Edit
         if object = @objectForItem item 
             return object
             
-        if _.isFunction(item.array) and item.type != 'text'
+        if @stage.isEditableItem item
 
             object = new Object @, item
             @objects.push object 

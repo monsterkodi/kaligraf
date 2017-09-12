@@ -8,7 +8,7 @@
 
 { elem, drag, stopEvent, post, clamp, log, $, _ } = require 'kxk'
 
-{ colorGradient, grayGradient, checkersPattern } = require './utils'
+{ contrastColor, colorGradient, grayGradient, checkersPattern } = require './utils'
 
 Tool = require './tool'
 
@@ -167,7 +167,7 @@ class Palette extends Tool
 
         @color = color
 
-        i = @invert @color
+        i = contrastColor @color
 
         @dot.attr stroke: i
         @lum.attr stroke: i, fill:   @color
@@ -243,14 +243,6 @@ class Palette extends Tool
     xPosEvent: (event) ->
         r = $("#stage").getBoundingClientRect()
         x = event.pageX - r.left - @element.offsetLeft
-
-    invert: (c) ->
-        if c.r == c.g == c.b
-            return new SVG.Color c.r+c.g+c.b < 255+128 and '#fff' or '#000'
-        if @luminance < 0.5
-            new SVG.Color '#fff'
-        else
-            new SVG.Color '#000'
 
     checkers: (c='#fff') ->
         @svg.pattern 10, 10, (add) ->

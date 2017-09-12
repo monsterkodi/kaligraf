@@ -66,8 +66,8 @@ class Tools extends Tool
     init: () ->
 
         @stage     = @kali.stage
-        @selection = @stage.selection
         @shapes    = @stage.shapes
+        @selection = @stage.selection
         
         tools = [
             [
@@ -104,10 +104,11 @@ class Tools extends Tool
                 { name: 'zoom',  class: 'zoom', action: 'zoom_reset',  combo: 'command+0' }
                 { name: 'grid',  class: 'grid', action: 'grid_toggle', combo: 'command+g' }
                 { name: 'width', class: 'line' }
+                { name: 'font',  class: 'font' }
             ]            
             [
-                { name: 'image',  group: 'shape'}
-                { name: 'text',   group: 'shape'}
+                { name: 'image',  group: 'shape' }
+                { name: 'text',   group: 'shape' }
             ]
         ]
         
@@ -238,6 +239,11 @@ class Tools extends Tool
             active?.deactivate()
             
         tool.activate()
+        
+        if name == 'text'
+            @selection.clear()
+        else
+            @shapes.clearText()
         
         switch name
             when 'edit'

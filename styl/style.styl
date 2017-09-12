@@ -27,6 +27,9 @@
     stroke-linecap          round
     stroke-linejoin         round
 
+button
+    border none
+    
 // 000000000  00000000  000   000  000000000  00000000  0000000    000  000000000    
 //    000     000        000 000      000     000       000   000  000     000       
 //    000     0000000     00000       000     0000000   000   000  000     000       
@@ -55,15 +58,36 @@
 
 .fontList
     position                absolute
-    background-color        #444
-    border                  1px solid white
+    background              #222
+
+.fontListScroll
+    overflow-y              auto
     height                  400px
-    overflow-x              auto
 
 .fontElem
-    border                  1px solid gray
     height                  30px
     font-size               20px
+    padding-left            10px
+    padding-top             4px
+    cursor                  pointer
+  
+.winTitle 
+    height                  30px
+    background              #222
+    cursor                  -webkit-grab
+    
+.winTitleText        
+    color                   #888
+    font-weight             bold
+    margin-top              6px
+    margin-left             10px
+    pointer-events          none
+    float                   left
+    
+.winTitleClose
+    margin                  4px
+    float                   right
+    cursor                  pointer
         
 //  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000  
 // 000       000       000      000       000          000     000  000   000  0000  000  
@@ -200,8 +224,13 @@
         // color               #000
         // background-color    #eee
 
+button
 .tool
 .item
+.winTitleClose
+.fontElem
+    font-family             Helvetica, Arial
+    font-weight             bold
     color                   #bbb
     background              #222
     &.active
@@ -209,11 +238,14 @@
     &:hover
         color               #ff0
         background-color    #333
-        
-.tool    
-    font-family             Helvetica, Arial
-    font-weight             bold
+
+button
+.tool
+.item
+.winTitle
     font-size               13px
+    
+.tool    
     position                absolute
     width                   60px
     height                  60px    

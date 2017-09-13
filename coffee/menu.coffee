@@ -40,6 +40,8 @@ class Menu
         
         for button in buttons
             @children.push new Button @, button
+            
+        @element.style.display = 'none' if @kali.app
 
 class Menus
     

@@ -165,9 +165,10 @@ class KaliApp
             minWidth:        556
             minHeight:       206
             useContentSize:  true
-            fullscreenable:  true
+            fullscreenable:  false
+            fullscreen:      false
             show:            false
-            backgroundColor: '#000'
+            backgroundColor: '#111'
             titleBarStyle:   'hidden'
 
         win.loadURL "file://#{__dirname}/index.html"

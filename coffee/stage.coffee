@@ -10,7 +10,8 @@
 {   contrastColor, normRect, bboxForItems, 
     growBox, boxForItems, boxOffset, boxCenter } = require './utils'
 
-{ clipboard } = require 'electron'
+electron  = require 'electron'
+clipboard = electron.clipboard
 
 SVG       = require 'svg.js'
 clr       = require 'svg.colorat.js'
@@ -129,8 +130,6 @@ class Stage
             @tools.activate 'text'
         else
             if not item?
-                log window.main?
-                log window.main?.toggleMaximize?
                 window.main?.toggleMaximize()
             else
                 log 'dblclick', item?.id()
@@ -146,6 +145,7 @@ class Stage
         @color = c
         @kali.element.style.background = @color
         document.body.style.background = @color
+        # electron.remote.getCurrentWindow().setBackgroundColor @color
         
         prefs.set 'stageColor', @color.toHex()    
     

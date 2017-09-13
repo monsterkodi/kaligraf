@@ -19,14 +19,13 @@ class Main
         post.setMaxListeners 100
         post.on 'slog', (t) -> window.logview?.appendText t
         
-        @kali = new Kali element: element  
+        @kali = new Kali element:element, app:not window.area?
         @kali.setStyle 'style'
         
-        if window.area?
-            window.area.on 'resized', @onResize
+        if @kali.app
+            window.onresize = => @onResize window.innerWidth, window.innerHeight
         else
-            window.onresize = (event) =>
-                @onResize window.innerWidth, window.innerHeight
+            window.area.on 'resized', @onResize
                 
     onResize: (w, h) => 
         
@@ -42,7 +41,7 @@ class Main
 
     toggleMaximize: ->
         
-        return if window.area?
+        return if not @kali.app
         
         win = electron.remote.getCurrentWindow()
         if win?.isMaximized()

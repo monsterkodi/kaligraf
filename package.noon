@@ -1,7 +1,7 @@
 name            kaligraf
 productName     kaligraf
-version         0.0.1
-description     experiment
+version         0.1.0
+description     svg editor
 main            js/app.js
 author          monsterkodi
 license         Unlicense
@@ -13,8 +13,8 @@ dependencies
                 kxk             ^0.16.12
                 svg.colorat.js  ^1.0.0
                 svg.js          ^2.6.3
-                system-font-families  ^0.5.0
 devDependencies
                 appdmg          ^0.4.5
-                electron        ^1.7.6
+                electron        ^1.8.0
                 electron-packager  ^9.0.1
+                electron-rebuild  ^1.6.0

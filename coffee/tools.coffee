@@ -19,7 +19,7 @@ class Tools extends Tool
         
         @tools    = []
         @children = []
-        @setPos x:0, y:0
+        @setPos x:0, y:@kali.app and 30 or 0
         
         post.on 'tool',   @onAction
         post.on 'toggle', (name) => @[name]?.toggleVisible()

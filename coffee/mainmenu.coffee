@@ -85,10 +85,6 @@ class MainMenu
                 label:       'Toggle DevTools'
                 accelerator: 'Cmd+Alt+I'
                 click:       (i,win) -> win?.webContents.openDevTools()
-            ,                
-                label:       'Toggle FullScreen'
-                accelerator: 'Ctrl+Cmd+F'
-                click:       (i,win) -> win?.setFullScreen !win.isFullScreen()
             ]
         ,        
             # 000   000  00000000  000      00000000 

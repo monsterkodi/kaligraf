@@ -18,6 +18,7 @@ class Kali
         
         prefs.init()
         
+        @app = cfg.app
         @element = cfg?.element ? window
         @element.style.overflow = 'initial'
         @element.parentNode.style.overflow = 'initial'

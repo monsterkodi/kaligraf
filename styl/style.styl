@@ -1,26 +1,49 @@
 
-//  0000000  000   000   0000000
-// 000       000   000  000
-// 0000000    000 000   000  0000
-//      000     000     000   000
-// 0000000       0       0000000
+// 0000000     0000000   0000000    000   000
+// 000   000  000   000  000   000   000 000
+// 0000000    000   000  000   000    00000
+// 000   000  000   000  000   000     000
+// 0000000     0000000   0000000       000
 
+body
+    background          #111
+    padding             0
+    margin              0
+    overflow            hidden
+    -webkit-user-select none
+    -webkit-app-region  no-drag
+
+*
+    outline-width       0
+    outline-style       none
+
+fill-abs()
+    position            absolute
+    bottom              0
+    right               0
+    left                0
+    top                 0
+
+body
+#kali
 #selection
 #resizer
 #stage
 #edit
 #grid
-    position                absolute
-    left                    0
-    right                   0
-    top                     0
-    bottom                  0
+    fill-abs()
 
 #selection
 #resizer
 #edit
 #grid
     pointer-events          none
+
+//  0000000  000   000   0000000
+// 000       000   000  000
+// 0000000    000 000   000  0000
+//      000     000     000   000
+// 0000000       0       0000000
 
 .resizerSVG
 .stageSVG
@@ -62,7 +85,7 @@ button
     &.active
         color               #ff0
         background          #333
-        
+
 // 000   000  000  000   000  000000000  000  000000000  000      00000000
 // 000 0 000  000  0000  000     000     000     000     000      000
 // 000000000  000  000 0 000     000     000     000     000      0000000
@@ -73,7 +96,7 @@ button
     border-top-left-radius  6px
     border-top-right-radius 6px
     border-bottom           1px solid #333
-    
+
 .winTitleText
 .winTitleButton
 .winTitleClose
@@ -335,6 +358,7 @@ button
 // 000   000  00000000  000   000   0000000
 
 #menus
+    -webkit-app-region      drag
     font-family             Helvetica, Arial
     font-weight             bold
     font-size               13px

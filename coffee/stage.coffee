@@ -54,13 +54,6 @@ class Stage
         switch action
 
             when 'setColor' then @setColor value
-
-    setColor: (c) ->
-
-        @color = c
-        @kali.element.style.background = @color
-        
-        prefs.set 'stageColor', @color.toHex()
         
     foregroundColor: -> contrastColor @color
 
@@ -135,13 +128,26 @@ class Stage
         if item?.type == 'text'
             @tools.activate 'text'
         else
-            log 'dblclick', item?.id()
+            if not item?
+                log window.main?
+                log window.main?.toggleMaximize?
+                window.main?.toggleMaximize()
+            else
+                log 'dblclick', item?.id()
         
     #  0000000   0000000   000       0000000   00000000   
     # 000       000   000  000      000   000  000   000  
     # 000       000   000  000      000   000  0000000    
     # 000       000   000  000      000   000  000   000  
     #  0000000   0000000   0000000   0000000   000   000  
+
+    setColor: (c) ->
+
+        @color = c
+        @kali.element.style.background = @color
+        document.body.style.background = @color
+        
+        prefs.set 'stageColor', @color.toHex()    
     
     onColor: (color, prop, value) =>
         

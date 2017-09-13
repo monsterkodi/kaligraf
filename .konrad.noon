@@ -1,1 +1,2 @@
 coffee  . map file 
+pug     . ext html . replace .. /styl/ /js/

@@ -183,6 +183,7 @@ class FontList
         @kali.insertBelowTools @element
         
         @activeGroup = @groupForFamily @kali.tools.getTool('font').family        
+        @activeGroup ?= 'Sans'
         @showGroup @activeGroup
 
     groupForFamily: (family) ->

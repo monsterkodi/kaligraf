@@ -5,6 +5,8 @@
 // 000   000  000   000  000   000     000
 // 0000000     0000000   0000000       000
 
+toolSize = 66px
+
 body
     background          #111
     padding             0
@@ -298,20 +300,25 @@ button
 .winTitle
     font-size               13px
 
-.tool
+.tools
     -webkit-app-region      drag
+    
+.tool    
     position                absolute
-    width                   60px
-    height                  60px
+    width                   toolSize
+    height                  toolSize
     cursor                  pointer
     &.down
-        height              30px
+        height              toolSize / 2
 
 .tool .title
     margin-top              4px
     text-align              center
     padding-top             4px
     padding-bottom          4px
+    
+.tools .title
+    margin-top              34px
 
 .toolPlus
 .toolMinus
@@ -364,7 +371,7 @@ button
     font-weight             bold
     font-size               13px
     position                absolute
-    left                    60px
+    left                    toolSize
     top                     0
 
 .menu

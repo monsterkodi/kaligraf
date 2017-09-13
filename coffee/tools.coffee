@@ -19,7 +19,8 @@ class Tools extends Tool
         
         @tools    = []
         @children = []
-        @setPos x:0, y:@kali.app and 30 or 0
+        # @setPos x:0, y:@kali.app and @kali.toolSize/2 or 0
+        @setPos x:0, y:0
         
         post.on 'tool',   @onAction
         post.on 'toggle', (name) => @[name]?.toggleVisible()
@@ -109,9 +110,10 @@ class Tools extends Tool
         tail = last @children
         
         if tool.cfg.orient == 'down'
-            tool.setPos x:(tail? and tail.pos().x or 0) + 60, y:0
+            tool.setPos x:(tail? and tail.pos().x or 0) + @kali.toolSize, y:0
         else
-            tool.setPos x:0, y:(tail? and tail.pos().y or -30) + 60
+            y = not @kali.app and -@kali.toolSize/2 or 0
+            tool.setPos x:0, y:(tail? and tail.pos().y or y) + @kali.toolSize
         
         tool.parent = @
         @children.push tool

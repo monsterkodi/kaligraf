@@ -457,7 +457,7 @@ class Stage
 
         vc = @viewCenter()
         vc.x = 560.5 if @viewSize().x > 1120
-        vc.minus(pos(60.5,30.5)).scale(1/zoom)
+        vc.minus(pos(@kali.toolSize+0.5,@kali.toolSize/2+0.5)).scale(1/zoom)
 
     setCursor: (cursor) -> @svg.style cursor: cursor
 

@@ -29,7 +29,7 @@ class Main
                 
     onResize: (w, h) => 
         
-        log "onResize #{w} #{h}"
+        # log "onResize #{w} #{h}"
         
         if @kali.stage.virgin
             delete @kali.stage.virgin

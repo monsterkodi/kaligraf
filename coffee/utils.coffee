@@ -202,8 +202,7 @@ module.exports =
     # 000       000   000  000       000       000  000   000       000   000       000  
     #  0000000  000   000  00000000   0000000  000   000  00000000  000   000  0000000   
     
-    checkersPattern: (svg, c='#fff') ->
-        s = 10
+    checkersPattern: (svg, s, c='#fff') ->
         s2 = s*2
         svg.pattern s2, s2, (add) ->
             add.rect(s2,s2).fill c

@@ -81,9 +81,9 @@ class Tool
                 tool = @kali.tools.newTool child
                 tool.parent = @
                 if @cfg.orient == 'down'
-                    tool.setPos x:tail.pos().x, y:tail.pos().y+30
+                    tool.setPos x:tail.pos().x, y:tail.pos().y+@kali.toolSize/2
                 else
-                    tool.setPos x:tail.pos().x+60, y:tail.pos().y
+                    tool.setPos x:tail.pos().x+@kali.toolSize, y:tail.pos().y
                 @children.push tool
             @hideChildren()
     

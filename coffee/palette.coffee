@@ -8,12 +8,12 @@
 
 { elem, drag, stopEvent, post, clamp, log, $, _ } = require 'kxk'
 
-{ contrastColor, colorGradient, grayGradient, checkersPattern } = require './utils'
+{ contrastColor, colorGradient, grayGradient } = require './utils'
 
 Tool = require './tool'
 
 WIDTH  = 255
-HEIGHT = 30
+HEIGHT = 0
 
 class Palette extends Tool
 
@@ -21,6 +21,8 @@ class Palette extends Tool
 
         super @kali, name: 'palette', class: 'palette'
 
+        HEIGHT = @kali.toolSize/2
+        
         @mode      = 'rgb'
         @alpha     = 1
         @value     = 2.0/3

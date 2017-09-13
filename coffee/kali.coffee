@@ -24,7 +24,9 @@ class Kali
         @element.parentNode.style.overflow = 'initial'
         @toolDiv = elem 'div', id: 'tools'
         @element.appendChild @toolDiv
-                
+        
+        @toolSize = 66
+        
         @menus   = new Menu  @
         @trans   = new Trans @
         @tools   = new Tools @, name: 'tools', text: 'tools', orient: 'down'

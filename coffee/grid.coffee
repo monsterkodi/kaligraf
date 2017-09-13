@@ -5,7 +5,7 @@
 # 000   000  000   000  000  000   000
 #  0000000   000   000  000  0000000
 
-{ stopEvent, elem, post, log, _ } = require 'kxk'
+{ stopEvent, elem, prefs, post, log, _ } = require 'kxk'
 
 Tool = require './tool'
 
@@ -27,6 +27,8 @@ class Grid extends Tool
         post.on 'stage', @onStage
 
         @grid = @svg.group()
+        
+        @setVisible prefs.get 'grid', false
 
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
@@ -110,9 +112,10 @@ class Grid extends Tool
             
     onStage: (prop, value) => if prop == 'viewbox' and @gridVisible() then @drawGrid()
 
-    toggleGrid:  -> if @gridVisible() then @hideGrid() else @showGrid()
+    setVisible: (v) -> if v then @showGrid() else @hideGrid()
+    toggleGrid:  -> @setVisible not @gridVisible()
     gridVisible: -> @svg.visible()
-    showGrid:    -> @drawGrid()
-    hideGrid:    -> @svg.hide()
+    showGrid:    -> @drawGrid(); prefs.set 'grid', true
+    hideGrid:    -> @svg.hide(); prefs.set 'grid', false
 
 module.exports = Grid

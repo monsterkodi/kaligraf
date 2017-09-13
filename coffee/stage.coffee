@@ -5,7 +5,7 @@
 #      000     000     000   000  000   000  000
 # 0000000      000     000   000   0000000   00000000
 
-{ resolve, elem, post, drag, stopEvent, last, empty, clamp, pos, fs, log, _ } = require 'kxk'
+{ resolve, elem, post, drag, prefs, stopEvent, last, empty, clamp, pos, fs, log, _ } = require 'kxk'
 
 {   contrastColor, normRect, bboxForItems, 
     growBox, boxForItems, boxOffset, boxCenter } = require './utils'
@@ -37,16 +37,17 @@ class Stage
 
         @kali.element.addEventListener 'wheel', @onWheel
         @element.addEventListener 'mousemove', @onMove
+        @element.addEventListener 'dblclick', @onDblClick
 
         post.on 'stage', @onStage
         post.on 'color', @onColor
         post.on 'line',  @onLine
         post.on 'font',  @onFont
 
-        @zoom = 1
+        @zoom   = 1
         @virgin = true
         
-        @setColor new SVG.Color '#222'
+        @setColor new SVG.Color prefs.get 'stageColor', '#222'
 
     onStage: (action, value) =>
 
@@ -58,6 +59,8 @@ class Stage
 
         @color = c
         @kali.element.style.background = @color
+        
+        prefs.set 'stageColor', @color.toHex()
         
     foregroundColor: -> contrastColor @color
 
@@ -126,6 +129,14 @@ class Stage
         center = @kali.trans.center item
         @kali.trans.center item, center.plus delta.times 1.0/@zoom
 
+    onDblClick: (event) =>
+        
+        item = @itemAtPos pos event
+        if item?.type == 'text'
+            @tools.activate 'text'
+        else
+            log 'dblclick', item?.id()
+        
     #  0000000   0000000   000       0000000   00000000   
     # 000       000   000  000      000   000  000   000  
     # 000       000   000  000      000   000  0000000    
@@ -150,6 +161,9 @@ class Stage
         
         for item in @selectedItems(type:'text')
             item.font prop, value
+            
+        @selection.updateItems()
+        @resizer.updateBox()
                 
     # 000      000  000   000  00000000  
     # 000      000  0000  000  000       

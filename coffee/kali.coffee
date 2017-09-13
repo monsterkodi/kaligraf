@@ -5,7 +5,7 @@
 # 000  000   000   000  000      000  
 # 000   000  000   000  0000000  000  
 
-{ setStyle, keyinfo, stopEvent, elem, log, $ } = require 'kxk'
+{ setStyle, keyinfo, stopEvent, prefs, elem, log, $ } = require 'kxk'
 
 Stage = require './stage'
 Tools = require './tools'
@@ -15,6 +15,8 @@ Trans = require './trans'
 class Kali
 
     constructor: (cfg) ->
+        
+        prefs.init()
         
         @element = cfg?.element ? window
         @element.style.overflow = 'initial'

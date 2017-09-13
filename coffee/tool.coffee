@@ -219,6 +219,7 @@ class Tool
     # 000   000   0000000     000     000      0      00000000  
     
     getActive: (group) ->
+        
         if @group == group and @active
             return @
         if @hasChildren()
@@ -226,6 +227,21 @@ class Tool
                 if a = tool.getActive group
                     return a
 
+    getTool: (name) ->
+        
+        if @name == name
+            return @
+        if @hasChildren()
+            for tool in @children
+                if t = tool.getTool name
+                    return t
+                    
+    # 00     00  000  000   000  000   000   0000000  00000000   000      000   000   0000000  
+    # 000   000  000  0000  000  000   000  000       000   000  000      000   000  000       
+    # 000000000  000  000 0 000  000   000  0000000   00000000   000      000   000  0000000   
+    # 000 0 000  000  000  0000  000   000       000  000        000      000   000       000  
+    # 000   000  000  000   000   0000000   0000000   000        0000000   0000000   0000000   
+    
     minusPlus: (minusCB, plusCB) ->
         plus  = elem 'span', class:'toolPlus',  text:'+'
         minus = elem 'span', class:'toolMinus', text:'-'               

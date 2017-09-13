@@ -5,7 +5,7 @@
 #    000     000   000  000   000  000           000
 #    000      0000000    0000000   0000000  0000000 
 
-{ elem, stopEvent, fileExists, post, first, last, empty, fs, path, log, _ } = require 'kxk'
+{ elem, stopEvent, fileExists, post, prefs, first, last, empty, fs, path, log, _ } = require 'kxk'
 
 Tool = require './tool'
 
@@ -33,29 +33,11 @@ class Tools extends Tool
     # 000        000   000  00000000  000       0000000   
     
     loadPrefs: ->
-        
-        @stroke.set 
-            mode:  'gry'
-            value: 0.7
-            alpha: 0.9
-            
-        @fill.set 
-            mode:  'gry'
-            value: 0.9
-            alpha: 0.5
-            
-        @width.setWidth 4
-        
-        # @grid.showGrid()
-        
-        @activateTool 'rect'
-        @activateTool 'pick'
-        @activateTool 'bezier'
-        @activateTool 'edit'
-        @activateTool 'text'
-        
-        post.emit 'stage', 'setColor', '#666'
-        post.emit 'tool', 'load'
+
+        @getTool(prefs.get 'activeTool', 'pick')?.onClick()
+                
+        # post.emit 'stage', 'setColor', '#666'
+        # post.emit 'tool', 'load'
         
     # 000  000   000  000  000000000  
     # 000  0000  000  000     000     
@@ -239,6 +221,8 @@ class Tools extends Tool
             active?.deactivate()
             
         tool.activate()
+        
+        prefs.set 'activeTool', name
         
         if name == 'text'
             @selection.clear()

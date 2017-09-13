@@ -82,19 +82,23 @@ class Palette extends Tool
 
             when 'proxy'
                 
-                @setMode     value.mode
-                @proxy     = value.name
-                @alpha     = value.alpha
-                @value     = value.value
-                @luminance = value.luminance
-                @color     = value.color
-                
-                @gradientRGB = colorGradient @svg, @luminance
-                @rgb.attr fill: @gradientRGB
-                @lph.attr x:@alpha*(WIDTH-HEIGHT/3)
-                @lum.attr x:@luminance*(WIDTH-HEIGHT/3)
-                
-                @setColor @value
+                @setProxy value
+           
+    setProxy: (color) ->
+        
+        @setMode     color.mode
+        @proxy     = color.name
+        @alpha     = color.alpha
+        @value     = color.value
+        @luminance = color.luminance
+        @color     = color.color
+        
+        @gradientRGB = colorGradient @svg, @luminance
+        @rgb.attr fill: @gradientRGB
+        @lph.attr x:@alpha*(WIDTH-HEIGHT/3)
+        @lum.attr x:@luminance*(WIDTH-HEIGHT/3)
+        
+        @setColor @value
                 
     selectGRY: (event) => @pick  event, @gry, @selectGRY
     selectRGB: (event) => @pick  event, @rgb, @selectRGB

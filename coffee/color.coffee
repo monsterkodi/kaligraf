@@ -5,7 +5,7 @@
 # 000       000   000  000      000   000  000   000  
 #  0000000   0000000   0000000   0000000   000   000  
 
-{ elem, drag, stopEvent, post, clamp, first, pos, log, $, _ } = require 'kxk'
+{ elem, drag, stopEvent, post, prefs, clamp, first, pos, log, $, _ } = require 'kxk'
 
 { colorGradient, grayGradient, checkersPattern } = require './utils'
 
@@ -34,10 +34,7 @@ class Color extends Tool
         @top.addClass 'trans'
         @sqr.addClass 'trans'
         
-        @mode      = 'rgb'
-        @alpha     = 1
-        @value     = 2/3
-        @luminance = 0.5
+        @copy prefs.get @name, luminance:0.5, color:'#fff', alpha:1, value:2/3, mode:'rgb'
         
         post.on 'palette', @onPalette
 
@@ -61,11 +58,13 @@ class Color extends Tool
 
     copy: (v) ->
         
+        @color     = new SVG.Color v.color if v.color?
         @luminance = v.luminance if v.luminance?
-        @color     = v.color     if v.color?
         @alpha     = v.alpha     if v.alpha?
         @value     = v.value     if v.value?
         @mode      = v.mode      if v.mode?
+        
+        prefs.set @name, luminance:@luminance, color:@color.toHex(), alpha:@alpha, value:@value, mode:@mode
         
         @update()
         
@@ -90,6 +89,7 @@ class Color extends Tool
             @showChildren()
             
             @kali.palette = new Palette @kali
+            @kali.palette.setProxy fill
     
     hideChildren: -> post.emit 'palette', 'hide'
             

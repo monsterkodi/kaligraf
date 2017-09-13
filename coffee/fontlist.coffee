@@ -120,8 +120,8 @@ class FontList
     constructor: (@kali) ->
         
         @element = elem 'div', class: 'fontList'
-        @element.style.left = "#{prefs.get 'fontlist.pos.x', 64}px"
-        @element.style.top  = "#{prefs.get 'fontlist.pos.y', 34}px"
+        @element.style.left = "#{prefs.get 'fontlist:pos:x', 64}px"
+        @element.style.top  = "#{prefs.get 'fontlist:pos:y', 34}px"
         @element.tabIndex   = 100
         
         @title = winTitle close:@onClose, buttons: Object.keys(fontGroups).map (group) => 
@@ -136,8 +136,8 @@ class FontList
             onMove: (drag) => 
                 x = parseInt(@element.style.left) + drag.delta.x
                 y = parseInt(@element.style.top)  + drag.delta.y
-                prefs.set 'fontlist.pos.x', x
-                prefs.set 'fontlist.pos.y', y
+                prefs.set 'fontlist:pos:x', x
+                prefs.set 'fontlist:pos:y', y
                 @element.style.left = "#{x}px"
                 @element.style.top  = "#{y}px"
         
@@ -178,7 +178,7 @@ class FontList
                 for font in fonts
                     addFont font if font?
                     
-            @select prefs.get("fontlist.selected.#{group}", 0), group, emit:false
+            @select prefs.get("fontlist:selected:#{group}", 0), group, emit:false
                     
         @kali.insertBelowTools @element
         
@@ -214,11 +214,11 @@ class FontList
     isVisible:      -> @element.style.display != 'none'
     toggleDisplay:  -> @setVisible not @isVisible()
     setVisible: (v) -> if v then @show() else @hide()
-    hide: -> @element.style.display = 'none';  @element.blur();  prefs.set 'fontlist.visible', false
+    hide: -> @element.style.display = 'none';  @element.blur();  prefs.set 'fontlist:visible', false
     show: -> 
         @element.style.display = 'block'
         @element.focus()
-        prefs.set 'fontlist.visible', true
+        prefs.set 'fontlist:visible', true
         @active().scrollIntoViewIfNeeded false
     
     onClose: => @hide()
@@ -260,7 +260,7 @@ class FontList
         @active(group).scrollIntoViewIfNeeded false
         if opt?.emit != false
             post.emit 'font', 'family', @active(group).innerHTML
-        prefs.set "fontlist.selected.#{group}", index
+        prefs.set "fontlist:selected:#{group}", index
 
     onClick: (event) => @select childIndex event.target
     

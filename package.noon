@@ -1,4 +1,5 @@
 name          kaligraf
+productName   kaligraf
 version       0.0.1
 description   experiment
 main          js/main.js

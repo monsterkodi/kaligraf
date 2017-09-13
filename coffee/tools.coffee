@@ -35,9 +35,7 @@ class Tools extends Tool
     loadPrefs: ->
 
         @getTool(prefs.get 'activeTool', 'pick')?.onClick()
-        @getTool('font').onClick() if prefs.get 'fontlist.visible', false                     
-        # post.emit 'stage', 'setColor', '#666'
-        # post.emit 'tool', 'load'
+        @getTool('font').onClick() if prefs.get 'fontlist:visible', false                     
         
     # 000  000   000  000  000000000  
     # 000  0000  000  000     000     

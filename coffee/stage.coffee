@@ -163,7 +163,7 @@ class Stage
             item.font prop, value
             
         @selection.updateItems()
-        @resizer.updateBox()
+        @resizer.calcBox()
                 
     # 000      000  000   000  00000000  
     # 000      000  0000  000  000       

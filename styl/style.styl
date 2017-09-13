@@ -47,6 +47,7 @@ button
 .tool
 .item
 .winTitleClose
+.winTitleButton
     font-family             Helvetica, Arial
     font-weight             bold
     color                   #bbb
@@ -54,15 +55,13 @@ button
         color               #fff
     &:hover
         color               #ff0
-        background-color    #333
+        background          #333
 
 .fontElem
     color                   #bbb
-    // &:hover
-        // color               #fff
     &.active
         color               #ff0
-        background-color    #333
+        background          #333
         
 // 000   000  000  000   000  000000000  000  000000000  000      00000000
 // 000 0 000  000  0000  000     000     000     000     000      000
@@ -71,11 +70,19 @@ button
 // 00     00  000  000   000     000     000     000     0000000  00000000
 
 .winTitle
+    border-top-left-radius  6px
+    border-top-right-radius 6px
     border-bottom           1px solid #333
     
 .winTitleText
+.winTitleButton
 .winTitleClose
     color                   #333
+    &:hover
+        background          #222
+    &.active
+        color               #bbb
+        background          #333
 
 .winTitle
     height                  30px
@@ -90,10 +97,9 @@ button
 
 .winTitleClose
 .winTitleButton
-    // position                absolute
-    // right                   6px
-    // top                     6px
     cursor                  pointer
+    padding-top             8px
+    padding-bottom          7px
 
 // 000000000  00000000  000   000  000000000  00000000  0000000    000  000000000
 //    000     000        000 000      000     000       000   000  000     000
@@ -110,10 +116,10 @@ button
 .textEditInput
     transform-origin        top left
     pointer-events          auto
-    background-color        transparent
+    background              transparent
     border                  none
     &::selection
-        background-color    rgba(128,128,128,0.2)
+        background          rgba(128,128,128,0.2)
 
 // 00000000   0000000   000   000  000000000  000      000   0000000  000000000
 // 000       000   000  0000  000     000     000      000  000          000
@@ -123,13 +129,15 @@ button
 
 .fontList
     position                absolute
+    padding-bottom 6px
+    border-radius 6px
 
 .fontListScroll
-    overflow                scroll
+    overflow-y              scroll
     max-height              400px
 
 .fontElem
-    height                  30px
+    min-height                  30px
     font-size               20px
     padding-left            10px
     padding-right           10px
@@ -153,7 +161,7 @@ button
 
 .selectionRect
 .editRect
-    background-color        #888
+    background              #888
 
 
 // 00000000  0000000    000  000000000
@@ -314,7 +322,7 @@ button
 // 0000000   0000000    0000000   000        00000000
 
 .loupeRect
-    background-color        transparent
+    background              transparent
     opacity                 0.5
 
 .trans

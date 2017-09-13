@@ -5,10 +5,10 @@
 # 000       000   000  000  0000     000   
 # 000        0000000   000   000     000   
 
-{ stopEvent, elem, post, log, _ } = require 'kxk'
+{ stopEvent, prefs, elem, post, log, _ } = require 'kxk'
 
-Tool        = require './tool'
-FontList    = require './fontlist'
+Tool     = require './tool'
+FontList = require './fontlist'
 
 class Font extends Tool
 
@@ -21,11 +21,11 @@ class Font extends Tool
         bold   = elem 'span', class:'toolPlus',  text:'b'
         italic = elem 'span', class:'toolMinus', text:'i'               
         
-        @bold   = false
-        @italic = false
-        @weight = 'normal'
-        @style  = 'normal'
-        @family = 'Helvetica'
+        @bold   = prefs.get 'font.bold',   false
+        @italic = prefs.get 'font.italic', false
+        @weight = prefs.get 'font.weight', 'normal'
+        @style  = prefs.get 'font.style',  'normal'
+        @family = prefs.get 'font.family', 'Helvetica'
         
         post.on 'font', @onFont
         
@@ -36,7 +36,7 @@ class Font extends Tool
         boldItalic.appendChild bold
         boldItalic.appendChild italic
         @element.appendChild boldItalic
-        @element.focus()
+        @element.focus()       
         
     # 0000000     0000000   000      0000000    
     # 000   000  000   000  000      000   000  
@@ -44,12 +44,14 @@ class Font extends Tool
     # 000   000  000   000  000      000   000  
     # 0000000     0000000   0000000  0000000    
     
-    onBold:   (event) => 
+    onBold: (event) => 
         
         stopEvent event  
         @bold   = !@bold
         @weight = @bold and 'bold' or 'normal'
         post.emit 'font', 'weight', @weight
+        prefs.set 'font.bold',   @bold
+        prefs.set 'font.weight', @weight
         
     # 000  000000000   0000000   000      000   0000000  
     # 000     000     000   000  000      000  000       
@@ -63,6 +65,8 @@ class Font extends Tool
         @italic = !@italic
         @style  = @italic and 'italic' or 'normal'
         post.emit 'font', 'style', @style
+        prefs.set 'font.italic',   @italic
+        prefs.set 'font.style',    @style
         
     # 00000000   0000000   000   000  000000000  
     # 000       000   000  0000  000     000     
@@ -75,6 +79,7 @@ class Font extends Tool
         if prop == 'family'
             @family = value
             @title.style.fontFamily = @family
+            prefs.set 'font.family', @family
         
     #  0000000  000      000   0000000  000   000  
     # 000       000      000  000       000  000   
@@ -89,7 +94,11 @@ class Font extends Tool
         if @list? 
             @list.toggleDisplay()
         else
-            @list = new FontList @kali
-            @list.show()
+            @showList()
+            
+    showList: ->
+        
+        @list = new FontList @kali
+        @list.show()
     
 module.exports = Font

@@ -5,14 +5,14 @@
 # 000       000   000  000  0000     000     000      000       000     000   
 # 000        0000000   000   000     000     0000000  000  0000000      000   
 
-{ stopEvent, childIndex, keyinfo, elem, drag, clamp, last, post, log, _ } = require 'kxk'
+{ stopEvent, childIndex, prefs, keyinfo, elem, drag, clamp, last, post, log, _ } = require 'kxk'
 
 { winTitle } = require './utils'
 
 fontManager = require 'font-manager' 
 
 fontGroups = 
-    sans: [
+    Sans: [
         'Apple SD Gothic Neo'
         'Apple Symbols'
         'AppleGothic'        
@@ -43,7 +43,7 @@ fontGroups =
         'Varela Round'
         'Verdana'        
     ]
-    serif: [
+    Serif: [
         'Apple Braille'   
         'AppleMyungjo'    
         'Baskerville'
@@ -61,7 +61,7 @@ fontGroups =
         'Times'
         'Times New Roman'
     ]
-    mono: [
+    Mono: [
         'American Typewriter'
         'Andale Mono'
         'Courier'
@@ -81,7 +81,7 @@ fontGroups =
         'ProggyTinyTT'
         'Source Code Pro'
     ]
-    fancy: [
+    Fancy: [
         'Apple Chancery'
         'Baoli SC'
         'Bradley Hand'
@@ -109,7 +109,7 @@ fontGroups =
         'Yuppy TC'
         'Zapfino'
     ]
-    other: [
+    Other: [
         'Bodoni Ornaments'
         'Webdings'
         'Wingdings'
@@ -120,8 +120,8 @@ class FontList
     constructor: (@kali) ->
         
         @element = elem 'div', class: 'fontList'
-        @element.style.left = "#{120}px"
-        @element.style.top  = "#{60}px"
+        @element.style.left = "#{prefs.get 'fontlist.pos.x', 64}px"
+        @element.style.top  = "#{prefs.get 'fontlist.pos.y', 34}px"
         @element.tabIndex   = 100
         
         @title = winTitle close:@onClose, buttons: Object.keys(fontGroups).map (group) => 
@@ -134,8 +134,12 @@ class FontList
         @drag = new drag
             target: @title
             onMove: (drag) => 
-                @element.style.left = "#{parseInt(@element.style.left) + drag.delta.x}px"
-                @element.style.top  = "#{parseInt(@element.style.top)  + drag.delta.y}px"
+                x = parseInt(@element.style.left) + drag.delta.x
+                y = parseInt(@element.style.top)  + drag.delta.y
+                prefs.set 'fontlist.pos.x', x
+                prefs.set 'fontlist.pos.y', y
+                @element.style.left = "#{x}px"
+                @element.style.top  = "#{y}px"
         
         @element.addEventListener 'wheel', (event) -> event.stopPropagation()
         @element.addEventListener 'keydown', @onKeyDown
@@ -173,12 +177,21 @@ class FontList
             if group == last Object.keys fontGroups
                 for font in fonts
                     addFont font if font?
-
+                    
+            @select prefs.get("fontlist.selected.#{group}", 0), group, emit:false
+                    
         @kali.insertBelowTools @element
         
-        @activeGroup = 'sans'
-        @showGroup 'sans'
-      
+        @activeGroup = @groupForFamily @kali.tools.getTool('font').family        
+        @showGroup @activeGroup
+
+    groupForFamily: (family) ->
+        
+        for group,groupFonts of fontGroups
+            for elem in @scrolls[group].children
+                if elem.innerHTML == family
+                    return group
+    
     #  0000000  000   000   0000000   000   000
     # 000       000   000  000   000  000 0 000
     # 0000000   000000000  000   000  000000000
@@ -194,10 +207,19 @@ class FontList
         @scrolls[@activeGroup].style.display = 'block'
         button = @title.querySelector ".fontListGroup_#{@activeGroup}"
         button.classList.add 'active'
-            
-    show: -> @element.style.display = 'block'; @element.focus()
-    hide: -> @element.style.display = 'none';  @element.blur()
-    toggleDisplay: -> if @element.style.display == 'none' then @show() else @hide()
+        @active().scrollIntoViewIfNeeded false
+        @element.focus()
+        post.emit 'font', 'family', @active().innerHTML
+          
+    isVisible:      -> @element.style.display != 'none'
+    toggleDisplay:  -> @setVisible not @isVisible()
+    setVisible: (v) -> if v then @show() else @hide()
+    hide: -> @element.style.display = 'none';  @element.blur();  prefs.set 'fontlist.visible', false
+    show: -> 
+        @element.style.display = 'block'
+        @element.focus()
+        prefs.set 'fontlist.visible', true
+        @active().scrollIntoViewIfNeeded false
     
     onClose: => @hide()
     
@@ -207,7 +229,7 @@ class FontList
     # 000   000  000          000     000     000     000       
     # 000   000   0000000     000     000      0      00000000  
     
-    active: -> @scrolls[@activeGroup].querySelector '.active'
+    active: (group=@activeGroup) -> @scrolls[group].querySelector '.active'
     activeIndex: -> not @active() and -1 or childIndex @active()
         
     # 000   000   0000000   000   000  000   0000000    0000000   000000000  00000000  
@@ -221,7 +243,7 @@ class FontList
         groups = Object.keys fontGroups 
         index = groups.indexOf @activeGroup
         index = clamp 0, groups.length-1, index+dir
-        @showGroup groups[index]
+        @showGroup groups[index]        
         
     #  0000000  00000000  000      00000000   0000000  000000000  
     # 000       000       000      000       000          000     
@@ -229,14 +251,16 @@ class FontList
     #      000  000       000      000       000          000     
     # 0000000   00000000  0000000  00000000   0000000     000     
     
-    select: (index) ->
-        scroll = @scrolls[@activeGroup]
+    select: (index, group=@activeGroup, opt) ->
+        
+        scroll = @scrolls[group]
         index = clamp 0, scroll.children.length-1, index
-        @active()?.classList.remove 'active'
+        @active(group)?.classList.remove 'active'
         scroll.children[index].classList.add 'active'
-        @active().scrollIntoViewIfNeeded false
-        post.emit 'font', 'family', @active().innerHTML
-        # log ">#{@active().innerHTML}<"
+        @active(group).scrollIntoViewIfNeeded false
+        if opt?.emit != false
+            post.emit 'font', 'family', @active(group).innerHTML
+        prefs.set "fontlist.selected.#{group}", index
 
     onClick: (event) => @select childIndex event.target
     
@@ -252,10 +276,10 @@ class FontList
         
         switch combo
             
-            when 'up', 'left'    then @navigate -1
-            when 'down', 'right' then @navigate +1
-            when 'command+left'  then stopEvent(event); @navigateGroup -1
-            when 'command+right' then stopEvent(event); @navigateGroup +1
+            when 'up'            then @navigate -1
+            when 'down'          then @navigate +1
+            when 'left'          then @navigateGroup -1
+            when 'right'         then @navigateGroup +1
             when 'command+up'    then stopEvent(event); @select 0
             when 'command+down'  then stopEvent(event); @select @scrolls[@activeGroup].children.length-1
             when 'esc', 'enter'  then return @hide()

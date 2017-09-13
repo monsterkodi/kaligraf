@@ -44,10 +44,7 @@ class Main
         return if not @kali.app
         
         win = electron.remote.getCurrentWindow()
-        if win?.isMaximized()
-            win?.unmaximize() 
-        else
-            win?.maximize()
+        electron.ipcRenderer.send 'maximizeWindow', win.id
             
     start: ->
 

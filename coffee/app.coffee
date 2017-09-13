@@ -28,7 +28,8 @@ kaliapp  = undefined # < created in app.on 'ready'
 args  = require('karg') """
 
 #{pkg.productName}
-
+    
+    filelist  . ? files to open           . **
     noprefs   . ? don't load preferences  . = false
     verbose   . ? log more                . = false
     DevTools  . ? open developer tools    . = false
@@ -102,12 +103,17 @@ class KaliApp
     reloadWin: (win) -> win?.webContents.reloadIgnoringCache()
 
     toggleMaximize: (win) ->
-        if win.isMaximized()
-            win.unmaximize() 
+        
+        if win?
+            if win.isMaximized()
+                win.unmaximize() 
+            else
+                win.maximize()        
         else
-            win.maximize()        
+            @showWindows()             
 
     toggleWindows: =>
+        
         if wins().length
             if visibleWins().length
                 if activeWin()
@@ -121,23 +127,23 @@ class KaliApp
             @createWindow()
 
     hideWindows: =>
+        
         for w in wins()
             w.hide()
             
     showWindows: =>
+        
         for w in wins()
             w.show()
             
     raiseWindows: =>
+        
         if visibleWins().length
             for w in visibleWins()
                 w.showInactive()
             visibleWins()[0].showInactive()
             visibleWins()[0].focus()
-    
-    closeWindows: =>
-        w.close() for w in wins()
-    
+        
     screenSize: -> electron.screen.getPrimaryDisplay().workAreaSize
                     
     #  0000000  00000000   00000000   0000000   000000000  00000000
@@ -152,9 +158,9 @@ class KaliApp
         if not bounds
             {w, h} = @screenSize()
             bounds = {}
-            bounds.width = h + 122
+            bounds.width = w
             bounds.height = h
-            bounds.x = parseInt (w-bounds.width)/2
+            bounds.x = 0
             bounds.y = 0
             
         win = new Browser
@@ -173,10 +179,9 @@ class KaliApp
 
         win.loadURL "file://#{__dirname}/index.html"
         
-        win.on 'close',  @onCloseWin
-        win.on 'move',   @onMoveWin
-        win.on 'resize', @onResizeWin
-                               
+        win.on 'move',   @saveBounds
+        win.on 'resize', @saveBounds     
+        
         winReadyToShow = =>
             win.show()
             win.focus()
@@ -184,26 +189,17 @@ class KaliApp
             if args.DevTools then win.webContents.openDevTools()
                         
         win.on 'ready-to-show', winReadyToShow
-        win 
+        win
     
-    onMoveWin: (event) => event.sender.webContents.send 'saveBounds'
-    
-    # 00000000   00000000   0000000  000  0000000  00000000
-    # 000   000  000       000       000     000   000     
-    # 0000000    0000000   0000000   000    000    0000000 
-    # 000   000  000            000  000   000     000     
-    # 000   000  00000000  0000000   000  0000000  00000000
-    
-    onResizeWin: (event) => 
-    
-    onCloseWin: (event) =>
+    saveBounds: (event) -> prefs.set 'bounds', event.sender.getBounds()
         
     otherInstanceStarted: (args, dir) =>
         if not visibleWins().length
             @toggleWindows()
             
     quit: => 
-        @closeWindows()
+        prefs.save()
+        w.close() for w in wins()
         app.exit 0
         process.exit 0
         
@@ -216,8 +212,10 @@ class KaliApp
 # 000   000  000        000        000   0000000   000   000
 
 app.on 'ready', -> kaliapp = new KaliApp
+app.on 'activate', -> kaliapp.showWindows()
 app.on 'window-all-closed', -> kaliapp.quit()
-    
+app.on 'open-file', (event, file) -> log "open file #{file}"
+        
 app.setName pkg.productName
 
 module.exports = KaliApp

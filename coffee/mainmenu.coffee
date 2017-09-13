@@ -31,7 +31,7 @@ class MainMenu
             ,
                 label:       "Hide #{pkg.productName}"
                 accelerator: 'Cmd+H'
-                click:       app.hideWindows
+                role:        'hide'
             ,
                 label:       'Hide Others'
                 accelerator: 'Cmd+Alt+H'
@@ -59,16 +59,6 @@ class MainMenu
                 label:       'Maximize'
                 accelerator: 'Cmd+Shift+m'
                 click:       (i,win) -> app.toggleMaximize win
-            ,
-                type: 'separator'
-            ,                            
-                label:       'Close Window'
-                accelerator: 'Cmd+W'
-                click:       (i,win) -> win.close()
-            ,
-                label:       'Close Other Windows'
-                accelerator: 'CmdOrCtrl+Shift+w'
-                click:       app.closeOtherWindows
             ,
                 type: 'separator'
             ,                            

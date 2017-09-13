@@ -1,0 +1,34 @@
+#!/bin/bash
+
+_NAME="kaligraf.app"
+
+while getopts ":t" opt; do
+    case "$opt" in
+        t)
+            _DEV=1
+            ;;
+  esac
+done
+
+if [ $_DEV ]; then
+    killall Electron 2> /dev/null
+    killall Electron 2> /dev/null
+    _DIR=$(pwd)
+    cd ~/s/ko
+    echo "$(pwd)/./node_modules/electron/cli.js ./js/main.js $_DIR"
+    ./node_modules/electron/cli.js ./js/main.js "$_DIR" "$@" &
+    exit 0
+elif [ -x "/Applications/$_NAME" ]; then
+    _PATH="/Applications"
+elif [ -x "$HOME/Applications/$_NAME" ]; then
+    _PATH="$HOME/Applications"
+else
+    _PATH="$(mdfind \"kMDItemCFBundleIdentifier == 'net.monsterkodi.kaligraf'\" | grep -v ShipIt | head -1 | xargs -0 dirname)"
+    if [ ! -x "$_PATH/$_NAME" ]; then
+        node "`dirname $0`/../lib/node_modules/kaligraf/bin/download.js" $*
+        exit 0
+    fi
+fi
+
+# echo "$_PATH/$_NAME/Contents/MacOS/ko"
+"$_PATH/$_NAME/Contents/MacOS/kaligraf" "$(pwd)" "$@" &

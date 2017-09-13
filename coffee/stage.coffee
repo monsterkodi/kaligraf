@@ -145,7 +145,6 @@ class Stage
         @color = c
         @kali.element.style.background = @color
         document.body.style.background = @color
-        # electron.remote.getCurrentWindow().setBackgroundColor @color
         
         prefs.set 'stageColor', @color.toHex()    
     

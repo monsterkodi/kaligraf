@@ -10,7 +10,7 @@ pkg      = require '../package.json'
 electron = require 'electron'
 Menu     = electron.Menu
 
-action = (action) -> post.toWins 'tool', action
+action = (action, arg) -> post.toWins 'tool', action, arg
 
 class MainMenu
     
@@ -33,27 +33,63 @@ class MainMenu
                 { label: 'Quit',                accelerator: 'Cmd+Q',       click: app.quit}
             ]
         ,
+            # 00000000  000  000      00000000  
+            # 000       000  000      000       
+            # 000000    000  000      0000000   
+            # 000       000  000      000       
+            # 000       000  0000000  00000000  
+            
             label: 'File', submenu: [
-                { label: 'Save',        accelerator: 'command+s',           click: -> action 'save'}
-                { label: 'Open...',     accelerator: 'command+o',           click: -> action 'load'}
-                { label: 'Reload',      accelerator: 'command+r',           click: -> action 'load'}
-                { label: 'Clear',       accelerator: 'command+k',           click: -> action 'clear'}
+                { label: 'Open...',         accelerator: 'command+o',       click: -> action 'open'}
+                { label: 'Open Recent...',  accelerator: 'command+shift+o', click: -> action 'openRecent'}
+                { type:  'separator'}
+                { label: 'Save',            accelerator: 'command+s',       click: -> action 'save'}
+                { label: 'Save As...',      accelerator: 'command+shift+s', click: -> action 'saveAs'}
+                { type:  'separator'}    
+                { label: 'Clear',           accelerator: 'command+k',       click: -> action 'clear'}
+                { label: 'Reload',          accelerator: 'command+r',       click: -> action 'load'}
             ]
         ,
+            # 00000000  0000000    000  000000000  
+            # 000       000   000  000     000     
+            # 0000000   000   000  000     000     
+            # 000       000   000  000     000     
+            # 00000000  0000000    000     000     
+            
             label: 'Edit', submenu: [
-                { label: 'Cut',         accelerator: 'command+x',           click: -> action 'cut'}
-                { label: 'Copy',        accelerator: 'command+c',           click: -> action 'copy'}
-                { label: 'Paste',       accelerator: 'command+v',           click: -> action 'paste'}
+                { label: 'Center',      accelerator: 'command+e',           click: -> action 'center'}
                 { type:  'separator'}
                 { label: 'Front',       accelerator: 'command+alt+up',      click: -> action 'front'}
                 { label: 'Raise',       accelerator: 'command+up',          click: -> action 'raise'}
                 { label: 'Lower',       accelerator: 'command+down',        click: -> action 'lower'}
                 { label: 'Back',        accelerator: 'command+alt+down',    click: -> action 'back' }
                 { type:  'separator'}
-                { label: 'Center',      accelerator: 'command+e',           click: -> action 'center'}
+                { label: 'Cut',         accelerator: 'command+x',           click: -> action 'cut'}
+                { label: 'Copy',        accelerator: 'command+c',           click: -> action 'copy'}
+                { label: 'Paste',       accelerator: 'command+v',           click: -> action 'paste'}
+                { type:  'separator'}
                 { label: 'All',         accelerator: 'command+a',           click: -> action 'selectAll'}
                 { label: 'None',        accelerator: 'command+d',           click: -> action 'deselect'}
                 { label: 'Invert',      accelerator: 'command+i',           click: -> action 'invert'}        
+            ]
+        ,
+            # 000000000   0000000    0000000   000      
+            #    000     000   000  000   000  000      
+            #    000     000   000  000   000  000      
+            #    000     000   000  000   000  000      
+            #    000      0000000    0000000   0000000  
+            
+            label: 'Tool', submenu: [
+                { label: 'Text',        accelerator: 'command+t',           click: -> action 'click', 'text'}
+                { label: 'Font',        accelerator: 'command+f',           click: -> action 'click', 'font'}
+                { type:  'separator'}
+                { label: 'Bezier',      accelerator: 'command+b',           click: -> action 'click', 'bezier'}
+                { label: 'Line',        accelerator: 'command+l',           click: -> action 'click', 'line'}
+                { label: 'Polygon',     accelerator: 'command+p',           click: -> action 'click', 'polygon'}
+                { label: 'Width',       accelerator: 'command+\\',          click: -> action 'click', 'width'}
+                { type:  'separator'}
+                { label: 'Grid',        accelerator: 'command+g',           click: -> action 'click', 'grid'}
+                { label: 'Zoom',        accelerator: 'command+0',           click: -> action 'click', 'zoom'}
             ]
         ,
             # 000   000  000  000   000  0000000     0000000   000   000
@@ -69,7 +105,7 @@ class MainMenu
                 { label: 'Bring All to Front', accelerator: 'Alt+Cmd+`',        role: 'front'}
                 { type:  'separator'}
                 { label: 'Reload Window',      accelerator: 'Ctrl+Alt+Cmd+L',   click: (i,win) -> app.reloadWin win}
-                { label: 'Toggle DevTools',    accelerator: 'Cmd+Alt+I',        click: (i,win) -> win?.webContents.openDevTools()}
+                { label: 'Toggle DevTools',    accelerator: 'Cmd+Alt+I',        click: (i,win) -> win?.webContents.toggleDevTools()}
             ]
         ,        
             # 000   000  00000000  000      00000000 

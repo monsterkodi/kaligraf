@@ -152,7 +152,7 @@ class Shapes
         shape = @kali.shapeTool()
         for s,k of toolKeys
             if k and shape != s
-                @tools[s].onClick()
+                @tools.clickTool s
                 return s
         shape
     
@@ -348,9 +348,17 @@ class Shapes
 
     handleEscape: ->
         
-        if @edit?
-            @edit.dotsel.clear()
-        @draw?.handleEscape()
+        if @draw?
+            
+            if @draw.handleEscape()
+                @endDrawing()
+                return true
+            
+        if @edit? 
+            if @edit.dotsel.clear() then return true
+            if @edit.clear()        then return true
+            
+        false    
     
     endDrawing: ->
 

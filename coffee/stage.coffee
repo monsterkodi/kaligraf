@@ -5,13 +5,15 @@
 #      000     000     000   000  000   000  000
 # 0000000      000     000   000   0000000   00000000
 
-{ resolve, elem, post, drag, prefs, stopEvent, last, empty, clamp, pos, fs, log, _ } = require 'kxk'
+{   resolve, elem, post, drag, prefs, stopEvent, 
+    first, last, empty, clamp, pos, fs, log, _ } = require 'kxk'
 
 {   contrastColor, normRect, bboxForItems, 
     growBox, boxForItems, boxOffset, boxCenter } = require './utils'
 
 electron  = require 'electron'
 clipboard = electron.clipboard
+dialog    = electron.remote.dialog
 
 SVG       = require 'svg.js'
 clr       = require 'svg.colorat.js'
@@ -26,6 +28,8 @@ class Stage
         @element = elem 'div', id: 'stage'
         @kali.element.insertBefore @element, @kali.element.firstChild
 
+        @currentFile = prefs.get 'currentFile', '~/Desktop/kaligraf.svg'
+        
         @svg = SVG(@element).size '100%', '100%'
         @svg.addClass 'stageSVG'
         @svg.clear()
@@ -246,26 +250,55 @@ class Stage
 
         svgStr
 
+    # 000       0000000    0000000   0000000    
+    # 000      000   000  000   000  000   000  
+    # 000      000   000  000000000  000   000  
+    # 000      000   000  000   000  000   000  
+    # 0000000   0000000   000   000  0000000    
+    
+    load: (file=@currentFile) ->
+
+        svg = fs.readFileSync resolve(file), encoding: 'utf8'
+        @setSVG svg
+        
+    open: ->
+
+        opts =         
+            title:'         Open'
+            filters:        [ {name: 'SVG', extensions: ['svg']} ]
+            properties:     ['openFile']
+            
+        dialog.showOpenDialog opts, (files) => 
+            if file = first files
+                @currentFile = file
+                @load()
+        
     #  0000000   0000000   000   000  00000000
     # 000       000   000  000   000  000
     # 0000000   000000000   000 000   0000000
     #      000  000   000     000     000
     # 0000000   000   000      0      00000000
 
-    save: ->
+    save: (file=@currentFile) ->
 
         bb = @svg.bbox()
         growBox bb
 
         svg = @getSVG @items(), bb, @color
 
-        fs.writeFileSync resolve('~/Desktop/kaligraf.svg'), svg
+        fs.writeFileSync resolve(file), svg
 
-    load: ->
+    saveAs: ->
 
-        svg = fs.readFileSync resolve('~/Desktop/kaligraf.svg'), encoding: 'utf8'
-        # log 'load', svg
-        @setSVG svg
+        opts =         
+            title:          'Save As'
+            defaultPath:    @currentFile
+            filters:        [ {name: 'SVG', extensions: ['svg']} ]
+            
+        dialog.showSaveDialog opts, (file) => 
+            if file?
+                @currentFile = file
+                @save()                
 
     #  0000000   0000000   00000000   000   000
     # 000       000   000  000   000   000 000
@@ -544,12 +577,18 @@ class Stage
         if down
             switch combo
 
-                when 'command+-' then return @zoomOut()
-                when 'command+=' then return @zoomIn()
-                when 'command+0' then return @resetView()
-                when 'enter', 'return', 'esc'
-                    if combo == 'esc' then @shapes.handleEscape()
-                    return @shapes.endDrawing()
+                when 'command+-'        then return @zoomOut()
+                when 'command+='        then return @zoomIn()
+                when 'command+0'        then return @resetView()
+                when 'enter', 'return'  then return @shapes.endDrawing()
+                    
+                when 'esc'
+                    
+                    if @shapes.handleEscape() then return
+                    if @selection.clear()     then return
+                    if @kali.shapeTool() != 'pick'
+                        @kali.tools.getTool('pick').onClick()
+                        return 
 
                 when 'left', 'right', 'up', 'down'
                     if @selectedItems().length

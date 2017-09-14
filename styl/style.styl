@@ -302,8 +302,8 @@ button
 
 .tools
     -webkit-app-region      drag
-    
-.tool    
+
+.tool
     position                absolute
     width                   toolSize
     height                  toolSize
@@ -316,7 +316,7 @@ button
     text-align              center
     padding-top             4px
     padding-bottom          4px
-    
+
 .tools .title
     margin-top              34px
 
@@ -387,3 +387,21 @@ button
     padding-right           10px
     cursor                  pointer
     border-style            hidden
+
+//  0000000   0000000  00000000    0000000   000      000      0000000     0000000   00000000
+// 000       000       000   000  000   000  000      000      000   000  000   000  000   000
+// 0000000   000       0000000    000   000  000      000      0000000    000000000  0000000
+//      000  000       000   000  000   000  000      000      000   000  000   000  000   000
+// 0000000    0000000  000   000   0000000   0000000  0000000  0000000    000   000  000   000
+
+scrollhandleWidth     = 6px
+
+::-webkit-scrollbar
+    width               scrollhandleWidth
+    height              scrollhandleWidth
+    background-color    transparent
+
+::-webkit-scrollbar-track
+    background-color    transparent
+
+

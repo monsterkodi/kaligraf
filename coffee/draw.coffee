@@ -141,20 +141,22 @@ class Draw
     # 000            000  000       000   000  000        000       
     # 00000000  0000000    0000000  000   000  000        00000000  
     
-    handleEscape: -> 
+    handleEscape: ->
         
-        return if not @drawing?
+        return false if not @drawing?
         
         object = @edit.objectForItem @drawing
         
         if object.points().length < 2 
             log 'delete?'
         
-        switch @shape 
+        switch @shape
             when 'bezier', 'bezier_quad', 'bezier_cube'
                 @movePoint @dotPos 0
             else 
                 object.delPoint object.ctrls.length-1
+            
+        true
 
     # 00000000  000   000  0000000    
     # 000       0000  000  000   000  

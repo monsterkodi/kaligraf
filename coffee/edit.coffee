@@ -59,12 +59,14 @@ class Edit
 
     clear: ->
 
+        editing = not @empty()
         @dotsel.clear()
         
         while @objects.length
             @delObject last @objects
 
         @svg.clear()
+        editing
 
     onStage: (action, box) => 
         

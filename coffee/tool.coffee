@@ -189,8 +189,8 @@ class Tool
             post.emit 'tool', 'activate', @name
         else if @action?
             post.emit 'tool', @action, @name
-        else
-            post.emit 'tool', 'click', @name
+        else if @name not in ['tools', 'font']
+            log "no action and no group #{@name}"
     
     activate:      -> @setActive true
     deactivate:    -> @setActive false

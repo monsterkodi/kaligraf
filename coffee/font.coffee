@@ -87,10 +87,12 @@ class Font extends Tool
     # 000       000      000  000       000  000   
     #  0000000  0000000  000   0000000  000   000  
     
-    onClick: (event) => 
+    onClick: (event) =>
         
         super event
+        
         @hideChildren()
+        
         if @list? 
             @list.toggleDisplay()
         else

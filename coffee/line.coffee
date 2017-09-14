@@ -23,7 +23,7 @@ class Line extends Tool
         
     onIncr: (event) => stopEvent(event) and @setWidth clamp 0, 100, @width + 1
     onDecr: (event) => stopEvent(event) and @setWidth clamp 0, 100, @width - 1
-    onClick: (event) => @setWidth 1
+    onClick: (event) => super event; @setWidth 1
     setWidth: (@width) =>
         @title.innerHTML = "#{parseInt @width}"
         post.emit 'line', 'width', @width

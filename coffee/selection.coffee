@@ -79,14 +79,19 @@ class Selection
             @delRectForItem item
             post.emit 'selection', 'del', @items, item
     
-    clear: () ->
+    clear: ->
 
         if not @empty()
+            
             for item in @items
                 item.forget 'itemRect'
+                
             @items = []
             @svg.clear()
             post.emit 'selection', 'clear'
+            return true
+            
+        false
             
     empty: -> @items.length <= 0
     contains: (item) -> item in @items

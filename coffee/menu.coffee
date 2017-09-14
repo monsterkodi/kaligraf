@@ -47,6 +47,8 @@ class Menus
     
     constructor: (@kali) ->
         
+        return if @kali.app
+            
         @children = []
         
         @element = elem 'div', id: 'menus'
@@ -88,7 +90,7 @@ class Menus
     
     handleKey: (mod, key, combo, char, event, down) ->
 
-        if down
+        if down and not @kali.app
             for menu in @children
                 for button in menu.children
                     if button.cfg.combo == combo

@@ -126,11 +126,12 @@ class Stage
     onDblClick: (event) =>
         
         item = @itemAtPos pos event
-        if item?.type == 'text'
-            @tools.activate 'text'
+        if not item?
+            window.main?.toggleMaximize()
         else
-            if not item?
-                window.main?.toggleMaximize()
+            if item.type == 'text'
+                @kali.tools.activateTool 'text'
+                @shapes.editTextItem item
             else
                 log 'dblclick', item?.id()
         
@@ -142,9 +143,9 @@ class Stage
 
     setColor: (c) ->
 
-        @color = c
-        @kali.element.style.background = @color
-        document.body.style.background = @color
+        @color = new SVG.Color c
+        @kali.element.style.background = @color.toHex()
+        document.body.style.background = @color.toHex()
         
         prefs.set 'stageColor', @color.toHex()    
     
@@ -263,6 +264,7 @@ class Stage
     load: ->
 
         svg = fs.readFileSync resolve('~/Desktop/kaligraf.svg'), encoding: 'utf8'
+        # log 'load', svg
         @setSVG svg
 
     #  0000000   0000000   00000000   000   000

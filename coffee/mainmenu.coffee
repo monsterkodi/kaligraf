@@ -59,6 +59,9 @@ class MainMenu
             label: 'Edit', submenu: [
                 { label: 'Center',      accelerator: 'command+e',           click: -> action 'center'}
                 { type:  'separator'}
+                { label: 'Group',       accelerator: 'command+g',           click: -> action 'group'}
+                { label: 'Ungroup',     accelerator: 'command+u',           click: -> action 'ungroup'}
+                { type:  'separator'}
                 { label: 'Front',       accelerator: 'command+alt+up',      click: -> action 'front'}
                 { label: 'Raise',       accelerator: 'command+up',          click: -> action 'raise'}
                 { label: 'Lower',       accelerator: 'command+down',        click: -> action 'lower'}
@@ -88,7 +91,7 @@ class MainMenu
                 { label: 'Polygon',     accelerator: 'command+p',           click: -> action 'click', 'polygon'}
                 { label: 'Width',       accelerator: 'command+\\',          click: -> action 'click', 'width'}
                 { type:  'separator'}
-                { label: 'Grid',        accelerator: 'command+g',           click: -> action 'click', 'grid'}
+                { label: 'Grid',        accelerator: 'command+9',           click: -> action 'click', 'grid'}
                 { label: 'Zoom',        accelerator: 'command+0',           click: -> action 'click', 'zoom'}
             ]
         ,

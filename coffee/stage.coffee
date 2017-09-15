@@ -78,14 +78,31 @@ class Stage
 
         items = @svg.node.getIntersectionList r, null
         items = [].slice.call(items, 0).reverse()
-        log items.length, p, @items().length
+        # log items.length, p, @items().length
         for item in items
-            log 'instance?', item.instance?, item.id, item.parentNode.instance?
             if item.instance in @items()
-                log 'found'
                 return item.instance
+            else if item.instance in @treeItems()
+                return @rootItem item.instance
+
+    rootItem: (item) ->
+        
+        if item.parent() == @svg then item
+        else @rootItem item.parent()
 
     items: -> @svg.children().filter (child) -> child.type != 'defs'
+    
+    treeItems: (item=@svg) -> 
+        
+        tree = []
+        children = item.children?()
+        if not empty children
+            for child in children
+                if child.type != 'defs'
+                    tree.push child
+                    tree = tree.concat @treeItems child
+        tree
+    
     selectedOrAllItems: -> 
         
         items = @selectedItems() 
@@ -105,6 +122,24 @@ class Stage
             items = items.filter (item) -> item.type == opt.type
         items
 
+    ungroup: ->
+        
+        oldItems = _.clone @items()
+        
+        for group in @selectedItems(type:'g')
+            group.ungroup()
+            
+        @selection.clear()
+        @selection.setItems @items().filter (item) -> item not in oldItems
+        
+    group: ->
+        
+        group = @svg.group()
+        for item in @selectedItems()
+           group.add item
+           
+        @selection.setItems [group]
+            
     isEditableItem: (item) -> _.isFunction(item.array) and item.type != 'text'
             
     # 00     00   0000000   000   000  00000000  

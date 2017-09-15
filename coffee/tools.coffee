@@ -41,6 +41,8 @@ class Tools extends Tool
             when 'click'      then @clickTool    name
             when 'activate'   then @activateTool name
             when 'openRecent' then @kali.openRecent()
+            when 'group'      then @stage.group()
+            when 'ungroup'    then @stage.ungroup()
             when 'cut'        then @stage.cut()
             when 'copy'       then @stage.copy()
             when 'paste'      then @stage.paste()
@@ -107,7 +109,7 @@ class Tools extends Tool
             ]
             [
                 { name: 'zoom',  class: 'zoom', action: 'zoom_reset',  combo: 'command+0' }
-                { name: 'grid',  class: 'grid', action: 'grid_toggle', combo: 'command+g' }
+                { name: 'grid',  class: 'grid', action: 'grid_toggle', combo: 'command+9' }
                 { name: 'width', class: 'line' }
                 { name: 'font',  class: 'font' }
             ]            

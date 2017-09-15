@@ -46,7 +46,11 @@ class Browser
     
     addFile: (file) ->
 
-        svg = fs.readFileSync resolve(file), encoding: 'utf8'
+        try
+            svg = fs.readFileSync resolve(file), encoding: 'utf8'
+        catch e
+            log 'error', e
+            return
         
         item = elem 'span', class: 'browserItem'
         text = winTitle text:file, class: 'browserItemTitle', close:@delFile
@@ -99,7 +103,7 @@ class Browser
 
     onClick: (event) =>
         
-        @kali.stage.load event.target.getAttribute 'file'
+        @kali.stage.setCurrentFile event.target.getAttribute 'file'
         @close()
         
     close: => @kali.closeRecent()

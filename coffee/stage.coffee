@@ -52,13 +52,13 @@ class Stage
         @zoom   = 1
         @virgin = true
         
-        @setColor new SVG.Color prefs.get 'stageColor', '#222'
+        @setColor prefs.get('stage:color', '#222'), prefs.get('stage:alpha', 1)
 
-    onStage: (action, value) =>
+    onStage: (action, color, alpha) =>
 
         switch action
 
-            when 'setColor' then @setColor value
+            when 'setColor' then @setColor color, alpha
         
     foregroundColor: -> contrastColor @color
 
@@ -183,13 +183,15 @@ class Stage
     # 000       000   000  000      000   000  000   000  
     #  0000000   0000000   0000000   0000000   000   000  
 
-    setColor: (c) ->
+    setColor: (color, @alpha) ->
 
-        @color = new SVG.Color c
+        log "setColor a  #{@alpha}", color
+        @color = new SVG.Color color
         @kali.element.style.background = @color.toHex()
         document.body.style.background = @color.toHex()
         
-        prefs.set 'stageColor', @color.toHex()    
+        prefs.set 'stage:color', @color.toHex()    
+        prefs.set 'stage:alpha', @alpha   
     
     onColor: (color, prop, value) =>
         
@@ -259,13 +261,15 @@ class Stage
                         added = last @svg.children()
                         if added.type != 'defs' and opt?.select != false
                             @selection.addItem last @svg.children()
+                          
+                    for item in @treeItems()
+                        tag = item.node.tagName
+                        if tag == 'metadata' or tag.startsWith 'sodipodi'
+                            item.remove()
                             
                     return
 
     getSVG: (items, bb, color) ->
-
-        selected = _.clone @selection.items
-        @selection.clear()
 
         svgStr = """
             <svg width="100%" height="100%"
@@ -288,8 +292,6 @@ class Stage
             svgStr += item.svg()
         svgStr += '</svg>'
 
-        @selection.setItems selected
-
         svgStr
 
     # 000       0000000    0000000   0000000    
@@ -297,6 +299,8 @@ class Stage
     # 000      000   000  000000000  000   000  
     # 000      000   000  000   000  000   000  
     # 0000000   0000000   000   000  0000000    
+    
+    setCurrentFile: (@currentFile) -> @load()
     
     load: (file=@currentFile) ->
 
@@ -330,9 +334,26 @@ class Stage
         bb = @svg.bbox()
         growBox bb
 
-        svg = @getSVG @items(), bb, @color
+        svgStr = """
+            <svg width="100%" height="100%"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg" 
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            xmlns:svgjs="http://svgjs.com/svgjs"
+            """
 
-        fs.writeFileSync resolve(file), svg
+        rgba = "#{@color.r}, #{@color.g}, #{@color.b}, #{@alpha}"
+
+        svgStr += "\nstyle=\"stroke-linecap: round; stroke-linejoin: round; background: rgba(#{rgba});\""
+        svgStr += "\nviewBox=\"#{bb.x} #{bb.y} #{bb.width} #{bb.height}\">"
+        
+        for item in @svg.children()
+            svgStr += '\n'
+            svgStr += item.svg()
+            
+        svgStr += '</svg>'
+        
+        fs.writeFileSync resolve(file), svgStr
 
     saveAs: ->
 

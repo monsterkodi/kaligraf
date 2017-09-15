@@ -509,11 +509,6 @@ class Stage
         stagePos = @stageForView viewPos
         @zoomAtPos viewPos, stagePos, (1.0 - event.deltaY/5000.0)
 
-    zoomAtPos: (viewPos, stagePos, factor) ->
-
-        @setZoom @zoom * factor
-        @panBy viewPos.minus @viewForStage stagePos
-
     # 0000000   0000000    0000000   00     00
     #    000   000   000  000   000  000   000
     #   000    000   000  000   000  000000000
@@ -576,6 +571,22 @@ class Stage
         @resetSize()
         @centerAtStagePos sc if sc?
 
+    zoomAtPos: (viewPos, stagePos, factor) ->
+
+        @zoom = clamp 0.01, 1000, @zoom * factor
+        
+        delta = viewPos.minus @viewForStage stagePos
+        delta.scale -1.0/@zoom
+        
+        box = @svg.viewbox()
+        
+        box.width  = @viewSize().x / @zoom
+        box.height = @viewSize().y / @zoom
+        box.x += delta.x
+        box.y += delta.y
+        
+        @setViewBox box
+        
     # 00000000    0000000   000   000
     # 000   000  000   000  0000  000
     # 00000000   000000000  000 0 000

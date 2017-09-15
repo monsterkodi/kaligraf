@@ -23,10 +23,16 @@ class Edit
         @element.classList.add 'passive' if @passive
         @kali.insertBelowTools @element
 
-        log 'edit', @passive
+        @linesWhite = SVG(@element).size '100%', '100%'
+        @linesWhite.addClass 'editLinesWhite'
+        @linesWhite.viewbox @stage.svg.viewbox()
+        
+        @linesBlack = SVG(@element).size '100%', '100%'
+        @linesBlack.addClass 'editLinesBlack'
+        @linesBlack.viewbox @stage.svg.viewbox()
         
         @svg = SVG(@element).size '100%', '100%'
-        @svg.addClass 'editSVG'
+        @svg.addClass 'editDots'
         @svg.viewbox @stage.svg.viewbox()
 
         @dotSize = @passive and 5 or 10
@@ -60,6 +66,7 @@ class Edit
         @defs['S'] = @svg.defs().circle s
         
         for k,def of @defs
+            def.transform x: -def.cx(), y:-def.cy()
             def.addClass 'editDot'
             def.style cursor: 'pointer'
         
@@ -67,8 +74,17 @@ class Edit
         
     updateDefs: ->
 
-        # for k,def of @defs
-            # def.transform scale:1/@stage.zoom
+        for k,def of @defs
+            def.transform scale:1/@stage.zoom
+            
+        dashArray = "#{2/@stage.zoom},#{6/@stage.zoom}"
+        
+        @linesWhite.style 'stroke-width': 1/@stage.zoom
+        @linesWhite.style 'stroke-dasharray': dashArray
+        @linesWhite.style 'stroke-dashoffset': "#{2/@stage.zoom}"
+        
+        @linesBlack.style 'stroke-width': 1/@stage.zoom
+        @linesBlack.style 'stroke-dasharray': dashArray
         
     # 0000000    00000000  000
     # 000   000  000       000
@@ -94,6 +110,8 @@ class Edit
 
     clear: ->
 
+        log 'clear'
+        
         editing = not @empty()
         @dotsel.clear()
         
@@ -105,7 +123,9 @@ class Edit
     onStage: (action, box) => 
         
         if action == 'viewbox' 
-            @svg.viewbox box
+            @svg.viewbox   box
+            @linesWhite.viewbox box
+            @linesBlack.viewbox box
             @updateDefs()
 
     # 0000000    00000000  000      00000000  000000000  00000000  
@@ -143,7 +163,11 @@ class Edit
     objectForItem: (item) -> @objects.find (o) -> o.item == item
 
     items: -> @objects.map (o) -> o.item
-    setItems: (items) -> @clear(); @addItem item for item in items
+    
+    setItems: (items) -> 
+        
+        @clear()
+        @addItem item for item in items
     
     # 0000000    00000000  000
     # 000   000  000       000
@@ -158,8 +182,10 @@ class Edit
     delObject: (object) ->
         
         if object in @objects
+            
             for dot in object.dots()
                 @dotsel.del dot
+                
             object.del()
             _.pull @objects, object
 
@@ -171,7 +197,8 @@ class Edit
 
     addItem: (item, o = join:true) ->
 
-        if not o.join and @dotsel.empty() then @clear()
+        if not o.join and @dotsel.empty() 
+            @clear()
         
         if object = @objectForItem item 
             return object
@@ -204,6 +231,8 @@ class Edit
     stageStart: (drag, event) ->
         
         eventPos = pos event
+        
+        log 'stageStart', eventPos
         
         item = @stage.itemAtPos eventPos
         
@@ -247,11 +276,14 @@ class Edit
             @dotsel.endRect pos event
             
             if drag.startPos == drag.lastPos
+                
                 eventPos = pos event
+                
                 if item = @stage.itemAtPos eventPos
-                    if event.shiftKey and @objectForItem item
+                    object = @objectForItem item
+                    if event.shiftKey and object
                         @delItem item
-                    else
+                    else if not object
                         @addItem item, join:event.shiftKey
                 
     # 00     00   0000000   000   000  00000000
@@ -262,7 +294,6 @@ class Edit
 
     moveBy: (delta) ->
         
-        # log 'edit moveBy', delta
         if not @dotsel.empty()
             @dotsel.moveBy delta
         else

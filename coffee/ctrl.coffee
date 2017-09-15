@@ -154,22 +154,11 @@ class Ctrl
 
     createLine: (dot) ->
 
-        line = @edit.svg.line()
-        line.addClass "editLine"
-        line.addClass "#{dot}Line"
-        line.back()
-
-        @lines[dot] = line
-        
-        line = @edit.svg.line()
-        line.addClass "editLine"
-        line.addClass "#{dot}_Line"
-        line.back()
-        
-        @lines["#{dot}_"] = line
+        @lines[dot]     = @edit.linesWhite.line()
+        @lines[dot+'_'] = @edit.linesBlack.line()
         
     plotLine: (dot, pos1, pos2) ->
-        
+
         @lines[dot    ]?.plot [[pos1.x, pos1.y], [pos2.x, pos2.y]]
         @lines[dot+'_']?.plot [[pos1.x, pos1.y], [pos2.x, pos2.y]]
 

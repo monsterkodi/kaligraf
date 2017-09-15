@@ -248,6 +248,11 @@ button
 // 000       000   000  000     000
 // 00000000  0000000    000     000
 
+.editLinesBlack
+.editLinesWhite
+.editDots
+    position                absolute
+
 .editDot
     pointer-events          all
 
@@ -281,27 +286,15 @@ button
         stroke              #800
         fill                #f80
 
-.editLine
+.editLinesBlack
     stroke                  #000
     stroke-dasharray        2,6
-.ctrlrLine
-.ctrlq2Line
-    stroke-dasharray        1,4
-
-.ctrl1_Line
-.ctrl2_Line
-.ctrls_Line
-.ctrlq_Line
+    
+.editLinesWhite
     stroke                  #fff
-    stroke-dashoffset       2
     stroke-dasharray        2,6
-
-.ctrlr_Line
-.ctrlq2_Line
-    stroke                  #fff
-    stroke-dashoffset       1
-    stroke-dasharray        1,4
-
+    stroke-dashoffset       2
+    
 // 00000000   00000000   0000000  000  0000000  00000000  00000000
 // 000   000  000       000       000     000   000       000   000
 // 0000000    0000000   0000000   000    000    0000000   0000000

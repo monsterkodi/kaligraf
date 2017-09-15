@@ -44,7 +44,7 @@ class Stage
         @element.addEventListener 'mousemove', @onMove
         @element.addEventListener 'dblclick', @onDblClick
         
-        @element.style.display = 'none'
+        # @element.style.display = 'none'
 
         post.on 'stage', @onStage
         post.on 'color', @onColor
@@ -171,7 +171,7 @@ class Stage
         
         item = @itemAtPos pos event
         if not item?
-            window.main?.toggleMaximize()
+            post.toMain 'maximizeWindow'
         else
             if item.type == 'text'
                 @kali.tools.activateTool 'text'
@@ -308,10 +308,8 @@ class Stage
 
         svg = fs.readFileSync resolve(file), encoding: 'utf8'
         @setSVG svg
-        
         @pushRecent file
-        
-        # post.emit 'tool', 'center'
+        @kali.closeBrowser()
         
     open: ->
 
@@ -370,12 +368,11 @@ class Stage
                 @save()
                 @pushRecent @currentFile
 
-
     pushRecent: (file) ->
         
         recent = prefs.get 'recent', []
         _.pull recent, file
-        recent.push file
+        recent.unshift file
         prefs.set 'recent', recent
                 
     #  0000000   0000000   00000000   000   000
@@ -631,7 +628,7 @@ class Stage
     #    000     000  000       000   000  000   000  000   000   000 000
     #     0      000  00000000  00     00  0000000     0000000   000   000
 
-    resetSize: ->
+    resetSize: =>
 
         box = @svg.viewbox()
 

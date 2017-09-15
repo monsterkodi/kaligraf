@@ -1,101 +1,122 @@
-
 # 00     00  00000000  000   000  000   000
 # 000   000  000       0000  000  000   000
 # 000000000  0000000   000 0 000  000   000
 # 000 0 000  000       000  0000  000   000
-# 000   000  00000000  000   000   0000000
+# 000   000  00000000  000   000   0000000 
 
-{ elem, post, log, _ } = require 'kxk'
+{ post, log }  = require 'kxk'
 
-class Button
+pkg      = require '../package.json'
+electron = require 'electron'
 
-    constructor: (@parent, @cfg) ->
-
-        @name   = @cfg.name
-        @group  = @cfg.group
-        @action = @cfg.action
-        
-        @element = elem 'div', class: 'item'
-        @element.innerHTML = _.capitalize @cfg.name
-        @parent.element.appendChild @element
-        @element.addEventListener 'click', @onClick
-        
-    onClick: (event) => post.emit 'tool', @action, @name
+action = (action, arg) -> post.toWins 'tool', action, arg
 
 class Menu
-
-    constructor: (@parent, buttons) ->
-
-        @kali = @parent.kali
-        @children = []
-        
-        @element  = elem 'div', class: 'menu'
-        @parent.element.appendChild @element
-        
-        @element.addEventListener 'mouseenter', => 
-            @element.style.overflow = 'visible'
-            @kali.tools.collapseTemp()
-            @element.style.zIndex = 1000
-        @element.addEventListener 'mouseleave', => @element.style.overflow = 'hidden'
-        
-        for button in buttons
-            @children.push new Button @, button
-            
-        @element.style.display = 'none' if @kali.app
-
-class Menus
     
-    constructor: (@kali) ->
+    @init: (app) -> 
         
-        return if @kali.app
+        electron.Menu.setApplicationMenu electron.Menu.buildFromTemplate [
             
-        @children = []
-        
-        @element = elem 'div', id: 'menus'
-        @kali.element.appendChild @element
-        
-        menus = [
-            [
-                { name: 'save',   action: 'save',      combo: 'command+s' }
-                { name: 'load',   action: 'load',      combo: 'command+o' }
-                { name: 'clear',  action: 'clear',     combo: 'command+k' }
+            # 000   000   0000000   000      000  
+            # 000  000   000   000  000      000  
+            # 0000000    000000000  000      000  
+            # 000  000   000   000  000      000  
+            # 000   000  000   000  0000000  000  
+            
+            label: pkg.name, submenu: [     
+                { label: "About #{pkg.name}",   accelerator: 'Cmd+.',       click: app.showAbout}
+                { type:  'separator'}
+                { label: "Hide #{pkg.name}",    accelerator: 'Cmd+H',       role: 'hide'}
+                { label: 'Hide Others',         accelerator: 'Cmd+Alt+H',   role: 'hideothers'}
+                { type:  'separator'}
+                { label: 'Quit',                accelerator: 'Cmd+Q',       click: app.quit}
             ]
-            [
-                { name: 'center', action: 'center',    combo: 'command+e' }
-                { name: 'all',    action: 'selectAll', combo: 'command+a' }
-                { name: 'none',   action: 'deselect',  combo: 'command+d' }
-                { name: 'invert', action: 'invert',    combo: 'command+i' }
+        ,
+            # 00000000  000  000      00000000  
+            # 000       000  000      000       
+            # 000000    000  000      0000000   
+            # 000       000  000      000       
+            # 000       000  0000000  00000000  
+            
+            label: 'File', submenu: [
+                { label: 'Open Recent...',  accelerator: 'command+o',       click: -> action 'openRecent'}
+                { label: 'Open...',         accelerator: 'command+shift+o', click: -> action 'open'}
+                { type:  'separator'}
+                { label: 'Save',            accelerator: 'command+s',       click: -> action 'save'}
+                { label: 'Save As...',      accelerator: 'command+shift+s', click: -> action 'saveAs'}
+                { type:  'separator'}    
+                { label: 'Clear',           accelerator: 'command+k',       click: -> action 'clear'}
+                { label: 'Reload',          accelerator: 'command+r',       click: -> action 'load'}
             ]
-            [
-                { name: 'cut',    action: 'cut',       combo: 'command+x' }
-                { name: 'copy',   action: 'copy',      combo: 'command+c' }
-                { name: 'paste',  action: 'paste',     combo: 'command+v' }
+        ,
+            # 00000000  0000000    000  000000000  
+            # 000       000   000  000     000     
+            # 0000000   000   000  000     000     
+            # 000       000   000  000     000     
+            # 00000000  0000000    000     000     
+            
+            label: 'Edit', submenu: [
+                { label: 'Center',      accelerator: 'command+e',           click: -> action 'center'}
+                { type:  'separator'}
+                { label: 'Group',       accelerator: 'command+g',           click: -> action 'group'}
+                { label: 'Ungroup',     accelerator: 'command+u',           click: -> action 'ungroup'}
+                { type:  'separator'}
+                { label: 'Front',       accelerator: 'command+alt+up',      click: -> action 'front'}
+                { label: 'Raise',       accelerator: 'command+up',          click: -> action 'raise'}
+                { label: 'Lower',       accelerator: 'command+down',        click: -> action 'lower'}
+                { label: 'Back',        accelerator: 'command+alt+down',    click: -> action 'back' }
+                { type:  'separator'}
+                { label: 'Cut',         accelerator: 'command+x',           click: -> action 'cut'}
+                { label: 'Copy',        accelerator: 'command+c',           click: -> action 'copy'}
+                { label: 'Paste',       accelerator: 'command+v',           click: -> action 'paste'}
+                { type:  'separator'}
+                { label: 'All',         accelerator: 'command+a',           click: -> action 'selectAll'}
+                { label: 'None',        accelerator: 'command+d',           click: -> action 'deselect'}
+                { label: 'Invert',      accelerator: 'command+i',           click: -> action 'invert'}        
             ]
-            [
-                { name: 'front',  action: 'front',     combo: 'command+alt+up'   }
-                { name: 'raise',  action: 'raise',     combo: 'command+up'       }
-                { name: 'lower',  action: 'lower',     combo: 'command+down'     }
-                { name: 'back',   action: 'back',      combo: 'command+alt+down' }
+        ,
+            # 000000000   0000000    0000000   000      
+            #    000     000   000  000   000  000      
+            #    000     000   000  000   000  000      
+            #    000     000   000  000   000  000      
+            #    000      0000000    0000000   0000000  
+            
+            label: 'Tool', submenu: [
+                { label: 'Text',        accelerator: 'command+t',           click: -> action 'click', 'text'}
+                { label: 'Font',        accelerator: 'command+f',           click: -> action 'click', 'font'}
+                { type:  'separator'}
+                { label: 'Bezier',      accelerator: 'command+b',           click: -> action 'click', 'bezier'}
+                { label: 'Line',        accelerator: 'command+l',           click: -> action 'click', 'line'}
+                { label: 'Polygon',     accelerator: 'command+p',           click: -> action 'click', 'polygon'}
+                { label: 'Width',       accelerator: 'command+\\',          click: -> action 'click', 'width'}
+                { type:  'separator'}
+                { label: 'Grid',        accelerator: 'command+9',           click: -> action 'click', 'grid'}
+                { label: 'Zoom',        accelerator: 'command+0',           click: -> action 'click', 'zoom'}
             ]
+        ,
+            # 000   000  000  000   000  0000000     0000000   000   000
+            # 000 0 000  000  0000  000  000   000  000   000  000 0 000
+            # 000000000  000  000 0 000  000   000  000   000  000000000
+            # 000   000  000  000  0000  000   000  000   000  000   000
+            # 00     00  000  000   000  0000000     0000000   00     00
+            
+            label: 'Window', submenu: [
+                { label: 'Minimize',           accelerator: 'Alt+Cmd+M',        click: (i,win) -> win?.minimize()}
+                { label: 'Maximize',           accelerator: 'Cmd+Shift+m',      click: (i)     -> app.toggleMaximize()}
+                { type:  'separator'}
+                { label: 'Bring All to Front', accelerator: 'Alt+Cmd+`',        role: 'front'}
+                { type:  'separator'}
+                { label: 'Reload Window',      accelerator: 'Ctrl+Alt+Cmd+L',   click: (i,win) -> app.reloadWin win}
+                { label: 'Toggle DevTools',    accelerator: 'Cmd+Alt+I',        click: (i,win) -> win?.webContents.toggleDevTools()}
+            ]
+        ,        
+            # 000   000  00000000  000      00000000 
+            # 000   000  000       000      000   000
+            # 000000000  0000000   000      00000000 
+            # 000   000  000       000      000      
+            # 000   000  00000000  0000000  000      
+            
+            label: 'Help', role: 'help', submenu: []            
         ]
 
-        for menu in menus
-            @children.push new Menu @, menu
-
-    # 000   000  00000000  000   000  
-    # 000  000   000        000 000   
-    # 0000000    0000000     00000    
-    # 000  000   000          000     
-    # 000   000  00000000     000     
-    
-    handleKey: (mod, key, combo, char, event, down) ->
-
-        if down and not @kali.app
-            for menu in @children
-                for button in menu.children
-                    if button.cfg.combo == combo
-                        return button.onClick()
-            
-        'unhandled'
-            
-module.exports = Menus
+module.exports = Menu

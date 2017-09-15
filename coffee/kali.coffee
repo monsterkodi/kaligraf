@@ -5,23 +5,21 @@
 # 000  000   000   000  000      000  
 # 000   000  000   000  0000000  000  
 
-{ setStyle, keyinfo, stopEvent, empty, post, prefs, elem, log, $ } = require 'kxk'
+{ setStyle, keyinfo, stopEvent, empty, first, post, prefs, elem, log, $, _ } = require 'kxk'
 
 Stage   = require './stage'
 Tools   = require './tools'
-Menu    = require './menu'
 Trans   = require './trans'
 Browser = require './browser'
 
 class Kali
 
-    constructor: (cfg) ->
+    constructor: (element) ->
         
         prefs.init()
         @setStyle 'style'
         
-        @app = cfg.app
-        @element = cfg?.element ? window
+        @element =$ element 
         @element.style.overflow = 'initial'
         @element.parentNode.style.overflow = 'initial'
         @toolDiv = elem 'div', id: 'tools'
@@ -29,7 +27,6 @@ class Kali
         
         @toolSize = 66
         
-        @menus   = new Menu  @
         @trans   = new Trans @
         @tools   = new Tools @, name: 'tools', text: 'tools', orient: 'down'
         @stage   = new Stage @
@@ -41,6 +38,11 @@ class Kali
         @tools.init()
         @tools.loadPrefs()
 
+        post.setMaxListeners 100
+        # post.on 'slog', (t) -> window.logview?.appendText t
+        
+        window.onresize = @kali.stage.resetSize
+                
     # 00000000   00000000   0000000  00000000  000   000  000000000  
     # 000   000  000       000       000       0000  000     000     
     # 0000000    0000000   000       0000000   000 0 000     000     
@@ -49,15 +51,17 @@ class Kali
     
     openRecent: ->
         
-        recent = prefs.get 'recent', []
+        recent = _.clone prefs.get 'recent', []
         if empty recent
             post.emit 'tool', 'open'
         else
+            if first(recent) == @stage.currentFile
+                recent.shift()
             @browser ?= new Browser @, recent
             
-    closeRecent: ->
+    closeBrowser: ->
         
-        @browser.del()
+        @browser?.del()
         delete @browser
         
     items: -> @stage.items()
@@ -81,14 +85,12 @@ class Kali
         
         {mod, key, combo, char} = keyinfo.forEvent event
         return stopEvent(event) if 'unhandled' != @tools.handleKey mod, key, combo, char, event, true
-        return stopEvent(event) if 'unhandled' != @menus.handleKey mod, key, combo, char, event, true
         return stopEvent(event) if 'unhandled' != @stage.handleKey mod, key, combo, char, event, true
 
     onKeyUp: (event) =>
         
         {mod, key, combo, char} = keyinfo.forEvent event
         return stopEvent(event) if 'unhandled' != @tools.handleKey mod, key, combo, char, event, false
-        return stopEvent(event) if 'unhandled' != @menus.handleKey mod, key, combo, char, event, false
         return stopEvent(event) if 'unhandled' != @stage.handleKey mod, key, combo, char, event, false
                 
     #  0000000  000000000  000   000  000      00000000  

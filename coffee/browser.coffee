@@ -104,8 +104,9 @@ class Browser
     onClick: (event) =>
         
         @kali.stage.setCurrentFile event.target.getAttribute 'file'
+        @kali.stage.centerSelection()
         @close()
         
-    close: => @kali.closeRecent()
+    close: => @kali.closeBrowser()
         
 module.exports = Browser

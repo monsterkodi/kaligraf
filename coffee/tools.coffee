@@ -138,8 +138,7 @@ class Tools extends Tool
         if tool.cfg.orient == 'down'
             tool.setPos x:(tail? and tail.pos().x or 0) + @kali.toolSize, y:0
         else
-            y = not @kali.app and -@kali.toolSize/2 or 0
-            tool.setPos x:0, y:(tail? and tail.pos().y or y) + @kali.toolSize
+            tool.setPos x:0, y:(tail? and tail.pos().y or 0) + @kali.toolSize
         
         tool.parent = @
         @children.push tool
@@ -171,11 +170,13 @@ class Tools extends Tool
         tool
         
     loadSVG: (name) ->
+        
         svgFile = "#{__dirname}/../svg/#{name}.svg"
         if fileExists svgFile
             return fs.readFileSync svgFile, encoding: 'utf8'
 
     saveSVG: (name, svg) ->
+        
         svgFile = "#{__dirname}/../svg/#{name}.svg"
         fs.writeFileSync svgFile, svg, encoding: 'utf8'
 
@@ -188,15 +189,16 @@ class Tools extends Tool
     loadPrefs: ->
         
         @clickTool prefs.get 'activeTool', 'pick' 
-        @clickTool 'font' if prefs.get 'fontlist:visible', false                     
-        if recent = last prefs.get 'recent', []
+        @clickTool 'font' if prefs.get 'fontlist:visible', false
+        
+        if recent = first prefs.get 'recent', []
             @stage.setCurrentFile recent
+            
         if box = prefs.get 'stage:viewbox'
-            log 'set stage viewbox', box
             @stage.zoom = box.zoom
             @stage.setViewBox box
             
-        @stage.element.style.display = 'block'
+        # @stage.element.style.display = 'block'
                     
     collapseTemp: =>
         
@@ -211,7 +213,6 @@ class Tools extends Tool
     # 000   000  00000000     000     
     
     handleKey: (mod, key, combo, char, event, down) ->
-        # log "Tools.handleKey mod:#{mod} key:#{key} combo:#{combo} down:#{down}"
 
         if down
             if mod == 'ctrl' then @ctrlDown = true

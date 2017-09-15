@@ -8,13 +8,12 @@
 { about, prefs, post, noon, fs, log } = require 'kxk'
 
 pkg      = require '../package.json'
-MainMenu = require './mainmenu'
+Menu     = require './menu'
 electron = require 'electron'
 colors   = require 'colors'
 
 app      = electron.app
 Browser  = electron.BrowserWindow
-Menu     = electron.Menu
 ipc      = electron.ipcMain
 
 kaliapp  = undefined # < created in app.on 'ready'
@@ -56,6 +55,7 @@ if args.verbose
 # 000   000  000  000  0000       000
 # 00     00  000  000   000  0000000 
 
+win         = null
 wins        = -> Browser.getAllWindows()
 activeWin   = -> Browser.getFocusedWindow()
 visibleWins = -> (w for w in wins() when w?.isVisible() and not w?.isMinimized())
@@ -67,10 +67,8 @@ winWithID   = (winID) -> Browser.fromId winID
 # 000  000        000     
 # 000  000         0000000
 
-ipc.on 'toggleDevTools', (event)        => event.sender.toggleDevTools()
-ipc.on 'maximizeWindow', (event, winID) => kaliapp.toggleMaximize winWithID winID
-ipc.on 'activateWindow', (event, winID) => kaliapp.activateWindowWithID winID
-ipc.on 'reloadWindow',   (event, winID) => kaliapp.reloadWin winWithID winID
+post.on 'toggleDevTools', => win.browserWindow.toggleDevTools()
+post.on 'maximizeWindow', => kaliapp.maximizeWindow()
                         
 # 000   000   0000000   000      000   0000000   00000000   00000000     
 # 000  000   000   000  000      000  000   000  000   000  000   000    
@@ -92,7 +90,7 @@ class KaliApp
                                 
         @createWindow()
 
-        MainMenu.init @
+        Menu.init @
 
     # 000   000  000  000   000  0000000     0000000   000   000   0000000
     # 000 0 000  000  0000  000  000   000  000   000  000 0 000  000     
@@ -102,7 +100,7 @@ class KaliApp
 
     reloadWin: (win) -> win?.webContents.reloadIgnoringCache()
 
-    toggleMaximize: (win) ->
+    maximizeWindow: ->
         
         if win?
             if win.isMaximized()
@@ -111,20 +109,6 @@ class KaliApp
                 win.maximize()        
         else
             @showWindows()             
-
-    toggleWindows: =>
-        
-        if wins().length
-            if visibleWins().length
-                if activeWin()
-                    @hideWindows()
-                else
-                    @raiseWindows()
-            else
-                @showWindows()
-        else
-            args.show = true
-            @createWindow()
 
     hideWindows: =>
         
@@ -152,7 +136,7 @@ class KaliApp
     # 000       000   000  000       000   000     000     000     
     #  0000000  000   000  00000000  000   000     000     00000000
        
-    createWindow: () ->
+    createWindow: ->
         
         bounds = prefs.get 'bounds', null
         if not bounds
@@ -193,9 +177,10 @@ class KaliApp
     
     saveBounds: (event) -> prefs.set 'bounds', event.sender.getBounds()
         
-    otherInstanceStarted: (args, dir) =>
-        if not visibleWins().length
-            @toggleWindows()
+    otherInstanceStarted: (args, dir) => 
+        
+        @showWindows()
+        @raiseWindows()
             
     quit: => 
         prefs.save()

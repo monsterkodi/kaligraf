@@ -43,6 +43,8 @@ class Stage
         @kali.element.addEventListener 'wheel', @onWheel
         @element.addEventListener 'mousemove', @onMove
         @element.addEventListener 'dblclick', @onDblClick
+        
+        @element.style.display = 'none'
 
         post.on 'stage', @onStage
         post.on 'color', @onColor
@@ -50,7 +52,7 @@ class Stage
         post.on 'font',  @onFont
 
         @zoom   = 1
-        @virgin = true
+        # @virgin = true
         
         @setColor prefs.get('stage:color', '#222'), prefs.get('stage:alpha', 1)
 
@@ -237,7 +239,7 @@ class Stage
 
         @clear()
         @addSVG svg, select:false
-        @resetView()
+        # @resetView()
 
     addSVG: (svg, opt) ->
 
@@ -309,7 +311,7 @@ class Stage
         
         @pushRecent file
         
-        post.emit 'tool', 'center'
+        # post.emit 'tool', 'center'
         
     open: ->
 
@@ -418,7 +420,8 @@ class Stage
         @shapes.edit?.clear()
         @selection.clear()
         @svg.clear()
-        @resetView()
+        # log 'clear'
+        # @resetView()
 
     #  0000000   00000000   0000000    00000000  00000000
     # 000   000  000   000  000   000  000       000   000
@@ -461,8 +464,6 @@ class Stage
     #  000 000   000  0000000   000000000
     #    000     000  000       000   000
     #     0      000  00000000  00     00
-
-    onResize: (w, h) => @resetSize()
 
     viewPos:  -> r = @element.getBoundingClientRect(); pos r.left, r.top
     viewSize: -> r = @element.getBoundingClientRect(); pos r.width, r.height
@@ -515,6 +516,7 @@ class Stage
 
         if out then z = 1.0/z
 
+        log 'loupe'
         @setZoom @zoom * z, sc
 
     # 000   000  000   000  00000000  00000000  000
@@ -546,14 +548,14 @@ class Stage
     ]
 
     zoomIn: ->
-
+        log 'zoomIn'
         for i in [0...Stage.zoomLevels.length]
             if @zoom < Stage.zoomLevels[i]
                 @setZoom Stage.zoomLevels[i], @stageCenter()
                 return
 
     zoomOut: ->
-
+        log 'zoomOut'
         for i in [Stage.zoomLevels.length-1..0]
             if @zoom > Stage.zoomLevels[i]
                 @setZoom Stage.zoomLevels[i], @stageCenter()
@@ -567,7 +569,9 @@ class Stage
 
     setCursor: (cursor) -> @svg.style cursor: cursor
 
-    resetView: (zoom=1) => @setZoom zoom, @toolCenter zoom
+    resetView: (zoom=1) => 
+        log 'resetView'
+        @setZoom zoom, @toolCenter zoom
 
     centerSelection: ->
 
@@ -582,6 +586,7 @@ class Stage
         h = (b.h / @zoom) / v.height
         z = 0.8 * @zoom / Math.max(w, h)
 
+        log 'centerSelection'
         @setZoom z, @stageForView boxCenter b
 
     setZoom: (z, sc) ->
@@ -589,6 +594,8 @@ class Stage
         z = clamp 0.01, 1000, z
 
         @zoom = z
+        
+        log 'setZoom'
         @resetSize()
         @centerAtStagePos sc if sc?
 
@@ -605,7 +612,7 @@ class Stage
         box.height = @viewSize().y / @zoom
         box.x += delta.x
         box.y += delta.y
-        
+        log 'zoomAtPos'
         @setViewBox box
         
     # 00000000    0000000   000   000
@@ -631,6 +638,7 @@ class Stage
         box.width  = @viewSize().x / @zoom
         box.height = @viewSize().y / @zoom
 
+        log 'resetSize'
         @setViewBox box
 
     moveViewBox: (delta) ->
@@ -640,17 +648,23 @@ class Stage
         box.x += delta.x
         box.y += delta.y
 
+        log 'moveViewBox'
         @setViewBox box
 
     setViewBox: (box) ->
 
-        delete box.zoom
-
         @svg.viewbox box
 
         box = @svg.viewbox()
+        
+        box.zoom = @zoom
         post.emit 'stage', 'viewbox', box
         post.emit 'stage', 'zoom',    @zoom
+        
+        prefs.set 'stage:viewbox', box
+        
+        log 'save viewbox', box
+        
         box
 
     # 000   000  00000000  000   000

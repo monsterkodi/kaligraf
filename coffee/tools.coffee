@@ -191,6 +191,12 @@ class Tools extends Tool
         @clickTool 'font' if prefs.get 'fontlist:visible', false                     
         if recent = last prefs.get 'recent', []
             @stage.setCurrentFile recent
+        if box = prefs.get 'stage:viewbox'
+            log 'set stage viewbox', box
+            @stage.zoom = box.zoom
+            @stage.setViewBox box
+            
+        @stage.element.style.display = 'block'
                     
     collapseTemp: =>
         

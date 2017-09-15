@@ -259,31 +259,33 @@ class Object
     
     delDots: (dots) ->
         
-        for indexDots in @indexDots dots
-            @delIndexDots indexDots.index, indexDots.dots
+        indexDots = @indexDots(dots).map (idots) -> index:idots.index, dots:idots.dots.map (dot) -> dot.dot
+        for indots in indexDots
+            log indots.index, indots.dots
+        
+        for indots in indexDots
+            @delIndexDots indots.index, indots.dots
         
     delIndexDots: (index, dots) ->
         
-        dotNames = dots.map (dot) -> dot.dot
-        
-        if 'point' in dotNames
+        if 'point' in dots
             @delPoint index
             return
             
         points = @points()
         point = points[index]
         
-        if dotNames.length > 1
-            if 'ctrl1' in dotNames and 'ctrl2' in dotNames
+        if dots.length > 1
+            if 'ctrl1' in dots and 'ctrl2' in dots
                 point[0] = 'L'
                 point.splice 1, 4
-            else if 'ctrlr' in dotNames
+            else if 'ctrlr' in dots
                 point[0] = 'L'
                 point.splice 1, 2
             else
-                log '???', dotNames
+                log '???', dots
         else
-            switch dotNames[0]
+            switch dots[0]
                 when 'ctrlq', 'ctrls', 'ctrlr'
                     point[0] = 'L'
                     point.splice 1, 2

@@ -20,22 +20,18 @@ class Main
         post.on 'slog', (t) -> window.logview?.appendText t
         
         @kali = new Kali element:element, app:not window.area?
-        @kali.setStyle 'style'
         
         if @kali.app
             window.onresize = => @onResize window.innerWidth, window.innerHeight
         else
             window.area.on 'resized', @onResize
                 
-    onResize: (w, h) => 
+    onResize: (w, h) =>
         
-        # log "onResize #{w} #{h}"
+        log "onResize #{w} #{h}", @kali.stage.virgin
         
         if @kali.stage.virgin
-            delete @kali.stage.virgin
-            reset = => @kali.stage.resetView @kali.stage.zoom 
-            reset()
-            setTimeout reset, 100
+            log 'deflower stage?'
         else
             @kali.stage.resetSize()
 

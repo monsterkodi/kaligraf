@@ -18,6 +18,7 @@ class Kali
     constructor: (cfg) ->
         
         prefs.init()
+        @setStyle 'style'
         
         @app = cfg.app
         @element = cfg?.element ? window

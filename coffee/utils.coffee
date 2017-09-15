@@ -238,4 +238,5 @@ module.exports =
             close = elem 'button', class:"#{clss}Close", text: 'X'
             close.addEventListener 'click', opt.close
             div.appendChild close
+            
         div

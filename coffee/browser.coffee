@@ -5,7 +5,7 @@
 # 000   000  000   000  000   000  000   000       000  000       000   000
 # 0000000    000   000   0000000   00     00  0000000   00000000  000   000
 
-{ stopEvent, keyinfo, elem, resolve, fs, log, _ } = require 'kxk'
+{ stopEvent, keyinfo, elem, prefs, resolve, fs, log, _ } = require 'kxk'
 
 { winTitle } = require './utils'
 
@@ -23,7 +23,6 @@ class Browser
         @title = winTitle close:@onClose, text: 'Recent', class: 'browserTitle'
         @element.appendChild @title 
         
-
         @scroll = elem class: 'browserScroll'
         @element.appendChild @scroll
         
@@ -36,7 +35,12 @@ class Browser
             @addFile file
             
         @element.focus()
-            
+
+        
+    del: -> 
+        
+        @element.remove()
+        
     #  0000000   0000000    0000000    
     # 000   000  000   000  000   000  
     # 000000000  000   000  000   000  
@@ -48,19 +52,31 @@ class Browser
         svg = fs.readFileSync resolve(file), encoding: 'utf8'
         
         item = elem 'span', class: 'browserItem'
-        text = elem class: 'browserItemText'
+        # text = elem class: 'browserItemText'
+        
+        text = winTitle text:file, class: 'browserItemTitle', close:@delFile
+        
         view = elem class: 'browserItemView'
         
         item.setAttribute 'file', file
         item.appendChild text
         item.appendChild view
         
-        text.innerHTML = file
+        # text.innerHTML = file
         view.innerHTML = svg
         
         @items.appendChild item
         
         item.addEventListener 'click', @onClick
+        
+    delFile: (event) => 
+        
+        file = event.target.parentNode.parentNode.getAttribute 'file'
+        recent = prefs.get 'recent'
+        _.pull recent, file
+        prefs.set 'recent', recent
+        event.target.parentNode.parentNode.remove()
+        stopEvent event
         
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
@@ -69,7 +85,7 @@ class Browser
     # 000   000  00000000     000     
     
     onKeyDown: (event) => 
-        log 'browser keyDown'
+
         {mod, key, combo, char} = keyinfo.forEvent event
         
         switch combo
@@ -80,7 +96,7 @@ class Browser
             when 'right'         then @navigateGroup +1
             # when 'command+up'    then stopEvent(event); @select 0
             # when 'command+down'  then stopEvent(event); @select @scrolls[@activeGroup].children.length-1
-            when 'esc', 'enter'  then return @hide()
+            when 'esc', 'enter'  then return @close()
             # else
                 # log combo
                 
@@ -94,9 +110,9 @@ class Browser
         event.stopPropagation()
 
     onClick: (event) =>
-        # log 'load', event.target.getAttribute 'file'
+        
         @kali.stage.load event.target.getAttribute 'file'
-        @hide()
+        @close()
         
     #  0000000  000   000   0000000   000   000
     # 000       000   000  000   000  000 0 000
@@ -117,14 +133,6 @@ class Browser
         # @element.focus()
         # post.emit 'font', 'family', @active().innerHTML
           
-    isVisible:      -> @element.style.display != 'none'
-    toggleDisplay:  -> @setVisible not @isVisible()
-    setVisible: (v) -> if v then @show() else @hide()
-    hide: -> @element.style.display = 'none'; @element.blur()
-    show: -> 
-        @element.style.display = 'block'
-        @element.focus()
-    
-    onClose: => @hide()
+    close: => @kali.closeRecent()
         
 module.exports = Browser

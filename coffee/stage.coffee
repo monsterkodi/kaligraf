@@ -266,6 +266,8 @@ class Stage
         recent.push file
         prefs.set 'recent', recent
         
+        post.emit 'tool', 'center'
+        
     open: ->
 
         opts =         

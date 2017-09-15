@@ -52,7 +52,12 @@ class Kali
         if empty recent
             post.emit 'tool', 'open'
         else
-            @browser = new Browser @, recent
+            @browser ?= new Browser @, recent
+            
+    closeRecent: ->
+        
+        @browser.del()
+        delete @browser
         
     items: -> @stage.items()
     

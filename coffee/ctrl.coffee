@@ -13,7 +13,6 @@ class Ctrl
 
         @dots  = {}
         @lines = {}
-        @drags = {}
 
         @edit  = @object.edit
         @stage = @edit.stage
@@ -27,9 +26,6 @@ class Ctrl
 
     del: ->
 
-        for k,d of @drags
-            d.deactivate()
-
         for k,d of @dots
             delete d.ctrl
             delete d.dot
@@ -40,7 +36,6 @@ class Ctrl
 
         @dots  = {}
         @lines = {}
-        @drags = {}
 
     # 0000000     0000000   000000000
     # 000   000  000   000     000
@@ -64,7 +59,7 @@ class Ctrl
                 @createDot 'ctrlq'
 
     updateDots: (point) ->
-        
+
         @updateDot 'point', point
         
         switch point[0]
@@ -92,6 +87,7 @@ class Ctrl
             svg = @edit.svg.rect @edit.dotSize, @edit.dotSize 
         else
             svg = @edit.svg.circle @edit.dotSize 
+            
         svg.addClass 'editDot'
         svg.addClass "#{dot}Dot"
         svg.style cursor: 'pointer'
@@ -99,19 +95,13 @@ class Ctrl
         svg.dot  = dot
 
         @dots[dot] = svg
+        
+        # log "createDot #{@index()} #{dot}", svg.type, svg.cx()
 
         if dot in ['ctrl1', 'ctrl2', 'ctrlq', 'ctrlr', 'ctrls']
             @createLine dot
         if dot == 'ctrlq'
             @createLine 'ctrlq2'
-
-        @drags[dot] = new drag
-            target:  svg.node
-            onStart: @onStart
-            onMove:  @onDrag
-            onStop:  @onStop
-
-        @drags[dot].dot = dot
 
         svg
 
@@ -141,13 +131,17 @@ class Ctrl
                     pos point[point.length-2], point[point.length-1]
                 else
                     pos point[0], point[1]
+            else
+                log 'dafuk?'
         
-        dotPos = @stage.viewForStage @trans.transform @object.item, itemPos
+        dotPos = @trans.transform @object.item, itemPos
+        
+        # log "updateDot #{dot}", svg.type, svg.cx(), svg.cy(), dotPos
         
         svg.cx dotPos.x
         svg.cy dotPos.y
 
-        pointPos = @stage.viewForStage @trans.transform @object.item, pos point[point.length-2], point[point.length-1]
+        pointPos = @trans.transform @object.item, pos point[point.length-2], point[point.length-1]
         
         if dot in ['ctrl2', 'ctrls', 'ctrlr', 'ctrlq']
             @plotLine dot, dotPos, pointPos
@@ -200,40 +194,13 @@ class Ctrl
             @dots[dot]?.removeClass 'selected'
             
     isSelected: (dot) -> @dots[dot]?.hasClass 'selected'
-        
-    #  0000000  000000000   0000000   00000000   000000000  
-    # 000          000     000   000  000   000     000     
-    # 0000000      000     000000000  0000000       000     
-    #      000     000     000   000  000   000     000     
-    # 0000000      000     000   000  000   000     000     
-    
-    onStart: (drag, event) =>
-
-        if event.shiftKey and @isSelected drag.dot
-            @object.edit.dotsel.del @dots[drag.dot]
-        else
-            keep = event.shiftKey or @isSelected drag.dot
-            @object.edit.dotsel.add @dots[drag.dot], keep
                 
-    #  0000000  000000000   0000000   00000000   
-    # 000          000     000   000  000   000  
-    # 0000000      000     000   000  00000000   
-    #      000     000     000   000  000        
-    # 0000000      000      0000000   000        
+    # 00     00   0000000   000   000  00000000  0000000    000   000  
+    # 000   000  000   000  000   000  000       000   000   000 000   
+    # 000000000  000   000   000 000   0000000   0000000      00000    
+    # 000 0 000  000   000     000     000       000   000     000     
+    # 000   000   0000000       0      00000000  0000000       000     
     
-    onStop: (drag, event) =>
-        
-    # 00     00   0000000   000   000  00000000
-    # 000   000  000   000  000   000  000
-    # 000000000  000   000   000 000   0000000
-    # 000 0 000  000   000     000     000
-    # 000   000   0000000       0      00000000
-
-    onDrag: (drag, event) =>
-
-        if not @object.edit.dotsel.empty()
-            @object.edit.dotsel.moveBy drag.delta, event
-        
     moveBy: (delta) ->
 
         for k,dot of @dots

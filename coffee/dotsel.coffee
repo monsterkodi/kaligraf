@@ -5,7 +5,7 @@
 # 000   000  000   000     000          000  000       000    
 # 0000000     0000000      000     0000000   00000000  0000000
 
-{ empty, log, _ } = require 'kxk'
+{ empty, drag, log, _ } = require 'kxk'
 
 { rectsIntersect, normRect } = require './utils'
 
@@ -13,9 +13,54 @@ class DotSel
 
     constructor: (@edit) ->
 
-        @stage = @edit.stage
-        @dots = []
+        @kali  = @edit.kali
+        @stage = @kali.stage
+        @dots  = []
+        
+        @drag = new drag
+            target:  @edit.element
+            onStart: @onStart
+            onMove:  @onDrag
 
+    #  0000000  000000000   0000000   00000000   000000000  
+    # 000          000     000   000  000   000     000     
+    # 0000000      000     000000000  0000000       000     
+    #      000     000     000   000  000   000     000     
+    # 0000000      000     000   000  000   000     000     
+    
+    onStart: (drag, event) =>
+        
+        if dot = event.target.instance
+
+            if event.shiftKey and dot.ctrl.isSelected dot.dot
+                @del dot
+            else
+                keep = event.shiftKey or dot.ctrl.isSelected dot.dot
+                @add dot, keep
+                        
+    # 0000000    00000000    0000000    0000000   
+    # 000   000  000   000  000   000  000        
+    # 000   000  0000000    000000000  000  0000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000   0000000   
+    
+    onDrag: (drag, event) =>
+        
+        if not @empty()
+            @moveBy drag.delta.times(1/@kali.stage.zoom), event
+
+    # 00     00   0000000   000   000  00000000  
+    # 000   000  000   000  000   000  000       
+    # 000000000  000   000   000 000   0000000   
+    # 000 0 000  000   000     000     000       
+    # 000   000   0000000       0      00000000  
+    
+    moveBy: (delta, event) ->
+        log 'dotsel.moveBy', delta
+        for objectDot in @objectDots()
+        
+            objectDot.object.moveDotsBy objectDot.dots, delta, event
+            
     #  0000000   0000000          000  0000000     0000000   000000000   0000000  
     # 000   000  000   000        000  000   000  000   000     000     000       
     # 000   000  0000000          000  000   000  000   000     000     0000000   
@@ -101,18 +146,6 @@ class DotSel
             dot.ctrl.setSelected dot.dot, false
             _.pull @dots, dot
         
-    # 00     00   0000000   000   000  00000000  
-    # 000   000  000   000  000   000  000       
-    # 000000000  000   000   000 000   0000000   
-    # 000 0 000  000   000     000     000       
-    # 000   000   0000000       0      00000000  
-    
-    moveBy: (delta, event) ->
-        
-        for objectDot in @objectDots()
-        
-            objectDot.object.moveDotsBy objectDot.dots, delta, event
-
     # 00000000   00000000   0000000  000000000
     # 000   000  000       000          000
     # 0000000    0000000   000          000

@@ -78,6 +78,7 @@ class Object
     
     updateCtrlDots: (index, point) ->
         
+        # log "updateCtrlDots #{index}"
         @ctrls[index].updateDots point
                 
     updatePos: ->
@@ -153,9 +154,9 @@ class Object
     # 000   000   0000000       0      00000000  000         0000000   000  000   000     000     
 
     
-    movePoint: (index, viewPos, dots=['point']) ->
+    movePoint: (index, stagePos, dots=['point']) ->
         
-        itemPos = @trans.inverse @item, @stage.stageForView viewPos
+        itemPos = @trans.inverse @item, stagePos
         
         points = @points()
         point  = points[index]
@@ -198,7 +199,7 @@ class Object
                     
                 when 'ctrlr'
                     ppos = @dotPos index
-                    refl = ppos.minus ppos.to viewPos
+                    refl = ppos.minus ppos.to stagePos
                     @movePoint index, refl, 'ctrls'
                     
         @updateCtrlDots index, point
@@ -212,18 +213,19 @@ class Object
     # 000   000  000   000  000   000  000        000   000  000  000  0000     000     
     # 000   000  0000000    0000000    000         0000000   000  000   000     000     
     
-    addPoint: (index, viewPos, code) ->
+    addPoint: (index, stagePos, code) ->
         
-        itemPos = @trans.inverse @item, @stage.stageForView viewPos
+        itemPos = @trans.inverse @item, stagePos
         
         points = @points()
         point  = switch code
             when 'S', 'Q'
-                [code, viewPos.x, viewPos.y, viewPos.x, viewPos.y]
+                [code, stagePos.x, stagePos.y, stagePos.x, stagePos.y]
             when 'C'
-                [code, viewPos.x, viewPos.y, viewPos.x, viewPos.y, viewPos.x, viewPos.y]
+                [code, stagePos.x, stagePos.y, stagePos.x, stagePos.y, stagePos.x, stagePos.y]
             else
                 [itemPos.x, itemPos.y]
+                
         points.splice index, 0, point
         
         @initCtrlDots   index, point
@@ -306,7 +308,7 @@ class Object
     moveCtrlsBy: (delta) ->
 
         for ctrl in @ctrls
-            ctrl.moveBy delta
+            ctrl.moveBy delta.times 1.0/@kali.stage.zoom
 
     plot: (points=@item.array()) -> @item.plot points
 

@@ -16,6 +16,9 @@ class Edit
 
     constructor: (@kali, @passive) ->
 
+        @stage   = @kali.stage
+        @trans   = @kali.trans
+        
         @element = elem 'div', id: 'edit'
         @element.classList.add 'passive' if @passive
         @kali.insertBelowTools @element
@@ -23,9 +26,7 @@ class Edit
         @svg = SVG(@element).size '100%', '100%'
         @svg.addClass 'editSVG'
         @svg.clear()
-
-        @stage   = @kali.stage
-        @trans   = @kali.trans
+        @svg.viewbox @stage.svg.viewbox()
 
         @dotSize = @passive and 5 or 10
         @objects = []
@@ -66,12 +67,12 @@ class Edit
             @delObject last @objects
 
         @svg.clear()
+        
         editing
 
     onStage: (action, box) => 
         
-        for object in @objects
-            object.updatePos()
+        if action == 'viewbox' then @svg.viewbox box
 
     # 0000000    00000000  000      00000000  000000000  00000000  
     # 000   000  000       000      000          000     000       
@@ -145,6 +146,7 @@ class Edit
 
             object = new Object @, item
             @objects.push object 
+            
             return object
 
     #  0000000   000   000         0000000  000000000  00000000   000      
@@ -225,7 +227,7 @@ class Edit
     # 000   000   0000000       0      00000000
 
     moveBy: (delta) ->
-
+        log 'edit moveBy', delta
         if not @dotsel.empty()
             @dotsel.moveBy delta
         else

@@ -372,8 +372,9 @@ class Shapes
                 
             else 
                 if @stage.isEditableItem @drawing
-                    @edit = new Edit @kali
-                    @edit.addItem @drawing
+                    @editItems [@drawing]
+                    # @edit = new Edit @kali
+                    # @edit.addItem @drawing
                 else if @drawing.type == 'text'
                     @editTextItem @drawing
                 else
@@ -392,7 +393,7 @@ class Shapes
             
     stopEdit: ->
         
-        @edit?.clear()
+        @edit?.del()
         delete @edit    
             
     # 000   000  00000000  000   000  

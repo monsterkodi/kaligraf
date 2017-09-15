@@ -56,7 +56,7 @@ class DotSel
     # 000   000   0000000       0      00000000  
     
     moveBy: (delta, event) ->
-        log 'dotsel.moveBy', delta
+        # log 'dotsel.moveBy', delta
         for objectDot in @objectDots()
         
             objectDot.object.moveDotsBy objectDot.dots, delta, event

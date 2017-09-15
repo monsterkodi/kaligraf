@@ -79,28 +79,21 @@ class Ctrl
     #  0000000  000   000  00000000  000   000     000     00000000  
     
     createDot: (dot) ->
-
-        if @object.isPoly()
-            s = @edit.dotSize/2
-            svg = @edit.svg.polygon [[0,s], [s,0], [0,-s], [-s,0]]
-        else if @pointCode() in ['L', 'M']
-            svg = @edit.svg.rect @edit.dotSize, @edit.dotSize 
-        else
-            svg = @edit.svg.circle @edit.dotSize 
+  
+        svg = @edit.svg.use @edit.defs[@pointCode()]
             
-        svg.addClass 'editDot'
         svg.addClass "#{dot}Dot"
-        svg.style cursor: 'pointer'
         svg.ctrl = @
         svg.dot  = dot
 
         @dots[dot] = svg
         
-        # log "createDot #{@index()} #{dot}", svg.type, svg.cx()
-
         if dot in ['ctrl1', 'ctrl2', 'ctrlq', 'ctrlr', 'ctrls']
+            
             @createLine dot
+            
         if dot == 'ctrlq'
+            
             @createLine 'ctrlq2'
 
         svg

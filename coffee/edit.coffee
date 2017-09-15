@@ -23,9 +23,10 @@ class Edit
         @element.classList.add 'passive' if @passive
         @kali.insertBelowTools @element
 
+        log 'edit', @passive
+        
         @svg = SVG(@element).size '100%', '100%'
         @svg.addClass 'editSVG'
-        @svg.clear()
         @svg.viewbox @stage.svg.viewbox()
 
         @dotSize = @passive and 5 or 10
@@ -33,8 +34,41 @@ class Edit
         
         @dotsel  = new DotSel @
 
+        @initDefs()
+        
         post.on 'ctrl',  @onCtrl
         post.on 'stage', @onStage
+        
+    # 0000000    00000000  00000000   0000000  
+    # 000   000  000       000       000       
+    # 000   000  0000000   000000    0000000   
+    # 000   000  000       000            000  
+    # 0000000    00000000  000       0000000   
+    
+    initDefs: ->
+        
+        @defs = {}
+        
+        s  = @dotSize
+        sh = @dotSize/2
+        
+        @defs['P'] = @svg.defs().polygon [[0,sh], [sh,0], [0,-sh], [-sh,0]]
+        @defs['L'] = @svg.defs().rect s, s         
+        @defs['M'] = @svg.defs().rect s, s 
+        @defs['C'] = @svg.defs().circle s
+        @defs['Q'] = @svg.defs().circle s
+        @defs['S'] = @svg.defs().circle s
+        
+        for k,def of @defs
+            def.addClass 'editDot'
+            def.style cursor: 'pointer'
+        
+        @updateDefs()
+        
+    updateDefs: ->
+
+        # for k,def of @defs
+            # def.transform scale:1/@stage.zoom
         
     # 0000000    00000000  000
     # 000   000  000       000
@@ -66,13 +100,13 @@ class Edit
         while @objects.length
             @delObject last @objects
 
-        @svg.clear()
-        
         editing
 
     onStage: (action, box) => 
         
-        if action == 'viewbox' then @svg.viewbox box
+        if action == 'viewbox' 
+            @svg.viewbox box
+            @updateDefs()
 
     # 0000000    00000000  000      00000000  000000000  00000000  
     # 000   000  000       000      000          000     000       
@@ -227,7 +261,8 @@ class Edit
     # 000   000   0000000       0      00000000
 
     moveBy: (delta) ->
-        log 'edit moveBy', delta
+        
+        # log 'edit moveBy', delta
         if not @dotsel.empty()
             @dotsel.moveBy delta
         else

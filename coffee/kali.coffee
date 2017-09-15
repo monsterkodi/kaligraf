@@ -5,12 +5,13 @@
 # 000  000   000   000  000      000  
 # 000   000  000   000  0000000  000  
 
-{ setStyle, keyinfo, stopEvent, prefs, elem, log, $ } = require 'kxk'
+{ setStyle, keyinfo, stopEvent, empty, post, prefs, elem, log, $ } = require 'kxk'
 
-Stage = require './stage'
-Tools = require './tools'
-Menu  = require './menu'
-Trans = require './trans'
+Stage   = require './stage'
+Tools   = require './tools'
+Menu    = require './menu'
+Trans   = require './trans'
+Browser = require './browser'
 
 class Kali
 
@@ -39,9 +40,26 @@ class Kali
         @tools.init()
         @tools.loadPrefs()
 
+    # 00000000   00000000   0000000  00000000  000   000  000000000  
+    # 000   000  000       000       000       0000  000     000     
+    # 0000000    0000000   000       0000000   000 0 000     000     
+    # 000   000  000       000       000       000  0000     000     
+    # 000   000  00000000   0000000  00000000  000   000     000     
+    
+    openRecent: ->
+        
+        recent = prefs.get 'recent', []
+        if empty recent
+            post.emit 'tool', 'open'
+        else
+            @browser = new Browser @, recent
+        
     items: -> @stage.items()
     
     insertBelowTools: (child) -> @element.insertBefore child, @toolDiv
+    insertAboveTools: (child) -> 
+        @element.appendChild child
+        child.style.zIndex = 1000
 
     shapeTool:    -> @tools.getActive('shape')?.name
         

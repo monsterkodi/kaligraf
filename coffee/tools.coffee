@@ -28,16 +28,39 @@ class Tools extends Tool
         
         @kali.tools = @
 
-    # 00000000   00000000   00000000  00000000   0000000  
-    # 000   000  000   000  000       000       000       
-    # 00000000   0000000    0000000   000000    0000000   
-    # 000        000   000  000       000            000  
-    # 000        000   000  00000000  000       0000000   
+    #  0000000    0000000  000000000  000   0000000   000   000  
+    # 000   000  000          000     000  000   000  0000  000  
+    # 000000000  000          000     000  000   000  000 0 000  
+    # 000   000  000          000     000  000   000  000  0000  
+    # 000   000   0000000     000     000   0000000   000   000  
     
-    loadPrefs: ->
-        log 'loadPrefs'
-        @clickTool prefs.get 'activeTool', 'pick' 
-        @clickTool 'font' if prefs.get 'fontlist:visible', false                     
+    onAction: (action, name) =>
+        
+        switch action
+            
+            when 'click'      then @clickTool    name
+            when 'activate'   then @activateTool name
+            when 'openRecent' then @kali.openRecent()
+            when 'cut'        then @stage.cut()
+            when 'copy'       then @stage.copy()
+            when 'paste'      then @stage.paste()
+            when 'save'       then @stage.save()
+            when 'saveAs'     then @stage.saveAs()
+            when 'load'       then @stage.load()
+            when 'open'       then @stage.open()
+            when 'clear'      then @stage.clear()
+            when 'zoom_reset' then @stage.resetView()
+            when 'zoom_in'    then @stage.zoomIn()
+            when 'zoom_out'   then @stage.zoomOut()
+            when 'lower'      then @stage.order  'backward'
+            when 'raise'      then @stage.order  'forward'
+            when 'back'       then @stage.order  'back'
+            when 'front'      then @stage.order  'front'
+            when 'selectAll'  then @stage.select 'all'
+            when 'deselect'   then @stage.select 'none'
+            when 'invert'     then @stage.select 'invert'
+            when 'center'     then @stage.centerSelection()
+            when 'grid_toggle' then @grid.toggleGrid()
         
     # 000  000   000  000  000000000  
     # 000  0000  000  000     000     
@@ -97,7 +120,7 @@ class Tools extends Tool
         @element.style.zIndex = 1 
         for tool in tools
             @addTool tool
-                    
+
     #  0000000   0000000    0000000    
     # 000   000  000   000  000   000  
     # 000000000  000   000  000   000  
@@ -153,39 +176,24 @@ class Tools extends Tool
     saveSVG: (name, svg) ->
         svgFile = "#{__dirname}/../svg/#{name}.svg"
         fs.writeFileSync svgFile, svg, encoding: 'utf8'
-            
-    #  0000000    0000000  000000000  000   0000000   000   000  
-    # 000   000  000          000     000  000   000  0000  000  
-    # 000000000  000          000     000  000   000  000 0 000  
-    # 000   000  000          000     000  000   000  000  0000  
-    # 000   000   0000000     000     000   0000000   000   000  
-    
-    onAction: (action, name) =>
-        
-        switch action
-            when 'click'      then @clickTool    name
-            when 'activate'   then @activateTool name
-            when 'cut'        then @stage.cut()
-            when 'copy'       then @stage.copy()
-            when 'paste'      then @stage.paste()
-            when 'save'       then @stage.save()
-            when 'saveAs'     then @stage.saveAs()
-            when 'load'       then @stage.load()
-            when 'open'       then @stage.open()
-            when 'clear'      then @stage.clear()
-            when 'zoom_reset' then @stage.resetView()
-            when 'zoom_in'    then @stage.zoomIn()
-            when 'zoom_out'   then @stage.zoomOut()
-            when 'lower'      then @stage.order  'backward'
-            when 'raise'      then @stage.order  'forward'
-            when 'back'       then @stage.order  'back'
-            when 'front'      then @stage.order  'front'
-            when 'selectAll'  then @stage.select 'all'
-            when 'deselect'   then @stage.select 'none'
-            when 'invert'     then @stage.select 'invert'
-            when 'center'     then @stage.centerSelection()
-            when 'grid_toggle' then @grid.toggleGrid()
 
+    # 00000000   00000000   00000000  00000000   0000000  
+    # 000   000  000   000  000       000       000       
+    # 00000000   0000000    0000000   000000    0000000   
+    # 000        000   000  000       000            000  
+    # 000        000   000  00000000  000       0000000   
+    
+    loadPrefs: ->
+        
+        @clickTool prefs.get 'activeTool', 'pick' 
+        @clickTool 'font' if prefs.get 'fontlist:visible', false                     
+                    
+    collapseTemp: =>
+        
+        if @temp 
+            @temp.hideChildren()
+            delete @temp
+        
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
     # 0000000    0000000     00000    
@@ -256,11 +264,5 @@ class Tools extends Tool
         @stage.resizer.activate name == 'pick'
             
         @stage.setCursor cursor
-        
-    collapseTemp: =>
-        
-        if @temp 
-            @temp.hideChildren()
-            delete @temp
-        
+                
 module.exports = Tools

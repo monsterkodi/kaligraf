@@ -261,6 +261,11 @@ class Stage
         svg = fs.readFileSync resolve(file), encoding: 'utf8'
         @setSVG svg
         
+        recent = prefs.get 'recent', []
+        _.pull recent, file
+        recent.push file
+        prefs.set 'recent', recent
+        
     open: ->
 
         opts =         

@@ -25,6 +25,11 @@ fill-abs()
     left                0
     top                 0
 
+font()
+
+    font-family             Varela Round, Helvetica, Arial
+    font-weight             bold
+    
 body
 #kali
 #selection
@@ -32,8 +37,9 @@ body
 #stage
 #edit
 #grid
-    overflow            hidden
+.fill
     fill-abs()
+    overflow                hidden
 
 #selection
 #resizer
@@ -73,8 +79,7 @@ button
 .item
 .winTitleClose
 .winTitleButton
-    font-family             Helvetica, Arial
-    font-weight             bold
+    font()
     color                   #bbb
     &.active
         color               #fff
@@ -125,6 +130,54 @@ button
     cursor                  pointer
     padding-top             8px
     padding-bottom          7px
+
+// 0000000    00000000    0000000   000   000   0000000  00000000  00000000   
+// 000   000  000   000  000   000  000 0 000  000       000       000   000  
+// 0000000    0000000    000   000  000000000  0000000   0000000   0000000    
+// 000   000  000   000  000   000  000   000       000  000       000   000  
+// 0000000    000   000   0000000   00     00  0000000   00000000  000   000  
+
+.browser
+    font()
+    background              #333
+    
+.browserTitle
+    color                   #888
+    -webkit-app-region      drag
+    
+.browserTitleText
+    margin-left             76px
+    
+.browserScroll
+    height                  100%
+    overflow-x              scroll
+    overflow-y              hidden
+
+.browserItems
+    display                 block
+    height                  100%
+    white-space             nowrap
+    padding-left            100px
+    
+.browserItem
+    display                 inline-block
+    margin-top              100px    
+    margin-right            100px    
+    cursor                  pointer
+    
+.browserItemText
+    background              #282828
+    color                   #888
+    font-size               12px
+    padding 6px
+    border-top-left-radius  6px
+    border-top-right-radius 6px
+    pointer-events          none
+    
+.browserItemView    
+    height                  700px
+    width                   1.5 * 700px
+    pointer-events          none
 
 // 000000000  00000000  000   000  000000000  00000000  0000000    000  000000000
 //    000     000        000 000      000     000       000   000  000     000
@@ -366,9 +419,8 @@ button
 // 000   000  00000000  000   000   0000000
 
 #menus
+    font()
     -webkit-app-region      drag
-    font-family             Helvetica, Arial
-    font-weight             bold
     font-size               13px
     position                absolute
     left                    toolSize

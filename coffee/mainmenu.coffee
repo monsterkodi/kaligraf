@@ -40,8 +40,8 @@ class MainMenu
             # 000       000  0000000  00000000  
             
             label: 'File', submenu: [
-                { label: 'Open...',         accelerator: 'command+shift+o', click: -> action 'open'}
                 { label: 'Open Recent...',  accelerator: 'command+o',       click: -> action 'openRecent'}
+                { label: 'Open...',         accelerator: 'command+shift+o', click: -> action 'open'}
                 { type:  'separator'}
                 { label: 'Save',            accelerator: 'command+s',       click: -> action 'save'}
                 { label: 'Save As...',      accelerator: 'command+shift+s', click: -> action 'saveAs'}

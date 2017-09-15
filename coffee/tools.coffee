@@ -187,6 +187,9 @@ class Tools extends Tool
         
         @clickTool prefs.get 'activeTool', 'pick' 
         @clickTool 'font' if prefs.get 'fontlist:visible', false                     
+        if recent = last prefs.get 'recent', []
+            @stage.currentFile = recent
+            @stage.load()
                     
     collapseTemp: =>
         

@@ -44,7 +44,7 @@ class DotSel
         
         dotSelected = false
         for dot in @dots
-            if dot.ctrl.isSelected dot.dot then dotSelected = true
+            if dot.ctrl?.isSelected dot.dot then dotSelected = true
             dot.ctrl?.setSelected dot.dot, false
             
         @dots = []

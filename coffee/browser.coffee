@@ -13,8 +13,6 @@ class Browser
 
     constructor: (@kali, @files) ->
 
-        log 'browser', @files
-        
         @element = elem 'div', class: 'browser fill'
         @element.tabIndex = 100
         @element.addEventListener 'wheel',   @onWheel
@@ -35,7 +33,6 @@ class Browser
             @addFile file
             
         @element.focus()
-
         
     del: -> 
         
@@ -52,17 +49,13 @@ class Browser
         svg = fs.readFileSync resolve(file), encoding: 'utf8'
         
         item = elem 'span', class: 'browserItem'
-        # text = elem class: 'browserItemText'
-        
         text = winTitle text:file, class: 'browserItemTitle', close:@delFile
-        
         view = elem class: 'browserItemView'
         
         item.setAttribute 'file', file
         item.appendChild text
         item.appendChild view
         
-        # text.innerHTML = file
         view.innerHTML = svg
         
         @items.appendChild item
@@ -90,21 +83,16 @@ class Browser
         
         switch combo
             
-            when 'up'            then @navigate -1
-            when 'down'          then @navigate +1
-            when 'left'          then @navigateGroup -1
-            when 'right'         then @navigateGroup +1
-            # when 'command+up'    then stopEvent(event); @select 0
-            # when 'command+down'  then stopEvent(event); @select @scrolls[@activeGroup].children.length-1
+            when 'left'          then @navigate -1
+            when 'right'         then @navigate +1
             when 'esc', 'enter'  then return @close()
-            # else
-                # log combo
                 
         if combo.startsWith 'command' then return
         
         stopEvent event
         
     onWheel: (event) => 
+        
         log 'browser wheel', event
         @scroll.scrollOffset += event.deltaY
         event.stopPropagation()
@@ -114,25 +102,6 @@ class Browser
         @kali.stage.load event.target.getAttribute 'file'
         @close()
         
-    #  0000000  000   000   0000000   000   000
-    # 000       000   000  000   000  000 0 000
-    # 0000000   000000000  000   000  000000000
-    #      000  000   000  000   000  000   000
-    # 0000000   000   000   0000000   00     00
-    
-    # showGroup: (group) ->
-#         
-        # button = @title.querySelector ".fontListGroup_#{@activeGroup}"
-        # button.classList.remove 'active'
-        # @scrolls[@activeGroup].style.display = 'none'
-        # @activeGroup = group
-        # @scrolls[@activeGroup].style.display = 'block'
-        # button = @title.querySelector ".fontListGroup_#{@activeGroup}"
-        # button.classList.add 'active'
-        # @active().scrollIntoViewIfNeeded false
-        # @element.focus()
-        # post.emit 'font', 'family', @active().innerHTML
-          
     close: => @kali.closeRecent()
         
 module.exports = Browser

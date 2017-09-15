@@ -78,8 +78,11 @@ class Stage
 
         items = @svg.node.getIntersectionList r, null
         items = [].slice.call(items, 0).reverse()
+        log items.length, p, @items().length
         for item in items
+            log 'instance?', item.instance?, item.id, item.parentNode.instance?
             if item.instance in @items()
+                log 'found'
                 return item.instance
 
     items: -> @svg.children().filter (child) -> child.type != 'defs'
@@ -204,21 +207,25 @@ class Stage
         e = elem 'div'
         e.innerHTML = svg
 
-        if e.firstChild.tagName == 'svg'
-
-            if e.firstChild.style.background
-                @setColor e.firstChild.style.background
-
-            svg = SVG.adopt e.firstChild
-            if svg? and svg.children().length
-
-                @selection.clear()
-
-                for child in svg.children()
-                    @svg.svg child.svg()
-                    added = last @svg.children()
-                    if added.type != 'defs' and opt?.select != false
-                        @selection.addItem last @svg.children()
+        for elemChild in e.children
+            
+            if elemChild.tagName == 'svg'
+    
+                if elemChild.style.background
+                    @setColor elemChild.style.background
+    
+                svg = SVG.adopt elemChild
+                if svg? and svg.children().length
+    
+                    @selection.clear()
+    
+                    for child in svg.children()
+                        @svg.add child
+                        added = last @svg.children()
+                        if added.type != 'defs' and opt?.select != false
+                            @selection.addItem last @svg.children()
+                            
+                    return
 
     getSVG: (items, bb, color) ->
 
@@ -261,10 +268,7 @@ class Stage
         svg = fs.readFileSync resolve(file), encoding: 'utf8'
         @setSVG svg
         
-        recent = prefs.get 'recent', []
-        _.pull recent, file
-        recent.push file
-        prefs.set 'recent', recent
+        @pushRecent file
         
         post.emit 'tool', 'center'
         
@@ -305,8 +309,17 @@ class Stage
         dialog.showSaveDialog opts, (file) => 
             if file?
                 @currentFile = file
-                @save()                
+                @save()
+                @pushRecent @currentFile
 
+
+    pushRecent: (file) ->
+        
+        recent = prefs.get 'recent', []
+        _.pull recent, file
+        recent.push file
+        prefs.set 'recent', recent
+                
     #  0000000   0000000   00000000   000   000
     # 000       000   000  000   000   000 000
     # 000       000   000  00000000     00000

@@ -187,7 +187,6 @@ class Stage
 
     setColor: (color, @alpha) ->
 
-        log "setColor a  #{@alpha}", color
         @color = new SVG.Color color
         @kali.element.style.background = @color.toHex()
         document.body.style.background = @color.toHex()
@@ -208,6 +207,7 @@ class Stage
         if not _.isEmpty attr
             for item in @selectedItems()
                 item.style attr
+                item.style opacity: 'unset'
 
     onFont: (prop, value) =>
         
@@ -417,8 +417,6 @@ class Stage
         @shapes.edit?.clear()
         @selection.clear()
         @svg.clear()
-        # log 'clear'
-        # @resetView()
 
     #  0000000   00000000   0000000    00000000  00000000
     # 000   000  000   000  000   000  000       000   000
@@ -513,7 +511,6 @@ class Stage
 
         if out then z = 1.0/z
 
-        log 'loupe'
         @setZoom @zoom * z, sc
 
     # 000   000  000   000  00000000  00000000  000
@@ -545,14 +542,14 @@ class Stage
     ]
 
     zoomIn: ->
-        log 'zoomIn'
+
         for i in [0...Stage.zoomLevels.length]
             if @zoom < Stage.zoomLevels[i]
                 @setZoom Stage.zoomLevels[i], @stageCenter()
                 return
 
     zoomOut: ->
-        log 'zoomOut'
+
         for i in [Stage.zoomLevels.length-1..0]
             if @zoom > Stage.zoomLevels[i]
                 @setZoom Stage.zoomLevels[i], @stageCenter()
@@ -567,7 +564,7 @@ class Stage
     setCursor: (cursor) -> @svg.style cursor: cursor
 
     resetView: (zoom=1) => 
-        log 'resetView'
+
         @setZoom zoom, @toolCenter zoom
 
     centerSelection: ->
@@ -583,7 +580,6 @@ class Stage
         h = (b.h / @zoom) / v.height
         z = 0.8 * @zoom / Math.max(w, h)
 
-        log 'centerSelection'
         @setZoom z, @stageForView boxCenter b
 
     setZoom: (z, sc) ->
@@ -592,7 +588,6 @@ class Stage
 
         @zoom = z
         
-        log 'setZoom'
         @resetSize()
         @centerAtStagePos sc if sc?
 
@@ -609,7 +604,7 @@ class Stage
         box.height = @viewSize().y / @zoom
         box.x += delta.x
         box.y += delta.y
-        log 'zoomAtPos'
+
         @setViewBox box
         
     # 00000000    0000000   000   000
@@ -635,7 +630,6 @@ class Stage
         box.width  = @viewSize().x / @zoom
         box.height = @viewSize().y / @zoom
 
-        log 'resetSize'
         @setViewBox box
 
     moveViewBox: (delta) ->
@@ -645,7 +639,6 @@ class Stage
         box.x += delta.x
         box.y += delta.y
 
-        log 'moveViewBox'
         @setViewBox box
 
     setViewBox: (box) ->
@@ -659,8 +652,6 @@ class Stage
         post.emit 'stage', 'zoom',    @zoom
         
         prefs.set 'stage:viewbox', box
-        
-        log 'save viewbox', box
         
         box
 

@@ -5,7 +5,7 @@
 # 000   000  000   000  000   000  000   000       000  000       000   000
 # 0000000    000   000   0000000   00     00  0000000   00000000  000   000
 
-{ stopEvent, keyinfo, elem, prefs, resolve, fs, log, _ } = require 'kxk'
+{ setStyle, stopEvent, keyinfo, elem, prefs, resolve, fs, log, _ } = require 'kxk'
 
 { winTitle } = require './utils'
 
@@ -33,6 +33,16 @@ class Browser
             @addFile file
             
         @element.focus()
+        @resize()
+        
+    resize: ->
+        
+        h = @element.getBoundingClientRect().height
+        
+        setStyle '.browserItemView', 'height',          "#{h*0.6}px"
+        setStyle '.browserItemView', 'width',           "#{h*0.9}px"
+        setStyle '.browserItem',     'margin-top',      "#{h*0.15}px"
+        setStyle '.browserItem',     'margin-right',    "#{h*0.2}px"
         
     del: -> 
         

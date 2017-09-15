@@ -40,7 +40,6 @@ class Draw
             when 'bezier', 'bezier_quad', 'bezier_cube' 
                 @picking = true
             else
-                log 'startDrawing delete @picking'
                 delete @picking
 
     # 0000000     0000000   000   000  000   000  

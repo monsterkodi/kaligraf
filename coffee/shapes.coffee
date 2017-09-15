@@ -384,7 +384,7 @@ class Shapes
         delete @draw
             
     editItems: (items) ->
-        log 'editItems'
+
         @stopEdit()
         @edit = new Edit @kali
         @edit.setItems items

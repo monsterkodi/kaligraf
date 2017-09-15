@@ -229,9 +229,7 @@ class Tools extends Tool
             
         'unhandled'
 
-    clickTool: (name) => 
-        log "clickTool #{name}", @getTool(name)?
-        @getTool(name)?.onClick()
+    clickTool: (name) => @getTool(name)?.onClick()
         
     #  0000000    0000000  000000000  000  000   000   0000000   000000000  00000000  
     # 000   000  000          000     000  000   000  000   000     000     000       

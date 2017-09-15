@@ -20,8 +20,6 @@ class Kali
         @setStyle 'style'
         
         @element =$ element 
-        @element.style.overflow = 'initial'
-        @element.parentNode.style.overflow = 'initial'
         @toolDiv = elem 'div', id: 'tools'
         @element.appendChild @toolDiv
         
@@ -41,7 +39,12 @@ class Kali
         post.setMaxListeners 100
         # post.on 'slog', (t) -> window.logview?.appendText t
         
-        window.onresize = @kali.stage.resetSize
+        window.onresize = @onResize
+        
+    onResize: =>
+        
+        @stage.resetSize
+        @browser?.resize()
                 
     # 00000000   00000000   0000000  00000000  000   000  000000000  
     # 000   000  000       000       000       0000  000     000     

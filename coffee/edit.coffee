@@ -110,8 +110,6 @@ class Edit
 
     clear: ->
 
-        log 'clear'
-        
         editing = not @empty()
         @dotsel.clear()
         
@@ -231,8 +229,6 @@ class Edit
     stageStart: (drag, event) ->
         
         eventPos = pos event
-        
-        log 'stageStart', eventPos
         
         item = @stage.itemAtPos eventPos
         

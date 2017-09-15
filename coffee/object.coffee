@@ -260,6 +260,7 @@ class Object
     delDots: (dots) ->
         
         indexDots = @indexDots(dots).map (idots) -> index:idots.index, dots:idots.dots.map (dot) -> dot.dot
+        
         for indots in indexDots
             log indots.index, indots.dots
         

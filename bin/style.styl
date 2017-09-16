@@ -131,15 +131,25 @@ button
     padding-top             8px
     padding-bottom          7px
 
+// 00000000  000  000      00000000  000  000   000  00000000   0000000   
+// 000       000  000      000       000  0000  000  000       000   000  
+// 000000    000  000      0000000   000  000 0 000  000000    000   000  
+// 000       000  000      000       000  000  0000  000       000   000  
+// 000       000  0000000  00000000  000  000   000  000        0000000   
+
 #fileInfo
     font()
     position                absolute
     left                    toolSize
     top                     0
+    background              #222
+    border-bottom-right-radius  6px
 
 .fileInfoText
+    display                 inline-block
+    color                   #bbb
     padding                 6px
-    font-size               10px
+    font-size               13px
     
 // 0000000    00000000    0000000   000   000   0000000  00000000  00000000   
 // 000   000  000   000  000   000  000 0 000  000       000       000   000  
@@ -229,7 +239,7 @@ button
     max-height              400px
 
 .fontElem
-    min-height                  30px
+    min-height              30px
     font-size               20px
     padding-left            10px
     padding-right           10px

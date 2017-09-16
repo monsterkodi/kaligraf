@@ -29,8 +29,7 @@ class FileInfo
         
     onStage: (action, color) =>
 
-        if action == 'color' 
-            @file.style.color = contrastColor color
-    
+        # if action == 'color' 
+            # @file.style.color = contrastColor color
 
 module.exports = FileInfo

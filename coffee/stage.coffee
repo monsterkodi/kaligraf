@@ -20,6 +20,7 @@ clr       = require 'svg.colorat.js'
 Shapes    = require './edit/shapes'
 Selection = require './selection'
 Resizer   = require './resizer'
+Exporter  = require './exporter'
 
 class Stage
 
@@ -76,8 +77,9 @@ class Stage
 
         items = @svg.node.getIntersectionList r, null
         items = [].slice.call(items, 0).reverse()
-        # log items.length, p, @items().length
+
         for item in items
+            
             if item.instance in @items()
                 return item.instance
             else if item.instance in @treeItems()
@@ -187,14 +189,19 @@ class Stage
     setColor: (color, alpha) ->
 
         if not alpha? 
-            if color.startsWith 'rgba'
-                @alpha = parseFloat color.split(',')[3]
+            if color.startsWith 'rgba('
+                split  = color.slice(5).split ','
+                @alpha = parseFloat split[3]
+                color  = "rgb(#{parseFloat split[0]}, #{parseFloat split[1]}, #{parseFloat split[2]})"
             else
                 @alpha = 1
         else
             @alpha = alpha
             
         @color = new SVG.Color color
+        
+        # log 'color', @color, color
+        # log 'alpha', @alpha
         
         @kali.element.style.background = @color.toHex()
         document.body.style.background = @color.toHex()
@@ -345,76 +352,9 @@ class Stage
 
         @currentFile = file
         
-        bb = @svg.bbox()
-        growBox bb
-
-        svgStr = """
-            <svg width="100%" height="100%"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg" 
-            xmlns:xlink="http://www.w3.org/1999/xlink"
-            xmlns:svgjs="http://svgjs.com/svgjs"
-            """
-
-        rgba = "#{@color.r}, #{@color.g}, #{@color.b}, #{@alpha}"
-        # log "rgba #{rgba}"
-        svgStr += "\nstyle=\"stroke-linecap: round; stroke-linejoin: round; background: rgba(#{rgba});\""
-        svgStr += "\nviewBox=\"#{bb.x} #{bb.y} #{bb.width} #{bb.height}\">"
-        
-        @cleanItem @svg
+        Exporter.save @svg, file:@currentFile, color:@color, alpha:@alpha
                 
-        for item in @svg.children()                    
-            svgStr += '\n'
-            svgStr += item.svg()
-            
-        svgStr += '</svg>'
-        
-        fs.writeFileSync resolve(file), svgStr
-        
         post.emit 'file', @currentFile
-
-    cleanItem: (item) ->
-        
-        # log 'clean', item.id()
-        if item.node.getAttribute 'sodipodi:nodetypes'
-            log "clean sodipodi: #{item.node.getAttribute 'sodipodi:nodetypes'}" 
-            # item.node.removeAttributeNS 'sodipodi', 'nodetypes'
-            item.node.removeAttribute   'sodipodi:nodetypes'
-            
-        if item.style('opacity') == 'unset'
-            log 'clear unset opacity'
-            item.style 'opacity', null
-         
-        if item.node.hasAttributes()
-            attr = item.node.attributes
-            for i in [attr.length-1..0]
-                # log "i:#{i}", attr[i], attr[i].name, attr[i].value
-                if attr[i]?.name.startsWith('inkscape:')
-                    log 'clean inkscape', item.node.getAttribute attr[i].name
-                    item.node.removeAttribute attr[i].name
-                if attr[i]?.name.startsWith('sodipodi:')
-                    log 'clean sodipodi', item.node.getAttribute attr[i].name
-                    item.node.removeAttribute attr[i].name
-
-        if item.type == 'defs'
-            if item.children?().length == 0 and item.node.innerHTML.length == 0
-                log 'defs', item.id(), item.children?().length, item.node.innerHTML
-                item.remove()
-        else if item.type.startsWith 'inkscape:'
-            item.remove()
-        else if item.type.startsWith 'sodipodi:'
-            item.remove()
-                    
-        if _.isFunction item.children
-            for child in item.children()
-                @cleanItem child
-        else if item.type == 'text'
-            for i in [0...item.lines().length()]
-                @cleanItem item.lines().get i 
-        # else
-            # log 'no children', item.type
-                    
-        log "opacity: #{item.node.getAttribute 'opacity'}" if item.node.getAttribute 'opacity'
                         
     saveAs: ->
 

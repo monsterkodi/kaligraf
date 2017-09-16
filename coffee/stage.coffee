@@ -385,9 +385,22 @@ class Stage
             log "clean sodipodi: #{item.node.getAttribute 'sodipodi:nodetypes'}" 
             # item.node.removeAttributeNS 'sodipodi', 'nodetypes'
             item.node.removeAttribute   'sodipodi:nodetypes'
+            
         if item.style('opacity') == 'unset'
             log 'clear unset opacity'
             item.style 'opacity', null
+         
+        if item.node.hasAttributes()
+            attr = item.node.attributes
+            for i in [attr.length-1..0]
+                # log "i:#{i}", attr[i], attr[i].name, attr[i].value
+                if attr[i]?.name.startsWith('inkscape:')
+                    log 'clean inkscape', item.node.getAttribute attr[i].name
+                    item.node.removeAttribute attr[i].name
+                if attr[i]?.name.startsWith('sodipodi:')
+                    log 'clean sodipodi', item.node.getAttribute attr[i].name
+                    item.node.removeAttribute attr[i].name
+            
         if _.isFunction item.children
             if _.isFunction item.children
                 for child in item.children()

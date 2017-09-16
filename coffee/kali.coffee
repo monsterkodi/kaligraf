@@ -7,10 +7,11 @@
 
 { setStyle, keyinfo, stopEvent, empty, first, post, prefs, elem, log, $, _ } = require 'kxk'
 
-Tools   = require './tool/tools'
-Stage   = require './stage'
-Trans   = require './trans'
-Browser = require './browser'
+Tools    = require './tool/tools'
+Stage    = require './stage'
+Trans    = require './trans'
+Browser  = require './browser'
+FileInfo = require './fileinfo'
 
 class Kali
 
@@ -20,7 +21,7 @@ class Kali
         @setStyle 'style'
         
         @element =$ element 
-        @toolDiv = elem 'div', id: 'tools'
+        @toolDiv = elem id: 'tools'
         @element.appendChild @toolDiv
         
         @toolSize = 66
@@ -29,17 +30,20 @@ class Kali
         @tools   = new Tools @, name: 'tools', text: 'tools', orient: 'down'
         @stage   = new Stage @
         
+        @tools.init()
+        
+        @fileInfo = new FileInfo @
+        
         @focus()
         @element.addEventListener 'keydown', @onKeyDown
         @element.addEventListener 'keyup',   @onKeyUp
         
-        @tools.init()
-        @tools.loadPrefs()
-
         post.setMaxListeners 100
         # post.on 'slog', (t) -> window.logview?.appendText t
         
         window.onresize = @onResize
+        
+        @tools.loadPrefs()
         
     onResize: =>
         
@@ -58,8 +62,6 @@ class Kali
         if empty recent
             post.emit 'tool', 'open'
         else
-            # if first(recent) == @stage.currentFile
-                # recent.shift()
             @browser ?= new Browser @, recent
             
     closeBrowser: ->

@@ -28,8 +28,6 @@ class Stage
         @element = elem 'div', id: 'stage'
         @kali.element.insertBefore @element, @kali.element.firstChild
 
-        @currentFile = prefs.get 'currentFile', '~/Desktop/kaligraf.svg'
-        
         @svg = SVG(@element).size '100%', '100%'
         @svg.addClass 'stageSVG'
         @svg.clear()
@@ -44,17 +42,15 @@ class Stage
         @element.addEventListener 'mousemove', @onMove
         @element.addEventListener 'dblclick', @onDblClick
         
-        # @element.style.display = 'none'
-
         post.on 'stage', @onStage
         post.on 'color', @onColor
         post.on 'line',  @onLine
         post.on 'font',  @onFont
 
-        @zoom   = 1
-        # @virgin = true
+        @zoom  = 1
+        @alpha = 1
         
-        @setColor prefs.get('stage:color', '#222'), prefs.get('stage:alpha', 1)
+        @setColor prefs.get 'stage:color', 'rgba(32, 32, 32, 1)'
 
     onStage: (action, color, alpha) =>
 
@@ -188,11 +184,22 @@ class Stage
     # 000       000   000  000      000   000  000   000  
     #  0000000   0000000   0000000   0000000   000   000  
 
-    setColor: (color, @alpha) ->
+    setColor: (color, alpha) ->
 
+        if not alpha? 
+            if color.startsWith 'rgba'
+                @alpha = parseFloat color.split(',')[3]
+            else
+                @alpha = 1
+        else
+            @alpha = alpha
+            
         @color = new SVG.Color color
+        
         @kali.element.style.background = @color.toHex()
         document.body.style.background = @color.toHex()
+        
+        post.emit 'stage', 'color', @color.toHex(), @alpha
         
         prefs.set 'stage:color', @color.toHex()    
         prefs.set 'stage:alpha', @alpha   
@@ -238,12 +245,6 @@ class Stage
     #      000     000     000   000
     # 0000000       0       0000000
 
-    setSVG: (svg) ->
-
-        @clear()
-        @addSVG svg, select:false
-        # @resetView()
-
     addSVG: (svg, opt) ->
 
         e = elem 'div'
@@ -253,8 +254,12 @@ class Stage
             
             if elemChild.tagName == 'svg'
     
-                if elemChild.style.background
-                    @setColor elemChild.style.background
+                if opt?.color != false
+                    
+                    if elemChild.style.background
+                        @setColor elemChild.style.background
+                    else
+                        @setColor "#222", 0
     
                 svg = SVG.adopt elemChild
                 if svg? and svg.children().length
@@ -305,12 +310,17 @@ class Stage
     # 000      000   000  000   000  000   000  
     # 0000000   0000000   000   000  0000000    
     
-    setCurrentFile: (@currentFile) -> @load()
-    
     load: (file=@currentFile) ->
 
-        svg = fs.readFileSync resolve(file), encoding: 'utf8'
-        @setSVG svg
+        try
+            svg = fs.readFileSync resolve(file), encoding: 'utf8'
+        catch e
+            log "error:", e
+            return
+
+        @clear file
+        @addSVG svg, select:false
+        
         @pushRecent file
         @kali.closeBrowser()
         
@@ -323,8 +333,7 @@ class Stage
             
         dialog.showOpenDialog opts, (files) => 
             if file = first files
-                @currentFile = file
-                @load()
+                @load file 
         
     #  0000000   0000000   000   000  00000000
     # 000       000   000  000   000  000
@@ -334,6 +343,8 @@ class Stage
 
     save: (file=@currentFile) ->
 
+        @currentFile = file
+        
         bb = @svg.bbox()
         growBox bb
 
@@ -346,7 +357,7 @@ class Stage
             """
 
         rgba = "#{@color.r}, #{@color.g}, #{@color.b}, #{@alpha}"
-
+        log "rgba #{rgba}"
         svgStr += "\nstyle=\"stroke-linecap: round; stroke-linejoin: round; background: rgba(#{rgba});\""
         svgStr += "\nviewBox=\"#{bb.x} #{bb.y} #{bb.width} #{bb.height}\">"
         
@@ -357,6 +368,8 @@ class Stage
         svgStr += '</svg>'
         
         fs.writeFileSync resolve(file), svgStr
+        
+        post.emit 'file', @currentFile
 
     saveAs: ->
 
@@ -367,8 +380,7 @@ class Stage
             
         dialog.showSaveDialog opts, (file) => 
             if file?
-                @currentFile = file
-                @save()
+                @save file 
                 @pushRecent @currentFile
 
     pushRecent: (file) ->
@@ -407,7 +419,7 @@ class Stage
     paste: ->
 
         delete @selection.pos
-        @addSVG clipboard.readText()
+        @addSVG clipboard.readText(), color:false
 
     cut: ->
 
@@ -415,11 +427,15 @@ class Stage
             @copy()
             @selection.delete()
 
-    clear: ->
+    clear: (file='untitled.svg') ->
 
+        @currentFile = file
+        
         @shapes.edit?.clear()
         @selection.clear()
         @svg.clear()
+        
+        post.emit 'file', @currentFile
 
     #  0000000   00000000   0000000    00000000  00000000
     # 000   000  000   000  000   000  000       000   000

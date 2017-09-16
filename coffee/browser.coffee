@@ -253,7 +253,7 @@ class Browser
                 
     openFile: (file) ->
         
-        @kali.stage.setCurrentFile file
+        @kali.stage.load file
         @kali.stage.centerSelection()
         @close()
         

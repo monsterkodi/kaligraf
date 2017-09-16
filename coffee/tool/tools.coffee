@@ -192,7 +192,7 @@ class Tools extends Tool
         @clickTool 'font' if prefs.get 'fontlist:visible', false
         
         if recent = first prefs.get 'recent', []
-            @stage.setCurrentFile recent
+            @stage.load recent
             
         if box = prefs.get 'stage:viewbox'
             @stage.zoom = box.zoom

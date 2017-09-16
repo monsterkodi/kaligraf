@@ -24,12 +24,12 @@ class Menu
             # 000   000  000   000  0000000  000  
             
             label: pkg.name, submenu: [     
-                { label: "About #{pkg.name}",   accelerator: 'command+/',   click: app.showAbout}
+                { label: "About #{pkg.name}",   accelerator: 'command+/',       click: app.showAbout}
                 { type:  'separator'}
-                { label: "Hide #{pkg.name}",    accelerator: 'Cmd+H',       role: 'hide'}
-                { label: 'Hide Others',         accelerator: 'Cmd+Alt+H',   role: 'hideothers'}
+                { label: "Hide #{pkg.name}",    accelerator: 'command+h',       role: 'hide'}
+                { label: 'Hide Others',         accelerator: 'command+alt+h',   role: 'hideothers'}
                 { type:  'separator'}
-                { label: 'Quit',                accelerator: 'Cmd+Q',       click: app.quit}
+                { label: 'Quit',                accelerator: 'command+q',       click: app.quit}
             ]
         ,
             # 00000000  000  000      00000000  

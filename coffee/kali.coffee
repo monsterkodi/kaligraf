@@ -87,6 +87,7 @@ class Kali
     onKeyDown: (event) =>
         
         {mod, key, combo, char} = keyinfo.forEvent event
+
         return stopEvent(event) if 'unhandled' != @tools.handleKey mod, key, combo, char, event, true
         return stopEvent(event) if 'unhandled' != @stage.handleKey mod, key, combo, char, event, true
 

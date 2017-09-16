@@ -88,7 +88,7 @@ class Object
         for i in [0...points.length]
             
             @updateCtrlDots i, points[i]
-                
+                    
     # 00     00   0000000   000   000  00000000  0000000     0000000   000000000   0000000  
     # 000   000  000   000  000   000  000       000   000  000   000     000     000       
     # 000000000  000   000   000 000   0000000   000   000  000   000     000     0000000   
@@ -146,7 +146,49 @@ class Object
                 @movePoint idots.index, newPos, dot.dot
             
         @plot()
-                            
+
+        
+    #  0000000   0000000   000   000  000   000  00000000  00000000   000000000  
+    # 000       000   000  0000  000  000   000  000       000   000     000     
+    # 000       000   000  000 0 000   000 000   0000000   0000000       000     
+    # 000       000   000  000  0000     000     000       000   000     000     
+    #  0000000   0000000   000   000      0      00000000  000   000     000     
+    
+    convertDots: (dots, type) ->
+        
+        points = @points()
+        
+        indexDots = @indexDots dots
+            
+        for idots in indexDots
+            index = idots.index
+            point = points[index]
+            
+            switch type
+                when 'bezier' 
+                    switch point[0]
+                        when 'C' then continue
+                        when 'Q', 'S' then point.splice 3, 0, [point[1], point[2]]
+                        when 'M', 'L' then point.splice 3, 0, [point[1], point[2], point[1], point[2]]
+                    point[0] = 'C'
+                when 'quad'
+                    switch point[0]
+                        when 'Q' then continue
+                        when 'C' then point.splice 3, 2
+                        when 'M', 'L' then point.splice 3, 0, [point[1], point[2]]
+                    point[0] = 'Q'
+                when 'smooth'
+                    switch point[0]
+                        when 'S' then continue
+                        when 'C' then point.splice 3, 2
+                        when 'M', 'L' then point.splice 3, 0, [point[1], point[2]]
+                    point[0] = 'S'
+                    
+            @initCtrlDots   index, point
+            @updateCtrlDots index, point
+            
+        @plot()
+                
     # 00     00   0000000   000   000  00000000  00000000    0000000   000  000   000  000000000  
     # 000   000  000   000  000   000  000       000   000  000   000  000  0000  000     000     
     # 000000000  000   000   000 000   0000000   00000000   000   000  000  000 0 000     000     

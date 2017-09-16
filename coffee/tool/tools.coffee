@@ -171,13 +171,13 @@ class Tools extends Tool
         
     loadSVG: (name) ->
         
-        svgFile = "#{__dirname}/../svg/#{name}.svg"
+        svgFile = "#{__dirname}/../../svg/#{name}.svg"
         if fileExists svgFile
             return fs.readFileSync svgFile, encoding: 'utf8'
 
     saveSVG: (name, svg) ->
         
-        svgFile = "#{__dirname}/../svg/#{name}.svg"
+        svgFile = "#{__dirname}/../../svg/#{name}.svg"
         fs.writeFileSync svgFile, svg, encoding: 'utf8'
 
     # 00000000   00000000   00000000  00000000   0000000  

@@ -24,7 +24,7 @@ class Menu
             # 000   000  000   000  0000000  000  
             
             label: pkg.name, submenu: [     
-                { label: "About #{pkg.name}",   accelerator: 'Cmd+.',       click: app.showAbout}
+                { label: "About #{pkg.name}",   accelerator: 'command+/',   click: app.showAbout}
                 { type:  'separator'}
                 { label: "Hide #{pkg.name}",    accelerator: 'Cmd+H',       role: 'hide'}
                 { label: 'Hide Others',         accelerator: 'Cmd+Alt+H',   role: 'hideothers'}
@@ -39,8 +39,8 @@ class Menu
             # 000       000  0000000  00000000  
             
             label: 'File', submenu: [
-                { label: 'Open Recent...',  accelerator: 'command+o',       click: -> action 'browse'}
-                { label: 'Open...',         accelerator: 'command+shift+o', click: -> action 'open'}
+                { label: 'Open Recent...',  accelerator: 'command+.',       click: -> action 'browse'}
+                { label: 'Open...',         accelerator: 'command+o',       click: -> action 'open'}
                 { type:  'separator'}
                 { label: 'Save',            accelerator: 'command+s',       click: -> action 'save'}
                 { label: 'Save As...',      accelerator: 'command+shift+s', click: -> action 'saveAs'}
@@ -73,6 +73,11 @@ class Menu
                 { label: 'All',         accelerator: 'command+a',           click: -> action 'selectAll'}
                 { label: 'None',        accelerator: 'command+d',           click: -> action 'deselect'}
                 { label: 'Invert',      accelerator: 'command+i',           click: -> action 'invert'}        
+                { label: 'Convert',     submenu: [
+                    { label: 'Smooth',  accelerator: 'command+1',           click: -> post.toWins 'convert', 'smooth'}
+                    { label: 'Quad',    accelerator: 'command+2',           click: -> post.toWins 'convert', 'quad'}
+                    { label: 'Bezier',  accelerator: 'command+3',           click: -> post.toWins 'convert', 'bezier'}
+                ]}
             ]
         ,
             # 000000000   0000000    0000000   000      

@@ -42,8 +42,9 @@ class Edit
 
         @initDefs()
         
-        post.on 'ctrl',  @onCtrl
-        post.on 'stage', @onStage
+        post.on 'ctrl',    @onCtrl
+        post.on 'stage',   @onStage
+        post.on 'convert', @onConvert
         
     # 0000000    00000000  00000000   0000000  
     # 000   000  000       000       000       
@@ -149,6 +150,18 @@ class Edit
                     object.item.node.remove()
         @clear()
     
+    #  0000000   0000000   000   000  000   000  00000000  00000000   000000000  
+    # 000       000   000  0000  000  000   000  000       000   000     000     
+    # 000       000   000  000 0 000   000 000   0000000   0000000       000     
+    # 000       000   000  000  0000     000     000       000   000     000     
+    #  0000000   0000000   000   000      0      00000000  000   000     000     
+    
+    onConvert: (type) =>
+        log 'onConvert', type
+        if not @dotsel.empty()
+            for objectDot in @dotsel.objectDots()
+                objectDot.object.convertDots objectDot.dots, type
+        
     # 000  000000000  00000000  00     00
     # 000     000     000       000   000
     # 000     000     0000000   000000000

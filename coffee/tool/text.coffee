@@ -143,7 +143,7 @@ class Text
     onKeyDown: (event) =>
         
         {mod, key, combo, char} = keyinfo.forEvent event
-        
+
         switch combo
             
             when 'enter'
@@ -165,5 +165,7 @@ class Text
             when 'esc', 'tab'
 
                 @endEditing()
+                
+        event.stopPropagation()
         
 module.exports = Text

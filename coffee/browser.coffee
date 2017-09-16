@@ -5,7 +5,7 @@
 # 000   000  000   000  000   000  000   000       000  000       000   000
 # 0000000    000   000   0000000   00     00  0000000   00000000  000   000
 
-{ setStyle, stopEvent, keyinfo, drag, elem, prefs, resolve, fs, clamp, pos, log, $, _ } = require 'kxk'
+{ setStyle, childIndex, stopEvent, keyinfo, drag, elem, prefs, resolve, fs, clamp, pos, log, $, _ } = require 'kxk'
 
 { winTitle } = require './utils'
 
@@ -59,7 +59,25 @@ class Browser
         @drag.deactivate()
         prefs.set 'browser:open', false
         @element.remove()
-                        
+
+    onDelFile: (event) => @delItem event.target.parentNode.parentNode
+        
+    delItem: (item) ->
+        
+        file = item.getAttribute 'file'
+        recent = prefs.get 'recent'
+        _.pull recent, file
+        prefs.set 'recent', recent
+        
+        if item == @selectedItem() and @items.children.length > 1
+            index = clamp 0, @items.children.length-2, childIndex item
+            item.remove()
+            @selectIndex index
+        else
+            item.remove()
+            
+        stopEvent event
+        
     #  0000000   0000000    0000000    
     # 000   000  000   000  000   000  
     # 000000000  000   000  000   000  
@@ -75,7 +93,7 @@ class Browser
             return
         
         item = elem 'span', class: 'browserItem'
-        text = winTitle text:file, class: 'browserItemTitle', close:@delFile
+        text = winTitle text:file, class: 'browserItemTitle', close:@onDelFile
         view = elem class: 'browserItemView'
         
         item.setAttribute 'file', file
@@ -85,16 +103,7 @@ class Browser
         view.innerHTML = svg
         
         @items.appendChild item
-        
-    delFile: (event) => 
-        
-        file = event.target.parentNode.parentNode.getAttribute 'file'
-        recent = prefs.get 'recent'
-        _.pull recent, file
-        prefs.set 'recent', recent
-        event.target.parentNode.parentNode.remove()
-        stopEvent event
-        
+                
     # 00000000   00000000   0000000  000  0000000  00000000    
     # 000   000  000       000       000     000   000         
     # 0000000    0000000   0000000   000    000    0000000     
@@ -129,6 +138,31 @@ class Browser
         
         @offset.x = (oldoff.x + relpos.x * br.width) / oldscl - relpos.x * br.width / @scale
         @items.style.transform = "scale(#{@scale}, #{@scale}) translate(#{-@offset.x}px, #{-@offset.y}px)"
+
+    # 0000000   0000000    0000000   00     00  
+    #    000   000   000  000   000  000   000  
+    #   000    000   000  000   000  000000000  
+    #  000     000   000  000   000  000 0 000  
+    # 0000000   0000000    0000000   000   000  
+    
+    zoom: (dir) ->
+        
+        br = @element.getBoundingClientRect()
+        
+        @setScale @scale * (1 + dir * 0.5), pos br.width/2, br.height/2
+        
+    zoomSelected: ->
+        
+        br = @element.getBoundingClientRect()
+        
+        @resize()   
+        @centerSelected()
+        
+    centerSelected: ->
+        
+        br = @element.getBoundingClientRect()
+        
+        @setOffsetX 1700 * childIndex(@selectedItem()) - (br.width/2/@scale - 750)
         
     #  0000000   00000000  00000000   0000000  00000000  000000000  000   000  
     # 000   000  000       000       000       000          000      000 000   
@@ -156,17 +190,25 @@ class Browser
     
     navigate: (dir) ->
         
-        current = @currentItem()
+        current = @selectedItem()
         if dir > 0 and not current.nextSibling then return
         if dir < 0 and not current.previousSibling then return
         
-        @setOffsetX @offset.x + dir * 1700
+        # @setOffsetX @offset.x + dir * 1700
         
         current.classList.remove 'selected'
         if dir > 0 and current.nextSibling
             current.nextSibling.classList.add 'selected'
         else if current.previousSibling
             current.previousSibling.classList.add 'selected'
+            
+        @centerSelected()
+
+    selectIndex: (index) ->
+        
+        @selectedItem()?.classList.remove 'selected'
+        @items.children[index]?.classList.add 'selected'
+        @centerSelected()
     
     # 000   000  000   000  00000000  00000000  000      
     # 000 0 000  000   000  000       000       000      
@@ -183,7 +225,6 @@ class Browser
             @setScale scale, pos(event), 0.1
             
         else
-            log event.deltaX, event.deltaX / @scale
             @setOffsetX @offset.x + 0.4 * event.deltaX / @scale
             
         event.stopPropagation()
@@ -213,12 +254,13 @@ class Browser
                 @openFile file
                 
     openFile: (file) ->
+        
         @kali.stage.setCurrentFile file
         @kali.stage.centerSelection()
         @close()
         
-    currentFile: -> @currentItem().getAttribute 'file'
-    currentItem: -> $ '.selected', @element
+    selectedFile: -> @selectedItem().getAttribute 'file'
+    selectedItem: -> $ '.selected', @element
         
     close: => @kali.closeBrowser()
 
@@ -236,8 +278,12 @@ class Browser
             
             when 'left'          then @navigate -1
             when 'right'         then @navigate +1
-            when 'esc'           then return @close()
-            when 'enter'         then return @openFile @currentFile()
+            when 'up',   'command+=' then return @zoom +1
+            when 'down', 'command+-' then @zoom -1
+            when 'esc'           then @close()
+            when 'enter'         then @openFile @selectedFile()
+            when 'command+0'     then @zoomSelected()
+            when 'backspace', 'delete' then @delItem @selectedItem()
                 
         if combo.startsWith 'command' then return
         

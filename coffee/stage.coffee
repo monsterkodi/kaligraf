@@ -361,14 +361,9 @@ class Stage
         svgStr += "\nstyle=\"stroke-linecap: round; stroke-linejoin: round; background: rgba(#{rgba});\""
         svgStr += "\nviewBox=\"#{bb.x} #{bb.y} #{bb.width} #{bb.height}\">"
         
-        for item in @svg.children()
-            @cleanItem item
-            
-            if item.type == 'defs'
-                if item.children?().length == 0 and item.node.innerHTML.length == 0
-                    log 'defs', item.id(), item.children?().length, item.node.innerHTML
-                    continue
-                    
+        @cleanItem @svg
+                
+        for item in @svg.children()                    
             svgStr += '\n'
             svgStr += item.svg()
             
@@ -400,16 +395,26 @@ class Stage
                 if attr[i]?.name.startsWith('sodipodi:')
                     log 'clean sodipodi', item.node.getAttribute attr[i].name
                     item.node.removeAttribute attr[i].name
-            
+
+        if item.type == 'defs'
+            if item.children?().length == 0 and item.node.innerHTML.length == 0
+                log 'defs', item.id(), item.children?().length, item.node.innerHTML
+                item.remove()
+        else if item.type.startsWith 'inkscape:'
+            item.remove()
+        else if item.type.startsWith 'sodipodi:'
+            item.remove()
+                    
         if _.isFunction item.children
-            if _.isFunction item.children
-                for child in item.children()
-                    @cleanItem child
+            for child in item.children()
+                @cleanItem child
         else if item.type == 'text'
             for i in [0...item.lines().length()]
                 @cleanItem item.lines().get i 
+        # else
+            # log 'no children', item.type
                     
-        log "opacity: #{item.node.getAttribute 'opacity'}"    if item.node.getAttribute 'opacity'
+        log "opacity: #{item.node.getAttribute 'opacity'}" if item.node.getAttribute 'opacity'
                         
     saveAs: ->
 

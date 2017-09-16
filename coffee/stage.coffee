@@ -17,7 +17,7 @@ dialog    = electron.remote.dialog
 
 SVG       = require 'svg.js'
 clr       = require 'svg.colorat.js'
-Shapes    = require './shapes'
+Shapes    = require './edit/shapes'
 Selection = require './selection'
 Resizer   = require './resizer'
 

@@ -7,7 +7,7 @@
 
 { empty, drag, log, _ } = require 'kxk'
 
-{ rectsIntersect, normRect } = require './utils'
+{ rectsIntersect, normRect } = require '../utils'
 
 class DotSel
 

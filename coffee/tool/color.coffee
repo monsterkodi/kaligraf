@@ -7,7 +7,7 @@
 
 { elem, drag, stopEvent, post, prefs, clamp, first, pos, log, $, _ } = require 'kxk'
 
-{ colorGradient, grayGradient, checkersPattern } = require './utils'
+{ colorGradient, grayGradient, checkersPattern } = require '../utils'
 
 Tool    = require './tool'
 Palette = require './palette'

@@ -7,7 +7,7 @@
 
 { post, drag, elem, empty, last, pos, log, _ } = require 'kxk'
 
-{ rectOffset, normRect, rectsIntersect } = require './utils'
+{ rectOffset, normRect, rectsIntersect } = require '../utils'
 
 Object = require './object'
 DotSel = require './dotsel'

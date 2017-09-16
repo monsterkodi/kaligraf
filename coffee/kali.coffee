@@ -7,8 +7,8 @@
 
 { setStyle, keyinfo, stopEvent, empty, first, post, prefs, elem, log, $, _ } = require 'kxk'
 
+Tools   = require './tool/tools'
 Stage   = require './stage'
-Tools   = require './tools'
 Trans   = require './trans'
 Browser = require './browser'
 

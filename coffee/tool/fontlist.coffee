@@ -7,7 +7,7 @@
 
 { stopEvent, childIndex, prefs, keyinfo, elem, drag, clamp, last, post, log, _ } = require 'kxk'
 
-{ winTitle } = require './utils'
+{ winTitle } = require '../utils'
 
 fontManager = require 'font-manager' 
 

@@ -17,7 +17,7 @@ body
 *
     outline-width       0
     outline-style       none
-
+    
 fill-abs()
     position            absolute
     bottom              0
@@ -150,19 +150,24 @@ button
     
 .browserScroll
     height                  100%
-    overflow-x              scroll
-    overflow-y              hidden
+    overflow                hidden
 
 .browserItems
     display                 block
-    height                  100%
+    transform-origin        top left
     white-space             nowrap
-    padding-left            100px
+    height                  100%
     
 .browserItem
     display                 inline-block
     vertical-align          top
     cursor                  pointer
+    margin-top              150px
+    margin-right            200px
+    &.selected .browserItemView
+        border              4px dotted #888
+    &.selected .browserItemTitleText
+        color               #ff0
     
 .browserItemTitleText
     background              #282828
@@ -174,8 +179,8 @@ button
     pointer-events          none
     
 .browserItemView
-    height                  700px
-    width                   1.5 * 700px
+    height                  1000px
+    width                   1.5 * 1000px
     pointer-events          none
 
 // 000000000  00000000  000   000  000000000  00000000  0000000    000  000000000
@@ -185,8 +190,8 @@ button
 //    000     00000000  000   000     000     00000000  0000000    000     000
 
 .textEdit
-    pointer-events          none
     transform-origin        top left
+    pointer-events          none
     position                absolute
     overflow                visible
 

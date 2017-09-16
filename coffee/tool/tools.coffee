@@ -40,7 +40,7 @@ class Tools extends Tool
             
             when 'click'      then @clickTool    name
             when 'activate'   then @activateTool name
-            when 'openRecent' then @kali.openRecent()
+            when 'browse'     then @kali.openBrowser()
             when 'group'      then @stage.group()
             when 'ungroup'    then @stage.ungroup()
             when 'cut'        then @stage.cut()
@@ -198,7 +198,8 @@ class Tools extends Tool
             @stage.zoom = box.zoom
             @stage.setViewBox box
             
-        # @stage.element.style.display = 'block'
+        if prefs.get 'browser:open', false
+            setImmediate => @kali.openBrowser()
                     
     collapseTemp: =>
         

@@ -39,7 +39,7 @@ class Menu
             # 000       000  0000000  00000000  
             
             label: 'File', submenu: [
-                { label: 'Open Recent...',  accelerator: 'command+o',       click: -> action 'openRecent'}
+                { label: 'Open Recent...',  accelerator: 'command+o',       click: -> action 'browse'}
                 { label: 'Open...',         accelerator: 'command+shift+o', click: -> action 'open'}
                 { type:  'separator'}
                 { label: 'Save',            accelerator: 'command+s',       click: -> action 'save'}

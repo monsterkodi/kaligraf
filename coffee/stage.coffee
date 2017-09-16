@@ -217,7 +217,7 @@ class Stage
         if not _.isEmpty attr
             for item in @selectedItems()
                 item.style attr
-                item.style opacity: 'unset'
+                item.node.removeAttribute 'opacity'
 
     onFont: (prop, value) =>
         
@@ -357,11 +357,18 @@ class Stage
             """
 
         rgba = "#{@color.r}, #{@color.g}, #{@color.b}, #{@alpha}"
-        log "rgba #{rgba}"
+        # log "rgba #{rgba}"
         svgStr += "\nstyle=\"stroke-linecap: round; stroke-linejoin: round; background: rgba(#{rgba});\""
         svgStr += "\nviewBox=\"#{bb.x} #{bb.y} #{bb.width} #{bb.height}\">"
         
         for item in @svg.children()
+            @cleanItem item
+            
+            if item.type == 'defs'
+                if item.children?().length == 0 and item.node.innerHTML.length == 0
+                    log 'defs', item.id(), item.children?().length, item.node.innerHTML
+                    continue
+                    
             svgStr += '\n'
             svgStr += item.svg()
             
@@ -371,6 +378,29 @@ class Stage
         
         post.emit 'file', @currentFile
 
+    cleanItem: (item) ->
+        
+        # log 'clean', item.id()
+        log "sodipodi: #{item.node.getAttributeNS 'sodipodi', 'nodetypes'}" if item.node.getAttributeNS 'sodipodi', 'nodetypes'
+        item.node.removeAttributeNS 'sodipodi', 'nodetypes'
+        log "sodipodi: #{item.node.getAttribute 'sodipodi:nodetypes'}" if item.node.getAttribute 'sodipodi:nodetypes'
+        item.node.removeAttribute   'sodipodi:nodetypes'
+        log "sodipodi: #{item.node.getAttributeNS 'svgjs', 'data'}" if item.node.getAttributeNS 'svgjs', 'data'        
+        item.node.removeAttributeNS 'svgjs', 'data'
+        item.node.removeAttribute   'svgjs:data' 
+        if item.style('opacity') == 'unset'
+            log 'clear unset opacity'
+            item.style 'opacity', null
+        if _.isFunction item.children
+            if _.isFunction item.children
+                for child in item.children()
+                    @cleanItem child
+        else if item.type == 'text'
+            for i in [0...item.lines().length()]
+                @cleanItem item.lines().get i 
+                    
+        log "opacity: #{item.node.getAttribute 'opacity'}"    if item.node.getAttribute 'opacity'
+                        
     saveAs: ->
 
         opts =         

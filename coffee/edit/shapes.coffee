@@ -300,7 +300,16 @@ class Shapes
         
         eventPos = pos event
         stagePos = @stage.stageForEvent eventPos
+        shape    = @kali.shapeTool() 
         
+        if shape == 'loupe'
+            
+            @selection.loupe.remove()
+            delete @selection.loupe
+            @stage.loupe drag.startPos, drag.pos
+            @stage.setCursor @tools.ctrlDown and 'zoom-out' or 'zoom-in'
+            return
+            
         if @selection.rect?
             @selection.endRect eventPos
             return
@@ -309,17 +318,7 @@ class Shapes
             @edit.stageStop drag, event
             return
             
-        shape = @kali.shapeTool() 
-            
-        switch shape
-            
-            when 'edit' then return 
-            when 'loupe' 
-                
-                @selection.loupe.remove()
-                delete @selection.loupe
-                @stage.loupe drag.startPos, drag.pos
-                @stage.setCursor @tools.ctrlDown and 'zoom-out' or 'zoom-in'
+        if shape == 'edit' then return 
 
         if @drawing
 

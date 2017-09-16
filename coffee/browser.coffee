@@ -194,8 +194,6 @@ class Browser
         if dir > 0 and not current.nextSibling then return
         if dir < 0 and not current.previousSibling then return
         
-        # @setOffsetX @offset.x + dir * 1700
-        
         current.classList.remove 'selected'
         if dir > 0 and current.nextSibling
             current.nextSibling.classList.add 'selected'

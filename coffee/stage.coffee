@@ -176,6 +176,9 @@ class Stage
             if item.type == 'text'
                 @kali.tools.activateTool 'text'
                 @shapes.editTextItem item
+            else if item.type in ['polygon', 'polyline', 'line', 'path']
+                @selection.clear()
+                @shapes.editItems [item]
             else
                 log 'dblclick', item?.id()
         
@@ -489,6 +492,7 @@ class Stage
 
     loupe: (p1, p2) ->
 
+        log 'loupe', p1, p2
         viewPos1 = @viewForEvent pos p1
         viewPos2 = @viewForEvent pos p2
         viewPos  = viewPos1.mid viewPos2

@@ -381,13 +381,10 @@ class Stage
     cleanItem: (item) ->
         
         # log 'clean', item.id()
-        log "sodipodi: #{item.node.getAttributeNS 'sodipodi', 'nodetypes'}" if item.node.getAttributeNS 'sodipodi', 'nodetypes'
-        item.node.removeAttributeNS 'sodipodi', 'nodetypes'
-        log "sodipodi: #{item.node.getAttribute 'sodipodi:nodetypes'}" if item.node.getAttribute 'sodipodi:nodetypes'
-        item.node.removeAttribute   'sodipodi:nodetypes'
-        log "sodipodi: #{item.node.getAttributeNS 'svgjs', 'data'}" if item.node.getAttributeNS 'svgjs', 'data'        
-        item.node.removeAttributeNS 'svgjs', 'data'
-        item.node.removeAttribute   'svgjs:data' 
+        if item.node.getAttribute 'sodipodi:nodetypes'
+            log "clean sodipodi: #{item.node.getAttribute 'sodipodi:nodetypes'}" 
+            # item.node.removeAttributeNS 'sodipodi', 'nodetypes'
+            item.node.removeAttribute   'sodipodi:nodetypes'
         if item.style('opacity') == 'unset'
             log 'clear unset opacity'
             item.style 'opacity', null

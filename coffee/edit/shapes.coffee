@@ -41,7 +41,7 @@ class Shapes
             
             when 'triangle'
                 
-                e = @svg.polygon '-0.50,0.50 0,-0.50 0.50,0.50'
+                e = @svg.polygon '-0.50,0.50 0,-0.366 0.50,0.50'
 
             when 'triangle_square'
                 
@@ -247,7 +247,6 @@ class Shapes
                 
                 r = x:drag.startPos.x, y:drag.startPos.y, x2:drag.pos.x, y2:drag.pos.y                
                 @selection.setRect @selection.loupe, r
-                # @stage.setCursor 'zoom-in'
                 
             when 'pick'
                 
@@ -296,7 +295,6 @@ class Shapes
                 @selection.loupe.remove()
                 delete @selection.loupe
                 @stage.loupe drag.startPos, drag.pos
-                # @stage.setCursor @tools.ctrlDown and 'zoom-out' or 'zoom-in'
                 @stage.setToolCursor @tools.ctrlDown and 'zoom-out' or 'zoom-in'
                 return
             
@@ -322,6 +320,9 @@ class Shapes
 
                 switch shape
                     when 'text' then
+                    when 'triangle' 
+                        @drawing.size 100, 50 * Math.sqrt 3
+                        @trans.center @drawing, stagePos
                     when 'ellipse'
                         @drawing.size 50, 100
                         @trans.center @drawing, stagePos

@@ -180,9 +180,7 @@ class Resizer
         addRot = (x, y, r, id) =>
             rot = @gg.circle(r).addClass 'resizerRot'
             rot.attr cx:x, cy:y
-            # cursor = "file://#{__dirname}/../svg/rot.svg"
-            # rot.style cursor: "url(#{cursor}) 18 12, auto"
-            rot.style cursor: Cursor.forTool 'rot'
+            rot.style cursor: Cursor.forTool 'rot ' + id
             @rotDrag[id] = new drag
                     target:  rot.node
                     onStart: @onRotStart

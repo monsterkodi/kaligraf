@@ -11,6 +11,7 @@
 
 Object = require './object'
 DotSel = require './dotsel'
+Cursor = require '../cursor'
 
 class Edit
 
@@ -69,7 +70,7 @@ class Edit
         for k,def of @defs
             def.transform x: -def.cx(), y:-def.cy()
             def.addClass 'editDot'
-            def.style cursor: 'pointer'
+            def.style cursor: Cursor.forTool 'edit hover'
         
         @updateDefs()
         

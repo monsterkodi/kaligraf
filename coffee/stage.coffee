@@ -175,7 +175,6 @@ class Stage
     onMove: (event) =>
 
         if @kali.shapeTool() == 'loupe'
-            # @setCursor @kali.tools.ctrlDown and 'zoom-out' or 'zoom-in'
             @setToolCursor @kali.tools.ctrlDown and 'zoom-out' or 'zoom-in'
 
         @shapes.onMove event

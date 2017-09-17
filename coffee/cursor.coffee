@@ -5,7 +5,7 @@
 # 000       000   000  000   000       000  000   000  000   000
 #  0000000   0000000   000   000  0000000    0000000   000   000
 
-{ elem, fileExists, fs, log } = require 'kxk' 
+{ elem, fileExists, fileName, path, fs, log } = require 'kxk' 
 
 { svgItems } = require './utils'
 
@@ -43,21 +43,38 @@ class Cursor
         Exporter.clean svg
         
         o = 6
-        tipx = 0+o
-        tipy = 0+o
-        
+        x = o
+        y = o
+        s = 32
         switch name
-            when 'rect', 'circle', 'ellipse' then tipx = 16; tipy = 16
-            when 'triangle'        then tipx = 16
-            when 'bezier_quad'     then tipx = 16
-            when 'pan'             then tipx = 12; tipy = 8
-            when 'line'            then tipx = 2; tipy = 28
-            when 'polygon'         then tipx = 4; tipy = 2
-            when 'triangle_square' then tipy = 32-o
-            when 'pipette'         then tipy = 32-o
-            when 'loupe', 'zoom-in', 'zoom-out' then tipx = 10; tipy = 9
-            when 'rot-tl'          then tipy = 32-o
+            when 'loupe', 'zoom-in', 'zoom-out' then x = 10; y =  9; 
+            when 'rect', 'circle', 'ellipse'    then x =  7; y =  7; s = 16
+            when 'pipette'          then           y = 32-o; 
+            when 'pan'              then x = 12;   y = 8;    
+            when 'edit hover'       then x = 2;    y = 2;    
+            when 'edit'             then x = 4;    y = 4;    
+            when 'triangle'         then x = 7;    y = 3;   s = 16
+            when 'triangle_square'  then x = 2;    y = 14;  s = 16
+            when 'line'             then x = 2;    y = 28
+            when 'bezier_quad'      then x = 16
+            when 'polygon'          then x = 4;    y = 2
+            when 'rot top left'     then x = 32-o; y = 32-o
+            when 'rot top right'    then           y = 32-o
+            when 'rot bot left'     then x = 32-o
+            when 'rot top'          then x = 16;   y = 32-o
+            when 'rot left'         then x = 32-o; y = 16
+            when 'rot right'        then           y = 16
+            when 'rot bot'          then x = 16
+            else "unhandled tip for  cursor#{name}"
             
-        "url(data:image/svg+xml;base64,#{btoa svg.svg()}) #{tipx} #{tipy}, auto"
+        svgFileX1 = path.join path.dirname(svgFile), fileName(svgFile) + " x1.svg"
+        svgFileX2 = path.join path.dirname(svgFile), fileName(svgFile) + " x2.svg"
+        svg.attr width: s, height:s
+        fs.writeFileSync svgFileX1, svg.svg(), encoding: 'utf8'
+        svg.attr width: s*2, height:s*2
+        fs.writeFileSync svgFileX2, svg.svg(), encoding: 'utf8'
+        
+        """-webkit-image-set( url("#{svgFileX1}") 1x, url("#{svgFileX2}") 2x ) #{x} #{y}, auto
+        """
 
 module.exports = Cursor

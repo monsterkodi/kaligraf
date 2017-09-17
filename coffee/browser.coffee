@@ -200,7 +200,7 @@ class Browser
         oldoff = @offset.times @scale
         relpos = pos eventPos.x / br.width, eventPos.y / br.height
         
-        @scale = scale
+        @scale = clamp 0.05, 50, scale
         
         @offset.y = (oldoff.y + relpos.y * br.height) / oldscl - relpos.y * br.height / @scale
             

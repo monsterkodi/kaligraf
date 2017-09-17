@@ -229,6 +229,7 @@ module.exports =
             
             for button in opt.buttons
                 btn = elem 'button', class:"#{clss}Button", text: button.text
+                btn.data = button.data if button.data?
                 btn.addEventListener 'click', button.action
                 btn.classList.add button['class'] if button['class']?
                 div.appendChild btn
@@ -240,3 +241,4 @@ module.exports =
             div.appendChild close
             
         div
+    

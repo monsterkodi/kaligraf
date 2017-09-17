@@ -114,7 +114,8 @@ button
         color               #bbb
         background          #333
 
-.winTitle
+.winTitle    
+.browserTitle
     height                  30px
     overflow                hidden
     cursor                  -webkit-grab
@@ -127,6 +128,7 @@ button
 
 .winTitleClose
 .winTitleButton
+.browserTitleClose
     cursor                  pointer
     padding-top             8px
     padding-bottom          7px
@@ -164,6 +166,13 @@ button
 .browserTitle
     color                   #888
     -webkit-app-region      drag
+    padding-left            toolSize
+
+.browserTitleClose
+    position                absolute
+    right                   0
+    background              #333
+    color                   #222
     
 .browserTitleText
     margin-left             76px
@@ -334,7 +343,8 @@ button
     cursor                  -webkit-grab
 
 .resizerRect
-    fill                    rgba(128,128,128,0.1)
+    // fill                    rgba(128,128,128,0.1)
+    fill                    none
     cursor                  move
     stroke                  none
 

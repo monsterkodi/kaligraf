@@ -5,9 +5,13 @@
 # 000   000  000   000  000   000  000   000       000  000       000   000
 # 0000000    000   000   0000000   00     00  0000000   00000000  000   000
 
-{ setStyle, childIndex, stopEvent, keyinfo, drag, elem, prefs, resolve, fs, clamp, pos, log, $, _ } = require 'kxk'
+{   setStyle, childIndex, stopEvent, keyinfo, drag, elem, 
+    first, prefs, resolve, fs, os, path, empty, clamp, pos, log, $, _ } = require 'kxk'
 
 { winTitle } = require './utils'
+
+electron = require 'electron'
+dialog   = electron.remote.dialog
 
 class Browser
 
@@ -22,7 +26,19 @@ class Browser
         @offset = pos 0,0
         if @files.length > 1 then @offset.x = 1600
         
-        @title = winTitle close:@onClose, class: 'browserTitle'
+        buttons = [
+            text:   'Open'
+            action: @onOpen
+        ]
+            
+        dirs = prefs.get 'browser:dirs', []
+        for dir in dirs
+            buttons.push
+                text:   path.basename dir
+                data:   dir: dir
+                action: @onDirButton
+        
+        @title = winTitle close: @close, class: 'browserTitle', buttons: buttons
         @element.appendChild @title 
         
         @scroll = elem class: 'browserScroll'
@@ -36,7 +52,7 @@ class Browser
         for file in @files
             @addFile file
         
-        @items.children[Math.min(1, @files.length-1)].classList.add 'selected'
+        @selectIndex Math.min 1, @files.length-1
             
         prefs.set 'browser:open', true
             
@@ -48,6 +64,45 @@ class Browser
         @element.focus()
         @resize()
         
+    #  0000000   00000000   00000000  000   000  
+    # 000   000  000   000  000       0000  000  
+    # 000   000  00000000   0000000   000 0 000  
+    # 000   000  000        000       000  0000  
+    #  0000000   000        00000000  000   000  
+    
+    onOpen: =>
+        
+        opts =         
+            title:      'Open'
+            properties: ['openDirectory']
+        
+        dialog.showOpenDialog opts, (dirs) => 
+            if dir = first dirs
+                @browseDir dir
+        
+    onDirButton: (event) => @browseDir event.target.data.dir
+                
+    browseDir: (dir) ->
+        
+        @items.innerHTML = ''
+        
+        fs.readdir dir, (err, files) =>
+            
+            return if err? or empty files
+
+            files = files.filter (file) -> path.extname(file) == '.svg'
+            return if empty files 
+            
+            for file in files
+                @addFile path.join dir, file
+                
+            @selectIndex 0
+            
+            dirs = prefs.get 'browser:dirs', []
+            dirs.push(dir) if dir not in dirs
+            prefs.set 'browser:dirs', dirs
+            log prefs.get 'browser:dirs'
+                
     # 0000000    00000000  000      
     # 000   000  000       000      
     # 000   000  0000000   000      

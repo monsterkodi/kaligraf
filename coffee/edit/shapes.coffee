@@ -237,7 +237,7 @@ class Shapes
         
         switch shape
             
-            when 'pipette' then
+            when 'pipette' then @kali.tools.getTool('pipette').onStageDrag drag, event
                     
             when 'pan'   
                 
@@ -290,13 +290,18 @@ class Shapes
         stagePos = @stage.stageForEvent eventPos
         shape    = @kali.shapeTool() 
         
-        if shape == 'loupe'
+        switch shape
             
-            @selection.loupe.remove()
-            delete @selection.loupe
-            @stage.loupe drag.startPos, drag.pos
-            @stage.setCursor @tools.ctrlDown and 'zoom-out' or 'zoom-in'
-            return
+            when 'loupe'
+                @selection.loupe.remove()
+                delete @selection.loupe
+                @stage.loupe drag.startPos, drag.pos
+                @stage.setCursor @tools.ctrlDown and 'zoom-out' or 'zoom-in'
+                return
+            
+            when 'pipette' 
+                @kali.tools.getTool('pipette').onStageStop drag, event
+                return
             
         if @selection.rect?
             @selection.endRect eventPos

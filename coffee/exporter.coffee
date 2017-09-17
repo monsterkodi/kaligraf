@@ -73,7 +73,7 @@ class Exporter
 
         if item.type == 'defs'
             if item.children?().length == 0 and item.node.innerHTML.length == 0
-                log 'defs', item.id(), item.children?().length, item.node.innerHTML
+                # log 'clean defs', item.id(), item.children?().length, item.node.innerHTML
                 item.remove()
         else if item.type.startsWith 'inkscape:'
             item.remove()

@@ -45,4 +45,27 @@ class Pipette extends Tool
             proxy = @tools[@kali.palette.proxy]
             @kali.palette.setClosestColor proxy.color, proxy.alpha
 
+    onStageDrag: (drag, event) =>
+        
+        width = 100
+        height = 100
+        svg = '<rect width="50" height="40" style="fill: rgb(160, 0, 0);"></rect>'
+        
+        svgStr = btoa """
+            <svg xmlns="http://www.w3.org/2000/svg" 
+                 xmlns:xlink="http://www.w3.org/1999/xlink" 
+                 version="1.1" 
+                 width="#{width}px" 
+                 height="#{height}px">#{svg}</svg>
+        """
+        
+        @kali.stage.setCursor "url(data:image/svg+xml;base64,#{svgStr}) 18 12, auto"
+        
+    onStageStop: (drag, event) =>
+        
+        eventPos = pos event
+        item = @stage.itemAtPos eventPos
+        if item?
+            log 'drop color at item?'
+            
 module.exports = Pipette

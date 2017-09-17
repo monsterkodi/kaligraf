@@ -175,7 +175,6 @@ class Resizer
         addCorner 0,           0, 'nw-resize', 'top left',  'M-10,-10L-10,10L0,10L0,0L10,0L10,-10Z'
         addCorner '100%', '100%', 'se-resize', 'bot right', 'M10,10L10,-10L0,-10L0,0L-10,0L-10,10Z'
 
-        
         addRot = (x, y, r, id) =>
             rot = @gg.circle(r).addClass 'resizerRot'
             rot.attr cx:x, cy:y

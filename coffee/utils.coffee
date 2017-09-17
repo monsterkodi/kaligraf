@@ -195,6 +195,7 @@ module.exports =
             new SVG.Color '#000'
             
     colorBrightness: (c) -> c = new SVG.Color(c); (c.r + c.g + c.b)/(3*255)
+    colorDist: (a,b) -> Math.abs(a.r-b.r) + Math.abs(a.g-b.g) + Math.abs(a.b-b.b)
             
     #  0000000  000   000  00000000   0000000  000   000  00000000  00000000    0000000  
     # 000       000   000  000       000       000  000   000       000   000  000       

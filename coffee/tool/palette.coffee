@@ -8,7 +8,7 @@
 
 { elem, drag, stopEvent, post, clamp, log, $, _ } = require 'kxk'
 
-{ contrastColor, colorGradient, grayGradient } = require '../utils'
+{ contrastColor, colorDist, colorBrightness, colorGradient, grayGradient } = require '../utils'
 
 Tool = require './tool'
 
@@ -101,7 +101,54 @@ class Palette extends Tool
         @lum.attr x:@luminance*(WIDTH-HEIGHT/3)
         
         @setColor @value
-                
+        
+    setClosestColor: (color, alpha) ->
+        
+        @alpha = alpha
+        @color = new SVG.Color color
+        
+        if @color.r == @color.g == @color.b
+            @setMode 'gry'
+            @value = colorBrightness @color
+            @luminance = @value
+        else
+            @setMode 'rgb'
+            @value = @valueForColor @color
+            
+        @updateColor @color
+        @updateSliders()
+        
+    updateSliders: ->
+        
+        @gradientRGB = colorGradient @svg, @luminance
+        
+        @lph.attr x:@alpha*(WIDTH-HEIGHT/3)
+        @rgb.attr fill: @gradientRGB
+        @lum.attr x: @luminance*(WIDTH-HEIGHT/3)
+        
+    valueForColor: (color) -> 
+        
+        minRGB = Math.min color.r, color.g, color.b 
+        maxRGB = Math.max color.r, color.g, color.b 
+        if minRGB > 0
+            @luminance = 0.5+minRGB/255/2
+        else
+            @luminance = maxRGB/255/2
+            
+        @updateLuminance()
+        
+        minValue = 0
+        minDist  = 255*3
+        for i in [0..255]
+            value = i/255
+            c = @gradientRGB.colorAt value
+            dist = colorDist c, color
+            if dist < minDist
+                minDist = dist
+                minValue = value
+        
+        minValue
+            
     #  0000000   000      00000000   000   000   0000000
     # 000   000  000      000   000  000   000  000   000
     # 000000000  000      00000000   000000000  000000000
@@ -128,12 +175,15 @@ class Palette extends Tool
 
         @luminance = f
 
+        @updateLuminance()
+        
+        @setColor @value
+        
+    updateLuminance: ->
+        
         @gradientRGB = colorGradient @svg, @luminance
-
         @rgb.attr fill: @gradientRGB
         @lum.attr x: @luminance*(WIDTH-HEIGHT/3)
-            
-        @setColor @value
 
     #  0000000   0000000   000       0000000   00000000
     # 000       000   000  000      000   000  000   000
@@ -148,17 +198,6 @@ class Palette extends Tool
         gradient = @mode == 'rgb' and @gradientRGB or @gradientGRY
 
         @updateColor new SVG.Color gradient.colorAt @value
-
-        x = @value*WIDTH
-        y = @mode == 'gry' and HEIGHT or 0
-        @dot.plot [[x,y], [x,HEIGHT+y]]
-
-        @gradientCOL = @svg.gradient 'linear', (stop) =>
-            stop.at 0.0, "#000"
-            stop.at 0.5, colorGradient(@svg, 0.5).colorAt @value
-            stop.at 1.0, "#fff"
-
-        @col.attr fill: @gradientCOL
          
         post.emit 'palette', 'change', @
         post.emit 'color', @proxy, 'color', @color
@@ -170,7 +209,18 @@ class Palette extends Tool
         i = contrastColor @color
 
         @dot.attr stroke: i
-        @lum.attr stroke: i, fill:   @color
+        @lum.attr stroke: i, fill: @color
+        
+        x = @value*WIDTH
+        y = @mode == 'gry' and HEIGHT or 0
+        @dot.plot [[x,y], [x,HEIGHT+y]]
+
+        @gradientCOL = @svg.gradient 'linear', (stop) =>
+            stop.at 0.0, "#000"
+            stop.at 0.5, colorGradient(@svg, 0.5).colorAt @value
+            stop.at 1.0, "#fff"
+
+        @col.attr fill: @gradientCOL
 
     # 00     00   0000000   0000000    00000000
     # 000   000  000   000  000   000  000
@@ -247,7 +297,13 @@ class Palette extends Tool
 
         grd = drag.target
         @setMode grd == @gry and 'gry' or 'rgb'
-        @setColor clamp 0, 1, @xPosEvent(event) / WIDTH
+        
+        value = clamp 0, 1, @xPosEvent(event) / WIDTH
+        @setColor value
+        
+        if @mode == 'gry'
+            @luminance = value
+            @updateLuminance()
 
     # 00000000  000   000  00000000  000   000  000000000   0000000
     # 000       000   000  000       0000  000     000     000

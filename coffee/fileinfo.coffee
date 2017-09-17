@@ -20,16 +20,12 @@ class FileInfo
         @element.appendChild @file
         
         post.on 'file',  @onFile
-        post.on 'stage', @onStage
+        # post.on 'stage', @onStage
         
     onFile: (file) =>
         
-        log "onFile #{file}"
         @file.innerHTML = fileName file
         
-    onStage: (action, color) =>
-
-        # if action == 'color' 
-            # @file.style.color = contrastColor color
+    # onStage: (action, color) =>
 
 module.exports = FileInfo

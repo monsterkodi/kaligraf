@@ -358,6 +358,10 @@ class Stage
 
         @currentFile = file
         
+        if @currentFile == 'untitled.svg'
+            @saveAs()
+            return
+        
         Exporter.save @svg, file:@currentFile, color:@color, alpha:@alpha
                 
         post.emit 'file', @currentFile

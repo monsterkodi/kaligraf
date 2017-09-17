@@ -195,21 +195,8 @@ class Shapes
                 @edit.stageStart drag, event
 
             when 'pipette'
-                
-                item = @stage.itemAtPos eventPos
-                if item? and item != @svg
-                    
-                    @tools.fill.color = item.style('fill')
-                    @tools.fill.alpha = item.style('fill-opacity')
-                    @tools.fill.update()
-                    post.emit 'color', 'fill', 'color', @tools.fill.color
-                    
-                    @tools.stroke.color = item.style('stroke')
-                    @tools.stroke.alpha = item.style('stroke-opacity')
-                    @tools.stroke.update()
-                    post.emit 'color', 'stroke', 'color', @tools.stroke.color
-                    
-                    @tools.width.setWidth item.style('stroke-width')
+
+                @kali.tools.getTool('pipette').onStageDown event
                 
             when 'loupe' 
                 

@@ -62,6 +62,9 @@ class Exporter
             item.style 'opacity', null
          
         if item.node.hasAttributes()
+            
+            item.node.removeAttribute 'xmlns:svgjs'
+            
             attr = item.node.attributes
             for i in [attr.length-1..0]
                 if attr[i]?.name.startsWith('inkscape:')

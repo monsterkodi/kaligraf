@@ -21,6 +21,7 @@ Shapes    = require './edit/shapes'
 Selection = require './selection'
 Resizer   = require './resizer'
 Exporter  = require './exporter'
+Cursor    = require './cursor'
 
 class Stage
 
@@ -67,6 +68,23 @@ class Stage
     # 000     000     000       000 0 000
     # 000     000     00000000  000   000
 
+    leafItemAtPos: (p) ->
+        
+        r = @svg.node.createSVGRect()
+        r.x      = p.x - @viewPos().x
+        r.y      = p.y - @viewPos().y
+        r.width  = 1
+        r.height = 1
+
+        items = @svg.node.getIntersectionList r, null
+        items = [].slice.call(items, 0).reverse()
+        items = items.filter (item) -> item.instance
+        items = items.map (item) -> item.instance
+
+        for item in items
+            if not _.isFunction item.children
+                return item
+    
     itemAtPos: (p) ->
 
         r = @svg.node.createSVGRect()
@@ -157,7 +175,8 @@ class Stage
     onMove: (event) =>
 
         if @kali.shapeTool() == 'loupe'
-            @setCursor @kali.tools.ctrlDown and 'zoom-out' or 'zoom-in'
+            # @setCursor @kali.tools.ctrlDown and 'zoom-out' or 'zoom-in'
+            @setToolCursor @kali.tools.ctrlDown and 'zoom-out' or 'zoom-in'
 
         @shapes.onMove event
             
@@ -230,7 +249,8 @@ class Stage
         if not _.isEmpty attr
             for item in @selectedItems()
                 item.style attr
-                item.node.removeAttribute 'opacity'
+                if prop == 'alpha'
+                    item.node.removeAttribute 'opacity'
 
     onFont: (prop, value) =>
         
@@ -576,6 +596,8 @@ class Stage
         vc.x = 560.5 if @viewSize().x > 1120
         vc.minus(pos(@kali.toolSize+0.5,@kali.toolSize/2+0.5)).scale(1/zoom)
 
+    setToolCursor: (tool, opt) -> @setCursor Cursor.forTool tool, opt
+        
     setCursor: (cursor) -> @svg.style cursor: cursor
 
     resetView: (zoom=1) => 

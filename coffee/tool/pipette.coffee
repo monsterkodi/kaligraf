@@ -5,8 +5,9 @@
 # 000        000  000        000          000        000     000     
 # 000        000  000        00000000     000        000     00000000
 
-{ post, pos, log, $, _ } = require 'kxk'
+{ elem, post, pos, log, fs, fileExists, $, _ } = require 'kxk'
 
+Exporter = require '../exporter'
 Tool = require './tool' 
  
 class Pipette extends Tool
@@ -26,46 +27,39 @@ class Pipette extends Tool
     
     onStageDown: (event) =>
 
-        eventPos = pos event
-        item = @stage.itemAtPos eventPos
+        item = @stage.leafItemAtPos pos event
+
         if item?
             
             @tools.fill.color = item.style 'fill' 
             @tools.fill.alpha = item.style 'fill-opacity' 
             @tools.fill.update()
-            post.emit 'color', 'fill', 'color', @tools.fill.color
             
             @tools.stroke.color = item.style 'stroke' 
             @tools.stroke.alpha = item.style 'stroke-opacity' 
             @tools.stroke.update()
-            post.emit 'color', 'stroke', 'color', @tools.stroke.color
             
             @tools.width.setWidth item.style 'stroke-width' 
             
             proxy = @tools[@kali.palette.proxy]
             @kali.palette.setClosestColor proxy.color, proxy.alpha
+            
+            @kali.stage.setToolCursor 'pipette', fill: @tools.fill.color, stroke: @tools.stroke.color
 
     onStageDrag: (drag, event) =>
-        
-        width = 100
-        height = 100
-        svg = '<rect width="50" height="40" style="fill: rgb(160, 0, 0);"></rect>'
-        
-        svgStr = btoa """
-            <svg xmlns="http://www.w3.org/2000/svg" 
-                 xmlns:xlink="http://www.w3.org/1999/xlink" 
-                 version="1.1" 
-                 width="#{width}px" 
-                 height="#{height}px">#{svg}</svg>
-        """
-        
-        @kali.stage.setCursor "url(data:image/svg+xml;base64,#{svgStr}) 18 12, auto"
-        
+                
     onStageStop: (drag, event) =>
         
-        eventPos = pos event
-        item = @stage.itemAtPos eventPos
+        @kali.stage.setToolCursor 'pipette'
+        
+        if drag.startPos == drag.lastPos
+            post.emit 'color', 'fill', 'color', @tools.fill.color
+            post.emit 'color', 'stroke', 'color', @tools.stroke.color
+            return
+            
+        item = @stage.leafItemAtPos pos event
         if item?
-            log 'drop color at item?'
+            item.style 'fill', @tools.fill.color
+            item.style 'stroke', @tools.stroke.color
             
 module.exports = Pipette

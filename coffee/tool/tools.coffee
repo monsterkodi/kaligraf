@@ -226,7 +226,7 @@ class Tools extends Tool
             @ctrlDown = false
             
         if @kali.shapeTool() == 'loupe'
-            @stage.setCursor @ctrlDown and 'zoom-out' or 'zoom-in'
+            @stage.setToolCursor @ctrlDown and 'zoom-out' or 'zoom-in'
             
         'unhandled'
 
@@ -264,15 +264,10 @@ class Tools extends Tool
                 if @shapes.edit? and not @shapes.edit.empty()
                     @selection.setItems @shapes.edit?.items()
                     @shapes.stopEdit()
-        
-        cursor = switch name
-            when 'pan'      then '-webkit-grab'
-            when 'loupe'    then @ctrlDown and 'zoom-out' or 'zoom-in'
-            when 'pipette'  then 'alias'
-            else 'default'
-        
+                
         @stage.resizer.activate name == 'pick'
             
-        @stage.setCursor cursor
+        log "activateTool #{name}"
+        @stage.setToolCursor name
                 
 module.exports = Tools

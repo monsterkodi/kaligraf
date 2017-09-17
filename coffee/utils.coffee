@@ -8,6 +8,35 @@
 
 module.exports = 
     
+    #  0000000  000   000   0000000   000  000000000  00000000  00     00   0000000  
+    # 000       000   000  000        000     000     000       000   000  000       
+    # 0000000    000 000   000  0000  000     000     0000000   000000000  0000000   
+    #      000     000     000   000  000     000     000       000 0 000       000  
+    # 0000000       0       0000000   000     000     00000000  000   000  0000000   
+    
+    svgItems: (item, opt) ->
+        items = []
+        
+        if opt?.style
+            if item.style opt.style
+                items.push item
+        else if opt?.attr
+            if item.node.hasAttribute opt.attr
+                items.push item
+        else if opt?.type
+            if item.type == opt.type
+                items.push item
+        else if opt?.types
+            if item.type in opt.types
+                items.push item
+        else
+            items.push item
+            
+        if _.isFunction item.children
+            for child in item.children()
+                items = items.concat module.exports.svgItems child
+        items
+    
     # 0000000     0000000   000   000  
     # 000   000  000   000   000 000   
     # 0000000    000   000    00000    

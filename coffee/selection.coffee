@@ -18,10 +18,14 @@ class Selection
         @element = elem 'div', id: 'selection'
         @kali.insertBelowTools @element
         
-        @svg = SVG(@element).size '100%', '100%' 
-        @svg.addClass 'selectionSVG'
-        @svg.clear()
+        @rectsWhite = SVG(@element).size '100%', '100%' 
+        @rectsWhite.addClass 'selectionWhite'
+        @rectsWhite.clear()
 
+        @rectsBlack = SVG(@element).size '100%', '100%' 
+        @rectsBlack.addClass 'selectionBlack'
+        @rectsBlack.clear()
+        
         @stage = @kali.stage
         
         post.on 'stage', @onStage
@@ -87,7 +91,8 @@ class Selection
                 item.forget 'itemRect'
                 
             @items = []
-            @svg.clear()
+            @rectsWhite.clear()
+            @rectsBlack.clear()
             post.emit 'selection', 'clear'
             return true
             
@@ -104,39 +109,69 @@ class Selection
     
     addRectForItem: (item) ->
 
-        r = @svg.rect()
-        r.addClass 'resizerItemRect'
-        item.remember 'itemRect', r
-        @updateItemRect item, r
+        r = @rectsWhite.rect()
+        item.remember 'itemRectWhite', r
 
+        r = @rectsBlack.rect()
+        item.remember 'itemRectBlack', r
+        
+        @updateItemRect item
+        
     delRectForItem: (item) ->
         
-        if r = item.remember 'itemRect' 
+        if r = item.remember 'itemRectWhite' 
             r.remove()
-            item.forget 'itemRect'
-        
+            item.forget 'itemRectWhite'
+
+        if r = item.remember 'itemRectBlack' 
+            r.remove()
+            item.forget 'itemRectBlack'
+            
     updateItems: ->
 
         for item in @items
             @updateItemRect item
         
-    updateItemRect: (item, r) ->
+    updateItemRect: (item) ->
         
         box = item.bbox()
-        r = item.remember('itemRect') if not r?
-        if r?
+
+        if r = item.remember 'itemRectWhite' 
+            
             r.attr
                 x:      box.x
                 y:      box.y
                 width:  box.width
                 height: box.height
+                
+            r.transform item.transform()
+
+        if r = item.remember 'itemRectBlack' 
+            
+            r.attr
+                x:      box.x
+                y:      box.y
+                width:  box.width
+                height: box.height
+                
             r.transform item.transform()
 
     onStage: (action, box) =>
         
         if action == 'viewbox' 
-            @svg.viewbox box
+            
+            @rectsWhite.viewbox box
+            @rectsBlack.viewbox box
+            
+            dashArray = "#{2/@stage.zoom},#{6/@stage.zoom}"
+            
+            @rectsWhite.style 'stroke-width': 1/@stage.zoom
+            @rectsWhite.style 'stroke-dasharray': dashArray
+            @rectsWhite.style 'stroke-dashoffset': "#{2/@stage.zoom}"
 
+            @rectsBlack.style 'stroke-width': 1/@stage.zoom
+            @rectsBlack.style 'stroke-dasharray': dashArray
+            
     #  0000000  000000000   0000000   00000000   000000000  
     # 000          000     000   000  000   000     000     
     # 0000000      000     000000000  0000000       000     
@@ -173,6 +208,7 @@ class Selection
     # 000   000  00000000   0000000     000       
       
     startRect: (p,o) -> 
+        
         if not o.join then @clear()
         @rect = x:p.x, y:p.y, x2:p.x, y2:p.y 
         @pos = rectOffset @rect
@@ -234,7 +270,9 @@ class Selection
         x:r.x-x, x2:r.x2-x, y:r.y-y, y2:r.y2-y
 
     viewPos: -> r = @element.getBoundingClientRect(); pos r.left, r.top
-             
+        
+    bbox: -> @rectsWhite.bbox()
+    
     #  0000000   0000000   000       0000000   00000000   
     # 000       000   000  000      000   000  000   000  
     # 000       000   000  000      000   000  0000000    

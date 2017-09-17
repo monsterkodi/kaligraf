@@ -298,7 +298,16 @@ button
 .editRect
     background              #888
 
+.selectionWhite
+    position                absolute
+    fill                    none
+    stroke                  #fff
 
+.selectionBlack
+    position                absolute
+    fill                    none
+    stroke                  #000
+    
 // 00000000  0000000    000  000000000
 // 000       000   000  000     000
 // 0000000   000   000  000     000
@@ -367,10 +376,9 @@ button
     cursor                  -webkit-grab
 
 .resizerRect
-    // fill                    rgba(128,128,128,0.1)
     fill                    none
-    cursor                  move
     stroke                  none
+    cursor                  move
 
 .resizerBorder
     fill                    none
@@ -386,11 +394,6 @@ button
     fill                    #fff
     stroke                  #000
     pointer-events          all
-
-.resizerItemRect
-    fill                    none
-    stroke                  #000
-    stroke-dasharray        2,2
 
 // 000000000   0000000    0000000   000
 //    000     000   000  000   000  000

@@ -112,7 +112,7 @@ class Resizer
         sx = (@sbox.w + dx)/@sbox.w
         sy = (@sbox.h + dy)/@sbox.h
                 
-        resizeCenter = boxPos @selection.svg.bbox(), opposide center
+        resizeCenter = boxPos @selection.bbox(), opposide center
         transmat = new SVG.Matrix().around resizeCenter.x, resizeCenter.y, new SVG.Matrix().scale sx, sy
 
         for item in @selection.items
@@ -238,7 +238,7 @@ class Resizer
         @rotationCorner = drag.id
         if event.ctrlKey
             @rotationCorner = 'center'
-        @rotationCenter = boxPos @selection.svg.bbox(), opposide @rotationCorner
+        @rotationCenter = boxPos @selection.bbox(), opposide @rotationCorner
         
     onRotStop: (drag, event) => 
         
@@ -343,7 +343,7 @@ class Resizer
     
     updateBox: ->
         
-        box = @selection.svg.bbox()
+        box = @selection.bbox()
         moveBox  box, boxOffset(@kali.stage.svg.viewbox()).scale -1
         scaleBox box, @kali.stage.zoom
         moveBox  box, boxOffset @viewPos()

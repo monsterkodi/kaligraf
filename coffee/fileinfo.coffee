@@ -20,12 +20,9 @@ class FileInfo
         @element.appendChild @file
         
         post.on 'file',  @onFile
-        # post.on 'stage', @onStage
         
     onFile: (file) =>
         
         @file.innerHTML = fileName file
         
-    # onStage: (action, color) =>
-
 module.exports = FileInfo

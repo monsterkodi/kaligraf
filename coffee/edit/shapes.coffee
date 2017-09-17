@@ -203,6 +203,7 @@ class Shapes
                 @selection.loupe = @selection.addRect 'loupeRect'
                 
             when 'pan' then
+                    
             else
                 @selection.clear()
   
@@ -301,12 +302,11 @@ class Shapes
             @selection.endRect eventPos
             return
             
-        if @edit?
-            @edit.stageStop drag, event
-            return
-            
-        if shape == 'edit' then return 
-
+        @edit?.stageStop drag, event
+        
+        if shape == 'edit' 
+            return 
+        
         if @drawing
 
             if drag.startPos == drag.lastPos

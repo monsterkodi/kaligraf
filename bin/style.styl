@@ -193,24 +193,48 @@ button
     cursor                  pointer
     margin-top              150px
     margin-right            200px
-    &.selected .browserItemView
-        border              4px dotted #888
-    &.selected .browserItemTitleText
-        color               #ff0
+            
+    &.selected
+        border-radius       12px
+        border              4px solid #282828
+        box-sizing          border-box
+            
+.browserItemTitle
+    position                relative
+    background              #333
+    border-top-left-radius  8px
+    border-top-right-radius 8px        
     
 .browserItemTitleText
-    background              #282828
-    color                   #888
     font-size               12px
     padding 6px
-    border-top-left-radius  6px
-    border-top-right-radius 6px
-    pointer-events          none
+    color                   #282828
+    &:hover
+        color               #888
+
+.browserItem.selected .browserItemTitleText
+    color                   #fff
+    
+.browserItemTitleClose
+    font-size               13px
+    color                   #282828
+    background              transparent
+    &:hover
+        background          transparent
+    position                absolute
+    right                   0
+    top                     0
     
 .browserItemView
+    & svg 
+        border-radius    8px
     height                  1000px
     width                   1.5 * 1000px
     pointer-events          none
+    
+.browserItem.selected .browserItemView svg
+    border-top-left-radius   0px
+    border-top-right-radius  0px
 
 // 000000000  00000000  000   000  000000000  00000000  0000000    000  000000000
 //    000     000        000 000      000     000       000   000  000     000

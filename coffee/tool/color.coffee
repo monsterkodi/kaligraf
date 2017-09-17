@@ -106,9 +106,8 @@ class Color extends Tool
             return
 
         if @kali.palette.proxy == @name
-
-            post.emit 'palette', 'toggle'
-            delete @kali.tools.temp
+            other = @kali.tools.getTool @name == 'fill' and 'stroke' or 'fill'
+            other.onClick e
             return
 
         post.emit 'palette', 'proxy', @
@@ -128,10 +127,12 @@ class Color extends Tool
             fill.element.style.width  = "#{@kali.toolSize/3}px"
             fill.element.style.height = "#{@kali.toolSize/3}px"
 
-    onMouseLeave: => #log 'leave', @name
+    onMouseLeave: => 
 
-    onMouseEnter: =>
+    onMouseEnter: (event) =>
 
+        return if event.buttons
+        
         if @name == 'fill' and @kali.tools.temp?.name == 'stroke'
             delete @kali.tools.temp
             tempStroke = true

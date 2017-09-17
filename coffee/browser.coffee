@@ -5,7 +5,7 @@
 # 000   000  000   000  000   000  000   000       000  000       000   000
 # 0000000    000   000   0000000   00     00  0000000   00000000  000   000
 
-{   setStyle, childIndex, stopEvent, keyinfo, drag, elem, 
+{   setStyle, childIndex, stopEvent, keyinfo, drag, elem, fileName,
     first, prefs, resolve, fs, os, path, empty, clamp, pos, log, $, _ } = require 'kxk'
 
 { winTitle } = require './utils'
@@ -148,7 +148,7 @@ class Browser
             return
         
         item = elem 'span', class: 'browserItem'
-        text = winTitle text:file, class: 'browserItemTitle', close:@onDelFile
+        text = winTitle text:fileName(file), class: 'browserItemTitle', close:@onDelFile
         view = elem class: 'browserItemView'
         
         item.setAttribute 'file', file

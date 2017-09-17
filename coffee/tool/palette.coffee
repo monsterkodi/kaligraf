@@ -102,12 +102,6 @@ class Palette extends Tool
         
         @setColor @value
                 
-    selectGRY: (event) => @pick  event, @gry, @selectGRY
-    selectRGB: (event) => @pick  event, @rgb, @selectRGB
-
-    selectLUM: (event) => @slide event, @lum, @selectLUM
-    selectLPH: (event) => @slide event, @lph, @selectLPH
-
     #  0000000   000      00000000   000   000   0000000
     # 000   000  000      000   000  000   000  000   000
     # 000000000  000      00000000   000000000  000000000
@@ -195,15 +189,47 @@ class Palette extends Tool
             when 'rgb'
                 @lum.show()
                 @col.show()
+                
+    # 0000000    00000000    0000000    0000000   
+    # 000   000  000   000  000   000  000        
+    # 000   000  0000000    000000000  000  0000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000   0000000   
 
+    selectGRY: (event) => @startDrag event, @gry, @pick
+    selectRGB: (event) => @startDrag event, @rgb, @pick
+
+    selectLUM: (event) => @startDrag event, @lum, @slide
+    selectLPH: (event) => @startDrag event, @lph, @slide
+                
+    startDrag: (event, target, cb) =>
+        
+        @saveTemp = @kali.tools.temp
+        delete @kali.tools.temp
+        
+        @drag = new drag
+            target: target
+            handle: @element
+            onMove: cb
+            onStop: @stopDrag
+            
+        cb @drag, event
+            
+    stopDrag: (drag, event) =>
+        
+        @drag.deactivate()
+        delete @drag
+        @kali.tools.temp = @saveTemp
+    
     #  0000000  000      000  0000000    00000000
     # 000       000      000  000   000  000
     # 0000000   000      000  000   000  0000000
     #      000  000      000  000   000  000
     # 0000000   0000000  000  0000000    00000000
 
-    slide: (event, slider, cb) =>
+    slide: (drag, event) =>
 
+        slider = drag.target
         f = clamp 0, 1, @xPosEvent(event) / WIDTH
 
         if slider == @lum
@@ -211,21 +237,17 @@ class Palette extends Tool
         else
             @setAlpha f
 
-        @moveEvents cb
-        stopEvent event
-
     # 00000000   000   0000000  000   000
     # 000   000  000  000       000  000
     # 00000000   000  000       0000000
     # 000        000  000       000  000
     # 000        000   0000000  000   000
 
-    pick: (event, grd, cb) =>
+    pick: (drag, event) =>
 
+        grd = drag.target
         @setMode grd == @gry and 'gry' or 'rgb'
         @setColor clamp 0, 1, @xPosEvent(event) / WIDTH
-        @moveEvents cb
-        stopEvent event
 
     # 00000000  000   000  00000000  000   000  000000000   0000000
     # 000       000   000  000       0000  000     000     000
@@ -234,18 +256,7 @@ class Palette extends Tool
     # 00000000      0      00000000  000   000     000     0000000
 
     onMouseEnter: => 
-    moveEvents: (cb) ->
-
-        @clearEvents @moveCB
-        @moveCB = cb
-        window.addEventListener 'mousemove', cb
-        window.addEventListener 'mouseup', => @clearEvents @moveCB
-
-    clearEvents: (cb) ->
-
-        window.removeEventListener 'mousemove', cb
-        window.removeEventListener 'mouseup',   cb
-
+    
     xPosEvent: (event) ->
         r = $("#stage").getBoundingClientRect()
         x = event.pageX - r.left - @element.offsetLeft

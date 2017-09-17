@@ -55,8 +55,10 @@ class Tool
     # 000   000  000   000     000     000       000   000    
     # 000   000   0000000       0      00000000  000   000    
 
-    onMouseEnter: =>
+    onMouseEnter: (event) =>
 
+        return if event.buttons
+        
         if @parent != @kali.tools.temp
             @kali.tools.collapseTemp()
             

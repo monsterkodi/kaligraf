@@ -202,7 +202,7 @@ class Tools extends Tool
             setImmediate => @kali.openBrowser()
                     
     collapseTemp: =>
-        
+
         if @temp 
             @temp.hideChildren()
             delete @temp

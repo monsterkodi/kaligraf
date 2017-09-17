@@ -6,7 +6,7 @@
 # 0000000    000   000   0000000   00     00  0000000   00000000  000   000
 
 {   setStyle, childIndex, stopEvent, keyinfo, drag, elem, fileName,
-    first, prefs, resolve, fs, os, path, empty, clamp, pos, log, $, _ } = require 'kxk'
+    first, prefs, resolve, childp, fs, os, path, empty, clamp, pos, log, $, _ } = require 'kxk'
 
 { winTitle } = require './utils'
 
@@ -116,6 +116,18 @@ class Browser
         @element.remove()
 
     onDelFile: (event) => @delItem event.target.parentNode.parentNode
+    onFinderFile: (event) => 
+        item = event.target.parentNode.parentNode
+        file = item.getAttribute 'file'
+        log 'openFinderFile', file
+        
+        stat = fs.statSync file 
+        args = [
+            '-e', 'tell application "Finder"', 
+            '-e', "reveal POSIX file \"#{file}\"",
+            '-e', 'activate',
+            '-e', 'end tell']
+        childp.spawn 'osascript', args
         
     delItem: (item) ->
         
@@ -148,7 +160,11 @@ class Browser
             return
         
         item = elem 'span', class: 'browserItem'
-        text = winTitle text:fileName(file), class: 'browserItemTitle', close:@onDelFile
+        # text = winTitle text:fileName(file), class: 'browserItemTitle', close:@onDelFile
+        text = winTitle class: 'browserItemTitle', close:@onDelFile, buttons: [
+            text: fileName file
+            action: @onFinderFile
+        ]
         view = elem class: 'browserItemView'
         
         item.setAttribute 'file', file

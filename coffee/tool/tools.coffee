@@ -267,7 +267,6 @@ class Tools extends Tool
                 
         @stage.resizer.activate name == 'pick'
             
-        log "activateTool #{name}"
         @stage.setToolCursor name
                 
 module.exports = Tools

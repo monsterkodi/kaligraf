@@ -56,6 +56,7 @@ class Cursor
             when 'triangle_square' then tipy = 32-o
             when 'pipette'         then tipy = 32-o
             when 'loupe', 'zoom-in', 'zoom-out' then tipx = 10; tipy = 9
+            when 'rot-tl'          then tipy = 32-o
             
         "url(data:image/svg+xml;base64,#{btoa svg.svg()}) #{tipx} #{tipy}, auto"
 

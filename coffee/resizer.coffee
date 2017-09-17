@@ -11,6 +11,8 @@
     moveBox,   zoomBox,  scaleBox,
     boxOffset, boxPos,   boxSize, boxForItems } = require './utils'
 
+Cursor = require './cursor'
+    
 class Resizer
 
     constructor: (@kali) ->
@@ -178,8 +180,9 @@ class Resizer
         addRot = (x, y, r, id) =>
             rot = @gg.circle(r).addClass 'resizerRot'
             rot.attr cx:x, cy:y
-            cursor = "file://#{__dirname}/../svg/rot.svg"
-            rot.style cursor: "url(#{cursor}) 18 12, auto"
+            # cursor = "file://#{__dirname}/../svg/rot.svg"
+            # rot.style cursor: "url(#{cursor}) 18 12, auto"
+            rot.style cursor: Cursor.forTool 'rot'
             @rotDrag[id] = new drag
                     target:  rot.node
                     onStart: @onRotStart

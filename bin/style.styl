@@ -206,14 +206,23 @@ button
     border-top-right-radius 8px        
     
 .browserItemTitleText
+.browserItemTitleButton
     font-size               12px
     padding 6px
     color                   #282828
     &:hover
         color               #888
-
+    
 .browserItem.selected .browserItemTitleText
+.browserItem.selected .browserItemTitleButton
     color                   #fff
+    &:hover
+        color               yellow
+        
+.browserItemTitleButton
+    background              transparent
+    &:hover
+        color               yellow
     
 .browserItemTitleClose
     font-size               13px

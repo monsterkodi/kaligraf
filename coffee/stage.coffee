@@ -122,6 +122,12 @@ class Stage
             items = items.filter (item) -> item.type == opt.type
         items
 
+    sortedSelectedItems: (opt) ->
+        
+        items = @selectedItems opt
+        items.sort (a,b) -> a.position() - b.position()
+        items
+        
     ungroup: ->
         
         oldItems = _.clone @items()
@@ -135,7 +141,7 @@ class Stage
     group: ->
         
         group = @svg.group()
-        for item in @selectedItems()
+        for item in @sortedSelectedItems()
            group.add item
            
         @selection.setItems [group]

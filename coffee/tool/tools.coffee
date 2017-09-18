@@ -60,6 +60,7 @@ class Tools extends Tool
             when 'deselect'   then @stage.select 'none'
             when 'invert'     then @stage.select 'invert'
             when 'center'     then @stage.centerSelection()
+            when 'swapColor'  then @stroke.swapColor()
             when 'grid_toggle' then @grid.toggleGrid()
         
     # 000  000   000  000  000000000  

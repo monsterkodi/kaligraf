@@ -90,6 +90,10 @@ class Menu
                 { label: 'Text',        accelerator: 'command+t',           click: -> action 'click', 'text'}
                 { label: 'Font',        accelerator: 'command+f',           click: -> action 'click', 'font'}
                 { type:  'separator'}
+                { label: 'Color',       submenu: [
+                    { label: 'Swap Fill Stroke', click: -> action 'swapColor'}
+                ] } 
+                { type:  'separator'}
                 { label: 'Bezier',      accelerator: 'command+b',           click: -> action 'click', 'bezier_smooth'}
                 { label: 'Line',        accelerator: 'command+l',           click: -> action 'click', 'line'}
                 { label: 'Polygon',     accelerator: 'command+p',           click: -> action 'click', 'polygon'}

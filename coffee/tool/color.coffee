@@ -92,6 +92,25 @@ class Color extends Tool
             @kali.palette.setProxy fill
 
     hideChildren: -> post.emit 'palette', 'hide'
+    
+    #  0000000  000   000   0000000   00000000   
+    # 000       000 0 000  000   000  000   000  
+    # 0000000   000000000  000000000  00000000   
+    #      000  000   000  000   000  000        
+    # 0000000   00     00  000   000  000        
+    
+    swapColor: ->
+        
+        tmp =
+            color:      @color
+            luminance:  @luminance
+            alpha:      @alpha
+            value:      @value
+            mode:       @mode
+        
+        fill = first @children
+        @copy fill
+        fill.copy tmp        
 
     #  0000000  000      000   0000000  000   000
     # 000       000      000  000       000  000

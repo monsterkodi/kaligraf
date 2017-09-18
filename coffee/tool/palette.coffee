@@ -86,6 +86,12 @@ class Palette extends Tool
                 
                 @setProxy value
            
+    # 00000000   00000000    0000000   000   000  000   000  
+    # 000   000  000   000  000   000   000 000    000 000   
+    # 00000000   0000000    000   000    00000      00000    
+    # 000        000   000  000   000   000 000      000     
+    # 000        000   000   0000000   000   000     000     
+    
     setProxy: (color) ->
         
         @setMode     color.mode
@@ -100,7 +106,8 @@ class Palette extends Tool
         @lph.attr x:@alpha*(WIDTH-HEIGHT/3)
         @lum.attr x:@luminance*(WIDTH-HEIGHT/3)
         
-        @setColor @value
+        gradient = @mode == 'rgb' and @gradientRGB or @gradientGRY
+        @updateColor new SVG.Color gradient.colorAt @value
         
     setClosestColor: (color, alpha) ->
         

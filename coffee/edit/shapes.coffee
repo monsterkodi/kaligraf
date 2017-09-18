@@ -202,7 +202,7 @@ class Shapes
                 
             when 'loupe' 
                 
-                @selection.loupe = @selection.addRect 'loupeRect'
+                @selection.loupe = @selection.addRect()
                 
             when 'pan' then
                     

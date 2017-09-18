@@ -21,6 +21,10 @@ class DotSel
             target:  @edit.element
             onStart: @onStart
             onMove:  @onDrag
+            
+        post.on 'stage', @onStage
+        
+    onStage: (action) => if action == 'viewbox' then @updateRect()
 
     #  0000000  000000000   0000000   00000000   000000000  
     # 000          000     000   000  000   000     000     
@@ -129,7 +133,7 @@ class DotSel
             for dot in object.dots()
                 if rectsIntersect r, dot.rbox()
                     @add dot, true
-                else if not o.join
+                else if not o?.join
                     @del dot
     addAll: ->
         
@@ -175,8 +179,10 @@ class DotSel
 
     updateRect: (o) ->
 
+        return if not @rect?
+        
         if not @rect.element
-            @rect.element = @stage.selection.addRect 'editRect'
+            @rect.element = @stage.selection.addRect()
         @stage.selection.setRect @rect.element, @rect
         
         @addInRect normRect(@rect), o

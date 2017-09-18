@@ -235,7 +235,7 @@ button
     
 .browserItemView
     & svg 
-        border-radius    8px
+        border-radius       8px
     height                  1000px
     width                   1.5 * 1000px
     pointer-events          none
@@ -293,18 +293,14 @@ button
 //      000  000       000      000       000          000     000  000   000  000  0000
 // 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000
 
-.selectangle
+.selectionRect
     pointer-events          none
     position                absolute
-    box-sizing              border-box
-    border                  1px dotted #888
+    box-sizing              border-box    
     padding                 0
     overflow                hidden
-    opacity                 0.25
-
-.selectionRect
-.editRect
-    background              #888
+    border                  1px dotted
+    // opacity                 0.1
 
 .selectionWhite
     position                absolute
@@ -469,10 +465,6 @@ button
 // 000      000   000  000   000  00000000   0000000
 // 000      000   000  000   000  000        000
 // 0000000   0000000    0000000   000        00000000
-
-.loupeRect
-    background              transparent
-    opacity                 0.5
 
 .trans
     pointer-events          none

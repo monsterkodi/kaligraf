@@ -7,7 +7,8 @@
 
 { last, elem, post, pos, log, _ } = require 'kxk'
 
-{ moveBox, scaleBox, boxOffset, normRect, rectsIntersect, rectOffset, boxForItems } = require './utils'
+{   contrastColor, moveBox, scaleBox, boxOffset, boxForItems,
+    normRect, rectsIntersect, rectOffset} = require './utils'
 
 class Selection
 
@@ -173,6 +174,8 @@ class Selection
             @rectsBlack.style 'stroke-width': 1/@stage.zoom
             @rectsBlack.style 'stroke-dasharray': dashArray
             
+            @updateRect()
+            
     #  0000000  000000000   0000000   00000000   000000000  
     # 000          000     000   000  000   000     000     
     # 0000000      000     000000000  0000000       000     
@@ -198,6 +201,7 @@ class Selection
     # 000   000   0000000       0      00000000  
     
     moveBy: (delta) ->
+        
         @stage.moveItems @items, delta
         @updateItems()
             
@@ -224,9 +228,12 @@ class Selection
         @rect.element.remove() 
         delete @rect
 
-    addRect: (clss='selectionRect') ->
+    addRect: ->
         
-        rect = elem 'div', class: "selectangle #{clss}"
+        rect = elem 'div', class: 'selectionRect'
+        ctra = contrastColor @stage.color
+        rect.style.background = "rgba(#{ctra.r}, #{ctra.g}, #{ctra.b}, 0.1)"
+        rect.style.borderColor = "rgba(#{ctra.r}, #{ctra.g}, #{ctra.b}, 0.3)"
         @kali.element.appendChild rect
         rect
             
@@ -239,6 +246,8 @@ class Selection
         elem.style.height = "#{r.y2 - r.y}px"
         
     updateRect: (opt={}) ->
+        
+        return if not @rect?
         
         if not @rect.element
             @rect.element = @addRect()
@@ -254,7 +263,7 @@ class Selection
     # 0000000   00000000  0000000  00000000   0000000     000     
     
     selectInRect: (rect, opt) ->
-        
+
         r = @stageRect normRect rect
         
         for child in @kali.items()

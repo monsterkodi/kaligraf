@@ -121,9 +121,11 @@ class Edit
     onStage: (action, box) => 
         
         if action == 'viewbox' 
-            @svg.viewbox   box
+            
+            @svg.viewbox box
             @linesWhite.viewbox box
             @linesBlack.viewbox box
+            @updateRect()
             @updateDefs()
 
     # 0000000    00000000  000      00000000  000000000  00000000  
@@ -320,9 +322,12 @@ class Edit
         delete @rect
 
     updateRect: (opt={}) ->
-
+        
+        return if not @rect?
+        
         if not @rect.element
-            @rect.element = @stage.selection.addRect 'editRect'
+            @rect.element = @stage.selection.addRect()
+            
         @stage.selection.setRect @rect.element, @rect
         
         @addInRect @rect, opt

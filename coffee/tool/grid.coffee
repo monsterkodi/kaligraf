@@ -110,7 +110,7 @@ class Grid extends Tool
             style.fill = '#282828'
             @grid.circle(10).style(style).cx(-vx*z).cy(-vy*z)
             
-    onStage: (prop, value) => if prop == 'viewbox' and @gridVisible() then @drawGrid()
+    onStage: (action) => if action == 'viewbox' and @gridVisible() then @drawGrid()
 
     setVisible: (v) -> if v then @showGrid() else @hideGrid()
     toggleGrid:  -> @setVisible not @gridVisible()

@@ -15,7 +15,7 @@ dialog   = electron.remote.dialog
 
 class Browser
 
-    constructor: (@kali, @files) ->
+    constructor: (@kali) ->
 
         @element = elem 'div', class: 'browser fill'
         @element.tabIndex = 100
@@ -24,7 +24,6 @@ class Browser
         
         @scale  = 1
         @offset = pos 0,0
-        if @files.length > 1 then @offset.x = 1600
         
         buttons = [
             text:   'Open'
@@ -48,12 +47,7 @@ class Browser
         @scroll.appendChild @items
                 
         @kali.insertAboveTools @element
-        
-        for file in @files
-            @addFile file
-        
-        @selectIndex Math.min 1, @files.length-1
-            
+                    
         prefs.set 'browser:open', true
             
         @drag = new drag
@@ -95,6 +89,8 @@ class Browser
             
             for file in files
                 @addFile path.join dir, file
+
+            @offset.x = files.length > 1 and 1600 or 0
                 
             @selectIndex 0
             
@@ -102,7 +98,29 @@ class Browser
             dirs.push(dir) if dir not in dirs
             prefs.set 'browser:dirs', dirs
             log prefs.get 'browser:dirs'
+            
+    # 00000000   00000000   0000000  00000000  000   000  000000000  
+    # 000   000  000       000       000       0000  000     000     
+    # 0000000    0000000   000       0000000   000 0 000     000     
+    # 000   000  000       000       000       000  0000     000     
+    # 000   000  00000000   0000000  00000000  000   000     000     
+    
+    browseRecent: (files) ->
+            
+        for file in files
+            if not @addFile file
+                @delRecent file
+
+        @offset.x = files.length > 1 and 1600 or 0
                 
+        @selectIndex Math.min 1, files.length-1
+
+    delRecent: (file) ->
+        
+        recent = prefs.get 'recent'
+        _.pull recent, file
+        prefs.set 'recent', recent
+        
     # 0000000    00000000  000      
     # 000   000  000       000      
     # 000   000  0000000   000      
@@ -132,9 +150,8 @@ class Browser
     delItem: (item) ->
         
         file = item.getAttribute 'file'
-        recent = prefs.get 'recent'
-        _.pull recent, file
-        prefs.set 'recent', recent
+
+        @delRecent file
         
         if item == @selectedItem() and @items.children.length > 1
             index = clamp 0, @items.children.length-2, childIndex item
@@ -144,7 +161,7 @@ class Browser
             item.remove()
             
         stopEvent event
-        
+                
     #  0000000   0000000    0000000    
     # 000   000  000   000  000   000  
     # 000000000  000   000  000   000  
@@ -156,11 +173,11 @@ class Browser
         try
             svg = fs.readFileSync resolve(file), encoding: 'utf8'
         catch e
-            log 'error', e
+            log "error adding file #{file}", e
             return
         
         item = elem 'span', class: 'browserItem'
-        # text = winTitle text:fileName(file), class: 'browserItemTitle', close:@onDelFile
+
         text = winTitle class: 'browserItemTitle', close:@onDelFile, buttons: [
             text: fileName file
             action: @onFinderFile
@@ -174,6 +191,8 @@ class Browser
         view.innerHTML = svg
         
         @items.appendChild item
+        
+        item
                 
     # 00000000   00000000   0000000  000  0000000  00000000    
     # 000   000  000       000       000     000   000         

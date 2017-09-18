@@ -62,7 +62,8 @@ class Kali
         if empty recent
             post.emit 'tool', 'open'
         else
-            @browser ?= new Browser @, recent
+            @browser ?= new Browser @
+            @browser.browseRecent recent
             
     closeBrowser: ->
         

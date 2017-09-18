@@ -13,7 +13,7 @@ electron = require 'electron'
 colors   = require 'colors'
 
 app      = electron.app
-Browser  = electron.BrowserWindow
+Window   = electron.BrowserWindow
 ipc      = electron.ipcMain
 
 kaliapp  = undefined # < created in app.on 'ready'
@@ -56,10 +56,10 @@ if args.verbose
 # 00     00  000  000   000  0000000 
 
 win         = null
-wins        = -> Browser.getAllWindows()
-activeWin   = -> Browser.getFocusedWindow()
+wins        = -> Window.getAllWindows()
+activeWin   = -> Window.getFocusedWindow()
 visibleWins = -> (w for w in wins() when w?.isVisible() and not w?.isMinimized())
-winWithID   = (winID) -> Browser.fromId winID
+winWithID   = (winID) -> Window.fromId winID
 
 # 000  00000000    0000000
 # 000  000   000  000     
@@ -147,7 +147,7 @@ class KaliApp
             bounds.x = 0
             bounds.y = 0
             
-        win = new Browser
+        win = new Window
             x:               bounds.x
             y:               bounds.y
             width:           bounds.width

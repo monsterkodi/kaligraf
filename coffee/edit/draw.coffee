@@ -191,6 +191,12 @@ class Draw
         object.addPoint object.numPoints(), stagePos, code
         object.plot()
 
+    # 00     00   0000000   000   000  00000000  
+    # 000   000  000   000  000   000  000       
+    # 000000000  000   000   000 000   0000000   
+    # 000 0 000  000   000     000     000       
+    # 000   000   0000000       0      00000000  
+    
     movePoint: (stagePos, action) ->
 
         object = @edit.objectForItem @drawing
@@ -198,15 +204,35 @@ class Draw
             log 'no object in edit?', @edit?, @drawing?
             return
         
-        dots   = ['point']
-        if action == 'drag'
-            switch @shape
-                when 'bezier'      then dots.push 'ctrls'
-                when 'bezier_quad' then dots.push 'ctrlq'
-                when 'bezier_cube' then dots.push 'ctrl1'; dots.push 'ctrl2'
+        dots = ['point']
+        switch action
+            when 'drag'
+                switch @shape
+                    when 'bezier'      then dots.push 'ctrls'
+                    when 'bezier_quad' then dots.push 'ctrlq'
+                    when 'bezier_cube' then dots.push 'ctrl1'; dots.push 'ctrl2'
+            when 'move'
+                switch @shape
+                    when 'bezier_cube' 
+                        dots.push 'ctrl2'
+                        
         object.movePoint object.ctrls.length-1, stagePos, dots
+
+        if @shape == 'bezier_cube' and action == 'drag' and object.ctrls.length > 2
+            
+            index = object.ctrls.length-2
+            ppos = @dotPos index
+            refl = ppos.minus ppos.to stagePos
+            object.movePoint index, refl, ['ctrl2']
+        
         object.plot()
        
+    # 0000000     0000000   000000000  00000000    0000000    0000000  
+    # 000   000  000   000     000     000   000  000   000  000       
+    # 000   000  000   000     000     00000000   000   000  0000000   
+    # 000   000  000   000     000     000        000   000       000  
+    # 0000000     0000000      000     000         0000000   0000000   
+    
     dotPos: (index, dot='point') ->
         
         object = @edit.objectForItem(@drawing)

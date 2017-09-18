@@ -72,12 +72,15 @@ class Cursor
         svgFileX1 = path.join path.dirname(svgFile), 'cursor', fileName(svgFile) + " x1.svg"
         svgFileX2 = path.join path.dirname(svgFile), 'cursor', fileName(svgFile) + " x2.svg"
         
-        svg.attr width: s, height:s
-        fs.writeFileSync svgFileX1, svg.svg(), encoding: 'utf8'
-        svg.attr width: s*2, height:s*2
-        fs.writeFileSync svgFileX2, svg.svg(), encoding: 'utf8'
-        
-        """-webkit-image-set( url("#{svgFileX1}") 1x, url("#{svgFileX2}") 2x ) #{x} #{y}, auto
-        """
+        if opt?.fill or opt?.stroke
+            "url(data:image/svg+xml;base64,#{btoa svg.svg()}) #{x} #{y}, auto"
+        else
+            svg.attr width: s, height:s
+            fs.writeFileSync svgFileX1, svg.svg(), encoding: 'utf8'
+            svg.attr width: s*2, height:s*2
+            fs.writeFileSync svgFileX2, svg.svg(), encoding: 'utf8'
+            
+            """-webkit-image-set( url("#{svgFileX1}") 1x, url("#{svgFileX2}") 2x ) #{x} #{y}, auto
+            """
 
 module.exports = Cursor

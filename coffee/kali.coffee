@@ -39,7 +39,6 @@ class Kali
         @element.addEventListener 'keyup',   @onKeyUp
         
         post.setMaxListeners 100
-        # post.on 'slog', (t) -> window.logview?.appendText t
         
         window.onresize = @onResize
         

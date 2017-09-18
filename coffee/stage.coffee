@@ -424,7 +424,6 @@ class Stage
         svg = @getSVG items, bb
         clipboard.writeText svg
 
-        delete @selection.pos
         for item in selected
             @selection.addItem item
 
@@ -432,7 +431,6 @@ class Stage
 
     paste: ->
 
-        delete @selection.pos
         @addSVG clipboard.readText(), color:false
 
     cut: ->

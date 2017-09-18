@@ -7,7 +7,7 @@
 
 { last, elem, post, pos, log, _ } = require 'kxk'
 
-{ normRect, rectsIntersect, rectOffset, boxForItems } = require './utils'
+{ moveBox, boxOffset, normRect, rectsIntersect, rectOffset, boxForItems } = require './utils'
 
 class Selection
 
@@ -27,6 +27,7 @@ class Selection
         @rectsBlack.clear()
         
         @stage = @kali.stage
+        @trans = @kali.trans
         
         post.on 'stage', @onStage
         
@@ -184,7 +185,6 @@ class Selection
         
         if item = @stage.itemAtPos eventPos
             if not @contains item
-                @pos = eventPos
                 @addItem item, join:event.shiftKey
             else # if not switched
                 if event.shiftKey then @delItem item
@@ -211,20 +211,17 @@ class Selection
         
         if not o.join then @clear()
         @rect = x:p.x, y:p.y, x2:p.x, y2:p.y 
-        @pos = rectOffset @rect
         @updateRect o
         
     moveRect: (p,o) -> 
     
         @rect.x2 = p.x
         @rect.y2 = p.y
-        delete @pos
         @updateRect o
         
     endRect: (p) -> 
     
         @rect.element.remove() 
-        delete @pos
         delete @rect
 
     addRect: (clss='selectionRect') ->
@@ -250,16 +247,26 @@ class Selection
         
         @selectInRect @rect, opt
         
+    #  0000000  00000000  000      00000000   0000000  000000000  
+    # 000       000       000      000       000          000     
+    # 0000000   0000000   000      0000000   000          000     
+    #      000  000       000      000       000          000     
+    # 0000000   00000000  0000000  00000000   0000000     000     
+    
     selectInRect: (rect, opt) ->
         
-        r = normRect rect
+        r = @stageRect normRect rect
         
         for child in @kali.items()
 
-            rb = child.rbox()
+            rb = @trans.rect child
+            
             if rectsIntersect r, rb
+                
                 @addItem child
+                
             else if not opt.join
+                
                 @delItem child
         
     offsetRect: (r) ->
@@ -269,6 +276,10 @@ class Selection
         y = s.top
         x:r.x-x, x2:r.x2-x, y:r.y-y, y2:r.y2-y
 
+    stageRect: (r) ->
+        
+        moveBox @offsetRect(r), boxOffset @stage.svg.viewbox()
+        
     viewPos: -> r = @element.getBoundingClientRect(); pos r.left, r.top
         
     bbox: -> @rectsWhite.bbox()

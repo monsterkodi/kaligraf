@@ -58,10 +58,11 @@ class Cursor
             when 'triangle_square'              then x = 2;    y = 14;  s = 16
             when 'line'                         then x = 2;    y = 28
             when 'bezier_quad'                  then x = 16
-            when 'polygon'                      then x = 4;    y = 2
-            when 'rot top left'                 then x = 32-o; y = 32-o
-            when 'rot top right'                then           y = 32-o
-            when 'rot bot left'                 then x = 32-o
+            when 'polygon', 'polyline'          then x = 4;    y = 2;  s = 22
+            when 'rot top left'                 then x = 18;   y = 18; s = 22
+            when 'rot top right'                then x =  4;   y = 18; s = 22
+            when 'rot bot left'                 then x = 18;   y =  4; s = 22
+            when 'rot bot right'                then x =  4;   y =  4; s = 22
             when 'rot top'                      then x = 16;   y = 32-o
             when 'rot left'                     then x = 32-o; y = 16
             when 'rot right'                    then           y = 16

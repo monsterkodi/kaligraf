@@ -97,7 +97,6 @@ class Browser
             dirs = prefs.get 'browser:dirs', []
             dirs.push(dir) if dir not in dirs
             prefs.set 'browser:dirs', dirs
-            log prefs.get 'browser:dirs'
             
     # 00000000   00000000   0000000  00000000  000   000  000000000  
     # 000   000  000       000       000       0000  000     000     
@@ -135,9 +134,9 @@ class Browser
 
     onDelFile: (event) => @delItem event.target.parentNode.parentNode
     onFinderFile: (event) => 
+        
         item = event.target.parentNode.parentNode
         file = item.getAttribute 'file'
-        log 'openFinderFile', file
         
         stat = fs.statSync file 
         args = [

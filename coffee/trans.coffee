@@ -21,9 +21,19 @@ class Trans
     pos:    (item, p) -> if p? then @setPos(   item, p) else @getPos    item
     rect:   (item, r) -> if r? then @setRect(  item, r) else @getRect   item
     rotation: (item, a, c) -> if a? then @setRotation(item, a, c) else @getRotation item
+    scale:    (item, s, c) -> if s? then @setScale(   item, s, c) else @getScale    item
 
     transform: (item, p) -> pos new SVG.Point(p).transform item.transform().matrix
     inverse:   (item, p) -> pos new SVG.Point(p).transform item.transform().matrix.inverse()
+    
+    getScale: (item) -> pos item.transform('scaleX'), item.transform('scaleY')
+    setScale: (item, s, c) ->
+        if c?
+            item.transform scaleX:s.x, cx:c.x, cy:c.y
+            item.transform scaleY:s.y, cx:c.x, cy:c.y
+        else
+            item.transform scaleX:s.x
+            item.transform scaleY:s.y
     
     getRotation: (item) -> item.transform 'rotation'
     setRotation: (item, a, c) -> 
@@ -44,7 +54,9 @@ class Trans
         newCenter = new SVG.Point oldCenter
         newCenter = pos newCenter.transform matrix
 
-        rotMat    = new SVG.Matrix().rotate item.transform().rotation
+        itemTrans = item.transform()
+        
+        rotMat    = new SVG.Matrix().rotate itemTrans.rotation
         oldSize   = @getSize item
         newSize1  = new SVG.Point oldSize
         newSize1  = newSize1.transform rotMat
@@ -57,7 +69,7 @@ class Trans
         else
             newSize = newSize2
         newSize = newSize.transform new SVG.Matrix().scale scale.x, scale.y
-        newSize = newSize.transform new SVG.Matrix().rotate -item.transform().rotation
+        newSize = newSize.transform new SVG.Matrix().rotate -itemTrans.rotation
         newSize = pos Math.abs(newSize.x), Math.abs(newSize.y)
 
         @setSize   item, newSize
@@ -119,7 +131,8 @@ class Trans
             when 'circle', 'ellipse'
                 item.transform x:c.x, y:c.y
             else
-                bb = item.bbox().transform new SVG.Matrix().rotate @rotation item
+                scale = @scale item
+                bb = item.bbox().transform new SVG.Matrix().scale(scale.x, scale.y).rotate(@rotation item)
                 item.transform x:c.x-bb.cx, y:c.y-bb.cy
         
     getCenter: (item)    -> 

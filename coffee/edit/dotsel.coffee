@@ -5,7 +5,7 @@
 # 000   000  000   000     000          000  000       000    
 # 0000000     0000000      000     0000000   00000000  0000000
 
-{ empty, drag, log, _ } = require 'kxk'
+{ empty, drag, post, log, _ } = require 'kxk'
 
 { rectsIntersect, normRect } = require '../utils'
 
@@ -32,6 +32,9 @@ class DotSel
         
         if dot = event.target.instance
 
+            if @kali.shapeTool() != 'edit'
+                post.emit 'tool', 'click', 'edit'
+            
             if event.shiftKey and dot.ctrl.isSelected dot.dot
                 @del dot
             else

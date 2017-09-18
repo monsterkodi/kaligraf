@@ -43,7 +43,7 @@ class Edit
 
         @initDefs()
         
-        post.on 'ctrl',    @onCtrl
+        # post.on 'ctrl',    @onCtrl
         post.on 'stage',   @onStage
         post.on 'convert', @onConvert
         
@@ -99,7 +99,7 @@ class Edit
         @clear()
 
         post.removeListener 'stage', @onStage
-        post.removeListener 'ctrl',  @onCtrl
+        # post.removeListener 'ctrl',  @onCtrl
 
         @svg.remove()
         @element.remove()
@@ -228,11 +228,11 @@ class Edit
     # 000   000  000  0000        000          000     000   000  000      
     #  0000000   000   000         0000000     000     000   000  0000000  
 
-    onCtrl: (item, action, dot, index, p) =>
+    # onCtrl: (item, action, dot, index, p) =>
 
-        if object = @objectForItem item
-        
-            object.editCtrl action, dot, index, p
+        # if object = @objectForItem item
+#         
+            # object.editCtrl action, dot, index, p
 
     #  0000000  000000000   0000000   00000000   000000000  
     # 000          000     000   000  000   000     000     

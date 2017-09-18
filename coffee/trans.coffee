@@ -32,6 +32,12 @@ class Trans
         else
             item.transform rotation:a
     
+    # 00000000   00000000   0000000  000  0000000  00000000  
+    # 000   000  000       000       000     000   000       
+    # 0000000    0000000   0000000   000    000    0000000   
+    # 000   000  000            000  000   000     000       
+    # 000   000  00000000  0000000   000  0000000  00000000  
+    
     resize: (item, matrix, scale) ->
         
         oldCenter = @getCenter item
@@ -57,6 +63,33 @@ class Trans
         @setSize   item, newSize
         @setCenter item, newCenter
         
+    #  0000000   00000000    0000000   000   000  00000000   
+    # 000        000   000  000   000  000   000  000   000  
+    # 000  0000  0000000    000   000  000   000  00000000   
+    # 000   000  000   000  000   000  000   000  000        
+    #  0000000   000   000   0000000    0000000   000        
+    
+    setGroupSize: (group, size) ->
+
+        oldSize = @size group
+        
+        scale = pos size.x/oldSize.x, size.y/oldSize.y
+        
+        transmat = new SVG.Matrix().around 0, 0, new SVG.Matrix().scale scale.x, scale.y
+        
+        for item in group.children()
+            
+            @resize item, transmat, scale
+                  
+    setGroupWidth:  (group, w) -> @setGroupSize group, x:w, y:@height(group)
+    setGroupHeight: (group, w) -> @setGroupSize group, x:@width(group), y:h
+    
+    # 00000000   00000000   0000000  000000000  
+    # 000   000  000       000          000     
+    # 0000000    0000000   000          000     
+    # 000   000  000       000          000     
+    # 000   000  00000000   0000000     000     
+    
     setRect: (item, r) ->
          
         r = normRect   r
@@ -74,6 +107,12 @@ class Trans
         
         item.bbox().transform item.transform().matrix
     
+    #  0000000  00000000  000   000  000000000  00000000  00000000   
+    # 000       000       0000  000     000     000       000   000  
+    # 000       0000000   000 0 000     000     0000000   0000000    
+    # 000       000       000  0000     000     000       000   000  
+    #  0000000  00000000  000   000     000     00000000  000   000  
+    
     setCenter: (item, c) -> 
     
         switch item.type
@@ -87,6 +126,12 @@ class Trans
     
         @transform item, boxCenter item.bbox()
         
+    # 00000000    0000000    0000000  
+    # 000   000  000   000  000       
+    # 00000000   000   000  0000000   
+    # 000        000   000       000  
+    # 000         0000000   0000000   
+    
     setPos: (item, c) -> 
         
         bb = item.bbox()
@@ -100,6 +145,12 @@ class Trans
     getPos: (item) -> 
     
         @transform item, boxOffset item.bbox()
+       
+    #  0000000  000  0000000  00000000    
+    # 000       000     000   000         
+    # 0000000   000    000    0000000     
+    #      000  000   000     000         
+    # 0000000   000  0000000  00000000    
         
     setWidth:  (item, w) -> 
     
@@ -108,7 +159,9 @@ class Trans
             when 'ellipse' then item.attr rx: w/2 
             when 'circle'  then item.attr r: w/2
             when 'rect'    then item.attr width: w
-            else                item.width w
+            when 'g'       then @setGroupWidth item, w
+            else
+                item.width w
     
     setHeight: (item, h) -> 
 
@@ -118,9 +171,17 @@ class Trans
             when 'ellipse' then item.attr ry: h/2 
             when 'circle'  then item.attr r: h/2
             when 'rect'    then item.attr height: h
-            else                item.height h
+            when 'g'       then @setGroupHeight item, h
+            else
+                item.height h
         
-    setSize:   (item, s) -> @setWidth(item,s.x); @setHeight(item,s.y)
+    setSize:   (item, size) -> 
+    
+        if item.type == 'g' 
+            @setGroupSize item, size
+        else
+            @setWidth  item, size.x 
+            @setHeight item, size.y 
             
     getWidth:  (item) -> item.bbox().width
     getHeight: (item) -> item.bbox().height

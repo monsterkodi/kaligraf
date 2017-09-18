@@ -107,7 +107,7 @@ class Grid extends Tool
             @grid.line(sx,v,sw,v).style style
             
         if vx < 0 and vx+vw > 0 and vy < 0 and vy+vh > 0
-            style.fill = '#181818'
+            style.fill = '#282828'
             @grid.circle(10).style(style).cx(-vx*z).cy(-vy*z)
             
     onStage: (prop, value) => if prop == 'viewbox' and @gridVisible() then @drawGrid()

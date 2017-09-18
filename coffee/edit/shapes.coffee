@@ -59,6 +59,9 @@ class Shapes
                     when 'bezier'      then ['S', stagePos.x, stagePos.y, stagePos.x, stagePos.y]
                     when 'bezier_quad' then ['Q', stagePos.x, stagePos.y, stagePos.x, stagePos.y]
                     when 'bezier_cube' then ['C', stagePos.x, stagePos.y, stagePos.x, stagePos.y, stagePos.x, stagePos.y]
+                    
+                if shape == 'bezier' then arr.push ['S', stagePos.x, stagePos.y, stagePos.x, stagePos.y]
+                    
                 a = new SVG.PathArray arr
                 e = @svg.path()
                 e.plot a

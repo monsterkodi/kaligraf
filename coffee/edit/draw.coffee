@@ -213,17 +213,20 @@ class Draw
                     when 'bezier_cube' then dots.push 'ctrl1'; dots.push 'ctrl2'
             when 'move'
                 switch @shape
-                    when 'bezier_cube' 
-                        dots.push 'ctrl2'
+                    when 'bezier_cube' then dots.push 'ctrl2'
+                    when 'bezier'      then dots.push 'ctrls'
                         
         object.movePoint object.ctrls.length-1, stagePos, dots
 
-        if @shape == 'bezier_cube' and action == 'drag' and object.ctrls.length > 2
+        if action == 'drag' and object.ctrls.length > 2 and @shape in ['bezier_cube', 'bezier']
             
             index = object.ctrls.length-2
             ppos = @dotPos index
             refl = ppos.minus ppos.to stagePos
-            object.movePoint index, refl, ['ctrl2']
+            
+            ctrl = @shape == 'bezier_cube' and 'ctrl2' or 'ctrls'
+                
+            object.movePoint index, refl, [ctrl]
         
         object.plot()
        

@@ -47,8 +47,9 @@ class Cursor
         y = o
         s = 32
         switch name
-            when 'loupe', 'zoom-in', 'zoom-out' then x = 10; y =  9; 
-            when 'rect', 'circle', 'ellipse'    then x =  7; y =  7; s = 16
+            when 'loupe', 'zoom-in', 'zoom-out' then x = 10; y = 9; 
+            when 'rect', 'circle', 'ellipse'    then x =  7; y = 7; s = 16
+            when 'draw_drag', 'draw_move'       then x =  7; y = 7; s = 16
             when 'pipette'          then           y = 32-o; 
             when 'pan'              then x = 12;   y = 8;    
             when 'edit hover'       then x = 2;    y = 2;    
@@ -67,8 +68,8 @@ class Cursor
             when 'rot bot'          then x = 16
             else "unhandled tip for  cursor#{name}"
             
-        svgFileX1 = path.join path.dirname(svgFile), fileName(svgFile) + " x1.svg"
-        svgFileX2 = path.join path.dirname(svgFile), fileName(svgFile) + " x2.svg"
+        svgFileX1 = path.join path.dirname(svgFile), 'cursor', fileName(svgFile) + " x1.svg"
+        svgFileX2 = path.join path.dirname(svgFile), 'cursor', fileName(svgFile) + " x2.svg"
         svg.attr width: s, height:s
         fs.writeFileSync svgFileX1, svg.svg(), encoding: 'utf8'
         svg.attr width: s*2, height:s*2

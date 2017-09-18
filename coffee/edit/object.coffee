@@ -165,19 +165,19 @@ class Object
             point = points[index]
             
             switch type
-                when 'bezier' 
+                when 'C' 
                     switch point[0]
                         when 'C' then continue
                         when 'Q', 'S' then point.splice 3, 0, [point[1], point[2]]
                         when 'M', 'L' then point.splice 3, 0, [point[1], point[2], point[1], point[2]]
                     point[0] = 'C'
-                when 'quad'
+                when 'Q'
                     switch point[0]
                         when 'Q' then continue
                         when 'C' then point.splice 3, 2
                         when 'M', 'L' then point.splice 3, 0, [point[1], point[2]]
                     point[0] = 'Q'
-                when 'smooth'
+                when 'S'
                     switch point[0]
                         when 'S' then continue
                         when 'C' then point.splice 3, 2

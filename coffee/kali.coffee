@@ -47,7 +47,7 @@ class Kali
         
     onResize: =>
         
-        @stage.resetSize
+        @stage.resetSize()
         @browser?.resize()
                 
     # 0000000    00000000    0000000   000   000   0000000  00000000  00000000   

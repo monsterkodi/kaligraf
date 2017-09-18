@@ -37,7 +37,7 @@ class Draw
                 
         switch @shape
             when 'line', 'polyline', 'polygon' then
-            when 'bezier', 'bezier_quad', 'bezier_cube' 
+            when 'bezier_smooth', 'bezier_quad', 'bezier_cube' 
                 @picking = true
             else
                 delete @picking
@@ -57,7 +57,7 @@ class Draw
         switch @shape
             when 'pie', 'arc'            then return false
             when 'line'                  then @movePoint stagePos
-            when 'polygon', 'polyline', 'bezier', 'bezier_quad', 'bezier_cube'  
+            when 'polygon', 'polyline', 'bezier_smooth', 'bezier_quad', 'bezier_cube'  
                 @addPoint stagePos
             
         true
@@ -114,7 +114,7 @@ class Draw
         
         switch @shape
             when 'pie', 'arc'            then delete @picking
-            when 'bezier', 'bezier_quad' then @picking = true
+            when 'bezier_smooth', 'bezier_quad', 'bezier_cube' then @picking = true
             when 'line'                  then @picking = true
             else         
                 @picking = @drawing?
@@ -131,7 +131,13 @@ class Draw
         
         return true  if not @drawing?
         return true  if @shape == 'line'
-        return false if @shape in ['bezier', 'bezier_quad', 'bezier_cube']
+        
+        if @shape in ['bezier', 'bezier_quad', 'bezier_cube']
+            @stage.setToolCursor "draw_move"
+            return false 
+        
+        @stage.setToolCursor @kali.shapeTool()
+        
         return not @picking
             
     # 00000000   0000000   0000000   0000000   00000000   00000000  
@@ -150,7 +156,7 @@ class Draw
             log 'delete?'
         
         switch @shape
-            when 'bezier', 'bezier_quad', 'bezier_cube'
+            when 'bezier_smooth', 'bezier_quad', 'bezier_cube'
                 @movePoint @dotPos 0
             else 
                 object.delPoint object.ctrls.length-1
@@ -184,12 +190,14 @@ class Draw
         stagePos = @stage.stageForEvent pos event 
         object  = @edit.objectForItem @drawing
         code    = switch @shape
-            when 'bezier'      then 'S'
-            when 'bezier_quad' then 'Q'
-            when 'bezier_cube' then 'C'
+            when 'bezier_smooth' then 'S'
+            when 'bezier_quad'   then 'Q'
+            when 'bezier_cube'   then 'C'
             else 'P'
         object.addPoint object.numPoints(), stagePos, code
         object.plot()
+        
+        @stage.setToolCursor "draw_drag"
 
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
@@ -208,17 +216,17 @@ class Draw
         switch action
             when 'drag'
                 switch @shape
-                    when 'bezier'      then dots.push 'ctrls'
-                    when 'bezier_quad' then dots.push 'ctrlq'
-                    when 'bezier_cube' then dots.push 'ctrl1'; dots.push 'ctrl2'
+                    when 'bezier_smooth' then dots.push 'ctrls'
+                    when 'bezier_quad'   then dots.push 'ctrlq'
+                    when 'bezier_cube'   then dots.push 'ctrl1'; dots.push 'ctrl2'
             when 'move'
                 switch @shape
-                    when 'bezier_cube' then dots.push 'ctrl2'
-                    when 'bezier'      then dots.push 'ctrls'
+                    when 'bezier_smooth' then dots.push 'ctrls'
+                    when 'bezier_cube'   then dots.push 'ctrl2'
                         
         object.movePoint object.ctrls.length-1, stagePos, dots
 
-        if action == 'drag' and object.ctrls.length > 2 and @shape in ['bezier_cube', 'bezier']
+        if action == 'drag' and object.ctrls.length > 2 and @shape in ['bezier_cube', 'bezier_smooth']
             
             index = object.ctrls.length-2
             ppos = @dotPos index
@@ -229,6 +237,8 @@ class Draw
             object.movePoint index, refl, [ctrl]
         
         object.plot()
+        
+        @stage.setToolCursor "draw_#{action}"
        
     # 0000000     0000000   000000000  00000000    0000000    0000000  
     # 000   000  000   000     000     000   000  000   000  000       

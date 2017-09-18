@@ -52,7 +52,7 @@ class Shapes
                 e = @svg[shape]()
                 e.plot [[stagePos.x, stagePos.y], [stagePos.x, stagePos.y]]
                 
-            when 'bezier', 'bezier_quad', 'bezier_cube'
+            when 'bezier_smooth', 'bezier_quad', 'bezier_cube'
 
                 arr = [ ['M', stagePos.x, stagePos.y] ]
                 arr.push switch shape

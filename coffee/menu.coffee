@@ -74,9 +74,9 @@ class Menu
                 { label: 'None',        accelerator: 'command+d',           click: -> action 'deselect'}
                 { label: 'Invert',      accelerator: 'command+i',           click: -> action 'invert'}        
                 { label: 'Convert',     submenu: [
-                    { label: 'Smooth',  accelerator: 'command+1',           click: -> post.toWins 'convert', 'smooth'}
-                    { label: 'Quad',    accelerator: 'command+2',           click: -> post.toWins 'convert', 'quad'}
-                    { label: 'Bezier',  accelerator: 'command+3',           click: -> post.toWins 'convert', 'bezier'}
+                    { label: 'Smooth',  accelerator: 'command+1',           click: -> post.toWins 'convert', 'S'}
+                    { label: 'Quad',    accelerator: 'command+2',           click: -> post.toWins 'convert', 'Q'}
+                    { label: 'Cubic',   accelerator: 'command+3',           click: -> post.toWins 'convert', 'C'}
                 ]}
             ]
         ,
@@ -90,7 +90,7 @@ class Menu
                 { label: 'Text',        accelerator: 'command+t',           click: -> action 'click', 'text'}
                 { label: 'Font',        accelerator: 'command+f',           click: -> action 'click', 'font'}
                 { type:  'separator'}
-                { label: 'Bezier',      accelerator: 'command+b',           click: -> action 'click', 'bezier'}
+                { label: 'Bezier',      accelerator: 'command+b',           click: -> action 'click', 'bezier_smooth'}
                 { label: 'Line',        accelerator: 'command+l',           click: -> action 'click', 'line'}
                 { label: 'Polygon',     accelerator: 'command+p',           click: -> action 'click', 'polygon'}
                 { label: 'Width',       accelerator: 'command+\\',          click: -> action 'click', 'width'}

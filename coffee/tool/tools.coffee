@@ -26,8 +26,6 @@ class Tools extends Tool
         post.on 'tool',   @onAction
         post.on 'toggle', (name) => @[name]?.toggleVisible()
         
-        # @kali.tools = @
-
     #  0000000    0000000  000000000  000   0000000   000   000  
     # 000   000  000          000     000  000   000  0000  000  
     # 000000000  000          000     000  000   000  000 0 000  
@@ -96,16 +94,16 @@ class Tools extends Tool
                 { name: 'triangle_square', group: 'shape' }
             ]
             [
-                { name: 'bezier',      group: 'shape', draw: true }
-                { name: 'bezier_quad', group: 'shape', draw: true }
-                { name: 'bezier_cube', group: 'shape', draw: true }
-                { name: 'pie',         group: 'shape', draw: true }
-                { name: 'arc',         group: 'shape', draw: true }
+                { name: 'bezier_smooth', group: 'shape', draw: true }
+                { name: 'bezier_quad',   group: 'shape', draw: true }
+                { name: 'bezier_cube',   group: 'shape', draw: true }
+                { name: 'pie',           group: 'shape', draw: true }
+                { name: 'arc',           group: 'shape', draw: true }
             ]
             [
-                { name: 'polygon',     group: 'shape', draw: true }
-                { name: 'polyline',    group: 'shape', draw: true }
-                { name: 'line',        group: 'shape', draw: true }
+                { name: 'polygon',  group: 'shape', draw: true }
+                { name: 'polyline', group: 'shape', draw: true }
+                { name: 'line',     group: 'shape', draw: true }
             ]
             [
                 { name: 'zoom',  class: 'zoom', action: 'zoom_reset',  combo: 'command+0' }

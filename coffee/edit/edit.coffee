@@ -156,7 +156,7 @@ class Edit
     #  0000000   0000000   000   000      0      00000000  000   000     000     
     
     onConvert: (type) =>
-        log 'onConvert', type
+
         if not @dotsel.empty()
             for objectDot in @dotsel.objectDots()
                 objectDot.object.convertDots objectDot.dots, type

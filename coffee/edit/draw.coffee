@@ -132,7 +132,7 @@ class Draw
         return true  if not @drawing?
         return true  if @shape == 'line'
         
-        if @shape in ['bezier', 'bezier_quad', 'bezier_cube']
+        if @shape in ['bezier_smooth', 'bezier_quad', 'bezier_cube']
             @stage.setToolCursor "draw_move"
             return false 
         

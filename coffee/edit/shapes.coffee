@@ -55,12 +55,11 @@ class Shapes
             when 'bezier_smooth', 'bezier_quad', 'bezier_cube'
 
                 arr = [ ['M', stagePos.x, stagePos.y] ]
+                
                 arr.push switch shape
-                    when 'bezier'      then ['S', stagePos.x, stagePos.y, stagePos.x, stagePos.y]
-                    when 'bezier_quad' then ['Q', stagePos.x, stagePos.y, stagePos.x, stagePos.y]
-                    when 'bezier_cube' then ['C', stagePos.x, stagePos.y, stagePos.x, stagePos.y, stagePos.x, stagePos.y]
-                    
-                if shape == 'bezier' then arr.push ['S', stagePos.x, stagePos.y, stagePos.x, stagePos.y]
+                    when 'bezier_smooth' then ['S', stagePos.x, stagePos.y, stagePos.x, stagePos.y]
+                    when 'bezier_quad'   then ['Q', stagePos.x, stagePos.y, stagePos.x, stagePos.y]
+                    when 'bezier_cube'   then ['C', stagePos.x, stagePos.y, stagePos.x, stagePos.y, stagePos.x, stagePos.y]
                     
                 a = new SVG.PathArray arr
                 e = @svg.path()

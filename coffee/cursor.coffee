@@ -47,29 +47,30 @@ class Cursor
         y = o
         s = 32
         switch name
-            when 'loupe', 'zoom-in', 'zoom-out' then x = 10; y = 9; 
-            when 'rect', 'circle', 'ellipse'    then x =  7; y = 7; s = 16
-            when 'draw_drag', 'draw_move'       then x =  7; y = 7; s = 16
-            when 'pipette'          then           y = 32-o; 
-            when 'pan'              then x = 12;   y = 8;    
-            when 'edit hover'       then x = 2;    y = 2;    
-            when 'edit'             then x = 4;    y = 4;    
-            when 'triangle'         then x = 7;    y = 3;   s = 16
-            when 'triangle_square'  then x = 2;    y = 14;  s = 16
-            when 'line'             then x = 2;    y = 28
-            when 'bezier_quad'      then x = 16
-            when 'polygon'          then x = 4;    y = 2
-            when 'rot top left'     then x = 32-o; y = 32-o
-            when 'rot top right'    then           y = 32-o
-            when 'rot bot left'     then x = 32-o
-            when 'rot top'          then x = 16;   y = 32-o
-            when 'rot left'         then x = 32-o; y = 16
-            when 'rot right'        then           y = 16
-            when 'rot bot'          then x = 16
+            when 'loupe', 'zoom-in', 'zoom-out' then x = 10;   y = 9; 
+            when 'rect', 'circle', 'ellipse'    then x =  7;   y = 7;   s = 16
+            when 'draw_drag', 'draw_move'       then x =  7;   y = 7;   s = 16
+            when 'pipette'                      then           y = 32-o; 
+            when 'pan'                          then x = 12;   y = 8;    
+            when 'edit hover'                   then x = 2;    y = 2;    
+            when 'edit'                         then x = 4;    y = 4;    
+            when 'triangle'                     then x = 7;    y = 3;   s = 16
+            when 'triangle_square'              then x = 2;    y = 14;  s = 16
+            when 'line'                         then x = 2;    y = 28
+            when 'bezier_quad'                  then x = 16
+            when 'polygon'                      then x = 4;    y = 2
+            when 'rot top left'                 then x = 32-o; y = 32-o
+            when 'rot top right'                then           y = 32-o
+            when 'rot bot left'                 then x = 32-o
+            when 'rot top'                      then x = 16;   y = 32-o
+            when 'rot left'                     then x = 32-o; y = 16
+            when 'rot right'                    then           y = 16
+            when 'rot bot'                      then x = 16
             else "unhandled tip for  cursor#{name}"
             
         svgFileX1 = path.join path.dirname(svgFile), 'cursor', fileName(svgFile) + " x1.svg"
         svgFileX2 = path.join path.dirname(svgFile), 'cursor', fileName(svgFile) + " x2.svg"
+        
         svg.attr width: s, height:s
         fs.writeFileSync svgFileX1, svg.svg(), encoding: 'utf8'
         svg.attr width: s*2, height:s*2

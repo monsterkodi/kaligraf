@@ -7,7 +7,7 @@
 
 { last, elem, post, pos, log, _ } = require 'kxk'
 
-{ moveBox, boxOffset, normRect, rectsIntersect, rectOffset, boxForItems } = require './utils'
+{ moveBox, scaleBox, boxOffset, normRect, rectsIntersect, rectOffset, boxForItems } = require './utils'
 
 class Selection
 
@@ -278,7 +278,7 @@ class Selection
 
     stageRect: (r) ->
         
-        moveBox @offsetRect(r), boxOffset @stage.svg.viewbox()
+        moveBox scaleBox(@offsetRect(r), 1/@stage.zoom), boxOffset @stage.svg.viewbox()
         
     viewPos: -> r = @element.getBoundingClientRect(); pos r.left, r.top
         

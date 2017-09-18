@@ -101,8 +101,8 @@ module.exports =
         
         box.x      *= scale
         box.y      *= scale
-        box.width  *= scale
-        box.height *= scale
+        if box.width?  then box.width  *= scale
+        if box.height? then box.height *= scale
         
         if box.cx? then box.cx *= scale
         if box.x2? then box.x2 *= scale

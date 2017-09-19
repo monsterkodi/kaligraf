@@ -112,6 +112,13 @@ class Ctrl
             log 'updateDot no svg?', dot
             return
         
+        if dot == 'ctrlr'
+            valid = @object.pointAt(@index()-1)[0] in ['C', 'S']
+            d = valid and 'unset' or 'none'
+            svg.style             display:d
+            @lines[dot].style     display:d
+            @lines[dot+'_'].style display:d
+            
         itemPos = @object.posAt @index(), dot
         
         dotPos = @trans.transform @object.item, itemPos
@@ -132,8 +139,9 @@ class Ctrl
             prevPos = @object.dotPos @index()-1
             @plotLine 'ctrl1', dotPos, prevPos
         else if dot == 'ctrlr'
-            prevPos = @object.dotPos @index()-1
-            @plotLine 'ctrlr', dotPos, prevPos
+            if @object.pointAt(@index()-1)[0] in ['C', 'S']
+                prevPos = @object.dotPos @index()-1
+                @plotLine 'ctrlr', dotPos, prevPos
         else if dot != 'point' # dot in ['ctrl2', 'ctrls', 'ctrlq']
             nextIndex = @index()+1
             nextIndex = 1 if nextIndex >= @object.numPoints()

@@ -159,9 +159,14 @@ class Edit
     
     onConvert: (type) =>
 
-        if not @dotsel.empty()
-            for objectDot in @dotsel.objectDots()
-                objectDot.object.convertDots objectDot.dots, type
+        return if @dotsel.empty()
+            
+        newDots = []
+        for objectDot in @dotsel.objectDots()
+            newDots = newDots.concat objectDot.object.convertDots objectDot.dots, type
+            
+        @dotsel.clear()
+        @dotsel.addDots newDots
         
     # 000  000000000  00000000  00     00
     # 000     000     000       000   000

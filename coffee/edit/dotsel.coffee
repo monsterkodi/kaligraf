@@ -140,7 +140,12 @@ class DotSel
         for object in @edit.objects
             for dot in object.dots()
                 @add dot, true
+
+    addDots: (dots) ->
         
+        for dot in dots
+            @add dot, true
+                
     # 0000000    00000000  000      
     # 000   000  000       000      
     # 000   000  0000000   000      

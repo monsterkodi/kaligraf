@@ -56,7 +56,24 @@ class Menu
             # 00000000  0000000    000     000     
             
             label: 'Edit', submenu: [
-                { label: 'Center',      accelerator: 'command+e',           click: -> action 'center'}
+                { label: 'Convert',     submenu: [
+                    { label: 'Quad',    accelerator: 'command+1',           click: -> post.toWins 'convert', 'Q'}
+                    { label: 'Cubic',   accelerator: 'command+2',           click: -> post.toWins 'convert', 'C'}
+                    { label: 'Smooth',  accelerator: 'command+3',           click: -> post.toWins 'convert', 'S'}
+                    { label: 'Divide',  accelerator: 'command+4',           click: -> post.toWins 'convert', 'D'}
+                ]}
+                { label: 'Align',     submenu: [
+                    { label: 'Left',    accelerator: 'alt+1',               click: -> post.toWins 'align', 'left'}
+                    { label: 'Center',  accelerator: 'alt+2',               click: -> post.toWins 'align', 'center'}
+                    { label: 'Right',   accelerator: 'alt+3',               click: -> post.toWins 'align', 'right'}
+                    { type:  'separator'}
+                    { label: 'Top',     accelerator: 'alt+4',               click: -> post.toWins 'align', 'top'}
+                    { label: 'Middle',  accelerator: 'alt+5',               click: -> post.toWins 'align', 'mid'}
+                    { label: 'Bottom',  accelerator: 'alt+6',               click: -> post.toWins 'align', 'bot'}
+                    { type:  'separator'}
+                    { label: 'Space Horizontal', accelerator: 'alt+7',      click: -> post.toWins 'space', 'horizontal'}
+                    { label: 'Space Vertical',   accelerator: 'alt+8',      click: -> post.toWins 'space', 'vertical'}
+                ]}                
                 { type:  'separator'}
                 { label: 'Group',       accelerator: 'command+g',           click: -> action 'group'}
                 { label: 'Ungroup',     accelerator: 'command+u',           click: -> action 'ungroup'}
@@ -73,23 +90,6 @@ class Menu
                 { label: 'All',         accelerator: 'command+a',           click: -> action 'selectAll'}
                 { label: 'None',        accelerator: 'command+d',           click: -> action 'deselect'}
                 { label: 'Invert',      accelerator: 'command+i',           click: -> action 'invert'}        
-                { label: 'Convert',     submenu: [
-                    { label: 'Smooth',  accelerator: 'command+1',           click: -> post.toWins 'convert', 'S'}
-                    { label: 'Quad',    accelerator: 'command+2',           click: -> post.toWins 'convert', 'Q'}
-                    { label: 'Cubic',   accelerator: 'command+3',           click: -> post.toWins 'convert', 'C'}
-                ]}
-                { label: 'Align',     submenu: [
-                    { label: 'Left',    accelerator: 'alt+1',               click: -> post.toWins 'align', 'left'}
-                    { label: 'Center',  accelerator: 'alt+2',               click: -> post.toWins 'align', 'center'}
-                    { label: 'Right',   accelerator: 'alt+3',               click: -> post.toWins 'align', 'right'}
-                    { type:  'separator'}
-                    { label: 'Top',     accelerator: 'alt+4',               click: -> post.toWins 'align', 'top'}
-                    { label: 'Middle',  accelerator: 'alt+5',               click: -> post.toWins 'align', 'mid'}
-                    { label: 'Bottom',  accelerator: 'alt+6',               click: -> post.toWins 'align', 'bot'}
-                    { type:  'separator'}
-                    { label: 'Space Horizontal', accelerator: 'alt+7',      click: -> post.toWins 'space', 'horizontal'}
-                    { label: 'Space Vertical',   accelerator: 'alt+8',      click: -> post.toWins 'space', 'vertical'}
-                ]}
             ]
         ,
             # 000000000   0000000    0000000   000      
@@ -113,6 +113,7 @@ class Menu
                 { type:  'separator'}
                 { label: 'Grid',        accelerator: 'command+9',           click: -> action 'click', 'grid'}
                 { label: 'Zoom',        accelerator: 'command+0',           click: -> action 'click', 'zoom'}
+                { label: 'Center',      accelerator: 'command+e',           click: -> action 'center'}
             ]
         ,
             # 000   000  000  000   000  0000000     0000000   000   000

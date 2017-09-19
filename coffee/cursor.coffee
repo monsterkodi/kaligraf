@@ -69,8 +69,11 @@ class Cursor
             when 'rot bot'                      then x = 16
             else "unhandled tip for  cursor#{name}"
             
-        svgFileX1 = path.join path.dirname(svgFile), 'cursor', fileName(svgFile) + " x1.svg"
-        svgFileX2 = path.join path.dirname(svgFile), 'cursor', fileName(svgFile) + " x2.svg"
+        cursorDir = path.join path.dirname(svgFile), 'cursor'
+        fs.ensureDirSync cursorDir 
+                
+        svgFileX1 = path.join cursorDir, fileName(svgFile) + " x1.svg"
+        svgFileX2 = path.join cursorDir, fileName(svgFile) + " x2.svg"
         
         if opt?.fill or opt?.stroke
             "url(data:image/svg+xml;base64,#{btoa svg.svg()}) #{x} #{y}, auto"

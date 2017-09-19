@@ -564,29 +564,6 @@ class Stage
     #  000     000   000  000   000  000 0 000
     # 0000000   0000000    0000000   000   000
 
-    @zoomLevels = [
-        0.01, 0.02, 0.05,
-        0.10, 0.15, 0.20, 0.25, 0.33, 0.50, 0.75,
-        1, 1.5, 2, 3, 4, 5, 6, 8,
-        10, 15, 20, 40, 80,
-        100, 150, 200, 400, 800,
-        1000
-    ]
-
-    zoomIn: ->
-
-        for i in [0...Stage.zoomLevels.length]
-            if @zoom < Stage.zoomLevels[i]
-                @setZoom Stage.zoomLevels[i], @stageCenter()
-                return
-
-    zoomOut: ->
-
-        for i in [Stage.zoomLevels.length-1..0]
-            if @zoom > Stage.zoomLevels[i]
-                @setZoom Stage.zoomLevels[i], @stageCenter()
-                return
-
     toolCenter: (zoom) ->
 
         vc = @viewCenter()
@@ -700,8 +677,8 @@ class Stage
         if down
             switch combo
 
-                when 'command+-'        then return @zoomOut()
-                when 'command+='        then return @zoomIn()
+                when 'command+-'        then return @kali.tools.zoom.zoomOut()
+                when 'command+='        then return @kali.tools.zoom.zoomIn()
                 when 'command+0'        then return @resetView()
                 when 'enter', 'return'  then return @shapes.endDrawing()
                     

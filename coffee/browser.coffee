@@ -5,7 +5,7 @@
 # 000   000  000   000  000   000  000   000       000  000       000   000
 # 0000000    000   000   0000000   00     00  0000000   00000000  000   000
 
-{   setStyle, childIndex, stopEvent, keyinfo, drag, elem, fileName,
+{   setStyle, childIndex, stopEvent, keyinfo, drag, elem, fileName, dirExists, 
     first, prefs, resolve, childp, fs, os, path, empty, clamp, pos, log, $, _ } = require 'kxk'
 
 { winTitle } = require './utils'
@@ -32,11 +32,12 @@ class Browser
             
         dirs = prefs.get 'browser:dirs', []
         for dir in dirs
-            buttons.push
-                text:   path.basename dir
-                data:   dir: dir
-                action: @onDirButton
-        
+            if dirExists dir
+                buttons.push
+                    text:   path.basename dir
+                    data:   dir: dir
+                    action: @onDirButton
+            
         @title = winTitle close: @close, class: 'browserTitle', buttons: buttons
         @element.appendChild @title 
         
@@ -192,7 +193,7 @@ class Browser
         @items.appendChild item
         
         item
-                
+                     
     # 00000000   00000000   0000000  000  0000000  00000000    
     # 000   000  000       000       000     000   000         
     # 0000000    0000000   0000000   000    000    0000000     

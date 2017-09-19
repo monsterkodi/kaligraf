@@ -99,52 +99,54 @@ class Object
     moveDotsBy: (dots, delta, event) ->
 
         indexDots = @indexDots dots
+        indexDots = indexDots.map (idts) -> index:idts.index, dots:idts.dots.map (d) -> d.dot
 
         if not event? or not event.ctrlKey
-            # log 'before:', indexDots.map (id) -> "index: #{id.index}" + (id.dots.map (d) -> d.dot).join(',')
             for idots in indexDots
 
                 add = (type, index) =>
-
                     dot  = @ctrls[index].dots[type]
                     idts = indexDots.find (i) -> i.index == index
                     if not idts?
                         idts = index:index, dots:[]
                         indexDots.push idts
+                    if dot.dot not in idts.dots
+                        idts.dots.push dot.dot
 
-                    if dot not in idts.dots
-                        idts.dots.push dot
-
-                if not empty idots.dots.filter((dot) -> dot.dot == 'point')
+                if not empty idots.dots.filter((dot) -> dot == 'point')
 
                     switch @pointCode idots.index
 
+                        when 'C' then add 'ctrl2', idots.index
                         when 'S' then add 'ctrls', idots.index
                         when 'Q' then add 'ctrlq', idots.index
-                        when 'C' then add 'ctrl2', idots.index
-
-                    if idots.index < @numPoints()-1
-                        nextIndex = idots.index+1
-                    else
-                        nextIndex = 1
-
+                        
+                    nextIndex = idots.index+1
+                    nextIndex = 1 if nextIndex >= @numPoints()
+                        
                     switch @pointCode nextIndex
-                        when 'Q' then add 'ctrlq', nextIndex
+                        
                         when 'C' then add 'ctrl1', nextIndex
-
-
+                        when 'Q' then add 'ctrlq', nextIndex
+                        
         for idots in indexDots
-            if idots.dots.length > 1
-                idots.dots = idots.dots.filter (dot) -> dot.dot != 'ctrlr'
-
-        # log 'after:', indexDots.map (id) -> "index: #{id.index}" + (id.dots.map (d) -> d.dot).join ','
+            if 'ctrlr' in idots.dots
+                prevIndex = idots.index-1
+                prevIndex = @numPoints()-1 if prevIndex == 0
+                idts = indexDots.find (i) -> i.index == prevIndex
+                if idts 
+                    ctrls = ['point', 'ctrls', 'ctrlq', 'ctrl2']
+                    if not empty _.intersection(ctrls, idts.dots)
+                        idots.dots = idots.dots.filter (d) -> d != 'ctrlr'
+                        idts.dots.push('point') if 'point' not in idts.dots
+                        break
 
         for idots in indexDots
 
             for dot in idots.dots
-                oldPos = @dotPos idots.index, dot.dot
+                oldPos = @dotPos idots.index, dot
                 newPos = oldPos.plus delta
-                @movePoint idots.index, newPos, dot.dot
+                @movePoint idots.index, newPos, dot
 
         @plot()
 
@@ -380,9 +382,17 @@ class Object
                     point[4] = itemPos.y
 
                 when 'ctrlr'
-                    ppos = @dotPos index
-                    refl = ppos.minus ppos.to stagePos
-                    @movePoint index, refl, 'ctrls'
+                    prevIndex = index-1
+                    prevIndex = @numPoints()-1 if prevIndex == 0
+                    prevp = @posAt prevIndex 
+                    refl = prevp.minus prevp.to stagePos
+                    prevCtrl = switch @pointAt(prevIndex)[0]
+                        when 'C' then 'ctrl2'
+                        when 'S' then 'ctrls'
+                        when 'Q' then 'ctrlq'
+                    if prevCtrl
+                        @movePoint prevIndex, refl, prevCtrl
+                    return
 
         @updateCtrlDots index, point
 
@@ -514,24 +524,23 @@ class Object
 
     dotPos: (index, dot='point') ->
 
-        index = @numPoints() + index if index < 0
-
-        if d = @ctrls[index]?.dots[dot]
+        if d = @ctrlAt(index)?.dots[dot]
             pos d.cx(), d.cy()
         else
             log "no dot #{dot} at index #{index}?"
 
     points: -> @item.array().valueOf()
     numPoints: -> @points().length
-    pointAt: (index) -> @points()[index]
+    pointAt: (index) -> @points()[@index index]
+    ctrlAt: (index) -> @ctrls[@index index]
     
+    index: (index) -> (@numPoints() + index) % @numPoints()
+        
     posAt: (index, dot='point') -> 
         
-        index = @numPoints() + index if index < 0
+        index = @index index
         
         p = @pointAt index
-        
-        # log "posAt #{index}", p
         
         switch dot
             when 'point'

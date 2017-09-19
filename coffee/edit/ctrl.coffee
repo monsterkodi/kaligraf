@@ -50,8 +50,8 @@ class Ctrl
         
         switch point[0]
             when 'S' 
-                @createDot 'ctrls'
                 @createDot 'ctrlr'
+                @createDot 'ctrls'
             when 'C'
                 @createDot 'ctrl1'
                 @createDot 'ctrl2'
@@ -64,8 +64,8 @@ class Ctrl
         
         switch point[0]
             when 'S' 
-                @updateDot 'ctrls', point
                 @updateDot 'ctrlr', point
+                @updateDot 'ctrls', point
             when 'C'
                 @updateDot 'ctrl1', point
                 @updateDot 'ctrl2', point
@@ -112,39 +112,36 @@ class Ctrl
             log 'updateDot no svg?', dot
             return
         
-        itemPos = switch dot
-            when 'ctrl1', 'ctrlq', 'ctrls' then pos point[1], point[2]
-            when 'ctrl2'                   then pos point[3], point[4]
-            when 'ctrlr'          
-                pp = pos point[point.length-2], point[point.length-1]
-                cp = pos point[1], point[2]
-                pp.minus pp.to cp 
-            when 'point'
-                if _.isString point[0]
-                    pos point[point.length-2], point[point.length-1]
-                else
-                    pos point[0], point[1]
-            else
-                log 'dafuk?'
+        itemPos = @object.posAt @index(), dot
         
         dotPos = @trans.transform @object.item, itemPos
-        
-        # log "updateDot #{dot}", svg.type, svg.cx(), svg.cy(), dotPos
         
         svg.cx dotPos.x
         svg.cy dotPos.y
 
-        pointPos = @trans.transform @object.item, pos point[point.length-2], point[point.length-1]
+        pointPos = @trans.transform @object.item, @object.posAt @index()
         
-        if dot in ['ctrl2', 'ctrls', 'ctrlr', 'ctrlq']
+        if dot in ['ctrl2', 'ctrls', 'ctrlq']
             @plotLine dot, dotPos, pointPos
             
+        if dot == 'ctrlq'
+            prevPos = @object.dotPos @index()-1
+            @plotLine 'ctrlq2', dotPos, prevPos
+            
         if dot == 'ctrl1'
-            prevPoint = @object.dotPos @index()-1
-            @plotLine 'ctrl1', dotPos, prevPoint
-        else if dot == 'ctrlq'
-            prevPoint = @object.dotPos @index()-1
-            @plotLine 'ctrlq2', dotPos, prevPoint
+            prevPos = @object.dotPos @index()-1
+            @plotLine 'ctrl1', dotPos, prevPos
+        else if dot == 'ctrlr'
+            prevPos = @object.dotPos @index()-1
+            @plotLine 'ctrlr', dotPos, prevPos
+        else if dot != 'point' # dot in ['ctrl2', 'ctrls', 'ctrlq']
+            nextIndex = @index()+1
+            nextIndex = 1 if nextIndex >= @object.numPoints()
+            nextPoint = @object.pointAt nextIndex
+            if nextPoint[0] == 'S'
+                if nextIndex < @object.ctrls.length
+                    nextCtrl = @object.ctrlAt nextIndex
+                    nextCtrl.updateDot 'ctrlr', nextPoint
             
     # 000      000  000   000  00000000
     # 000      000  0000  000  000

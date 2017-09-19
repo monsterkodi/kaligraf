@@ -191,12 +191,12 @@ class Stage
 
     onDblClick: (event) =>
         
-        item = @itemAtPos pos event
+        item = @leafItemAtPos pos event
         if not item?
             post.toMain 'maximizeWindow'
         else
             if item.type == 'text'
-                @kali.tools.activateTool 'text'
+                # @kali.tools.activateTool 'text'
                 @shapes.editTextItem item
             else if item.type in ['polygon', 'polyline', 'line', 'path']
                 @selection.clear()

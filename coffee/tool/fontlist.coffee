@@ -24,7 +24,6 @@ fontGroups =
         'Avenir'
         'Avenir Next'
         'Avenir Next Condensed'
-        'Bodoni 72'        
         'Cousine'
         'Futura'
         'Geneva'
@@ -47,9 +46,9 @@ fontGroups =
         'Apple Braille'   
         'AppleMyungjo'    
         'Baskerville'
-        'Big Caslon'        
+        'Big Caslon'
+        'Bodoni 72'        
         'Cochin'
-        'Copperplate'        
         'Didot'
         'Georgia'
         'Hoefler Text'        
@@ -62,7 +61,6 @@ fontGroups =
         'Times New Roman'
     ]
     Mono: [
-        'American Typewriter'
         'Andale Mono'
         'Courier'
         'Courier New'
@@ -82,6 +80,7 @@ fontGroups =
         'Source Code Pro'
     ]
     Fancy: [
+        'American Typewriter'                
         'Apple Chancery'
         'Baoli SC'
         'Bradley Hand'
@@ -89,6 +88,7 @@ fontGroups =
         'Chalkboard'
         'Chalkduster'
         'Comic Sans MS'
+        'Copperplate'        
         'Hannotate TC'
         'HanziPen TC'
         'Herculanum'

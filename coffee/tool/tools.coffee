@@ -110,6 +110,7 @@ class Tools extends Tool
                 { name: 'zoom',  class: 'zoom', action: 'zoom_reset',  combo: 'command+0' }
                 { name: 'grid',  class: 'grid', action: 'grid_toggle', combo: 'command+9' }
                 { name: 'width', class: 'line' }
+                { name: 'align', class: 'align' }
                 { name: 'font',  class: 'font' }
             ]            
             [

@@ -78,6 +78,18 @@ class Menu
                     { label: 'Quad',    accelerator: 'command+2',           click: -> post.toWins 'convert', 'Q'}
                     { label: 'Cubic',   accelerator: 'command+3',           click: -> post.toWins 'convert', 'C'}
                 ]}
+                { label: 'Align',     submenu: [
+                    { label: 'Left',    accelerator: 'alt+1',               click: -> post.toWins 'align', 'left'}
+                    { label: 'Center',  accelerator: 'alt+2',               click: -> post.toWins 'align', 'center'}
+                    { label: 'Right',   accelerator: 'alt+3',               click: -> post.toWins 'align', 'right'}
+                    { type:  'separator'}
+                    { label: 'Top',     accelerator: 'alt+4',               click: -> post.toWins 'align', 'top'}
+                    { label: 'Middle',  accelerator: 'alt+5',               click: -> post.toWins 'align', 'mid'}
+                    { label: 'Bottom',  accelerator: 'alt+6',               click: -> post.toWins 'align', 'bot'}
+                    { type:  'separator'}
+                    { label: 'Space Horizontal', accelerator: 'alt+7',      click: -> post.toWins 'space', 'horizontal'}
+                    { label: 'Space Vertical',   accelerator: 'alt+8',      click: -> post.toWins 'space', 'vertical'}
+                ]}
             ]
         ,
             # 000000000   0000000    0000000   000      

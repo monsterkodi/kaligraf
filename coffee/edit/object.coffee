@@ -161,27 +161,57 @@ class Object
         indexDots = @indexDots dots
             
         for idots in indexDots
+            
             index = idots.index
             point = points[index]
             
+            continue if index == 0
+            
+            thisp = @dotPos index
+            prevp = @dotPos index-1
+            
             switch type
+                
                 when 'C' 
+                    
                     switch point[0]
                         when 'C' then continue
-                        when 'Q', 'S' then point.splice 3, 0, [point[1], point[2]]
-                        when 'M', 'L' then point.splice 3, 0, [point[1], point[2], point[1], point[2]]
+                        when 'Q', 'S' 
+                            ctrl = pos point[1], point[2]
+                            mid1 = prevp.plus (prevp.to ctrl).scale 0.666
+                            mid2 = thisp.plus (thisp.to ctrl).scale 0.666
+                            point.splice 1, 2, mid1.x, mid1.y, mid2.x, mid2.y
+                        when 'M', 'L' 
+                            mid1 = prevp.plus (prevp.to thisp).scale 0.333
+                            mid2 = prevp.plus (prevp.to thisp).scale 0.666
+                            point.splice 1, 0, mid1.x, mid1.y, mid2.x, mid2.y
+                            
                     point[0] = 'C'
+                    
                 when 'Q'
+                    
                     switch point[0]
                         when 'Q' then continue
-                        when 'C' then point.splice 3, 2
-                        when 'M', 'L' then point.splice 3, 0, [point[1], point[2]]
+                        when 'C' 
+                            midp = @dotPos(index, 'ctrl1').mid @dotPos(index, 'ctrl2')
+                            point.splice 1, 4, midp.x, midp.y
+                        when 'M', 'L' 
+                            midp = prevp.mid thisp 
+                            point.splice 1, 0, midp.x, midp.y
+                            
                     point[0] = 'Q'
+                    
                 when 'S'
+                    
                     switch point[0]
                         when 'S' then continue
-                        when 'C' then point.splice 3, 2
-                        when 'M', 'L' then point.splice 3, 0, [point[1], point[2]]
+                        when 'C' 
+                            midp = @dotPos(index, 'ctrl1').mid @dotPos(index, 'ctrl2')
+                            point.splice 1, 4, midp.x, midp.y
+                        when 'M', 'L' 
+                            midp = prevp.mid thisp 
+                            point.splice 1, 0, midp.x, midp.y
+                            
                     point[0] = 'S'
                     
             @initCtrlDots   index, point

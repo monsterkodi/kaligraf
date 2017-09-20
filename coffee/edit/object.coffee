@@ -50,7 +50,6 @@ class Object
         points = @points()
 
         for i in [0...points.length]
-
             @initCtrlDots   i, points[i]
             @updateCtrlDots i, points[i]
 
@@ -102,6 +101,7 @@ class Object
         indexDots = indexDots.map (idts) -> index:idts.index, dots:idts.dots.map (d) -> d.dot
 
         if not event? or not event.ctrlKey
+            
             for idots in indexDots
 
                 add = (type, index) =>
@@ -132,9 +132,8 @@ class Object
         for idots in indexDots
             if 'ctrlr' in idots.dots
                 prevIndex = idots.index-1
-                prevIndex = @numPoints()-1 if prevIndex == 0
-                idts = indexDots.find (i) -> i.index == prevIndex
-                if idts 
+                prevIndex = @numPoints()-1 if prevIndex == 0                
+                if idts = indexDots.find((i) -> i.index == prevIndex)
                     ctrls = ['point', 'ctrls', 'ctrlq', 'ctrl2']
                     if not empty _.intersection(ctrls, idts.dots)
                         idots.dots = idots.dots.filter (d) -> d != 'ctrlr'
@@ -144,7 +143,7 @@ class Object
         for idots in indexDots
 
             for dot in idots.dots
-                oldPos = @dotPos idots.index, dot
+                oldPos = @posAt idots.index, dot
                 newPos = oldPos.plus delta
                 @movePoint idots.index, newPos, dot
 
@@ -338,10 +337,12 @@ class Object
     # 000   000   0000000       0      00000000  000         0000000   000  000   000     000
 
 
-    movePoint: (index, stagePos, dots=['point']) ->
+    movePoint: (index, itemPos, dots=['point']) ->
 
-        itemPos = @trans.inverse @item, stagePos
-
+        transmat = @item.transform().matrix
+        transmat = transmat.translate -@item.transform().x, -@item.transform().y
+        itemPos  = pos new SVG.Point(itemPos.x, itemPos.y).transform(transmat.inverse())
+        
         points = @points()
         point  = points[index]
 
@@ -385,7 +386,7 @@ class Object
                     prevIndex = index-1
                     prevIndex = @numPoints()-1 if prevIndex == 0
                     prevp = @posAt prevIndex 
-                    refl = prevp.minus prevp.to stagePos
+                    refl = prevp.minus prevp.to itemPos
                     prevCtrl = switch @pointAt(prevIndex)[0]
                         when 'C' then 'ctrl2'
                         when 'S' then 'ctrls'

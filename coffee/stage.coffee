@@ -56,8 +56,8 @@ class Stage
         
         @setColor prefs.get 'stage:color', 'rgba(32, 32, 32, 1)'
 
-    do:   -> @undo.start @
-    done: -> @undo.stop  @
+    do:   (action) -> @undo.start @, action
+    done:          -> @undo.end   @
         
     onStage: (action, color, alpha) =>
 
@@ -186,7 +186,7 @@ class Stage
             
     moveItems: (items, delta) ->
 
-        @do()
+        @do 'move' + (items.map (item) -> item.id()).join ''
         for item in items
             @moveItem item, delta
         @done()
@@ -286,7 +286,7 @@ class Stage
     
     setSVG: (svg) ->
         
-        @clear()
+        @clear @currentFile
         @addSVG svg, select:false
     
     addSVG: (svg, opt) ->
@@ -356,6 +356,8 @@ class Stage
     
     load: (file=@currentFile) ->
 
+        @currentFile = file
+        
         try
             svg = fs.readFileSync resolve(file), encoding: 'utf8'
         catch e

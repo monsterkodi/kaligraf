@@ -18,8 +18,9 @@ class Resizer
     constructor: (@kali) ->
 
         @trans = @kali.trans
+        @stage = @kali.stage
         
-        @selection = @kali.stage.selection
+        @selection = @stage.selection
         @element = elem 'div', id: 'resizer'
         @kali.insertBelowTools @element
 
@@ -27,7 +28,7 @@ class Resizer
         @svg.addClass 'resizerSVG'
         @svg.clear()
 
-        @svg.node.addEventListener 'wheel', (event) => @kali.stage.onWheel event
+        @svg.node.addEventListener 'wheel', (event) => @stage.onWheel event
 
         @box  = null
         @rect = null
@@ -39,8 +40,8 @@ class Resizer
         post.on 'stage',     @onStage
         post.on 'selection', @onSelection
 
-    do:   -> @stage.undo.start @
-    done: -> @stage.undo.end   @
+    do: (action) -> @stage.undo.start @, action
+    done:        -> @stage.undo.end   @
         
     # 00000000    0000000   000000000   0000000   000000000  000   0000000   000   000  
     # 000   000  000   000     000     000   000     000     000  000   000  0000  000  
@@ -50,15 +51,15 @@ class Resizer
     
     onRotation: (drag, event) =>
         
-        @do()
+        @do 'rotate'
         
         if Math.abs(drag.delta.x) > Math.abs(drag.delta.y)
             d = drag.delta.x
         else
             d = drag.delta.y
 
-        sp = @kali.stage.stageForEvent drag.lastPos
-        ep = @kali.stage.stageForEvent drag.pos
+        sp = @stage.stageForEvent drag.lastPos
+        ep = @stage.stageForEvent drag.pos
         v1 = sp.minus @rotationCenter 
         v2 = ep.minus @rotationCenter
         angle = v1.rotation v2
@@ -87,7 +88,7 @@ class Resizer
 
     onResize: (drag, event) =>
 
-        @do()
+        @do 'resize'
         
         dx = drag.delta.x
         dy = drag.delta.y
@@ -272,7 +273,7 @@ class Resizer
         @onStart()
             
         if event?.shiftKey
-            @kali.stage.shapes.handleMouseDown event
+            @stage.shapes.handleMouseDown event
             return 'skip'
 
     onDragStop: =>
@@ -354,8 +355,8 @@ class Resizer
     updateBox: ->
         
         box = @selection.bbox()
-        moveBox  box, boxOffset(@kali.stage.svg.viewbox()).scale -1
-        scaleBox box, @kali.stage.zoom
+        moveBox  box, boxOffset(@stage.svg.viewbox()).scale -1
+        scaleBox box, @stage.zoom
         moveBox  box, boxOffset @viewPos()
         @setBox  box
 
@@ -373,8 +374,8 @@ class Resizer
             
         @sbox = new SVG.RBox @box # in view coordinates
 
-        zoomBox @sbox, @kali.stage.zoom
-        moveBox @sbox, boxOffset @kali.stage.svg.viewbox()
+        zoomBox @sbox, @stage.zoom
+        moveBox @sbox, boxOffset @stage.svg.viewbox()
         
     # 000   000  000  00000000  000   000
     # 000   000  000  000       000 0 000

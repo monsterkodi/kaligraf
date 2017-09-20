@@ -46,8 +46,8 @@ class Edit
         post.on 'stage',   @onStage
         post.on 'convert', @onConvert
 
-    do:   -> @stage.undo.start @
-    done: -> @stage.undo.stop @
+    do: (action) -> @stage.undo.start @, action
+    done:        -> @stage.undo.end   @
         
     # 0000000    00000000  00000000   0000000  
     # 000   000  000       000       000       

@@ -22,8 +22,8 @@ class Object
 
         if item? then @setItem item
 
-    do:   -> @stage.undo.start @
-    done: -> @stage.undo.stop @
+    do:   (action) -> @stage.undo.start @, action
+    done:          -> @stage.undo.end   @
         
     # 0000000    00000000  000
     # 000   000  000       000
@@ -100,7 +100,7 @@ class Object
 
     moveDotsBy: (dots, delta, event) ->
 
-        @do()
+        @do 'move dots'
                 
         indexDots = @indexDots dots
 

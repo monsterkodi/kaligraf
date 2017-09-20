@@ -17,20 +17,107 @@ class Undo
         
         @history = []
         @futures = []
+
+    #  0000000  000000000   0000000   00000000   000000000  
+    # 000          000     000   000  000   000     000     
+    # 0000000      000     000000000  0000000       000     
+    #      000     000     000   000  000   000     000     
+    # 0000000      000     000   000  000   000     000     
+    
+    start: (object, action) ->
         
+        @futures = []
+        
+        state = @state 'start', object
+        state.action = action
+        prev = last @history
+        
+        if @sameState(state, prev) and prev.type != 'start'
+            prev.type = 'startend'
+        else   
+            if action? and prev? and action == prev.action and prev.type != 'start'
+                log 'start splice'
+                state.type = 'startend'
+                @history.splice @history.length-1, 1, state
+            @history.push state
+            
+        @log 'START'
+            
+    # 00000000  000   000  0000000    
+    # 000       0000  000  000   000  
+    # 0000000   000 0 000  000   000  
+    # 000       000  0000  000   000  
+    # 00000000  000   000  0000000    
+    
+    end: (object) ->
+
+        prev   = last @history
+        state  = @state 'end', object
+        state.action = prev.action
+        if prev.action? and prev.type != 'start'
+            log 'end splice'
+            state.type = 'startend'
+            @history.splice @history.length-1, 1, state
+        else   
+            @history.push state
+            
+        @log 'END'
+            
+    #  0000000  000000000   0000000   000000000  00000000  
+    # 000          000     000   000     000     000       
+    # 0000000      000     000000000     000     0000000   
+    #      000     000     000   000     000     000       
+    # 0000000      000     000   000     000     00000000  
+    
+    state: (type, object) ->
+
+        state =
+            type:   type
+            class:  object.constructor.name
+        
+        if object instanceof Object
+            
+            state.id     = object.item.id()
+            state.points = object.points()
+            
+        else
+            
+            state.svg = @stage.getSVG()
+            
+        state
+
+    sameState: (a,b) ->
+        
+        same = a? and b? and a.id == b.id and a.action == b.action
+        same and _.isEqual a.points, b.points
+        
+    # 000   000  000   000  0000000     0000000   
+    # 000   000  0000  000  000   000  000   000  
+    # 000   000  000 0 000  000   000  000   000  
+    # 000   000  000  0000  000   000  000   000  
+    #  0000000   000   000  0000000     0000000   
+    
     undo: -> 
         
         return if empty @history
         
         @futures.unshift @history.pop()
         
-        while last(@history)?.type == 'stop'
+        while last(@history)? and last(@history).type != 'start'
             @futures.unshift @history.pop()
             
         @apply last @history
         
-        @dump() if empty @history
+        # @dump() if empty @history
         
+        @log 'UNDO'
+        
+    # 00000000   00000000  0000000     0000000   
+    # 000   000  000       000   000  000   000  
+    # 0000000    0000000   000   000  000   000  
+    # 000   000  000       000   000  000   000  
+    # 000   000  00000000  0000000     0000000   
+    
     redo: -> 
         
         return if empty @futures
@@ -42,7 +129,15 @@ class Undo
             
         @apply last @history
         
-        @dump() if empty @futures
+        # @dump() if empty @futures
+        
+        @log 'REDO'
+    
+    #  0000000   00000000   00000000   000      000   000  
+    # 000   000  000   000  000   000  000       000 000   
+    # 000000000  00000000   00000000   000        00000    
+    # 000   000  000        000        000         000     
+    # 000   000  000        000        0000000     000     
     
     apply: (state) ->
         
@@ -57,6 +152,12 @@ class Undo
             
             @stage.setSVG state.svg
 
+    # 0000000    000   000  00     00  00000000   
+    # 000   000  000   000  000   000  000   000  
+    # 000   000  000   000  000000000  00000000   
+    # 000   000  000   000  000 0 000  000        
+    # 0000000     0000000   000   000  000        
+    
     dump: ->
         
         log @history
@@ -66,41 +167,10 @@ class Undo
         svg += str(@futures.filter (h) -> h.class != 'Object')
         
         fs.writeFile resolve('~/Desktop/history.html'), svg, ->
-            
-    start: (object) ->
         
-        @futures = []
-        
-        state = @state 'start', object
             
-        if @sameState state, last @history
-            last(@history).type = 'startstop'
-        else   
-            @history.push state
-            
-    stop: (object) ->
-
-        @history.push @state 'stop', object
-            
-    state: (type, object) ->
-
-        state =
-            type:   type
-            class:  object.constructor.name
-        
-        if object instanceof Object
-            
-            state.id =     object.item.id()
-            state.points = object.points()
-            
-        else
-            
-            state.svg = @stage.getSVG()
-            
-        state
-                        
-    sameState: (a,b) ->
-        
-        a? and b? and a.id == b.id and _.isEqual a.points, b.points
+    log: (msg) ->
+        # log msg
+        # log @history.map((i) -> i.action + ' ' + i.type).join '\n'
         
 module.exports = Undo

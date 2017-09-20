@@ -39,6 +39,9 @@ class Resizer
         post.on 'stage',     @onStage
         post.on 'selection', @onSelection
 
+    do:   -> @stage.undo.start @
+    done: -> @stage.undo.end   @
+        
     # 00000000    0000000   000000000   0000000   000000000  000   0000000   000   000  
     # 000   000  000   000     000     000   000     000     000  000   000  0000  000  
     # 0000000    000   000     000     000000000     000     000  000   000  000 0 000  
@@ -46,6 +49,8 @@ class Resizer
     # 000   000   0000000      000     000   000     000     000   0000000   000   000  
     
     onRotation: (drag, event) =>
+        
+        @do()
         
         if Math.abs(drag.delta.x) > Math.abs(drag.delta.y)
             d = drag.delta.x
@@ -71,6 +76,8 @@ class Resizer
         
         p = boxPos @rect.bbox(), opposide @rotationCorner
         @gg.transform rotation:@gg.transform('rotation')+angle, cx:p.x, cy:p.y
+        
+        @done()
     
     # 00000000   00000000   0000000  000  0000000  00000000  
     # 000   000  000       000       000     000   000       
@@ -80,6 +87,8 @@ class Resizer
 
     onResize: (drag, event) =>
 
+        @do()
+        
         dx = drag.delta.x
         dy = drag.delta.y
         
@@ -123,6 +132,7 @@ class Resizer
             
         @selection.updateItems()
         @calcBox()
+        @done()
         
     # 00000000   00000000   0000000  000000000
     # 000   000  000       000          000

@@ -11,13 +11,13 @@
 
 class Exporter
 
-    #  0000000   0000000   000   000  00000000  
-    # 000       000   000  000   000  000       
-    # 0000000   000000000   000 000   0000000   
-    #      000  000   000     000     000       
-    # 0000000   000   000      0      00000000  
+    #  0000000  000   000   0000000   
+    # 000       000   000  000        
+    # 0000000    000 000   000  0000  
+    #      000     000     000   000  
+    # 0000000       0       0000000   
     
-    @save: (svg, opt) ->
+    @svg: (svg, opt) ->
         
         bb = svg.bbox()
         growBox bb
@@ -31,7 +31,7 @@ class Exporter
             """
 
         rgba = "#{opt.color.r}, #{opt.color.g}, #{opt.color.b}, #{opt.alpha}"
-        # log "rgba #{rgba}"
+
         svgStr += "\nstyle=\"stroke-linecap: round; stroke-linejoin: round; background: rgba(#{rgba});\""
         svgStr += "\nviewBox=\"#{bb.x} #{bb.y} #{bb.width} #{bb.height}\">"
         
@@ -42,9 +42,17 @@ class Exporter
             svgStr += item.svg()
             
         svgStr += '</svg>'
+
+    #  0000000   0000000   000   000  00000000  
+    # 000       000   000  000   000  000       
+    # 0000000   000000000   000 000   0000000   
+    #      000  000   000     000     000       
+    # 0000000   000   000      0      00000000  
         
-        fs.writeFileSync resolve(opt.file), svgStr
+    @save: (svg, opt) ->
         
+        fs.writeFileSync resolve(opt.file), Exporter.svg svg, opt
+       
     #  0000000  000      00000000   0000000   000   000  
     # 000       000      000       000   000  0000  000  
     # 000       000      0000000   000000000  000 0 000  

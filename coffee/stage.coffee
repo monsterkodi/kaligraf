@@ -17,6 +17,7 @@ dialog    = electron.remote.dialog
 
 SVG       = require 'svg.js'
 clr       = require 'svg.colorat.js'
+Undo      = require './edit/undo'
 Shapes    = require './edit/shapes'
 Selection = require './selection'
 Resizer   = require './resizer'
@@ -39,6 +40,7 @@ class Stage
         @selection = new Selection @kali
         @resizer   = new Resizer   @kali
         @shapes    = new Shapes    @kali
+        @undo      = new Undo      @kali
 
         @kali.element.addEventListener 'wheel', @onWheel
         @element.addEventListener 'mousemove', @onMove
@@ -54,6 +56,9 @@ class Stage
         
         @setColor prefs.get 'stage:color', 'rgba(32, 32, 32, 1)'
 
+    do:   -> @undo.start @
+    done: -> @undo.stop  @
+        
     onStage: (action, color, alpha) =>
 
         switch action
@@ -181,8 +186,10 @@ class Stage
             
     moveItems: (items, delta) ->
 
+        @do()
         for item in items
             @moveItem item, delta
+        @done()
 
     moveItem: (item, delta) ->
 
@@ -275,6 +282,13 @@ class Stage
     #      000     000     000   000
     # 0000000       0       0000000
 
+    getSVG: -> Exporter.svg @svg, color:@color, alpha:@alpha
+    
+    setSVG: (svg) ->
+        
+        @clear()
+        @addSVG svg, select:false
+    
     addSVG: (svg, opt) ->
 
         e = elem 'div'
@@ -309,7 +323,7 @@ class Stage
                             
                     return
 
-    getSVG: (items, bb, color) ->
+    itemSVG: (items, bb, color) ->
 
         svgStr = """
             <svg width="100%" height="100%"
@@ -348,9 +362,8 @@ class Stage
             log "error:", e
             return
 
-        @clear file
-        @addSVG svg, select:false
-        
+        @setSVG svg
+            
         @pushRecent file
         @kali.closeBrowser()
         
@@ -419,7 +432,7 @@ class Stage
         bb = bboxForItems items
         growBox bb
 
-        svg = @getSVG items, bb
+        svg = @itemSVG items, bb
         clipboard.writeText svg
 
         for item in selected

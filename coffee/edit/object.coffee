@@ -22,6 +22,9 @@ class Object
 
         if item? then @setItem item
 
+    do:   -> @stage.undo.start @
+    done: -> @stage.undo.stop @
+        
     # 0000000    00000000  000
     # 000   000  000       000
     # 000   000  0000000   000
@@ -97,8 +100,9 @@ class Object
 
     moveDotsBy: (dots, delta, event) ->
 
+        @do()
+                
         indexDots = @indexDots dots
-        indexDots = indexDots.map (idts) -> index:idts.index, dots:idts.dots.map (d) -> d.dot
 
         if not event? or not event.ctrlKey
             
@@ -151,7 +155,7 @@ class Object
                 @movePoint idots.index, newPos, dot
 
         @plot()
-
+        @done()
         
     # 0000000    000  000   000  000  0000000    00000000  
     # 000   000  000  000   000  000  000   000  000       
@@ -160,6 +164,8 @@ class Object
     # 0000000    000      0      000  0000000    00000000  
     
     divide: (dots) ->
+        
+        @do()
         
         newDots = []
         
@@ -172,8 +178,6 @@ class Object
             index = idots.index
             point = points[index]
 
-            log "divide #{index}"
-            
             continue if index == 0
 
             thisp = @posAt index
@@ -242,6 +246,7 @@ class Object
             newDots = newDots.concat _.values @ctrls[index+1].dots
                     
         @plot()
+        @done()
         newDots        
 
     #  0000000   0000000   000   000  000   000  00000000  00000000   000000000
@@ -252,6 +257,8 @@ class Object
 
     convertDots: (dots, type) ->
 
+        @do()
+        
         if type == 'D' then return @divide dots      
         
         newDots = []
@@ -331,6 +338,7 @@ class Object
             newDots = newDots.concat _.values @ctrls[index].dots
 
         @plot()
+        @done()
         newDots
 
     # 00     00   0000000   000   000  00000000  00000000    0000000   000  000   000  000000000
@@ -398,7 +406,7 @@ class Object
 
         if point[0] in ['Q', 'M', 'L', 'C'] and index < @numPoints()-1
             @updateCtrlDots index+1, @pointAt index+1
-
+            
     #  0000000   0000000    0000000    00000000    0000000   000  000   000  000000000
     # 000   000  000   000  000   000  000   000  000   000  000  0000  000     000
     # 000000000  000   000  000   000  00000000   000   000  000  000 0 000     000
@@ -422,7 +430,7 @@ class Object
 
         @initCtrlDots   index, point
         @updateCtrlDots index, point
-
+        
     # 0000000    00000000  000      00000000    0000000   000  000   000  000000000
     # 000   000  000       000      000   000  000   000  000  0000  000     000
     # 000   000  0000000   000      00000000   000   000  000  000 0 000     000
@@ -442,7 +450,7 @@ class Object
             @plot()
             @updateCtrlDots index,   @pointAt index   if index < @numPoints()
             @updateCtrlDots index+1, @pointAt index+1 if index < @numPoints()-1
-
+            
     # 0000000    00000000  000      0000000     0000000   000000000
     # 000   000  000       000      000   000  000   000     000
     # 000   000  0000000   000      000   000  000   000     000
@@ -451,12 +459,7 @@ class Object
 
     delDots: (dots) ->
 
-        indexDots = @indexDots(dots).map (idots) -> index:idots.index, dots:idots.dots.map (dot) -> dot.dot
-
-        for indots in indexDots
-            log indots.index, indots.dots
-
-        for indots in indexDots
+        for indots in @indexDots dots
             @delIndexDots indots.index, indots.dots
 
     delIndexDots: (index, dots) ->
@@ -519,7 +522,7 @@ class Object
         for index in [@numPoints()-1..0]
             idots = dots.filter (dot) -> dot.ctrl?.index() == index
             if not empty idots
-                indexDots.push index:index, dots:idots
+                indexDots.push index:index, dots:idots.map (dot) -> dot.dot
         indexDots
 
     dotPos: (index, dot='point') ->

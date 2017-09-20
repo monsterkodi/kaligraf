@@ -44,6 +44,8 @@ class Tools extends Tool
             when 'cut'        then @stage.cut()
             when 'copy'       then @stage.copy()
             when 'paste'      then @stage.paste()
+            when 'undo'       then @stage.undo.undo()
+            when 'redo'       then @stage.undo.redo()
             when 'save'       then @stage.save()
             when 'saveAs'     then @stage.saveAs()
             when 'load'       then @stage.load()
@@ -60,6 +62,7 @@ class Tools extends Tool
             when 'center'     then @stage.centerSelection()
             when 'swapColor'  then @stroke.swapColor()
             when 'grid_toggle' then @grid.toggleGrid()
+            else log "unhandled tool action #{action} #{name}"
         
     # 000  000   000  000  000000000  
     # 000  0000  000  000     000     
@@ -251,7 +254,7 @@ class Tools extends Tool
         if name == 'text'
             @selection.clear()
         else
-            if name != 'edit'
+            if name not in ['edit', 'pan', 'loupe']
                 @shapes.stopEdit()
             @shapes.clearText()
         

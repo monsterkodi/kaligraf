@@ -17,8 +17,8 @@ class Edit
 
     constructor: (@kali, @passive) ->
 
-        @stage   = @kali.stage
-        @trans   = @kali.trans
+        @stage = @kali.stage
+        @trans = @kali.trans
         
         @element = elem 'div', id: 'edit'
         @element.classList.add 'passive' if @passive
@@ -45,6 +45,9 @@ class Edit
         
         post.on 'stage',   @onStage
         post.on 'convert', @onConvert
+
+    do:   -> @stage.undo.start @
+    done: -> @stage.undo.stop @
         
     # 0000000    00000000  00000000   0000000  
     # 000   000  000       000       000       
@@ -137,19 +140,24 @@ class Edit
     delete: ->
         
         if not @dotsel.empty()
+            
+            @do()
             for objectDot in @dotsel.objectDots()
                 objectDot.object.delDots objectDot.dots
             @dotsel.clear()
-            return
+            @done()
         
-        if not @empty()
+        else if not @empty()
+            
+            @do()
             for object in @objects
                 if object.item.parent()?.removeElement?
                     object.item.remove()
                 else
                     object.item.clear()
                     object.item.node.remove()
-        @clear()
+            @clear()
+            @done()
     
     #  0000000   0000000   000   000  000   000  00000000  00000000   000000000  
     # 000       000   000  0000  000  000   000  000       000   000     000     

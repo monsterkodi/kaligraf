@@ -138,13 +138,16 @@ class Object
                     if not empty _.intersection(ctrls, idts.dots)
                         idots.dots = idots.dots.filter (d) -> d != 'ctrlr'
                         idts.dots.push('point') if 'point' not in idts.dots
-                        break
 
+        itemDelta = @trans.inverse(@item, delta).minus @trans.inverse(@item, pos(0,0))
+
+        indexDots = indexDots.filter (idts) -> idts.dots.length
+        
         for idots in indexDots
 
             for dot in idots.dots
                 oldPos = @posAt idots.index, dot
-                newPos = oldPos.plus delta
+                newPos = oldPos.plus itemDelta
                 @movePoint idots.index, newPos, dot
 
         @plot()
@@ -338,10 +341,6 @@ class Object
 
 
     movePoint: (index, itemPos, dots=['point']) ->
-
-        transmat = @item.transform().matrix
-        transmat = transmat.translate -@item.transform().x, -@item.transform().y
-        itemPos  = pos new SVG.Point(itemPos.x, itemPos.y).transform(transmat.inverse())
         
         points = @points()
         point  = points[index]

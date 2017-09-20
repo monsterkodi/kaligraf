@@ -14,6 +14,9 @@ class Selection
 
     constructor: (@kali) ->
         
+        @stage = @kali.stage
+        @trans = @kali.trans
+        
         @items = []
         
         @element = elem 'div', id: 'selection'
@@ -27,11 +30,20 @@ class Selection
         @rectsBlack.addClass 'selectionBlack'
         @rectsBlack.clear()
         
-        @stage = @kali.stage
-        @trans = @kali.trans
-        
         post.on 'stage', @onStage
+       
+    #  0000000  000000000   0000000   000000000  00000000  
+    # 000          000     000   000     000     000       
+    # 0000000      000     000000000     000     0000000   
+    #      000     000     000   000     000     000       
+    # 0000000      000     000   000     000     00000000  
+    
+    state: -> ids: @items.map (item) -> item.id()
+    
+    restore: (state) ->
         
+        @setItems state.ids.map (id) -> SVG.get id
+    
     # 0000000    00000000  000      00000000  000000000  00000000  
     # 000   000  000       000      000          000     000       
     # 000   000  0000000   000      0000000      000     0000000   

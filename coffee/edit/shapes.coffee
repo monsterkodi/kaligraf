@@ -32,6 +32,25 @@ class Shapes
     do: (action) -> @stage.undo.start @, action
     done: -> @stage.undo.end @
             
+    #  0000000  000000000   0000000   000000000  00000000  
+    # 000          000     000   000     000     000       
+    # 0000000      000     000000000     000     0000000   
+    #      000     000     000   000     000     000       
+    # 0000000      000     000   000     000     00000000  
+    
+    state: -> 
+        
+        if @edit?
+            edit: @edit.state
+        else
+            {}
+            
+    restore: (state) ->
+        
+        if state.edit?
+            @edit ?= new Edit @kali
+            @edit.restore state.edit
+    
     #  0000000  000   000   0000000   00000000   00000000  
     # 000       000   000  000   000  000   000  000       
     # 0000000   000000000  000000000  00000000   0000000   
@@ -371,7 +390,7 @@ class Shapes
                 @drawing.remove()
                 
             else 
-                if @stage.isEditableItem @drawing
+                if @stage.isEditable @drawing
                     @editItems [@drawing]
                 else if @drawing.type == 'text'
                     @editTextItem @drawing

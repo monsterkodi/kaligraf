@@ -23,7 +23,7 @@ class Undo
     # 000       000      000       000   000  000   000  
     #  0000000  0000000  00000000  000   000  000   000  
     
-    clear: -> 
+    clear: ->
         
         @history = []
         @futures = []
@@ -88,7 +88,7 @@ class Undo
             
         else
             
-            state.svg = @stage.getSVG()
+            state.stage = @stage.state()
             
         state
 
@@ -156,7 +156,7 @@ class Undo
             
         else
             
-            @stage.setSVG state.svg
+            @stage.restore state.stage
 
     # 0000000    000   000  00     00  00000000   
     # 000   000  000   000  000   000  000   000  
@@ -175,7 +175,8 @@ class Undo
         fs.writeFile resolve('~/Desktop/history.html'), svg, ->
             
     log: (msg) ->
-        log msg
-        log @history.map((i) -> i.class + ' ' + i.action + ' ' + i.type).join '\n'
+        
+        # log msg
+        # log @history.map((i) -> i.class + ' ' + i.action + ' ' + i.type).join '\n'
         
 module.exports = Undo

@@ -45,10 +45,27 @@ class Edit
         
         post.on 'stage',   @onStage
         post.on 'convert', @onConvert
+        
+    #  0000000  000000000   0000000   000000000  00000000  
+    # 000          000     000   000     000     000       
+    # 0000000      000     000000000     000     0000000   
+    #      000     000     000   000     000     000       
+    # 0000000      000     000   000     000     00000000  
 
     do: (action) -> @stage.undo.start @, action
     done:        -> @stage.undo.end   @
+    
+    state: ->
         
+        dotsel:  @dotsel.dots.map (dot) -> index:dot.ctrl.index(), dot:dot.dot
+        objects: @objects.map (obj) -> obj.item.id()
+        
+    restore: (state) ->
+        
+        @dotsel.clear()
+        log restore 'dots',    state.dotsel
+        log restore 'objects', state.objects
+    
     # 0000000    00000000  00000000   0000000  
     # 000   000  000       000       000       
     # 000   000  0000000   000000    0000000   
@@ -228,7 +245,7 @@ class Edit
         if object = @objectForItem item 
             return object
             
-        if @stage.isEditableItem item
+        if @stage.isEditable item
 
             object = new Object @, item
             @objects.push object 

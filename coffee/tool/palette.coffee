@@ -293,6 +293,9 @@ class Palette extends Tool
             @setLuminance f
         else
             @setAlpha f
+            
+        if @proxy == 'fill' and event.metaKey
+            post.emit 'stage', 'setColor', @color, @alpha
 
     # 00000000   000   0000000  000   000
     # 000   000  000  000       000  000
@@ -311,6 +314,9 @@ class Palette extends Tool
         if @mode == 'gry'
             @luminance = value
             @updateLuminance()
+            
+        if @proxy == 'fill' and event.metaKey
+            post.emit 'stage', 'setColor', @color, @alpha
 
     # 00000000  000   000  00000000  000   000  000000000   0000000
     # 000       000   000  000       0000  000     000     000

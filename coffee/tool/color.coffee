@@ -118,7 +118,7 @@ class Color extends Tool
     # 000       000      000  000       000  000
     #  0000000  0000000  000   0000000  000   000
 
-    onClick: (e)  =>
+    onClick: (event)  =>
 
         if @name == 'fill' and e.metaKey
             post.emit 'stage', 'setColor', @color, @alpha
@@ -126,7 +126,7 @@ class Color extends Tool
 
         if @kali.palette.proxy == @name
             other = @kali.tools.getTool @name == 'fill' and 'stroke' or 'fill'
-            other.onClick e
+            other.onClick event
             return
 
         post.emit 'palette', 'proxy', @

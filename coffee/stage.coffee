@@ -55,16 +55,37 @@ class Stage
         @alpha = 1
         
         @setColor prefs.get 'stage:color', 'rgba(32, 32, 32, 1)'
+        
+    #  0000000  000000000   0000000   000000000  00000000  
+    # 000          000     000   000     000     000       
+    # 0000000      000     000000000     000     0000000   
+    #      000     000     000   000     000     000       
+    # 0000000      000     000   000     000     00000000  
 
     do:   (action) -> @undo.start @, action
     done:          -> @undo.end   @
         
+    state: ->
+        
+        selection: @selection.state()
+        shapes:    @shapes.state()
+        color:     @color.toHex()
+        alpha:     @alpha
+        svg:       @getSVG()
+        
+    restore: (state) ->
+
+        @setSVG state.svg
+        @setColor state.color, state.alpha
+        @selection.restore state.selection
+        @shapes.restore state.shapes
+    
     onStage: (action, color, alpha) =>
 
         switch action
 
             when 'setColor' 
-                @do()
+                @do 'stage color'
                 @setColor color, alpha
                 @done()
         
@@ -90,7 +111,7 @@ class Stage
         items = items.map (item) -> item.instance
 
         for item in items
-            if not _.isFunction item.children
+            if not @isLeaf item
                 return item
     
     itemAtPos: (p) ->
@@ -128,6 +149,15 @@ class Stage
                     tree.push child
                     tree = tree.concat @treeItems child
         tree
+
+    isLeaf:     (item) -> _.isFunction item.children
+    isEditable: (item) -> _.isFunction(item.array) and item.type != 'text'
+    
+    #  0000000  00000000  000      00000000   0000000  000000000  00000000  0000000    
+    # 000       000       000      000       000          000     000       000   000  
+    # 0000000   0000000   000      0000000   000          000     0000000   000   000  
+    #      000  000       000      000       000          000     000       000   000  
+    # 0000000   00000000  0000000  00000000   0000000     000     00000000  0000000    
     
     selectedOrAllItems: -> 
         
@@ -147,6 +177,10 @@ class Stage
         if opt?.type?
             items = items.filter (item) -> item.type == opt.type
         items
+        
+    selectedLeafItems: ->
+        
+        @selectedItems().filter (item) -> not @isLeaf item
 
     sortedSelectedItems: (opt) ->
         
@@ -154,8 +188,15 @@ class Stage
         items.sort (a,b) -> a.position() - b.position()
         items
         
+    #  0000000   00000000    0000000   000   000  00000000   
+    # 000        000   000  000   000  000   000  000   000  
+    # 000  0000  0000000    000   000  000   000  00000000   
+    # 000   000  000   000  000   000  000   000  000        
+    #  0000000   000   000   0000000    0000000   000        
+    
     ungroup: ->
         
+        @do()
         oldItems = _.clone @items()
         
         for group in @selectedItems(type:'g')
@@ -163,16 +204,17 @@ class Stage
             
         @selection.clear()
         @selection.setItems @items().filter (item) -> item not in oldItems
+        @done()
         
     group: ->
         
+        @do()
         group = @svg.group()
         for item in @sortedSelectedItems()
            group.add item
            
         @selection.setItems [group]
-            
-    isEditableItem: (item) -> _.isFunction(item.array) and item.type != 'text'
+        @done()
             
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
@@ -250,7 +292,7 @@ class Stage
             when 'color'
                 attr[color] = new SVG.Color value
                 
-        items = @selectedItems()
+        items = @selectedLeafItems()
         if not empty(attr) and not empty(items)
             @do 'color' + itemIDs items
             for item in items

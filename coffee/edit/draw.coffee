@@ -176,7 +176,7 @@ class Draw
         
         delete @drawing
         delete @picking
-
+        
     continuePicking: -> @picking and @shape != 'line'
 
     # 00000000    0000000   000  000   000  000000000  

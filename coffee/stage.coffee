@@ -8,7 +8,7 @@
 {   resolve, elem, post, drag, prefs, stopEvent, 
     first, last, empty, clamp, pos, fs, log, _ } = require 'kxk'
 
-{   contrastColor, normRect, bboxForItems, 
+{   contrastColor, normRect, bboxForItems, itemIDs,
     growBox, boxForItems, boxOffset, boxCenter } = require './utils'
 
 electron  = require 'electron'
@@ -63,7 +63,10 @@ class Stage
 
         switch action
 
-            when 'setColor' then @setColor color, alpha
+            when 'setColor' 
+                @do()
+                @setColor color, alpha
+                @done()
         
     foregroundColor: -> contrastColor @color
 
@@ -186,7 +189,7 @@ class Stage
             
     moveItems: (items, delta) ->
 
-        @do 'move' + (items.map (item) -> item.id()).join ''
+        @do 'move' + itemIDs items
         for item in items
             @moveItem item, delta
         @done()
@@ -229,16 +232,13 @@ class Stage
             
         @color = new SVG.Color color
         
-        # log 'color', @color, color
-        # log 'alpha', @alpha
-        
         @kali.element.style.background = @color.toHex()
         document.body.style.background = @color.toHex()
         
         post.emit 'stage', 'color', @color.toHex(), @alpha
         
         prefs.set 'stage:color', @color.toHex()    
-        prefs.set 'stage:alpha', @alpha   
+        prefs.set 'stage:alpha', @alpha  
     
     onColor: (color, prop, value) =>
         
@@ -250,19 +250,24 @@ class Stage
             when 'color'
                 attr[color] = new SVG.Color value
                 
-        if not _.isEmpty attr
-            for item in @selectedItems()
+        items = @selectedItems()
+        if not empty(attr) and not empty(items)
+            @do 'color' + itemIDs items
+            for item in items
                 item.style attr
                 if prop == 'alpha'
                     item.node.removeAttribute 'opacity'
+            @done()
 
     onFont: (prop, value) =>
         
+        @do()
         for item in @selectedItems(type:'text')
             item.font prop, value
             
         @selection.updateItems()
         @resizer.calcBox()
+        @done()
                 
     # 000      000  000   000  00000000  
     # 000      000  0000  000  000       
@@ -444,18 +449,38 @@ class Stage
 
     paste: ->
 
+        @do()
         @addSVG clipboard.readText(), color:false
+        @done()
 
     cut: ->
 
         if not @selection.empty()
+            @do()
             @copy()
             @selection.delete()
+            @done()
 
-    clear: (file='untitled.svg') ->
+    #  0000000  000      00000000   0000000   00000000   
+    # 000       000      000       000   000  000   000  
+    # 000       000      0000000   000000000  0000000    
+    # 000       000      000       000   000  000   000  
+    #  0000000  0000000  00000000  000   000  000   000  
+    
+    new: ->
+        
+        @undo.clear()
+        @clear 'untitled.svg'
+    
+    doClear: -> 
+        
+        @do()
+        @clear()
+        @done()
+    
+    clear: (file=@currentFile) ->
 
         @currentFile = file
-        
         @shapes.edit?.clear()
         @selection.clear()
         @svg.clear()
@@ -470,8 +495,10 @@ class Stage
 
     order: (order) ->
 
+        @do()
         for item in @selectedItems()
             item[order]()
+        @done()
 
     select: (select) ->
 

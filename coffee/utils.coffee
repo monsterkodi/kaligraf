@@ -37,6 +37,8 @@ module.exports =
                 items = items.concat module.exports.svgItems child
         items
     
+    itemIDs: (items) -> (items.map (item) -> item.id()).join ''        
+        
     # 0000000     0000000   000   000  
     # 000   000  000   000   000 000   
     # 0000000    000   000    00000    

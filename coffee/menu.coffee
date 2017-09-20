@@ -41,6 +41,7 @@ class Menu
             label: 'File', submenu: [
                 { label: 'Open Recent...',  accelerator: 'command+.',       click: -> action 'browse'}
                 { label: 'Open...',         accelerator: 'command+o',       click: -> action 'open'}
+                { label: 'New',             accelerator: 'command+n',       click: -> action 'new'}
                 { type:  'separator'}
                 { label: 'Save',            accelerator: 'command+s',       click: -> action 'save'}
                 { label: 'Save As...',      accelerator: 'command+shift+s', click: -> action 'saveAs'}

@@ -28,7 +28,10 @@ class Shapes
             onStart: @onStart
             onMove:  @onDrag
             onStop:  @onStop
-        
+
+    do: (action) -> @stage.undo.start @, action
+    done: -> @stage.undo.end @
+            
     #  0000000  000   000   0000000   00000000   00000000  
     # 000       000   000  000   000  000   000  000       
     # 0000000   000000000  000000000  00000000   0000000   
@@ -207,6 +210,7 @@ class Shapes
             when 'pan' then
                     
             else
+                @do()
                 @selection.clear()
   
                 if @drawing? and @draw?.handleDown event
@@ -334,6 +338,7 @@ class Shapes
                 
             if not @draw? or @draw.handleStop event
                 @endDrawing()
+                @done()
 
     # 00000000  000   000  0000000        0000000    00000000    0000000   000   000  
     # 000       0000  000  000   000      000   000  000   000  000   000  000 0 000  

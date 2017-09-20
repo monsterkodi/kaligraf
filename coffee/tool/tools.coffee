@@ -50,7 +50,8 @@ class Tools extends Tool
             when 'saveAs'     then @stage.saveAs()
             when 'load'       then @stage.load()
             when 'open'       then @stage.open()
-            when 'clear'      then @stage.clear()
+            when 'new'        then @stage.new()
+            when 'clear'      then @stage.doClear()
             when 'zoom_reset' then @stage.resetView()
             when 'lower'      then @stage.order  'backward'
             when 'raise'      then @stage.order  'forward'

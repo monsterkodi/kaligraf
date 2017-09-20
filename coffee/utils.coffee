@@ -15,6 +15,7 @@ module.exports =
     # 0000000       0       0000000   000     000     00000000  000   000  0000000   
     
     svgItems: (item, opt) ->
+        
         items = []
         
         if opt?.style

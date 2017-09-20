@@ -180,7 +180,7 @@ class Stage
         
     selectedLeafItems: ->
         
-        @selectedItems().filter (item) -> not @isLeaf item
+        @selectedItems().filter (item) => not @isLeaf item
 
     sortedSelectedItems: (opt) ->
         

@@ -120,7 +120,7 @@ class Color extends Tool
 
     onClick: (event)  =>
 
-        if @name == 'fill' and e.metaKey
+        if @name == 'fill' and event.metaKey
             post.emit 'stage', 'setColor', @color, @alpha
             return
 

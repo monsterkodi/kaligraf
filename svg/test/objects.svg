@@ -3,7 +3,7 @@ version="1.1"
 xmlns="http://www.w3.org/2000/svg" 
 xmlns:xlink="http://www.w3.org/1999/xlink"
 xmlns:svgjs="http://svgjs.com/svgjs"
-style="stroke-linecap: round; stroke-linejoin: round; background: rgba(255, 255, 255, 0.808);"
+style="stroke-linecap: round; stroke-linejoin: round; background: rgba(236, 236, 236, 0.6078431372549019);"
 viewBox="-1545.9789306640625 -398.94984130859376 6389.4732421875 4736.05458984375">
 <line id="SvgjsLine56633" x1="437.4187514175506" y1="1327.9856150109408" x2="2464.3915060404047" y2="1327.985595703125" style="stroke: rgb(184, 184, 184); stroke-opacity: 1; stroke-width: 9; fill: rgb(196, 196, 196); fill-opacity: 0;" transform="matrix(0.9999999999999999,0,0,0.9999999999999999,1336.8622037136174,-305.844482421875)"></line>
 <line id="SvgjsLine5749" x1="994.620388001144" y1="227.94388962220705" x2="3310.204032967044" y2="933.2653446980269" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 8; fill: none; fill-opacity: 0;" transform="matrix(1,0,0,1,-0.0001220703125,39.92394211676958)"></line>

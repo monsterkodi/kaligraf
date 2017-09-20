@@ -196,11 +196,9 @@ class Stage
             post.toMain 'maximizeWindow'
         else
             if item.type == 'text'
-                # @kali.tools.activateTool 'text'
                 @shapes.editTextItem item
             else if item.type in ['polygon', 'polyline', 'line', 'path']
-                @selection.clear()
-                @shapes.editItems [item]
+                post.emit 'tool', 'click', 'edit'
             else
                 log 'dblclick', item?.id()
         
@@ -687,7 +685,7 @@ class Stage
                     if @shapes.handleEscape() then return
                     if @selection.clear()     then return
                     if @kali.shapeTool() != 'pick'
-                        @kali.tools.getTool('pick').onClick()
+                        post.emit 'tool', 'click', 'pick'
                         return 
 
                 when 'left', 'right', 'up', 'down'

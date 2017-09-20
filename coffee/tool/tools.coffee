@@ -251,6 +251,8 @@ class Tools extends Tool
         if name == 'text'
             @selection.clear()
         else
+            if name != 'edit'
+                @shapes.stopEdit()
             @shapes.clearText()
         
         switch name

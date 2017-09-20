@@ -56,13 +56,7 @@ class Menu
             # 00000000  0000000    000     000     
             
             label: 'Edit', submenu: [
-                { label: 'Convert',     submenu: [
-                    { label: 'Quad',    accelerator: 'command+1',           click: -> post.toWins 'convert', 'Q'}
-                    { label: 'Cubic',   accelerator: 'command+2',           click: -> post.toWins 'convert', 'C'}
-                    { label: 'Smooth',  accelerator: 'command+3',           click: -> post.toWins 'convert', 'S'}
-                    { label: 'Divide',  accelerator: 'command+4',           click: -> post.toWins 'convert', 'D'}
-                ]}
-                { label: 'Align',     submenu: [
+                { label: 'Align', submenu: [
                     { label: 'Left',    accelerator: 'alt+1',               click: -> post.toWins 'align', 'left'}
                     { label: 'Center',  accelerator: 'alt+2',               click: -> post.toWins 'align', 'center'}
                     { label: 'Right',   accelerator: 'alt+3',               click: -> post.toWins 'align', 'right'}
@@ -73,23 +67,34 @@ class Menu
                     { type:  'separator'}
                     { label: 'Space Horizontal', accelerator: 'alt+7',      click: -> post.toWins 'space', 'horizontal'}
                     { label: 'Space Vertical',   accelerator: 'alt+8',      click: -> post.toWins 'space', 'vertical'}
-                ]}                
+                ]}
+                { label: 'Convert',     submenu: [
+                    { label: 'Quad',    accelerator: 'command+1',           click: -> post.toWins 'convert', 'Q'}
+                    { label: 'Cubic',   accelerator: 'command+2',           click: -> post.toWins 'convert', 'C'}
+                    { label: 'Smooth',  accelerator: 'command+3',           click: -> post.toWins 'convert', 'S'}
+                    { label: 'Divide',  accelerator: 'command+4',           click: -> post.toWins 'convert', 'D'}
+                ]}
+                { label: 'Order', submenu: [
+                    { label: 'Front',       accelerator: 'command+alt+up',  click: -> action 'front'}
+                    { label: 'Raise',       accelerator: 'command+up',      click: -> action 'raise'}
+                    { label: 'Lower',       accelerator: 'command+down',    click: -> action 'lower'}
+                    { label: 'Back',        accelerator: 'command+alt+down',click: -> action 'back' }
+                ]}
+                { label: 'Select', submenu: [
+                    { label: 'All',         accelerator: 'command+a',       click: -> action 'selectAll'}
+                    { label: 'None',        accelerator: 'command+d',       click: -> action 'deselect'}
+                    { label: 'Invert',      accelerator: 'command+i',       click: -> action 'invert'}        
+                ]}
                 { type:  'separator'}
                 { label: 'Group',       accelerator: 'command+g',           click: -> action 'group'}
                 { label: 'Ungroup',     accelerator: 'command+u',           click: -> action 'ungroup'}
-                { type:  'separator'}
-                { label: 'Front',       accelerator: 'command+alt+up',      click: -> action 'front'}
-                { label: 'Raise',       accelerator: 'command+up',          click: -> action 'raise'}
-                { label: 'Lower',       accelerator: 'command+down',        click: -> action 'lower'}
-                { label: 'Back',        accelerator: 'command+alt+down',    click: -> action 'back' }
                 { type:  'separator'}
                 { label: 'Cut',         accelerator: 'command+x',           click: -> action 'cut'}
                 { label: 'Copy',        accelerator: 'command+c',           click: -> action 'copy'}
                 { label: 'Paste',       accelerator: 'command+v',           click: -> action 'paste'}
                 { type:  'separator'}
-                { label: 'All',         accelerator: 'command+a',           click: -> action 'selectAll'}
-                { label: 'None',        accelerator: 'command+d',           click: -> action 'deselect'}
-                { label: 'Invert',      accelerator: 'command+i',           click: -> action 'invert'}        
+                { label: 'Undo',        accelerator: 'command+z',           click: -> action 'undo'}
+                { label: 'Redo',        accelerator: 'command+shift+z',     click: -> action 'redo'}
             ]
         ,
             # 000000000   0000000    0000000   000      

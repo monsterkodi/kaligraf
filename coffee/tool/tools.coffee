@@ -34,7 +34,7 @@ class Tools extends Tool
     
     onAction: (action, tool, button) =>
         
-        log "tools.onAction #{action} #{tool} #{button}"
+        # log "tools.onAction #{action} #{tool} #{button}"
         
         switch action
             

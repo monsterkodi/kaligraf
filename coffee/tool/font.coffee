@@ -24,11 +24,13 @@ class Font extends Tool
         
         @initTitle 'Font'
         @initButtons [
-            text: 'b'
+            text:  'b'
+            name:  'bold'
             action: @onBold
             toggle: @bold
         ,
-            text: 'i'
+            text:   'i'
+            name:   'italic'
             action: @onItalic
             toggle: @italic
         ]

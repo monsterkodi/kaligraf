@@ -5,7 +5,7 @@
 # 000      000  000  0000  000       
 # 0000000  000  000   000  00000000  
 
-{ stopEvent, elem, prefs, clamp, post, log, _ } = require 'kxk'
+{ elem, prefs, clamp, post, log, _ } = require 'kxk'
 
 Tool = require './tool'
 
@@ -19,6 +19,7 @@ class Line extends Tool
         
         @initButtons [
             text:   '-'
+            name:   'out'
             action: @onDecr
         ,
             text:   '1'
@@ -26,14 +27,15 @@ class Line extends Tool
             action: @onReset
         ,
             text:   '+'
+            name:   'in'
             action: @onIncr
         ]
         
         @setWidth prefs.get 'width', 1
         
-    onIncr: (event) => stopEvent(event) and @setWidth clamp 0, 100, @width + 1
-    onDecr: (event) => stopEvent(event) and @setWidth clamp 0, 100, @width - 1
-    onReset: (event) => @setWidth 1
+    onIncr: => @setWidth clamp 0, 100, @width + 1
+    onDecr: => @setWidth clamp 0, 100, @width - 1
+    onReset: => @setWidth 1
     setWidth: (@width) =>
         @button('width').innerHTML = "#{parseInt @width}"
         post.emit 'line', 'width', @width

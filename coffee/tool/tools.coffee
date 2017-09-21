@@ -113,6 +113,7 @@ class Tools extends Tool
                 { name: 'zoom',  class: 'zoom'  }
                 { name: 'grid',  class: 'grid'  }
                 { name: 'group', class: 'group' }
+                { name: 'order', class: 'order' }
                 { name: 'width', class: 'line'  }
                 { name: 'align', class: 'align' }                
             ]            

@@ -187,35 +187,7 @@ class Stage
         items = @selectedItems opt
         items.sort (a,b) -> a.position() - b.position()
         items
-        
-    # #  0000000   00000000    0000000   000   000  00000000   
-    # # 000        000   000  000   000  000   000  000   000  
-    # # 000  0000  0000000    000   000  000   000  00000000   
-    # # 000   000  000   000  000   000  000   000  000        
-    # #  0000000   000   000   0000000    0000000   000        
-#     
-    # ungroup: ->
-#         
-        # @do()
-        # oldItems = _.clone @items()
-#         
-        # for group in @selectedItems(type:'g')
-            # group.ungroup()
-#             
-        # @selection.clear()
-        # @selection.setItems @items().filter (item) -> item not in oldItems
-        # @done()
-#         
-    # group: ->
-#         
-        # @do()
-        # group = @svg.group()
-        # for item in @sortedSelectedItems()
-           # group.add item
-#            
-        # @selection.setItems [group]
-        # @done()
-            
+                    
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
     # 000000000  000   000   000 000   0000000   
@@ -531,19 +503,12 @@ class Stage
         
         post.emit 'file', @currentFile
 
-    #  0000000   00000000   0000000    00000000  00000000
-    # 000   000  000   000  000   000  000       000   000
-    # 000   000  0000000    000   000  0000000   0000000
-    # 000   000  000   000  000   000  000       000   000
-    #  0000000   000   000  0000000    00000000  000   000
-
-    order: (order) ->
-
-        @do()
-        for item in @selectedItems()
-            item[order]()
-        @done()
-
+    #  0000000  00000000  000      00000000   0000000  000000000  
+    # 000       000       000      000       000          000     
+    # 0000000   0000000   000      0000000   000          000     
+    #      000  000       000      000       000          000     
+    # 0000000   00000000  0000000  00000000   0000000     000     
+    
     select: (select) ->
 
         switch select

@@ -62,6 +62,8 @@ class Tool
                 
             btn.addEventListener 'mousedown', (event) => 
                 @clickButton event.target.name
+                if not @hasParent()
+                    @kali.tools.collapseTemp()
                 stopEvent event
                 
             span.appendChild btn

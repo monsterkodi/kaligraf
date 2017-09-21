@@ -77,10 +77,10 @@ class Menu
                     { label: 'Divide',  accelerator: 'command+4',           click: -> post.toWins 'convert', 'D'}
                 ]}
                 { label: 'Order', submenu: [
-                    { label: 'Front',       accelerator: 'command+alt+up',  click: -> action 'front'}
-                    { label: 'Raise',       accelerator: 'command+up',      click: -> action 'raise'}
-                    { label: 'Lower',       accelerator: 'command+down',    click: -> action 'lower'}
-                    { label: 'Back',        accelerator: 'command+alt+down',click: -> action 'back' }
+                    { label: 'Front',       accelerator: 'command+alt+up',  click: -> button 'order', 'front'}
+                    { label: 'Raise',       accelerator: 'command+up',      click: -> button 'order', 'raise'}
+                    { label: 'Lower',       accelerator: 'command+down',    click: -> button 'order', 'lower'}
+                    { label: 'Back',        accelerator: 'command+alt+down',click: -> button 'order', 'back' }
                 ]}
                 { label: 'Select', submenu: [
                     { label: 'All',         accelerator: 'command+a',       click: -> action 'selectAll'}

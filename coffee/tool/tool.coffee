@@ -245,7 +245,7 @@ class Tool
         @execute()
         
     execute: ->
-        log "tool.execute #{@name}"
+        # log "tool.execute #{@name}"
         if @group?
             post.emit 'tool', 'activate', @name
         else if @action?

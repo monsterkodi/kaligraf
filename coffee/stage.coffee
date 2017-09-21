@@ -217,7 +217,7 @@ class Stage
         
         item = @leafItemAtPos pos event
         if not item?
-            post.toMain 'maximizeWindow'
+            # post.toMain 'maximizeWindow'
         else
             if item.type == 'text'
                 @shapes.editTextItem item

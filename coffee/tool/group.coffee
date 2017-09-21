@@ -5,7 +5,7 @@
 # 000   000  000   000  000   000  000   000  000      
 #  0000000   000   000   0000000    0000000   000      
 
-{ log, _ } = require 'kxk'
+{ prefs, log, _ } = require 'kxk'
 
 Tool = require './tool'
 
@@ -19,6 +19,7 @@ class Group extends Tool
         
         @stage.group   = Group.group
         @stage.ungroup = Group.ungroup
+        @stage.ids     = Group.ids
         
         @initTitle 'Group'
         
@@ -30,8 +31,16 @@ class Group extends Tool
             action: @onUngroup
         ]
         
-    onUngroup: (event) => @stage.ungroup()
-    onGroup:   (event) => @stage.group()
+        @initButtons [
+            text:   'IDs'
+            name:   'ids'
+            action: @onIDs
+            toggle: prefs.get 'stage:ids', false
+        ]
+        
+    onUngroup: => @stage.ungroup()
+    onGroup:   => @stage.group()
+    onIDs:     => @stage.ids()
 
     execute: -> log 'group execute'
 
@@ -62,5 +71,7 @@ class Group extends Tool
            
         @selection.setItems [group]
         @done()
+        
+    @ids: -> log 'ids'
     
 module.exports = Group

@@ -109,11 +109,12 @@ class Tools extends Tool
                 { name: 'line',     group: 'shape', draw: true }
             ]
             [
-                { name: 'zoom',  class: 'zoom', action: 'zoom_reset',  combo: 'command+0' }
-                { name: 'grid',  class: 'grid', action: 'grid_toggle', combo: 'command+9' }
-                { name: 'width', class: 'line' }
+                { name: 'zoom',  class: 'zoom',  action: 'zoom_reset',  combo: 'command+0' }
+                { name: 'grid',  class: 'grid',  action: 'grid_toggle', combo: 'command+9' }
+                { name: 'group', class: 'group' }
+                { name: 'width', class: 'line'  }
                 { name: 'align', class: 'align' }
-                { name: 'font',  class: 'font' }
+                { name: 'font',  class: 'font'  }
             ]            
             [
                 { name: 'image',  group: 'shape' }
@@ -262,7 +263,8 @@ class Tools extends Tool
         switch name
             when 'edit'
                 if not @selection.empty() 
-                    @shapes.editItems @selection.items
+                    # @shapes.editItems @selection.items
+                    @shapes.editItems @stage.selectedLeafItems()
                     @selection.clear()
             when 'pick' 
                 if @shapes.edit? and not @shapes.edit.empty()

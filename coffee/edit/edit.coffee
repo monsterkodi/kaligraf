@@ -63,8 +63,8 @@ class Edit
     restore: (state) ->
         
         @dotsel.clear()
-        log restore 'dots',    state.dotsel
-        log restore 'objects', state.objects
+        log 'restore dots',    state.dotsel
+        log 'restore objects', state.objects
     
     # 0000000    00000000  00000000   0000000  
     # 000   000  000       000       000       

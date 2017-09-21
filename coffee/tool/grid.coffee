@@ -22,7 +22,12 @@ class Grid extends Tool
         @svg.clear()
         @svg.hide()
         
-        @title = @element.appendChild elem 'div', class: 'title', text: '100'
+        @initTitle '100'
+        @initButtons [
+            text: 'Snap'
+            action: @onSnap
+            toggle: true
+        ]
 
         post.on 'stage', @onStage
 
@@ -30,6 +35,8 @@ class Grid extends Tool
         
         @setVisible prefs.get 'grid', false
 
+    onSnap: (event) => log 'onSnap'
+        
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
     # 000   000  0000000    000000000  000000000  

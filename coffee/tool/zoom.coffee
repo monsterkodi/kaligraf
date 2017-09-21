@@ -17,9 +17,15 @@ class Zoom extends Tool
         
         @stage = @kali.stage
                 
-        @title = @element.appendChild elem 'div', class:'title', text: '100%'
+        @initTitle '100%'
         
-        @minusPlus @zoomOut, @zoomIn
+        @initButtons [
+            text:   '-'
+            action: @zoomOut
+        ,
+            text:   '+'
+            action: @zoomIn
+        ]
         
         post.on 'stage', @onStage
     

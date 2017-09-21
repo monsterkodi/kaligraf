@@ -7,6 +7,8 @@
 
 { post, drag, last, resolve, pos, log, _ } = require 'kxk'
 
+{ constrain } = require '../utils'
+
 Draw = require './draw'
 Edit = require './edit'
 Text = require '../tool/text'
@@ -259,6 +261,8 @@ class Shapes
         
         if @draw?.handleDrag event
             return
+            
+        constrain drag, event
         
         switch shape
             

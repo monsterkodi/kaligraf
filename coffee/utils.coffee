@@ -273,4 +273,29 @@ module.exports =
             div.appendChild close
             
         div
+   
+    #  0000000   0000000   000   000   0000000  000000000  00000000    0000000   000  000   000  
+    # 000       000   000  0000  000  000          000     000   000  000   000  000  0000  000  
+    # 000       000   000  000 0 000  0000000      000     0000000    000000000  000  000 0 000  
+    # 000       000   000  000  0000       000     000     000   000  000   000  000  000  0000  
+    #  0000000   0000000   000   000  0000000      000     000   000  000   000  000  000   000  
     
+    constrain: (drag, event) ->
+        
+        if event.shiftKey
+    
+            if not drag.shift?
+                
+                if Math.abs(drag.delta.x) >= Math.abs(drag.delta.y)
+                    drag.shift = pos 1,0
+                else
+                    drag.shift = pos 0,1
+                    
+            drag.delta.x *= drag.shift.x
+            drag.delta.y *= drag.shift.y
+                    
+        else
+            
+            delete drag.shift
+            
+        

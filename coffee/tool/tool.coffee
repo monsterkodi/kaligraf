@@ -5,7 +5,7 @@
 #    000     000   000  000   000  000    
 #    000      0000000    0000000   0000000
 
-{ elem, drag, post, first, last, log, _ } = require 'kxk'
+{ stopEvent, elem, drag, post, first, last, log, _ } = require 'kxk'
 
 class Tool
 
@@ -28,15 +28,64 @@ class Tool
         if @cfg.svg?
             @setSVG @cfg.svg
         else if not @cfg.class?
-            @element.appendChild elem 'div', class: 'title', text: _.capitalize @cfg.name
+            @initTitle _.capitalize @cfg.name
         
         @drag = new drag
-            handle:  @element
             target:  @element
             onStart: @dragStart
             onMove:  @dragMove
             onStop:  @dragStop
-         
+            
+    # 0000000    000   000  000000000  000000000   0000000   000   000   0000000  
+    # 000   000  000   000     000        000     000   000  0000  000  000       
+    # 0000000    000   000     000        000     000   000  000 0 000  0000000   
+    # 000   000  000   000     000        000     000   000  000  0000       000  
+    # 0000000     0000000      000        000      0000000   000   000  0000000   
+    
+    initButtons: (buttons) ->
+        
+        span = elem class: 'toolButtons'
+        for button in buttons
+            btn = elem 'span'
+            btn.innerHTML = button.text   if button.text?
+            btn.name      = button.name   if button.name?
+            if button.action?
+                btn.classList.add 'toolButton'
+                btn.action = button.action
+            else
+                btn.classList.add 'toolLabel'
+                
+            if button.toggle?
+                btn.classList.add 'toolToggle'
+                btn.toggle = button.toggle
+                btn.classList.toggle 'active', btn.toggle
+                
+            btn.addEventListener 'mousedown', (event) -> 
+                if event.target.toggle?
+                    event.target.toggle = !event.target.toggle
+                    event.target.classList.toggle 'active'
+                stopEvent(event) and event.target.action? event
+                
+            span.appendChild btn
+            
+        @element.appendChild span
+     
+    buttonElem: (name) ->
+        
+        for btn in @element.querySelectorAll '.toolButton, .toolLabel'
+            if btn.name == name
+                return btn
+        
+    # 000000000  000  000000000  000      00000000  
+    #    000     000     000     000      000       
+    #    000     000     000     000      0000000   
+    #    000     000     000     000      000       
+    #    000     000     000     0000000  00000000  
+    
+    initTitle: (text) ->
+        
+        @title = @element.appendChild elem 'div', class:'title', text: text
+            
     #  0000000  000   000   0000000   
     # 000       000   000  000        
     # 0000000    000 000   000  0000  
@@ -163,19 +212,19 @@ class Tool
     # 000       000      000  000       000  000   
     #  0000000  0000000  000   0000000  000   000  
     
-    onClick: (e) => 
+    onClick: (event) => 
         
-        if e?.metaKey and @svg?
+        if event?.metaKey and @svg?
             @kali.stage.addSVG @svg.svg()
             return
             
-        if e?.ctrlKey and @svg?
+        if event?.ctrlKey and @svg?
             svg = @kali.stage.copy()
             @setSVG svg
             @kali.tools.saveSVG @name, svg
             return
             
-        if @hasChildren() and e
+        if @hasChildren() and event
             @toggleChildren()
         else if @hasParent()
             if @cfg.orient != 'down'
@@ -237,24 +286,5 @@ class Tool
             for tool in @children
                 if t = tool.getTool name
                     return t
-                    
-    # 00     00  000  000   000  000   000   0000000  00000000   000      000   000   0000000  
-    # 000   000  000  0000  000  000   000  000       000   000  000      000   000  000       
-    # 000000000  000  000 0 000  000   000  0000000   00000000   000      000   000  0000000   
-    # 000 0 000  000  000  0000  000   000       000  000        000      000   000       000  
-    # 000   000  000  000   000   0000000   0000000   000        0000000   0000000   0000000   
-    
-    minusPlus: (minusCB, plusCB) ->
-        plus  = elem 'span', class:'toolPlus',  text:'+'
-        minus = elem 'span', class:'toolMinus', text:'-'               
-        
-        plus .addEventListener 'mousedown', plusCB
-        minus.addEventListener 'mousedown', minusCB
-        
-        plusMinus = elem 'div', class:'toolPlusMinus'
-        plusMinus.appendChild minus
-        plusMinus.appendChild plus
-        @element.appendChild plusMinus
-        
-                    
+                                        
 module.exports = Tool

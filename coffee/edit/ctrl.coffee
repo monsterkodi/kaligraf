@@ -71,7 +71,19 @@ class Ctrl
                 @updateDot 'ctrl2', point
             when 'Q'
                 @updateDot 'ctrlq', point
-        
+
+    updateLines: (point) ->
+
+        switch point[0]
+            when 'S'
+                @updateLine 'ctrlr', point
+                @updateLine 'ctrls', point
+            when 'C'
+                @updateLine 'ctrl1', point
+                @updateLine 'ctrl2', point
+            when 'Q'
+                @updateLine 'ctrlq', point
+                
     #  0000000  00000000   00000000   0000000   000000000  00000000  
     # 000       000   000  000       000   000     000     000       
     # 000       0000000    0000000   000000000     000     0000000   
@@ -150,7 +162,23 @@ class Ctrl
                 if nextIndex < @object.ctrls.length
                     nextCtrl = @object.ctrlAt nextIndex
                     nextCtrl.updateDot 'ctrlr', nextPoint
+
+    updateLine: (dot, point) ->
+
+        dotPos = @trans.transform @object.item, @object.posAt @index(), dot
+        
+        if dot in ['ctrl2', 'ctrls', 'ctrlq']
+            @plotLine dot, dotPos, @trans.transform @object.item, @object.posAt @index()
             
+        if dot == 'ctrlq'
+            @plotLine 'ctrlq2', dotPos, @object.dotPos @index()-1
+            
+        if dot == 'ctrl1'
+            @plotLine 'ctrl1', dotPos, @object.dotPos @index()-1
+        else if dot == 'ctrlr'
+            if @object.pointAt(@index()-1)[0] in ['C', 'S']
+                @plotLine 'ctrlr', dotPos, @object.dotPos @index()-1
+        
     # 000      000  000   000  00000000
     # 000      000  0000  000  000
     # 000      000  000 0 000  0000000

@@ -43,7 +43,7 @@ class Undo
         prev = last @history
         
         if @sameState(state, prev) and prev.type != 'start'
-            log 'sameState!'
+            # log 'sameState!'
         else   
             if action? and prev? and action == prev.action and prev.type != 'start'
                 @history.splice @history.length-1, 1, state
@@ -95,7 +95,7 @@ class Undo
     sameState: (a,b) ->
         
         same = a? and b? and a.id == b.id and a.action? and a.action == b.action
-        same and _.isEqual a.points, b.points
+        same and _.isEqual(a.points, b.points) and _.isEqual(a.stage, b.stage)
         
     # 000   000  000   000  0000000     0000000   
     # 000   000  0000  000  000   000  000   000  

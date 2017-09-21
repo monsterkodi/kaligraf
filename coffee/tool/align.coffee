@@ -15,12 +15,40 @@ class Align extends Tool
 
         super @kali, cfg
         
+        @initTitle 'Align'
+        @initButtons [
+            text: 'L'
+            action: => @onAlign 'left'
+        ,
+            text: 'C'
+            action: => @onAlign 'center'
+        ,
+            text: 'R'
+            action: => @onAlign 'right'
+        ]
+        @initButtons [
+            text: 'T'
+            action: => @onAlign 'top'
+        ,
+            text: 'M'
+            action: => @onAlign 'mid'
+        ,
+            text: 'B'
+            action: => @onAlign 'bot'
+        ]
+        
         @stage = @kali.stage
         @trans = @kali.trans
         
         post.on 'align', @onAlign
         post.on 'space', @onSpace
 
+    #  0000000  00000000    0000000    0000000  00000000  
+    # 000       000   000  000   000  000       000       
+    # 0000000   00000000   000000000  000       0000000   
+    #      000  000        000   000  000       000       
+    # 0000000   000        000   000   0000000  00000000  
+    
     onSpace: (direction) =>
         
         items = @stage.selectedItems()
@@ -53,7 +81,18 @@ class Align extends Tool
                 when 'vertical'   then newPos.y = ra.y2 + avg
             @trans.pos b, newPos
             
+    #  0000000   000      000   0000000   000   000  
+    # 000   000  000      000  000        0000  000  
+    # 000000000  000      000  000  0000  000 0 000  
+    # 000   000  000      000  000   000  000  0000  
+    # 000   000  0000000  000   0000000   000   000  
+    
     onAlign: (side) =>
+        
+        if @stage.shapes.edit?.dotsel.numDots()
+            log "align dots #{side}"
+            @stage.shapes.edit?.dotsel.align side
+            return
         
         sum = 0
         items = @stage.selectedItems()

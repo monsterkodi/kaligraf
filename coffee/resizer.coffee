@@ -276,10 +276,23 @@ class Resizer
             @stage.shapes.handleMouseDown event
             return 'skip'
 
-    onDragStop: =>
+    onDragMove: (drag, event) => 
+        log 'event.shiftKey', event.shiftKey, drag.shift?
+        if event.shiftKey or drag.shift
+            
+            if not @drag.shift?
+                if Math.abs(delta.x) >= Math.abs(delta.y)
+                    drag.shift = pos 1,0
+                else
+                    drag.shift = pos 0,1
+                    
+            drag.x *= drag.shift.x
+            drag.y *= drag.shift.y
+        
+        @moveBy drag.delta
 
-    onDragMove: (drag) => @moveBy drag.delta
-
+    onDragStop: (drag) => @delete @drag.shift
+    
     moveBy: (delta) ->
 
         if not @selection.rect?

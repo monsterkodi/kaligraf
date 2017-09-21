@@ -81,9 +81,12 @@ class Object
 
     updateCtrlDots: (index, point) ->
 
-        # log "updateCtrlDots #{index}"
         @ctrls[index].updateDots point
 
+    updateCtrlLines: (index, point) ->
+
+        @ctrls[index].updateLines point
+        
     updatePos: ->
 
         points = @points()
@@ -153,6 +156,26 @@ class Object
                 oldPos = @posAt idots.index, dot
                 newPos = oldPos.plus itemDelta
                 @movePoint idots.index, newPos, dot
+
+        @plot()
+        @done()
+
+    # 000   000  00000000   0000000     0000000   000000000  00000000  0000000     0000000   000000000   0000000  
+    # 000   000  000   000  000   000  000   000     000     000       000   000  000   000     000     000       
+    # 000   000  00000000   000   000  000000000     000     0000000   000   000  000   000     000     0000000   
+    # 000   000  000        000   000  000   000     000     000       000   000  000   000     000          000  
+    #  0000000   000        0000000    000   000     000     00000000  0000000     0000000      000     0000000   
+    
+    updateDots: (dots) ->
+        
+        @do()
+        
+        for dot in dots
+
+            index   = dot.ctrl.index()
+            itemPos = @dotPos index, dot.dot
+            itemPos = @trans.inverse dot.ctrl.object.item, itemPos
+            @setPoint index, dot.dot, itemPos
 
         @plot()
         @done()
@@ -403,9 +426,70 @@ class Object
                     return
 
         @updateCtrlDots index, point
-
+        
         if point[0] in ['Q', 'M', 'L', 'C'] and index < @numPoints()-1
             @updateCtrlDots index+1, @pointAt index+1
+
+    #  0000000  00000000  000000000  00000000    0000000   000  000   000  000000000  
+    # 000       000          000     000   000  000   000  000  0000  000     000     
+    # 0000000   0000000      000     00000000   000   000  000  000 0 000     000     
+    #      000  000          000     000        000   000  000  000  0000     000     
+    # 0000000   00000000     000     000         0000000   000  000   000     000     
+    
+    setPoint: (index, dot, itemPos) ->
+        
+        points = @points()
+        point  = points[index]
+
+        switch dot
+            when 'point'
+                switch point[0]
+                    when 'S', 'Q', 'C', 'M', 'L'
+                        point[point.length-2] = itemPos.x
+                        point[point.length-1] = itemPos.y
+                    else
+                        if @item.type == 'line'
+                            point[0] = itemPos.x
+                            point[1] = itemPos.y
+                            @item.plot points
+                        else
+                            point[0] = itemPos.x
+                            point[1] = itemPos.y
+
+                if @isPath() and not @edit.passive and index == @numPoints()-1
+
+                    firstPoint = @pointAt 0
+                    firstPoint[1] = itemPos.x
+                    firstPoint[2] = itemPos.y
+
+                    @updateCtrlLines 0, firstPoint
+                    @updateCtrlLines 1, @pointAt 1 if points.length>1
+
+            when 'ctrl1', 'ctrlq', 'ctrls'
+                point[1] = itemPos.x
+                point[2] = itemPos.y
+
+            when 'ctrl2'
+                point[3] = itemPos.x
+                point[4] = itemPos.y
+
+            when 'ctrlr'
+                prevIndex = index-1
+                prevIndex = @numPoints()-1 if prevIndex == 0
+                prevp = @posAt prevIndex 
+                refl = prevp.minus prevp.to itemPos
+                prevCtrl = switch @pointAt(prevIndex)[0]
+                    when 'C' then 'ctrl2'
+                    when 'S' then 'ctrls'
+                    when 'Q' then 'ctrlq'
+                if prevCtrl
+                    @setPoint prevIndex, prevCtrl, refl
+                return
+
+        @updateCtrlLines index, point
+        
+        if point[0] in ['Q', 'M', 'L', 'C'] and index < @numPoints()-1
+            @updateCtrlLines index+1, @pointAt index+1
             
     #  0000000   0000000    0000000    00000000    0000000   000  000   000  000000000
     # 000   000  000   000  000   000  000   000  000   000  000  0000  000     000

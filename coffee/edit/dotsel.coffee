@@ -63,7 +63,7 @@ class DotSel
     # 000   000   0000000       0      00000000  
     
     moveBy: (delta, event) ->
-        # log 'dotsel.moveBy', delta
+        
         for objectDot in @objectDots()
         
             objectDot.object.moveDotsBy objectDot.dots, delta, event
@@ -102,6 +102,7 @@ class DotSel
         @dots = []
         dotSelected
 
+    numDots: -> @dots.length
     empty: -> empty @dots
 
     invert: ->
@@ -191,5 +192,42 @@ class DotSel
         @stage.selection.setRect @rect.element, @rect
         
         @addInRect normRect(@rect), o
-                                    
+        
+    #  0000000   000      000   0000000   000   000  
+    # 000   000  000      000  000        0000  000  
+    # 000000000  000      000  000  0000  000 0 000  
+    # 000   000  000      000  000   000  000  0000  
+    # 000   000  0000000  000   0000000   000   000  
+    
+    align: (side) ->
+        
+        sum = 0
+        min = Number.MAX_SAFE_INTEGER
+        max = Number.MIN_SAFE_INTEGER
+        
+        return if @numDots() < 2
+        
+        for dot in @dots
+            switch side
+                when 'left'   then min = Math.min min, dot.cx()
+                when 'top'    then min = Math.min min, dot.cy()
+                when 'right'  then max = Math.max max, dot.cx()
+                when 'bot'    then max = Math.max max, dot.cy()
+                when 'center' then sum += dot.cx()
+                when 'mid'    then sum += dot.cy()
+                    
+        avg = sum / @numDots()
+        
+        for dot in @dots
+            switch side
+                when 'left'   then dot.cx min
+                when 'top'    then dot.cy min
+                when 'right'  then dot.cx max
+                when 'bot'    then dot.cy max
+                when 'center' then dot.cx avg
+                when 'mid'    then dot.cy avg
+        
+        for objectDot in @objectDots()
+            objectDot.object.updateDots objectDot.dots
+                              
 module.exports = DotSel

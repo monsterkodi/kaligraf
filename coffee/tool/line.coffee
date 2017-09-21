@@ -15,17 +15,27 @@ class Line extends Tool
         
         super @kali, cfg
                 
-        @title = @element.appendChild elem 'div', class:'title'
+        @initTitle 'Line'
         
-        @minusPlus @onDecr, @onIncr
+        @initButtons [
+            text:   '-'
+            action: @onDecr
+        ,
+            text:   '1'
+            name:   'width'
+            action: @onReset
+        ,
+            text:   '+'
+            action: @onIncr
+        ]
         
         @setWidth prefs.get 'width', 1
         
     onIncr: (event) => stopEvent(event) and @setWidth clamp 0, 100, @width + 1
     onDecr: (event) => stopEvent(event) and @setWidth clamp 0, 100, @width - 1
-    onClick: (event) => super event; @setWidth 1
+    onReset: (event) => @setWidth 1
     setWidth: (@width) =>
-        @title.innerHTML = "#{parseInt @width}"
+        @buttonElem('width').innerHTML = "#{parseInt @width}"
         post.emit 'line', 'width', @width
         prefs.set 'width', @width
     

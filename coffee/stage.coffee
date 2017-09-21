@@ -188,33 +188,33 @@ class Stage
         items.sort (a,b) -> a.position() - b.position()
         items
         
-    #  0000000   00000000    0000000   000   000  00000000   
-    # 000        000   000  000   000  000   000  000   000  
-    # 000  0000  0000000    000   000  000   000  00000000   
-    # 000   000  000   000  000   000  000   000  000        
-    #  0000000   000   000   0000000    0000000   000        
-    
-    ungroup: ->
-        
-        @do()
-        oldItems = _.clone @items()
-        
-        for group in @selectedItems(type:'g')
-            group.ungroup()
-            
-        @selection.clear()
-        @selection.setItems @items().filter (item) -> item not in oldItems
-        @done()
-        
-    group: ->
-        
-        @do()
-        group = @svg.group()
-        for item in @sortedSelectedItems()
-           group.add item
-           
-        @selection.setItems [group]
-        @done()
+    # #  0000000   00000000    0000000   000   000  00000000   
+    # # 000        000   000  000   000  000   000  000   000  
+    # # 000  0000  0000000    000   000  000   000  00000000   
+    # # 000   000  000   000  000   000  000   000  000        
+    # #  0000000   000   000   0000000    0000000   000        
+#     
+    # ungroup: ->
+#         
+        # @do()
+        # oldItems = _.clone @items()
+#         
+        # for group in @selectedItems(type:'g')
+            # group.ungroup()
+#             
+        # @selection.clear()
+        # @selection.setItems @items().filter (item) -> item not in oldItems
+        # @done()
+#         
+    # group: ->
+#         
+        # @do()
+        # group = @svg.group()
+        # for item in @sortedSelectedItems()
+           # group.add item
+#            
+        # @selection.setItems [group]
+        # @done()
             
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
@@ -250,6 +250,8 @@ class Stage
             if item.type == 'text'
                 @shapes.editTextItem item
             else if item.type in ['polygon', 'polyline', 'line', 'path']
+                if item not in @selectedItems()
+                    @selection.setItems [item]
                 post.emit 'tool', 'click', 'edit'
             else
                 log 'dblclick', item?.id()

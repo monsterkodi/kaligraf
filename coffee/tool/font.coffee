@@ -16,10 +16,16 @@ class Font extends Tool
         
         super @kali, cfg
 
-        @title = @element.appendChild elem 'div', class:'title', text: 'Font'
-
-        bold   = elem 'span', class:'toolPlus',  text:'b'
-        italic = elem 'span', class:'toolMinus', text:'i'               
+        @initTitle 'Font'
+        @initButtons [
+            text: 'b'
+            action: @onBold
+            toggle: true
+        ,
+            text: 'i'
+            action: @onItalic
+            toggle: true
+        ]
         
         @bold   = prefs.get 'font:bold',   false
         @italic = prefs.get 'font:italic', false
@@ -28,15 +34,8 @@ class Font extends Tool
         @family = prefs.get 'font:family', 'Helvetica'
         
         post.on 'font', @onFont
-        
-        bold  .addEventListener 'mousedown', @onBold
-        italic.addEventListener 'mousedown', @onItalic
-        
-        boldItalic = elem 'div', class:'toolPlusMinus'
-        boldItalic.appendChild bold
-        boldItalic.appendChild italic
-        @element.appendChild boldItalic
-        @element.focus()       
+                
+        @element.focus() # really? 
         
     # 0000000     0000000   000      0000000    
     # 000   000  000   000  000      000   000  

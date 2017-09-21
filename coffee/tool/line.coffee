@@ -35,7 +35,7 @@ class Line extends Tool
     onDecr: (event) => stopEvent(event) and @setWidth clamp 0, 100, @width - 1
     onReset: (event) => @setWidth 1
     setWidth: (@width) =>
-        @buttonElem('width').innerHTML = "#{parseInt @width}"
+        @button('width').innerHTML = "#{parseInt @width}"
         post.emit 'line', 'width', @width
         prefs.set 'width', @width
     

@@ -22,7 +22,13 @@ class Grid extends Tool
         @svg.clear()
         @svg.hide()
         
-        @initTitle '100'
+        @initTitle 'Grid'
+        @initButtons [
+            text:   '100'
+            name:   'grid'
+            toggle: prefs.get 'grid', false
+            action: @toggleGrid
+        ]
         @initButtons [
             text: 'Snap'
             action: @onSnap
@@ -79,26 +85,28 @@ class Grid extends Tool
                 v = (y*s-oy)*z
                 @grid.line(sx,v,sw,v).style style
 
+        spacing = @button 'grid' 
+                
         if z >= 100
 
-            @title.innerHTML = '1'
+            spacing.innerHTML = '1'
             draw 1, z/1000
             draw 10, 1.0
 
         else if z >= 10
 
-            @title.innerHTML = '10'
+            spacing.innerHTML = '10'
             draw 10, z/100
             draw 100, 1.0
 
         else if z >= 1
 
-            @title.innerHTML = '100'
+            spacing.innerHTML = '100'
             draw 100, z/10
             draw 1000, 1.0
 
         else
-            @title.innerHTML = '1000'
+            spacing.innerHTML = '1000'
             draw 1000, z
 
         style = 
@@ -120,9 +128,9 @@ class Grid extends Tool
     onStage: (action) => if action == 'viewbox' and @gridVisible() then @drawGrid()
 
     setVisible: (v) -> if v then @showGrid() else @hideGrid()
-    toggleGrid:  -> @setVisible not @gridVisible()
+    toggleGrid:  => @setVisible not @gridVisible()
     gridVisible: -> @svg.visible()
     showGrid:    -> @drawGrid(); prefs.set 'grid', true
-    hideGrid:    -> @svg.hide(); prefs.set 'grid', false
+    hideGrid:    -> @svg.hide(); prefs.set 'grid', false; @button('grid').innerHTML = 'Show'
 
 module.exports = Grid

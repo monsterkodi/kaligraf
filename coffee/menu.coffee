@@ -10,6 +10,7 @@ pkg      = require '../package.json'
 electron = require 'electron'
 
 action = (action, arg) -> post.toWins 'tool', action, arg
+button = (tool, button) -> post.toWins 'tool', 'button', tool, button
 
 class Menu
     
@@ -108,6 +109,11 @@ class Menu
                 { label: 'Text',        accelerator: 'command+t',           click: -> action 'click', 'text'}
                 { label: 'Font',        accelerator: 'command+f',           click: -> action 'click', 'font'}
                 { type:  'separator'}
+                { label: 'Zoom',        submenu: [
+                    { label:'Reset', accelerator: 'command+0', click: -> button 'zoom', 'reset' }
+                    { label:'Out',   accelerator: 'command+-', click: -> button 'zoom', 'out'  }
+                    { label:'In',    accelerator: 'command+=', click: -> button 'zoom', 'in'  }
+                ] }
                 { label: 'Color',       submenu: [
                     { label: 'Swap Fill Stroke', click: -> action 'swapColor'}
                 ] } 
@@ -117,8 +123,7 @@ class Menu
                 { label: 'Polygon',     accelerator: 'command+p',           click: -> action 'click', 'polygon'}
                 { label: 'Width',       accelerator: 'command+\\',          click: -> action 'click', 'width'}
                 { type:  'separator'}
-                { label: 'Grid',        accelerator: 'command+9',           click: -> action 'click', 'grid'}
-                { label: 'Zoom',        accelerator: 'command+0',           click: -> action 'click', 'zoom'}
+                { label: 'Grid',        accelerator: 'command+9',           click: -> button 'grid', 'grid'}
                 { label: 'Center',      accelerator: 'command+e',           click: -> action 'center'}
             ]
         ,

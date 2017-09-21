@@ -761,9 +761,6 @@ class Stage
         if down
             switch combo
 
-                when 'command+-'        then return @kali.tools.zoom.zoomOut()
-                when 'command+='        then return @kali.tools.zoom.zoomIn()
-                when 'command+0'        then return @resetView()
                 when 'enter', 'return'  then return @shapes.endDrawing()
                     
                 when 'esc'

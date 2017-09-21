@@ -5,7 +5,7 @@
 #  000     000   000  000   000  000 0 000  
 # 0000000   0000000    0000000   000   000  
 
-{ stopEvent, elem, post, log, _ } = require 'kxk'
+{ elem, post, log, _ } = require 'kxk'
 
 Tool = require './tool'
 
@@ -17,17 +17,30 @@ class Zoom extends Tool
         
         @stage = @kali.stage
                 
-        @initTitle '100%'
+        @initTitle 'Zoom'
         
         @initButtons [
+            text:   'x1'
+            name:   'reset'
+            action: @reset
+        ]
+        @initButtons [
             text:   '-'
+            name:   'out'
             action: @zoomOut
         ,
             text:   '+'
+            name:   'in'
             action: @zoomIn
         ]
         
         post.on 'stage', @onStage
+    
+    # 000      00000000  000   000  00000000  000       0000000  
+    # 000      000       000   000  000       000      000       
+    # 000      0000000    000 000   0000000   000      0000000   
+    # 000      000          000     000       000           000  
+    # 0000000  00000000      0      00000000  0000000  0000000   
     
     @levels = [
         0.01, 0.02, 0.05,
@@ -38,31 +51,52 @@ class Zoom extends Tool
         1000
     ]
         
+    # 000  000   000  
+    # 000  0000  000  
+    # 000  000 0 000  
+    # 000  000  0000  
+    # 000  000   000  
+    
     zoomIn: (event) => 
-        stopEvent event 
         
         for i in [0...Zoom.levels.length]
             if @stage.zoom < Zoom.levels[i]
                 @stage.setZoom Zoom.levels[i], @stage.stageCenter()
-                log Zoom.levels[i]
                 return
 
+    #  0000000   000   000  000000000  
+    # 000   000  000   000     000     
+    # 000   000  000   000     000     
+    # 000   000  000   000     000     
+    #  0000000    0000000      000     
+    
     zoomOut: (event) =>
-        stopEvent event 
         
         for i in [Zoom.levels.length-1..0]
             if @stage.zoom > Zoom.levels[i]
                 @stage.setZoom Zoom.levels[i], @stage.stageCenter()
-                log Zoom.levels[i]
                 return
-        
+
+    # 00000000   00000000   0000000  00000000  000000000  
+    # 000   000  000       000       000          000     
+    # 0000000    0000000   0000000   0000000      000     
+    # 000   000  000            000  000          000     
+    # 000   000  00000000  0000000   00000000     000     
+    
+    reset: (event) => @stage.resetView()
+                
     onStage: (action, value) =>
         
         switch action
             when 'zoom'
-                if value < 2
-                    @title.innerHTML = "#{parseInt value*100}%"
+                btn = @button 'reset' 
+                if value < 1
+                    btn.innerHTML = "#{parseInt value*100}%"
+                else if value < 1.1
+                    btn.innerHTML = "x1"
+                else if value < 2
+                    btn.innerHTML = "x#{parseInt value}.#{parseInt(value*10) % 10}"
                 else
-                    @title.innerHTML = "x#{parseInt value}"
+                    btn.innerHTML = "x#{parseInt value}"
     
 module.exports = Zoom

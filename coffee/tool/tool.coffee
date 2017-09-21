@@ -60,22 +60,30 @@ class Tool
                 btn.toggle = button.toggle
                 btn.classList.toggle 'active', btn.toggle
                 
-            btn.addEventListener 'mousedown', (event) -> 
-                if event.target.toggle?
-                    event.target.toggle = !event.target.toggle
-                    event.target.classList.toggle 'active'
-                stopEvent(event) and event.target.action? event
+            btn.addEventListener 'mousedown', (event) => 
+                @clickButton event.target.name
+                stopEvent event
                 
             span.appendChild btn
             
         @element.appendChild span
      
-    buttonElem: (name) ->
+    button: (name) ->
         
         for btn in @element.querySelectorAll '.toolButton, .toolLabel'
             if btn.name == name
                 return btn
+
+    clickButton: (button) ->
         
+        btn = @button button
+
+        if btn.toggle?
+            btn.toggle = !btn.toggle
+            btn.classList.toggle 'active'
+        
+        btn.action?()
+                
     # 000000000  000  000000000  000      00000000  
     #    000     000     000     000      000       
     #    000     000     000     000      0000000   
@@ -235,7 +243,7 @@ class Tool
         @execute()
         
     execute: ->
-        
+        log "tool.execute #{@name}"
         if @group?
             post.emit 'tool', 'activate', @name
         else if @action?

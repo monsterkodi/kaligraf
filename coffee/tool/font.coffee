@@ -16,23 +16,23 @@ class Font extends Tool
         
         super @kali, cfg
 
-        @initTitle 'Font'
-        @initButtons [
-            text: 'b'
-            action: @onBold
-            toggle: true
-        ,
-            text: 'i'
-            action: @onItalic
-            toggle: true
-        ]
-        
         @bold   = prefs.get 'font:bold',   false
         @italic = prefs.get 'font:italic', false
         @weight = prefs.get 'font:weight', 'normal'
         @style  = prefs.get 'font:style',  'normal'
         @family = prefs.get 'font:family', 'Helvetica'
         
+        @initTitle 'Font'
+        @initButtons [
+            text: 'b'
+            action: @onBold
+            toggle: @bold
+        ,
+            text: 'i'
+            action: @onItalic
+            toggle: @italic
+        ]
+                
         post.on 'font', @onFont
                 
         @element.focus() # really? 

@@ -32,12 +32,15 @@ class Tools extends Tool
     # 000   000  000          000     000  000   000  000  0000  
     # 000   000   0000000     000     000   0000000   000   000  
     
-    onAction: (action, name) =>
+    onAction: (action, tool, button) =>
+        
+        log "tools.onAction #{action} #{tool} #{button}"
         
         switch action
             
-            when 'click'      then @clickTool    name
-            when 'activate'   then @activateTool name
+            when 'click'      then @clickTool        tool
+            when 'button'     then @clickToolButton  tool, button
+            when 'activate'   then @activateTool     tool
             when 'browse'     then @kali.openBrowser()
             when 'group'      then @stage.group()
             when 'ungroup'    then @stage.ungroup()
@@ -52,7 +55,6 @@ class Tools extends Tool
             when 'open'       then @stage.open()
             when 'new'        then @stage.new()
             when 'clear'      then @stage.doClear()
-            when 'zoom_reset' then @stage.resetView()
             when 'lower'      then @stage.order  'backward'
             when 'raise'      then @stage.order  'forward'
             when 'back'       then @stage.order  'back'
@@ -62,8 +64,7 @@ class Tools extends Tool
             when 'invert'     then @stage.select 'invert'
             when 'center'     then @stage.centerSelection()
             when 'swapColor'  then @stroke.swapColor()
-            when 'grid_toggle' then @grid.toggleGrid()
-            else log "unhandled tool action #{action} #{name}"
+            else log "unhandled tool action #{action} #{tool}"
         
     # 000  000   000  000  000000000  
     # 000  0000  000  000     000     
@@ -109,16 +110,16 @@ class Tools extends Tool
                 { name: 'line',     group: 'shape', draw: true }
             ]
             [
-                { name: 'zoom',  class: 'zoom',  action: 'zoom_reset',  combo: 'command+0' }
-                { name: 'grid',  class: 'grid',  action: 'grid_toggle', combo: 'command+9' }
+                { name: 'zoom',  class: 'zoom'  }
+                { name: 'grid',  class: 'grid'  }
                 { name: 'group', class: 'group' }
                 { name: 'width', class: 'line'  }
-                { name: 'align', class: 'align' }
-                { name: 'font',  class: 'font'  }
+                { name: 'align', class: 'align' }                
             ]            
             [
                 { name: 'image',  group: 'shape' }
                 { name: 'text',   group: 'shape' }
+                { name: 'font',   class: 'font'  }
             ]
         ]
         
@@ -233,7 +234,8 @@ class Tools extends Tool
             
         'unhandled'
 
-    clickTool: (name) => @getTool(name)?.onClick()
+    clickTool: (tool) => @getTool(tool)?.onClick()
+    clickToolButton: (tool, button) =>  @getTool(tool)?.clickButton button
         
     #  0000000    0000000  000000000  000  000   000   0000000   000000000  00000000  
     # 000   000  000          000     000  000   000  000   000     000     000       

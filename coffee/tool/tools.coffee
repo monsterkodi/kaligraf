@@ -110,17 +110,18 @@ class Tools extends Tool
                 { name: 'line',     group: 'shape', draw: true }
             ]
             [
-                { name: 'zoom',  class: 'zoom'  }
-                { name: 'grid',  class: 'grid'  }
-                { name: 'group', class: 'group' }
-                { name: 'order', class: 'order' }
-                { name: 'width', class: 'line'  }
-                { name: 'align', class: 'align' }                
+                { class: 'zoom'  }
+                { name:  'width', class: 'line' }
+                { class: 'align' }                
+                { class: 'grid'  }
+                { class: 'group' }
+                { class: 'order' }
+                { class: 'undo'  }
             ]            
             [
-                { name: 'image',  group: 'shape' }
-                { name: 'text',   group: 'shape' }
-                { name: 'font',   class: 'font'  }
+                { name:  'image',  group: 'shape' }
+                { name:  'text',   group: 'shape' }
+                { class: 'font'  }
             ]
         ]
         

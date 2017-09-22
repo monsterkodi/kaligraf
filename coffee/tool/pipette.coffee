@@ -16,7 +16,6 @@ class Pipette extends Tool
 
         super @kali, cfg
         
-        @stage = @kali.stage
         @tools = @kali.tools
 
     # 0000000     0000000   000   000  000   000  

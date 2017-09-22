@@ -37,7 +37,6 @@ class Align extends Tool
             action: => @onAlign 'bot'
         ]
         
-        @stage = @kali.stage
         @trans = @kali.trans
         
         post.on 'align', @onAlign

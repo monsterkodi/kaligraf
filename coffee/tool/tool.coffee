@@ -11,7 +11,8 @@ class Tool
 
     constructor: (@kali, @cfg) ->
 
-        @name   = @cfg.name
+        @name   = @cfg.name ? @cfg.class
+        @stage  = @kali.stage 
         @draw   = @cfg.draw
         @group  = @cfg.group
         @action = @cfg.action

@@ -15,8 +15,6 @@ class Zoom extends Tool
         
         super @kali, cfg
         
-        @stage = @kali.stage
-                
         @initTitle 'Zoom'
         
         @initButtons [

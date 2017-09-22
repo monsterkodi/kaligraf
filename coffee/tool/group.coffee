@@ -17,8 +17,6 @@ class Group extends Tool
         
         super @kali, cfg
         
-        @stage = @kali.stage
-        
         @stage.group   = Group.group
         @stage.ungroup = Group.ungroup
         @stage.ids     = Group.ids

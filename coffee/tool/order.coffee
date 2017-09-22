@@ -15,7 +15,6 @@ class Order extends Tool
         
         super @kali, cfg
         
-        @stage = @kali.stage
         @stage.order = Order.order    
 
         @initTitle 'Order'

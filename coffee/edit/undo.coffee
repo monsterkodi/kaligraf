@@ -5,7 +5,7 @@
 # 000   000  000  0000  000   000  000   000
 #  0000000   000   000  0000000     0000000 
 
-{ first, last, empty, resolve, fs, str, log, _ } = require 'kxk'
+{ post, first, last, empty, resolve, fs, str, log, _ } = require 'kxk'
 
 Object = require './object'
 
@@ -112,9 +112,19 @@ class Undo
             
         @apply last @history
         
-        # @dump() if empty @history
+        @post 'undo'
         
-        @log 'UNDO'
+    undoAll: ->
+        
+        return if empty @history
+        
+        @futures = @history.concat @futures
+        @history = []
+        @history.push @futures.shift()
+        
+        @apply last @history
+        
+        @post 'undo'
         
     # 00000000   00000000  0000000     0000000   
     # 000   000  000       000   000  000   000  
@@ -133,9 +143,17 @@ class Undo
             
         @apply last @history
         
-        # @dump() if empty @futures
+        @post 'redo'
         
-        @log 'REDO'
+    redoAll: ->
+        
+        return if empty @futures
+        
+        @history = @history.concat @futures
+        
+        @apply last @history
+        
+        @post 'redo'        
     
     #  0000000   00000000   00000000   000      000   000  
     # 000   000  000   000  000   000  000       000 000   
@@ -154,6 +172,16 @@ class Undo
             
         @stage.restore state.stage
 
+    # 00000000    0000000    0000000  000000000  
+    # 000   000  000   000  000          000     
+    # 00000000   000   000  0000000      000     
+    # 000        000   000       000     000     
+    # 000         0000000   0000000      000     
+    
+    post: (action) ->
+        
+        post.emit 'undo', action:action, undos:@history.length, redos:@futures.length
+        
     # 0000000    000   000  00     00  00000000   
     # 000   000  000   000  000   000  000   000  
     # 000   000  000   000  000000000  00000000   

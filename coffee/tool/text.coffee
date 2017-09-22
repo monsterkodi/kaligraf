@@ -12,7 +12,7 @@
 class Text
 
     constructor: (@kali, @item) ->
-        
+        # no super here?
         @stage = @kali.stage
         
         font = @item.font()

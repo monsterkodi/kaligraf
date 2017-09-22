@@ -54,8 +54,8 @@ class Grid extends Tool
         @svg.show()
         @grid.clear()
 
-        z = @kali.stage.zoom
-        v = @kali.stage.svg.viewbox()
+        z = @stage.zoom
+        v = @stage.svg.viewbox()
         vx = v.x
         vy = v.y
         vw = v.width

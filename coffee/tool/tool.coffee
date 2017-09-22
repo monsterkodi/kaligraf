@@ -101,6 +101,7 @@ class Tool
     
     initTitle: (text) ->
         
+        text ?= @constructor.name
         @title = @element.appendChild elem 'div', class:'title', text: text
             
     #  0000000  000   000   0000000   

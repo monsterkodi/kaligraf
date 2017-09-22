@@ -17,7 +17,7 @@ class Undo extends Tool
         
         @undo = @stage.undo
                         
-        @initTitle 'Undo'
+        @initTitle()
         
         @initButtons [
             text:   '<'
@@ -30,15 +30,22 @@ class Undo extends Tool
         ]
         
         @initButtons [
+            text:   '0'
             name:   'undos'
             action: @undo.undoAll
         ,
+            text:   '0'
             name:   'redos'
             action: @undo.redoAll
         ]
         
         post.on 'undo', @onUndo
         
-    onUndo: (info) => log 'onUndo', info
+    onUndo: (info) => 
+        
+        log 'onUndo', info
+        
+        @button('undos').innerHTML = info.undos
+        @button('redos').innerHTML = info.redos
     
 module.exports = Undo

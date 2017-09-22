@@ -58,9 +58,9 @@ class Pipette extends Tool
             
         item = @stage.leafItemAtPos pos event
         if item?
-            @stage.undo.start @stage, 'color'+item.id()
+            @stage.undo.do @stage, 'color'+item.id()
             item.style 'fill',   @tools.fill.color
             item.style 'stroke', @tools.stroke.color
-            @stage.undo.end @stage
+            @stage.undo.done @stage
             
 module.exports = Pipette

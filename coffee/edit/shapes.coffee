@@ -31,8 +31,8 @@ class Shapes
             onMove:  @onDrag
             onStop:  @onStop
 
-    do: (action) -> @stage.undo.start @, action
-    done: -> @stage.undo.end @
+    do: (action) -> @stage.undo.do @, action
+    done: -> @stage.undo.done @
             
     #  0000000  000000000   0000000   000000000  00000000  
     # 000          000     000   000     000     000       

@@ -15,7 +15,7 @@ class Line extends Tool
         
         super @kali, cfg
                 
-        @initTitle 'Line'
+        @initTitle()
         
         @initButtons [
             text:   '-'

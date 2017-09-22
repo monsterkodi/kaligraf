@@ -62,8 +62,8 @@ class Stage
     #      000     000     000   000     000     000       
     # 0000000      000     000   000     000     00000000  
 
-    do:   (action) -> @undo.start @, action
-    done:          -> @undo.end   @
+    do:   (action) -> @undo.do @, action
+    done:          -> @undo.done @
         
     state: ->
         

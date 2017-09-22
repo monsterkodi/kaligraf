@@ -52,8 +52,8 @@ class Edit
     #      000     000     000   000     000     000       
     # 0000000      000     000   000     000     00000000  
 
-    do: (action) -> @stage.undo.start @, action
-    done:        -> @stage.undo.end   @
+    do: (action) -> @stage.undo.do @, action
+    done:        -> @stage.undo.done   @
     
     state: ->
         

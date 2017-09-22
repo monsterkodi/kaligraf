@@ -15,7 +15,7 @@ class Zoom extends Tool
         
         super @kali, cfg
         
-        @initTitle 'Zoom'
+        @initTitle()
         
         @initButtons [
             text:   'x1'

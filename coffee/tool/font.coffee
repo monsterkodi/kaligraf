@@ -22,7 +22,7 @@ class Font extends Tool
         @style  = prefs.get 'font:style',  'normal'
         @family = prefs.get 'font:family', 'Helvetica'
         
-        @initTitle 'Font'
+        @initTitle()
         @initButtons [
             text:  'b'
             name:  'bold'

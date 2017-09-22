@@ -22,7 +22,7 @@ class Grid extends Tool
         @svg.clear()
         @svg.hide()
         
-        @initTitle 'Grid'
+        @initTitle()
         @initButtons [
             text:   '100'
             name:   'grid'

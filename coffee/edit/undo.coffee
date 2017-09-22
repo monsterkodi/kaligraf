@@ -28,13 +28,13 @@ class Undo
         @history = []
         @futures = []
         
-    #  0000000  000000000   0000000   00000000   000000000  
-    # 000          000     000   000  000   000     000     
-    # 0000000      000     000000000  0000000       000     
-    #      000     000     000   000  000   000     000     
-    # 0000000      000     000   000  000   000     000     
+    # 0000000     0000000   
+    # 000   000  000   000  
+    # 000   000  000   000  
+    # 000   000  000   000  
+    # 0000000     0000000   
     
-    start: (object, action) ->
+    do: (object, action) ->
         
         @futures = []
         
@@ -49,59 +49,33 @@ class Undo
                 @history.splice @history.length-1, 1, state
             @history.push state
             
-        @log 'START'
+        @post 'do'
             
-    # 00000000  000   000  0000000    
-    # 000       0000  000  000   000  
-    # 0000000   000 0 000  000   000  
-    # 000       000  0000  000   000  
-    # 00000000  000   000  0000000    
+    # 0000000     0000000   000   000  00000000
+    # 000   000  000   000  0000  000  000     
+    # 000   000  000   000  000 0 000  0000000 
+    # 000   000  000   000  000  0000  000     
+    # 0000000     0000000   000   000  00000000
     
-    end: (object) ->
+    done: (object) ->
 
-        prev   = last @history
-        state  = @state 'end', object
+        prev  = last @history
+        state = @state 'end', object
         state.action = prev.action
         if prev.action? and prev.type != 'start'
             @history.splice @history.length-1, 1, state
         else   
             @history.push state
             
-        @log 'END'
-            
-    #  0000000  000000000   0000000   000000000  00000000  
-    # 000          000     000   000     000     000       
-    # 0000000      000     000000000     000     0000000   
-    #      000     000     000   000     000     000       
-    # 0000000      000     000   000     000     00000000  
-    
-    state: (type, object) ->
-
-        state =
-            type:   type
-            class:  object.constructor.name
-        
-        if object instanceof Object
-            
-            state.id     = object.item.id()
-            state.points = object.points()
-            
-        state.stage = @stage.state()
-            
-        state
-
-    sameState: (a,b) ->
-        
-        same = a? and b? and a.id == b.id and a.action? and a.action == b.action
-        same and _.isEqual(a.points, b.points) and _.isEqual(a.stage, b.stage)
-        
+        @post 'done'
+                    
     # 000   000  000   000  0000000     0000000   
     # 000   000  0000  000  000   000  000   000  
     # 000   000  000 0 000  000   000  000   000  
     # 000   000  000  0000  000   000  000   000  
     #  0000000   000   000  0000000     0000000   
     
-    undo: -> 
+    undo: => 
         
         return if empty @history
         
@@ -114,7 +88,7 @@ class Undo
         
         @post 'undo'
         
-    undoAll: ->
+    undoAll: =>
         
         return if empty @history
         
@@ -132,7 +106,7 @@ class Undo
     # 000   000  000       000   000  000   000  
     # 000   000  00000000  0000000     0000000   
     
-    redo: -> 
+    redo: => 
         
         return if empty @futures
         
@@ -145,7 +119,7 @@ class Undo
         
         @post 'redo'
         
-    redoAll: ->
+    redoAll: =>
         
         return if empty @futures
         
@@ -181,6 +155,33 @@ class Undo
     post: (action) ->
         
         post.emit 'undo', action:action, undos:@history.length, redos:@futures.length
+
+        
+    #  0000000  000000000   0000000   000000000  00000000  
+    # 000          000     000   000     000     000       
+    # 0000000      000     000000000     000     0000000   
+    #      000     000     000   000     000     000       
+    # 0000000      000     000   000     000     00000000  
+    
+    state: (type, object) ->
+
+        state =
+            type:   type
+            class:  object.constructor.name
+        
+        if object instanceof Object
+            
+            state.id     = object.item.id()
+            state.points = object.points()
+            
+        state.stage = @stage.state()
+            
+        state
+
+    sameState: (a,b) ->
+        
+        same = a? and b? and a.id == b.id and a.action? and a.action == b.action
+        same and _.isEqual(a.points, b.points) and _.isEqual(a.stage, b.stage)
         
     # 0000000    000   000  00     00  00000000   
     # 000   000  000   000  000   000  000   000  

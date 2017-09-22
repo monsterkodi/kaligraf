@@ -15,7 +15,7 @@ class Align extends Tool
 
         super @kali, cfg
         
-        @initTitle 'Align'
+        @initTitle()
         @initButtons [
             text: 'L'
             action: => @onAlign 'left'

@@ -21,7 +21,7 @@ class Group extends Tool
         @stage.ungroup = Group.ungroup
         @stage.ids     = Group.ids
         
-        @initTitle 'Group'
+        @initTitle()
         
         @initButtons [
             action: @onGroup

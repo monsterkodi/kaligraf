@@ -110,13 +110,13 @@ class Tools extends Tool
                 { name: 'line',     group: 'shape', draw: true }
             ]
             [
+                { class: 'undo'  }
                 { class: 'zoom'  }
-                { name:  'width', class: 'line' }
                 { class: 'align' }                
-                { class: 'grid'  }
                 { class: 'group' }
                 { class: 'order' }
-                { class: 'undo'  }
+                { class: 'grid'  }
+                { name:  'width', class: 'line' }
             ]            
             [
                 { name:  'image',  group: 'shape' }

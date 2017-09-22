@@ -17,7 +17,7 @@ class Order extends Tool
         
         @stage.order = Order.order    
 
-        @initTitle 'Order'
+        @initTitle()
         @initButtons [
             text: 'F'
             name: 'front'

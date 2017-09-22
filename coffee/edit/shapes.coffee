@@ -136,6 +136,8 @@ class Shapes
     
     onStart: (drag, event) => 
 
+        delete drag.shift
+        
         @clearText()
         
         shape = @kali.shapeTool()

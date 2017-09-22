@@ -5,7 +5,7 @@
 #    000     000   000  000   000  000    
 #    000      0000000    0000000   0000000
 
-{ stopEvent, elem, drag, post, first, last, log, _ } = require 'kxk'
+{ fileExists, stopEvent, elem, drag, post, first, last, log, fs, _ } = require 'kxk'
 
 class Tool
 
@@ -49,6 +49,7 @@ class Tool
             btn = elem 'span'
             btn.innerHTML = button.text   if button.text?
             btn.name      = button.name   if button.name?
+            
             if button.action?
                 btn.classList.add 'toolButton'
                 btn.action = button.action
@@ -60,7 +61,12 @@ class Tool
                 btn.toggle = button.toggle
                 btn.classList.toggle 'active', btn.toggle
                 
+            if button.svg?
+                btn.innerHTML = @loadSVG button.svg
+                btn.classList.add 'toolIcon'
+                
             btn.addEventListener 'mousedown', (event) => 
+                log "clickButton #{event.target.name}"
                 @clickButton event.target.name
                 if not @hasParent()
                     @kali.tools.collapseTemp()
@@ -107,7 +113,18 @@ class Tool
         @element.innerHTML = svg
         @svg = SVG.adopt(@element.firstChild)
         @svg.addClass 'toolSVG'
-            
+
+    loadSVG: (name) ->
+        
+        svgFile = "#{__dirname}/../../svg/#{name}.svg"
+        if fileExists svgFile
+            return fs.readFileSync svgFile, encoding: 'utf8'
+
+    saveSVG: (name, svg) ->
+        
+        svgFile = "#{__dirname}/../../svg/#{name}.svg"
+        fs.writeFileSync svgFile, svg, encoding: 'utf8'
+        
     # 000   000   0000000   000   000  00000000  00000000     
     # 000   000  000   000  000   000  000       000   000    
     # 000000000  000   000   000 000   0000000   0000000      

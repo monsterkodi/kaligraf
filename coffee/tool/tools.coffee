@@ -5,7 +5,7 @@
 #    000     000   000  000   000  000           000
 #    000      0000000    0000000   0000000  0000000 
 
-{ elem, stopEvent, fileExists, post, prefs, first, last, empty, fs, path, log, _ } = require 'kxk'
+{ elem, stopEvent, post, prefs, first, last, empty, fs, path, log, _ } = require 'kxk'
 
 Tool = require './tool'
 
@@ -174,17 +174,6 @@ class Tools extends Tool
         @tools.push tool
         tool
         
-    loadSVG: (name) ->
-        
-        svgFile = "#{__dirname}/../../svg/#{name}.svg"
-        if fileExists svgFile
-            return fs.readFileSync svgFile, encoding: 'utf8'
-
-    saveSVG: (name, svg) ->
-        
-        svgFile = "#{__dirname}/../../svg/#{name}.svg"
-        fs.writeFileSync svgFile, svg, encoding: 'utf8'
-
     # 00000000   00000000   00000000  00000000   0000000  
     # 000   000  000   000  000       000       000       
     # 00000000   0000000    0000000   000000    0000000   

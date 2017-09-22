@@ -78,8 +78,8 @@ class Menu
                 ]}
                 { label: 'Order', submenu: [
                     { label: 'Front',       accelerator: 'command+alt+up',  click: -> button 'order', 'front'}
-                    { label: 'Raise',       accelerator: 'command+up',      click: -> button 'order', 'raise'}
-                    { label: 'Lower',       accelerator: 'command+down',    click: -> button 'order', 'lower'}
+                    { label: 'Raise',       accelerator: 'command+up',      click: -> button 'order', 'forward'}
+                    { label: 'Lower',       accelerator: 'command+down',    click: -> button 'order', 'backward'}
                     { label: 'Back',        accelerator: 'command+alt+down',click: -> button 'order', 'back' }
                 ]}
                 { label: 'Select', submenu: [

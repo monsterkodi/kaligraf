@@ -5,7 +5,7 @@
 #      000  000       000      000       000          000     000  000   000  000  0000
 # 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000
 
-{ last, elem, post, pos, log, _ } = require 'kxk'
+{ prefs, last, elem, post, pos, log, _ } = require 'kxk'
 
 {   contrastColor, moveBox, scaleBox, boxOffset, boxForItems,
     normRect, rectsIntersect, rectOffset} = require './utils'
@@ -30,6 +30,8 @@ class Selection
         @rectsBlack.addClass 'selectionBlack'
         @rectsBlack.clear()
         
+        @showIDs prefs.get 'stags:ids', false
+        
         post.on 'stage', @onStage
        
     #  0000000  000000000   0000000   000000000  00000000  
@@ -43,6 +45,25 @@ class Selection
     restore: (state) ->
         log 'restore', state
         @setItems state.ids.map (id) -> SVG.get id
+        
+    # 000  0000000     0000000  
+    # 000  000   000  000       
+    # 000  000   000  0000000   
+    # 000  000   000       000  
+    # 000  0000000    0000000   
+    
+    showIDs: (show=true) -> 
+    
+        if show
+            if not @ids?
+                @ids = SVG(@element).size '100%', '100%'
+                @ids.addClass 'selectionIDs'
+                @ids.clear()
+                @element.insertBefore @ids.node, @rectsWhite.node
+            @updateIDs()
+        else
+            @ids?.remove()
+            delete @ids
     
     # 0000000    00000000  000      00000000  000000000  00000000  
     # 000   000  000       000      000          000     000       
@@ -128,7 +149,7 @@ class Selection
 
         r = @rectsBlack.rect()
         item.remember 'itemRectBlack', r
-        
+                
         @updateItemRect item
         
     delRectForItem: (item) ->
@@ -141,11 +162,18 @@ class Selection
             r.remove()
             item.forget 'itemRectBlack'
             
-    updateItems: ->
+    update: -> @updateItems()
+            
+    updateItems: (items=@items) ->
+
+        for item in items
+            @updateItemRect item
+
+    updateIDs: ->
 
         for item in @items
-            @updateItemRect item
-        
+            @updateItemID item
+            
     updateItemRect: (item) ->
         
         box = item.bbox()
@@ -169,6 +197,28 @@ class Selection
                 height: box.height
                 
             r.transform item.transform()
+            
+        @updateItemID item
+        
+    updateItemID: (item) ->
+        
+        box = item.bbox()
+        
+        if @ids
+            
+            if not id = item.remember 'itemID'
+                id = @ids.text item.id()
+                id.addClass 'itemID'
+                id.style
+                    fill:   'black'
+                    stroke: 'none'
+                item.remember 'itemID', id
+            
+            id.attr
+                x: box.x
+                y: box.y
+                
+            id.transform item.transform()
 
     onStage: (action, box) =>
         
@@ -176,6 +226,10 @@ class Selection
             
             @rectsWhite.viewbox box
             @rectsBlack.viewbox box
+            
+            if @ids?
+                @ids.viewbox box
+                @ids.style 'font-size', 12/@stage.zoom
             
             dashArray = "#{2/@stage.zoom},#{6/@stage.zoom}"
             
@@ -215,7 +269,7 @@ class Selection
     moveBy: (delta) ->
         
         @stage.moveItems @items, delta
-        @updateItems()
+        @update()
             
     # 00000000   00000000   0000000  000000000    
     # 000   000  000       000          000       

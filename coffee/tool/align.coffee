@@ -124,5 +124,8 @@ class Align extends Tool
                 when 'mid'    then newPos.y = avg - bbox.height/2
                               
             @trans.pos item, newPos
+            
+        @stage.selection.update()
+        @stage.resizer.update()
         
 module.exports = Align

@@ -281,8 +281,8 @@ class Stage
         for item in @selectedItems(type:'text')
             item.font prop, value
             
-        @selection.updateItems()
-        @resizer.calcBox()
+        @selection.update()
+        @resizer.update()
         @done()
                 
     # 000      000  000   000  00000000  

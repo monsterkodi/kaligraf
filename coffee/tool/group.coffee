@@ -5,7 +5,7 @@
 # 000   000  000   000  000   000  000   000  000      
 #  0000000   000   000   0000000    0000000   000      
 
-{ prefs, log, _ } = require 'kxk'
+{ prefs, empty, log, _ } = require 'kxk'
 
 Tool = require './tool'
 
@@ -24,11 +24,13 @@ class Group extends Tool
         @initTitle 'Group'
         
         @initButtons [
-            text:   'G'
             action: @onGroup
+            name:   'group'
+            svg:    'rect'
         ,
-            text:   'U'
             action: @onUngroup
+            name:   'ungroup'
+            svg:    'circle'
         ]
         
         @initButtons [
@@ -50,28 +52,39 @@ class Group extends Tool
     #      000     000     000   000  000   000  000         
     # 0000000      000     000   000   0000000   00000000    
     
-    @ungroup: ->
-        
-        @do()
-        oldItems = _.clone @items()
-        groups = @selectedItems type:'g'
-        for group in groups 
-            group.ungroup()
-            
-        @selection.clear()
-        @selection.setItems @items().filter (item) -> item not in oldItems
-        @done()
-        
     @group: ->
+
+        sortedItems = @sortedSelectedItems()
+        if not empty sortedItems
+            @do()
+            group = @svg.group()
+            
+            for item in sortedItems
+               group.add item
+               
+            @selection.setItems [group]
+            @done()
         
-        @do()
-        group = @svg.group()
-        for item in @sortedSelectedItems()
-           group.add item
-           
-        @selection.setItems [group]
-        @done()
+    @ungroup: ->
+
+        groups = @selectedItems type:'g'
+        if not empty groups
+            @do()
+            oldItems = _.clone @items()
+            
+            for group in groups 
+                group.ungroup()
+                
+            @selection.clear()
+            @selection.setItems @items().filter (item) -> item not in oldItems
+            @done()
         
-    @ids: -> log 'ids'
+    @ids: -> 
+    
+        ids = prefs.get 'stage:ids', false
+        ids = !ids
+        prefs.set 'stage:ids', ids
+        
+        @selection.showIDs ids
     
 module.exports = Group

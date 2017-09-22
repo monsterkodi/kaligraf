@@ -327,6 +327,7 @@ class Stage
                         @setColor "#222", 0
     
                 svg = SVG.adopt elemChild
+                
                 if svg? and svg.children().length
     
                     @selection.clear()
@@ -342,6 +343,8 @@ class Stage
                         if tag == 'metadata' or tag.startsWith 'sodipodi'
                             item.remove()
                             
+                    Exporter.cleanIDs @treeItems()
+                    
                     return
 
     itemSVG: (items, bb, color) ->

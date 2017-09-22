@@ -7,7 +7,7 @@
 
 { resolve, fs, log, _ } = require 'kxk'
 
-{ growBox } = require './utils'
+{ growBox, uuid } = require './utils'
 
 class Exporter
 
@@ -105,4 +105,22 @@ class Exporter
                     
         log "opacity: #{item.node.getAttribute 'opacity'}" if item.node.getAttribute 'opacity'
         
+    # 000  0000000     0000000  
+    # 000  000   000  000       
+    # 000  000   000  0000000   
+    # 000  000   000       000  
+    # 000  0000000    0000000   
+    
+    @cleanIDs: (items) ->
+
+        ids = items.map (item) -> item.id() 
+        
+        ids = []
+        for item in items
+
+            while item.id().startsWith('Svgjs') or item.id() in ids
+                uuid item
+                
+            ids.push item.id()
+                
 module.exports = Exporter

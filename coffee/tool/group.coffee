@@ -7,6 +7,8 @@
 
 { prefs, empty, log, _ } = require 'kxk'
 
+{ uuid } = require '../utils'
+
 Tool = require './tool'
 
 class Group extends Tool
@@ -58,6 +60,7 @@ class Group extends Tool
         if not empty sortedItems
             @do()
             group = @svg.group()
+            uuid group
             
             for item in sortedItems
                group.add item

@@ -13,6 +13,7 @@ dependencies
                 kxk             ^0.16.12
                 svg.colorat.js  ^1.0.0
                 svg.js          ^2.6.3
+                uuid            ^3.1.0
 devDependencies
                 appdmg          ^0.4.5
                 electron        ^1.8.0

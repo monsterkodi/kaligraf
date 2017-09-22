@@ -7,7 +7,7 @@
 
 { post, drag, last, resolve, pos, log, _ } = require 'kxk'
 
-{ constrain } = require '../utils'
+{ constrain, uuid } = require '../utils'
 
 Draw = require './draw'
 Edit = require './edit'
@@ -112,6 +112,8 @@ class Shapes
                 
             else
                 e = @svg[shape]()
+              
+        uuid e
                 
         e.style
             stroke:           @tools.stroke.color

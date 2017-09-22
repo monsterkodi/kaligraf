@@ -129,6 +129,10 @@ class Selection
     
     addRectForItem: (item) ->
 
+        if not item?.remember?
+            log 'dafuk', item
+            return
+        
         r = @rectsWhite.rect()
         item.remember 'itemRectWhite', r
 
@@ -161,11 +165,6 @@ class Selection
 
         for item in items
             @updateItemRect item
-
-    updateIDs: ->
-
-        for item in @items
-            @updateItemID item
             
     updateItemRect: (item) ->
         
@@ -205,18 +204,31 @@ class Selection
             if not @ids?
                 @ids = SVG(@element).size '100%', '100%'
                 @ids.addClass 'selectionIDs'
-                @ids.clear()
                 @element.insertBefore @ids.node, @rectsBlack.node.nextSibling
+            @ids.clear()
             @updateIDs()
         else
+            for item in @items
+                item.forget 'itemIDRect'
+                item.forget 'itemID'
             @ids?.remove()
             delete @ids
-    
+
+    updateIDs: ->
+
+        @ids.viewbox @stage.svg.viewbox()
+        @ids.style 'font-size',    12/@stage.zoom
+        @ids.style 'font-family', 'Menlo,Monaco,Andale Mono,Arial,Verdana'
+        @ids.style 'stroke-width', 1/@stage.zoom
+        
+        for item in @items
+            @updateItemID item
+            
     updateItemID: (item) ->
         
-        box = item.bbox()
-
         if @ids
+            
+            box = item.bbox()
             
             if not idRect = item.remember 'itemIDRect'    
                 idRect = @ids.rect 0,0
@@ -251,12 +263,7 @@ class Selection
             @rectsWhite.viewbox box
             @rectsBlack.viewbox box
             
-            if @ids?
-                @ids.viewbox box
-                @ids.style 'font-size',    12/@stage.zoom
-                @ids.style 'font-family', 'Menlo,Monaco,Andale Mono,Arial,Verdana'
-                @ids.style 'stroke-width', 1/@stage.zoom
-                @updateIDs()
+            if @ids? then @updateIDs()
             
             dashArray = "#{2/@stage.zoom},#{6/@stage.zoom}"
             

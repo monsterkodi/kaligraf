@@ -6,6 +6,8 @@
 
 { empty, clamp, elem, pos, log, _ } = require 'kxk'
 
+uuid = require 'uuid/v4'
+
 module.exports = 
     
     #  0000000  000   000   0000000   000  000000000  00000000  00     00   0000000  
@@ -38,7 +40,11 @@ module.exports =
                 items = items.concat module.exports.svgItems child
         items
     
-    itemIDs: (items) -> (items.map (item) -> item.id()).join ''        
+    itemIDs: (items) -> (items.map (item) -> item.id()).join ''   
+    
+    uuid: (item) -> 
+        item.id item.type[0].toUpperCase() + "-" + uuid().slice(0,8).splice 2,0,'-'
+        log item.id()
         
     # 0000000     0000000   000   000  
     # 000   000  000   000   000 000   

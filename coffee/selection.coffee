@@ -30,7 +30,7 @@ class Selection
         @rectsBlack.addClass 'selectionBlack'
         @rectsBlack.clear()
         
-        @showIDs prefs.get 'stags:ids', false
+        @showIDs prefs.get 'stage:ids', false
         
         post.on 'stage', @onStage
        
@@ -45,26 +45,7 @@ class Selection
     restore: (state) ->
         log 'restore', state
         @setItems state.ids.map (id) -> SVG.get id
-        
-    # 000  0000000     0000000  
-    # 000  000   000  000       
-    # 000  000   000  0000000   
-    # 000  000   000       000  
-    # 000  0000000    0000000   
-    
-    showIDs: (show=true) -> 
-    
-        if show
-            if not @ids?
-                @ids = SVG(@element).size '100%', '100%'
-                @ids.addClass 'selectionIDs'
-                @ids.clear()
-                @element.insertBefore @ids.node, @rectsWhite.node
-            @updateIDs()
-        else
-            @ids?.remove()
-            delete @ids
-    
+            
     # 0000000    00000000  000      00000000  000000000  00000000  
     # 000   000  000       000      000          000     000       
     # 000   000  0000000   000      0000000      000     0000000   
@@ -123,11 +104,15 @@ class Selection
         if not @empty()
             
             for item in @items
-                item.forget 'itemRect'
+                item.forget 'itemRectWhite'
+                item.forget 'itemRectBlack'
+                item.forget 'itemIDRect'
+                item.forget 'itemID'
                 
             @items = []
             @rectsWhite.clear()
             @rectsBlack.clear()
+            @ids?.clear()
             post.emit 'selection', 'clear'
             return true
             
@@ -161,6 +146,14 @@ class Selection
         if r = item.remember 'itemRectBlack' 
             r.remove()
             item.forget 'itemRectBlack'
+            
+        if id = item.remember 'itemID'
+            id.remove()
+            item.forget 'itemID'
+            
+        if idRect = item.remember 'itemIDRect'
+            idRect.remove()
+            item.forget 'itemIDRect'
             
     update: -> @updateItems()
             
@@ -200,26 +193,57 @@ class Selection
             
         @updateItemID item
         
+    # 000  000000000  00000000  00     00  000  0000000    
+    # 000     000     000       000   000  000  000   000  
+    # 000     000     0000000   000000000  000  000   000  
+    # 000     000     000       000 0 000  000  000   000  
+    # 000     000     00000000  000   000  000  0000000    
+    
+    showIDs: (show=true) -> 
+    
+        if show
+            if not @ids?
+                @ids = SVG(@element).size '100%', '100%'
+                @ids.addClass 'selectionIDs'
+                @ids.clear()
+                @element.insertBefore @ids.node, @rectsBlack.node.nextSibling
+            @updateIDs()
+        else
+            @ids?.remove()
+            delete @ids
+    
     updateItemID: (item) ->
         
         box = item.bbox()
-        
+
         if @ids
             
+            if not idRect = item.remember 'itemIDRect'    
+                idRect = @ids.rect 0,0
+                idRect.addClass 'itemIDRect'
+                item.remember 'itemIDRect', idRect
+                
             if not id = item.remember 'itemID'
                 id = @ids.text item.id()
-                id.addClass 'itemID'
-                id.style
-                    fill:   'black'
-                    stroke: 'none'
-                item.remember 'itemID', id
-            
-            id.attr
-                x: box.x
-                y: box.y
-                
+                id.addClass     'itemID'
+                id.style font:  'inherit'
+                item.remember   'itemID', id
+    
             id.transform item.transform()
 
+            idRect.attr x:box.x, y:box.y
+            idRect.transform item.transform()
+            @trans.width  idRect, @trans.width(id)+4
+            @trans.height idRect, 14/@stage.zoom
+            
+            @trans.center id, @trans.center(idRect).plus 2
+            
+    #  0000000   000   000   0000000  000000000   0000000    0000000   00000000  
+    # 000   000  0000  000  000          000     000   000  000        000       
+    # 000   000  000 0 000  0000000      000     000000000  000  0000  0000000   
+    # 000   000  000  0000       000     000     000   000  000   000  000       
+    #  0000000   000   000  0000000      000     000   000   0000000   00000000  
+    
     onStage: (action, box) =>
         
         if action == 'viewbox' 
@@ -229,7 +253,10 @@ class Selection
             
             if @ids?
                 @ids.viewbox box
-                @ids.style 'font-size', 12/@stage.zoom
+                @ids.style 'font-size',    12/@stage.zoom
+                @ids.style 'font-family', 'Menlo,Monaco,Andale Mono,Arial,Verdana'
+                @ids.style 'stroke-width', 1/@stage.zoom
+                @updateIDs()
             
             dashArray = "#{2/@stage.zoom},#{6/@stage.zoom}"
             

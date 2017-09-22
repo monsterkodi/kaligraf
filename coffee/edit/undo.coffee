@@ -86,9 +86,7 @@ class Undo
             state.id     = object.item.id()
             state.points = object.points()
             
-        else
-            
-            state.stage = @stage.state()
+        state.stage = @stage.state()
             
         state
 
@@ -154,9 +152,7 @@ class Undo
             item = SVG.get state.id
             item.plot state.points
             
-        else
-            
-            @stage.restore state.stage
+        @stage.restore state.stage
 
     # 0000000    000   000  00     00  00000000   
     # 000   000  000   000  000   000  000   000  
@@ -176,7 +172,7 @@ class Undo
             
     log: (msg) ->
         
-        # log msg
-        # log @history.map((i) -> i.class + ' ' + i.action + ' ' + i.type).join '\n'
+        log msg
+        log @history.map((i) -> i.class + ' ' + i.action + ' ' + i.type).join '\n'
         
 module.exports = Undo

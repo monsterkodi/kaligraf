@@ -74,7 +74,7 @@ class Stage
         svg:       @getSVG()
         
     restore: (state) ->
-
+        
         @setSVG state.svg
         @setColor state.color, state.alpha
         @selection.restore state.selection

@@ -43,7 +43,7 @@ class Shapes
     state: -> 
         
         if @edit?
-            edit: @edit.state
+            edit: @edit.state()
         else
             {}
             

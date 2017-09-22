@@ -57,15 +57,27 @@ class Edit
     
     state: ->
         
-        dotsel:  @dotsel.dots.map (dot) -> index:dot.ctrl.index(), dot:dot.dot
+        dotsel:  @dotsel.dots.map (dot) -> id:dot.ctrl.object.item.id(), index:dot.ctrl.index(), dot:dot.dot
         objects: @objects.map (obj) -> obj.item.id()
         
     restore: (state) ->
-        
+
         @dotsel.clear()
-        log 'restore dots',    state.dotsel
-        log 'restore objects', state.objects
-    
+        
+        @objects = []
+        
+        for id in state.objects
+            item = SVG.get id
+            @addItem item
+        
+        for {id, index, dot} in state.dotsel
+
+            item   = SVG.get id
+            object = @objectForItem item
+            ctrl   = object.ctrlAt index
+            dot    = ctrl.dots[dot]
+            @dotsel.add dot
+            
     # 0000000    00000000  00000000   0000000  
     # 000   000  000       000       000       
     # 000   000  0000000   000000    0000000   

@@ -44,7 +44,7 @@ class Group extends Tool
     onGroup:   => @stage.group()
     onIDs:     => @stage.ids()
 
-    execute: -> log 'group execute'
+    execute: -> 
 
     #  0000000  000000000   0000000    0000000   00000000    
     # 000          000     000   000  000        000         

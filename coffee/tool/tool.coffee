@@ -7,6 +7,8 @@
 
 { fileExists, stopEvent, elem, drag, post, first, last, log, fs, _ } = require 'kxk'
 
+{ elemProp } = require '../utils'
+
 class Tool
 
     constructor: (@kali, @cfg) ->
@@ -67,10 +69,18 @@ class Tool
                 btn.classList.add 'toolIcon'
                 
             btn.addEventListener 'mousedown', (event) => 
-                log "clickButton #{event.target.name}"
-                @clickButton event.target.name
+                
+                button = event.target.name
+                
+                if not button?
+                    button = elemProp event.target, 'name'
+                
+                if button?
+                    @clickButton button 
+                    
                 if not @hasParent()
                     @kali.tools.collapseTemp()
+                    
                 stopEvent event
                 
             span.appendChild btn
@@ -87,6 +97,9 @@ class Tool
         
         btn = @button button
 
+        if not btn?
+            log 'wtf?', button
+        
         if btn.toggle?
             btn.toggle = !btn.toggle
             btn.classList.toggle 'active'

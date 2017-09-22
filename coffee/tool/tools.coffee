@@ -92,10 +92,13 @@ class Tools extends Tool
             ]
             [
                 { name: 'rect',     group: 'shape' }
-                { name: 'circle',   group: 'shape' }
-                { name: 'ellipse',  group: 'shape' }
                 { name: 'triangle', group: 'shape' }
                 { name: 'triangle_square', group: 'shape' }
+                { name:  'image',   group: 'shape' }
+            ]
+            [
+                { name: 'circle',   group: 'shape' }
+                { name: 'ellipse',  group: 'shape' }
             ]
             [
                 { name: 'bezier_smooth', group: 'shape', draw: true }
@@ -110,19 +113,22 @@ class Tools extends Tool
                 { name: 'line',     group: 'shape', draw: true }
             ]
             [
-                { class: 'undo'  }
-                { class: 'zoom'  }
-                { class: 'align' }                
-                { class: 'group' }
-                { class: 'order' }
-                { class: 'grid'  }
-                { name:  'width', class: 'line' }
-            ]            
-            [
-                { name:  'image',  group: 'shape' }
                 { name:  'text',   group: 'shape' }
                 { class: 'font'  }
             ]
+            [
+                { name:  'width', class: 'line' }
+            ]
+            [
+                { class: 'undo'  }
+                { class: 'zoom'  }
+                { class: 'grid'  }
+            ]            
+            [
+                { class: 'group' }
+                { class: 'align' }                
+                { class: 'order' }
+            ]            
         ]
         
         @element.style.zIndex = 1 
@@ -226,7 +232,9 @@ class Tools extends Tool
         'unhandled'
 
     clickTool: (tool) => @getTool(tool)?.onClick()
-    clickToolButton: (tool, button) =>  @getTool(tool)?.clickButton button
+    clickToolButton: (tool, button) =>  
+        log "clickToolButton #{tool} #{button}"
+        @getTool(tool)?.clickButton button
         
     #  0000000    0000000  000000000  000  000   000   0000000   000000000  00000000  
     # 000   000  000          000     000  000   000  000   000     000     000       

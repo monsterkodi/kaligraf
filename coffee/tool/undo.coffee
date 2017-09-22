@@ -43,8 +43,6 @@ class Undo extends Tool
         
     onUndo: (info) => 
         
-        log 'onUndo', info
-        
         @button('undos').innerHTML = info.undos
         @button('redos').innerHTML = info.redos
     

@@ -43,7 +43,7 @@ class Selection
     state: -> ids: @items.map (item) -> item.id()
     
     restore: (state) ->
-        log 'restore', state
+
         @setItems state.ids.map (id) -> SVG.get id
             
     # 0000000    00000000  000      00000000  000000000  00000000  

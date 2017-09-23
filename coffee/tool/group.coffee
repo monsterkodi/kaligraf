@@ -26,19 +26,19 @@ class Group extends Tool
         @initButtons [
             action: @onGroup
             name:   'group'
-            svg:    'rect'
+            svg:    'group'
         ,
             action: @onUngroup
             name:   'ungroup'
-            svg:    'circle'
+            svg:    'ungroup'
         ]
         
-        @initButtons [
-            text:   'IDs'
-            name:   'ids'
-            action: @onIDs
-            toggle: prefs.get 'stage:ids', false
-        ]
+        # @initButtons [
+            # text:   'IDs'
+            # name:   'ids'
+            # action: @onIDs
+            # toggle: prefs.get 'stage:ids', false
+        # ]
         
     onUngroup: => @stage.ungroup()
     onGroup:   => @stage.group()

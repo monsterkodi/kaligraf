@@ -28,6 +28,8 @@ class Undo
         @history = []
         @futures = []
         
+        @post 'clear'
+        
     # 0000000     0000000   
     # 000   000  000   000  
     # 000   000  000   000  

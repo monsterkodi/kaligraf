@@ -19,22 +19,13 @@ class Order extends Tool
 
         @initTitle()
         @initButtons [
-            text: 'F'
-            name: 'front'
-            action: => @stage.order 'front'
-        ,
-            text: 'f'
-            name: 'forward'
+            name:   'forward'
+            svg:    'order-forward'
             action: => @stage.order 'forward'
-        ]
-        @initButtons [
-            text: 'B'
-            name: 'back'
-            action: => @stage.order 'back'
         ,
-            text: 'b'
             name: 'backward'
-            action: => @stage.order 'backward'
+            svg:  'order-backward'
+            action: => @stage.order 'backward'            
         ]
 
     #  0000000  000000000   0000000    0000000   00000000  

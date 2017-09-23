@@ -59,13 +59,13 @@ class Menu
             
             label: 'Edit', submenu: [
                 { label: 'Align', submenu: [
-                    { label: 'Left',    accelerator: 'alt+1',               click: -> post.toWins 'align', 'left'}
-                    { label: 'Center',  accelerator: 'alt+2',               click: -> post.toWins 'align', 'center'}
-                    { label: 'Right',   accelerator: 'alt+3',               click: -> post.toWins 'align', 'right'}
-                    { type:  'separator'}
-                    { label: 'Top',     accelerator: 'alt+4',               click: -> post.toWins 'align', 'top'}
-                    { label: 'Middle',  accelerator: 'alt+5',               click: -> post.toWins 'align', 'mid'}
-                    { label: 'Bottom',  accelerator: 'alt+6',               click: -> post.toWins 'align', 'bot'}
+                    { label: 'Left',    accelerator: 'alt+1',               click: -> button 'align', 'left'}
+                    { label: 'Center',  accelerator: 'alt+2',               click: -> button 'align', 'center'}
+                    { label: 'Right',   accelerator: 'alt+3',               click: -> button 'align', 'right'}
+                    { type:  'separator'}                                             
+                    { label: 'Top',     accelerator: 'alt+4',               click: -> button 'align', 'top'}
+                    { label: 'Middle',  accelerator: 'alt+5',               click: -> button 'align', 'mid'}
+                    { label: 'Bottom',  accelerator: 'alt+6',               click: -> button 'align', 'bot'}
                     { type:  'separator'}
                     { label: 'Space Horizontal', accelerator: 'alt+7',      click: -> post.toWins 'space', 'horizontal'}
                     { label: 'Space Vertical',   accelerator: 'alt+8',      click: -> post.toWins 'space', 'vertical'}
@@ -77,10 +77,10 @@ class Menu
                     { label: 'Divide',  accelerator: 'command+4',           click: -> post.toWins 'convert', 'D'}
                 ]}
                 { label: 'Order', submenu: [
-                    { label: 'Front',       accelerator: 'command+alt+up',  click: -> button 'order', 'front'}
+                    { label: 'Front',       accelerator: 'command+alt+up',  click: -> button 'send',  'front'}
                     { label: 'Raise',       accelerator: 'command+up',      click: -> button 'order', 'forward'}
                     { label: 'Lower',       accelerator: 'command+down',    click: -> button 'order', 'backward'}
-                    { label: 'Back',        accelerator: 'command+alt+down',click: -> button 'order', 'back' }
+                    { label: 'Back',        accelerator: 'command+alt+down',click: -> button 'send',  'back' }
                 ]}
                 { label: 'Select', submenu: [
                     { label: 'All',         accelerator: 'command+a',       click: -> action 'selectAll'}

@@ -55,10 +55,6 @@ class Tools extends Tool
             when 'open'       then @stage.open()
             when 'new'        then @stage.new()
             when 'clear'      then @stage.doClear()
-            when 'lower'      then @stage.order  'backward'
-            when 'raise'      then @stage.order  'forward'
-            when 'back'       then @stage.order  'back'
-            when 'front'      then @stage.order  'front'
             when 'selectAll'  then @stage.select 'all'
             when 'deselect'   then @stage.select 'none'
             when 'invert'     then @stage.select 'invert'
@@ -127,7 +123,9 @@ class Tools extends Tool
             [
                 { class: 'group' }
                 { class: 'align' }                
+                { class: 'space' }                
                 { class: 'order' }
+                { class: 'send'  }
             ]            
         ]
         

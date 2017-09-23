@@ -468,7 +468,6 @@ button
         color               #fff
     &:active
         color               #fff
-        // border-color        #888
         background          linear-gradient(to bottom, transparent, #444)
     &:first-child
         border-top-left-radius    4px
@@ -485,9 +484,12 @@ button
     color                   #666
 
 .toolIcon
-    max-height              22px
+    // max-height              22px
     padding-top             1px
     padding-bottom          1px
+    opacity                 0.6
+    &:hover
+        opacity             1.0
     
 .toolSVG
     position                absolute

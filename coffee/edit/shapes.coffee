@@ -11,7 +11,7 @@
 
 Draw = require './draw'
 Edit = require './edit'
-Text = require '../tool/text'
+Text = require './text'
 
 class Shapes
 

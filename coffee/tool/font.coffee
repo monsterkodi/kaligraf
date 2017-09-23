@@ -5,7 +5,7 @@
 # 000       000   000  000  0000     000   
 # 000        0000000   000   000     000   
 
-{ stopEvent, prefs, elem, post, log, _ } = require 'kxk'
+{ stopEvent, prefs, clamp, elem, post, log, _ } = require 'kxk'
 
 Tool     = require './tool'
 FontList = require './fontlist'
@@ -21,8 +21,22 @@ class Font extends Tool
         @weight = prefs.get 'font:weight', 'normal'
         @style  = prefs.get 'font:style',  'normal'
         @family = prefs.get 'font:family', 'Helvetica'
+        @size   = prefs.get 'font:size',   100
         
         @initTitle()
+        @initButtons [
+            text:   '-'
+            name:   'decr'
+            action: @onDecr
+        ,
+            text:   @size
+            name:   'size'
+            action: @onReset
+        ,
+            text:   '+'
+            name:   'incr'
+            action: @onIncr
+        ]
         @initButtons [
             text:  'b'
             name:  'bold'
@@ -37,8 +51,6 @@ class Font extends Tool
                 
         post.on 'font', @onFont
                 
-        @element.focus() # really? 
-        
     # 0000000     0000000   000      0000000    
     # 000   000  000   000  000      000   000  
     # 0000000    000   000  000      000   000  
@@ -47,9 +59,13 @@ class Font extends Tool
     
     onBold: (event) => 
         
-        stopEvent event  
         @bold   = !@bold
         @weight = @bold and 'bold' or 'normal'
+        
+        @title.style.fontWeight = @weight
+        @button('bold').style.fontWeight = @weight
+        @button('italic').style.fontWeight = @weight
+        
         post.emit 'font', 'weight', @weight
         prefs.set 'font:bold',   @bold
         prefs.set 'font:weight', @weight
@@ -62,9 +78,13 @@ class Font extends Tool
     
     onItalic: (event) => 
         
-        stopEvent(event) 
         @italic = !@italic
         @style  = @italic and 'italic' or 'normal'
+        
+        @title.style.fontStyle = @style
+        @button('bold').style.fontStyle = @style
+        @button('italic').style.fontStyle = @style
+        
         post.emit 'font', 'style', @style
         prefs.set 'font:italic',   @italic
         prefs.set 'font:style',    @style
@@ -98,7 +118,22 @@ class Font extends Tool
             @list.toggleDisplay()
         else
             @showList()
-            
+
+    onIncr:  => @setSize clamp 0, 999, @size + 1
+    onDecr:  => @setSize clamp 0, 999, @size - 1
+    onReset: => @setSize 100
+
+    setSize: (@size) =>
+        @button('size').innerHTML = "#{parseInt @size}"
+        post.emit 'font', 'size', @size
+        prefs.set 'font:size', @size
+    
+    # 000      000   0000000  000000000  
+    # 000      000  000          000     
+    # 000      000  0000000      000     
+    # 000      000       000     000     
+    # 0000000  000  0000000      000     
+    
     showList: ->
         
         @list = new FontList @kali

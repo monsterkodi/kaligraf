@@ -33,8 +33,8 @@ class Line extends Tool
         
         @setWidth prefs.get 'width', 1
         
-    onIncr: => @setWidth clamp 0, 100, @width + 1
-    onDecr: => @setWidth clamp 0, 100, @width - 1
+    onIncr:  => @setWidth clamp 0, 100, @width + 1
+    onDecr:  => @setWidth clamp 0, 100, @width - 1
     onReset: => @setWidth 1
     setWidth: (@width) =>
         @button('width').innerHTML = "#{parseInt @width}"

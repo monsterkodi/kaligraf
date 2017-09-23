@@ -231,7 +231,6 @@ class Tools extends Tool
 
     clickTool: (tool) => @getTool(tool)?.onClick()
     clickToolButton: (tool, button) =>  
-        log "clickToolButton #{tool} #{button}"
         @getTool(tool)?.clickButton button
         
     #  0000000    0000000  000000000  000  000   000   0000000   000000000  00000000  

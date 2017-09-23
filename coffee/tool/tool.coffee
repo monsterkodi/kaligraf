@@ -70,6 +70,7 @@ class Tool
                 btn.classList.add 'toolTiny' if button.tiny?
                 btn.classList.remove 'toolButton'
                 btn.firstChild.classList.add 'toolIconSVG'
+                btn.icon = button.icon ? button.tiny
                 
             btn.addEventListener 'mousedown', (event) => 
                 
@@ -95,19 +96,6 @@ class Tool
         for btn in @element.querySelectorAll '.toolButton, .toolLabel, .toolIcon'
             if btn.name == name
                 return btn
-
-    clickButton: (button) ->
-        
-        btn = @button button
-
-        if not btn?
-            log 'wtf?', button
-        
-        if btn.toggle?
-            btn.toggle = !btn.toggle
-            btn.classList.toggle 'active'
-        
-        btn.action?()
                 
     # 000000000  000  000000000  000      00000000  
     #    000     000     000     000      000       
@@ -256,18 +244,43 @@ class Tool
     # 000       000      000  000       0000000    
     # 000       000      000  000       000  000   
     #  0000000  0000000  000   0000000  000   000  
+
+    clickButton: (button) ->
+        
+        btn = @button button
+
+        if not btn?
+            log 'wtf?', button
+        
+        if btn.icon?
+            if event?.metaKey
+                @kali.stage.addSVG @loadSVG btn.icon
+                return
+
+            if event?.ctrlKey
+                svg = @kali.stage.copy()
+                btn.innerHTML = svg
+                @saveSVG btn.icon, svg
+                return
+                
+        if btn.toggle?
+            btn.toggle = !btn.toggle
+            btn.classList.toggle 'active'
+        
+        btn.action?()    
     
     onClick: (event) => 
         
-        if event?.metaKey and @svg?
-            @kali.stage.addSVG @svg.svg()
-            return
-            
-        if event?.ctrlKey and @svg?
-            svg = @kali.stage.copy()
-            @setSVG svg
-            @kali.tools.saveSVG @name, svg
-            return
+        if @svg?
+            if event?.metaKey
+                @kali.stage.addSVG @svg.svg()
+                return
+                
+            if event?.ctrlKey
+                svg = @kali.stage.copy()
+                @setSVG svg
+                @saveSVG @name, svg
+                return
             
         if @hasChildren() and event
             @toggleChildren()

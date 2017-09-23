@@ -17,11 +17,11 @@ class Send extends Tool
         
         @initTitle()
         @initButtons [
-            svg:    'order-front'
+            icon:   'order-front'
             name:   'front'
             action: => @stage.order 'front'    
         ,
-            svg:    'order-back'
+            icon:   'order-back'
             name:   'back'
             action: => @stage.order 'back'
         ]

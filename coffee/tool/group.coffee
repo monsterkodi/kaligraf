@@ -26,11 +26,11 @@ class Group extends Tool
         @initButtons [
             action: @onGroup
             name:   'group'
-            svg:    'group'
+            icon:   'group'
         ,
             action: @onUngroup
             name:   'ungroup'
-            svg:    'ungroup'
+            icon:   'ungroup'
         ]
         
         # @initButtons [

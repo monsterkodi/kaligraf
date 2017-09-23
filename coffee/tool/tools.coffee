@@ -121,8 +121,8 @@ class Tools extends Tool
                 { class: 'grid'  }
             ]            
             [
-                { class: 'group' }
                 { class: 'align' }                
+                { class: 'group' }
                 { class: 'space' }                
                 { class: 'order' }
                 { class: 'send'  }

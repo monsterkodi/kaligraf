@@ -17,11 +17,11 @@ class Space extends Tool
         
         @initTitle()
         @initButtons [
-            svg:    'space-horizontal'
+            icon:   'space-horizontal'
             name:   'horizontal'
             action: => @onSpace 'horizontal'
         ,
-            svg:    'space-vertical'
+            icon:   'space-vertical'
             name:   'vertical'
             action: => @onSpace 'vertical'
         ]

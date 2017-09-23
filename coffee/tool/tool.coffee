@@ -64,9 +64,10 @@ class Tool
                 btn.toggle = button.toggle
                 btn.classList.toggle 'active', btn.toggle
                 
-            if button.svg?
-                btn.innerHTML = @loadSVG button.svg
+            if button.icon? or button.tiny?
+                btn.innerHTML = @loadSVG button.icon ? button.tiny
                 btn.classList.add 'toolIcon'
+                btn.classList.add 'toolTiny' if button.tiny?
                 btn.classList.remove 'toolButton'
                 btn.firstChild.classList.add 'toolIconSVG'
                 

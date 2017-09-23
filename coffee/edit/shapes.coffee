@@ -212,7 +212,7 @@ class Shapes
         stagePos = @stage.stageForEvent eventPos
           
         if shape in ['loupe', 'pipette']
-            @kali.tools.getTool(shape).onStageDown drag, event
+            @kali.tools.getTool(shape).onStageDown event
             return
         
         switch shape

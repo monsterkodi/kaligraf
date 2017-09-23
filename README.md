@@ -1,5 +1,3 @@
-![kaligraf](svg/test/kaligraf.svg)
 ![kaligraf](svg/test/kaligraf2.svg)
-![kaligraf](svg/test/objects.svg)
-![kaligraf](svg/test/shapes.svg)
-![kaligraf](svg/test/tools.svg)
+![objects](svg/test/objects.svg)
+![tools](svg/test/tools.svg)

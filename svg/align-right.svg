@@ -1,9 +1,6 @@
 <svg width="100%" height="100%"
 version="1.1"
 xmlns="http://www.w3.org/2000/svg" 
-xmlns:xlink="http://www.w3.org/1999/xlink"
-xmlns:svgjs="http://svgjs.com/svgjs"
-style="stroke-linecap: round; stroke-linejoin: round; background: rgba(34, 34, 34, 0);"
-viewBox="10.592060852050782 283.30564270019534 79.45068969726563 69.38990478515625">
-<rect id="R-b4-03bb36" width="22.563356399536133" height="66.20890808105469" style="stroke: rgb(111, 111, 111); stroke-opacity: 1; stroke-width: 6; fill: rgb(0, 0, 0); fill-opacity: 1;" x="128" y="34" transform="matrix(1.3877787807814457e-16,1,-1,1.3877787807814457e-16,117.42185974121094,161.088134765625)"></rect>
-<rect id="R-57-95fde8" width="22.527822494506836" height="23.946779251098633" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 6; fill: rgb(0, 0, 0); fill-opacity: 1;" x="128" y="34" transform="matrix(1.3877787807814457e-16,1,-1,1.3877787807814457e-16,117.42183685302734,196.3852310180664)"></rect></svg>
+style="stroke-linecap: round; stroke-linejoin: round; "
+viewBox="763.9389892578125 1443.523779296875 79.450634765625 69.38994140625">
+<g id="G-56-da1679" transform="matrix(1,0,0,1,753.3469009399414,1160.2181901082201)"><rect id="R-83-554f23" width="22.563356399536133" height="66.20890808105469" style="stroke: rgb(111, 111, 111); stroke-opacity: 1; stroke-width: 6; fill: rgb(0, 0, 0); fill-opacity: 1;" x="128" y="34" transform="matrix(1.3877787807814457e-16,1,-1,1.3877787807814457e-16,117.42185974121094,161.088134765625)"></rect><rect id="R-1f-021725" width="22.527822494506836" height="23.946779251098633" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 6; fill: rgb(0, 0, 0); fill-opacity: 1;" x="128" y="34" transform="matrix(1.3877787807814457e-16,1,-1,1.3877787807814457e-16,117.42183685302734,196.3852310180664)"></rect></g></svg>

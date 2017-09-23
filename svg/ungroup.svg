@@ -1,10 +1,6 @@
 <svg width="100%" height="100%"
 version="1.1"
 xmlns="http://www.w3.org/2000/svg" 
-xmlns:xlink="http://www.w3.org/1999/xlink"
-xmlns:svgjs="http://svgjs.com/svgjs"
-style="stroke-linecap: round; stroke-linejoin: round; background: rgba(34, 34, 34, 0);"
-viewBox="-42.62124328613281 214.4483154296875 222.9460693359375 227.113623046875">
-<rect id="R-ed-4ee5e1" width="185.78839111328125" height="189.26133728027344" style="stroke: rgb(255, 255, 255); stroke-opacity: 0; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 0;" x="128" y="34" transform="matrix(1,0,0,1,-152.0424041748047,199.37445831298828)"></rect>
-<rect id="R-dd-f72f43" width="85.7521743774414" height="87.35494232177734" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 15; fill: rgb(0, 0, 0); fill-opacity: 1;" x="128" y="34" transform="matrix(1,0,0,1,-115.66690826416016,236.04582595825195)"></rect>
-<rect id="R-bb-e5e5f8" width="69.85745239257812" height="71.16326904296875" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 15; fill: rgb(0, 0, 0); fill-opacity: 1;" x="128" y="34" transform="matrix(1,0,0,1,-71.6805191040039,279.21099853515625)"></rect></svg>
+style="stroke-linecap: round; stroke-linejoin: round; "
+viewBox="326.7358856201172 1154.9911010742187 222.94610595703125 227.113623046875">
+<g id="G-99-fbf7d9" transform="matrix(1,0,0,1,369.3571319580078,940.5427598103686)"><rect id="R-10-eb6071" width="185.78839111328125" height="189.26133728027344" style="stroke: rgb(255, 255, 255); stroke-opacity: 0; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 0;" x="128" y="34" transform="matrix(1,0,0,1,-152.0424041748047,199.37445831298828)"></rect><rect id="R-a0-0a4897" width="85.7521743774414" height="87.35494232177734" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 15; fill: rgb(0, 0, 0); fill-opacity: 1;" x="128" y="34" transform="matrix(1,0,0,1,-115.66690826416016,236.04582595825195)"></rect><rect id="R-5b-ea72e8" width="69.85745239257812" height="71.16326904296875" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 15; fill: rgb(0, 0, 0); fill-opacity: 1;" x="128" y="34" transform="matrix(1,0,0,1,-71.6805191040039,279.21099853515625)"></rect></g></svg>

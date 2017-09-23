@@ -5,7 +5,7 @@
 #      000     000     000   000  000   000  000
 # 0000000      000     000   000   0000000   00000000
 
-{   resolve, elem, post, drag, prefs, stopEvent, 
+{   resolve, elem, post, drag, prefs, stopEvent, fileName,
     first, last, empty, clamp, pos, fs, log, _ } = require 'kxk'
 
 {   contrastColor, normRect, bboxForItems, itemIDs,
@@ -320,12 +320,17 @@ class Stage
                 if svg? and svg.children().length
     
                     @selection.clear()
-    
-                    for child in svg.children()
+                    
+                    children = svg.children()
+                    items = []
+                                            
+                    for child in children
                         @svg.add child
                         added = last @svg.children()
-                        if added.type != 'defs' and opt?.select != false
-                            @selection.addItem last @svg.children()
+                        if added.type != 'defs' 
+                            items.push added
+                            if opt.id?
+                                added.id opt.id
                           
                     for item in @treeItems()
                         tag = item.node.tagName
@@ -333,6 +338,10 @@ class Stage
                             item.remove()
                             
                     Exporter.cleanIDs @treeItems()
+                    
+                    if opt?.select != false
+                        for item in items        
+                            @selection.addItem item
                     
                     return
 
@@ -385,14 +394,29 @@ class Stage
     open: ->
 
         opts =         
-            title:'         Open'
+            title:          'Open'
             filters:        [ {name: 'SVG', extensions: ['svg']} ]
             properties:     ['openFile']
             
         dialog.showOpenDialog opts, (files) => 
             if file = first files
                 @load file 
+
+    import: ->
         
+        opts =         
+            title:          'Import'
+            filters:        [ {name: 'SVG', extensions: ['svg']} ]
+            properties:     ['openFile']
+            
+        dialog.showOpenDialog opts, (files) => 
+            if not empty files
+                @do()
+                for file in files
+                    svg = fs.readFileSync file, encoding: 'utf8'
+                    @addSVG svg, color:false, id:fileName file
+                @done()
+                
     #  0000000   0000000   000   000  00000000
     # 000       000   000  000   000  000
     # 0000000   000000000   000 000   0000000
@@ -429,6 +453,17 @@ class Stage
         _.pull recent, file
         recent.unshift file
         prefs.set 'recent', recent
+        
+    export: ->
+        
+        opts =         
+            title:          'Export'
+            defaultPath:    @currentFile
+            filters:        [ {name: 'SVG', extensions: ['svg']} ]
+        
+        dialog.showSaveDialog opts, (file) => 
+            if file?
+                fs.writeFileSync file, @copy(), encoding: 'utf8'
                 
     #  0000000   0000000   00000000   000   000
     # 000       000   000  000   000   000 000

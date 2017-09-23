@@ -40,15 +40,19 @@ class Menu
             # 000       000  0000000  00000000  
             
             label: 'File', submenu: [
+                { label: 'New',             accelerator: 'command+n',       click: -> action 'new'}
+                { label: 'Clear',           accelerator: 'command+k',       click: -> action 'clear'}
+                { label: 'Reload',          accelerator: 'command+r',       click: -> action 'load'}
+                { type:  'separator'}
                 { label: 'Open Recent...',  accelerator: 'command+.',       click: -> action 'browse'}
                 { label: 'Open...',         accelerator: 'command+o',       click: -> action 'open'}
-                { label: 'New',             accelerator: 'command+n',       click: -> action 'new'}
                 { type:  'separator'}
                 { label: 'Save',            accelerator: 'command+s',       click: -> action 'save'}
                 { label: 'Save As...',      accelerator: 'command+shift+s', click: -> action 'saveAs'}
+                { type:  'separator'}
+                { label: 'Import...',       accelerator: 'command+alt+o',   click: -> action 'import'}
+                { label: 'Export...',       accelerator: 'command+alt+s',   click: -> action 'export'}
                 { type:  'separator'}    
-                { label: 'Clear',           accelerator: 'command+k',       click: -> action 'clear'}
-                { label: 'Reload',          accelerator: 'command+r',       click: -> action 'load'}
             ]
         ,
             # 00000000  0000000    000  000000000  

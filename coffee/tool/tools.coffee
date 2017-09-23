@@ -49,11 +49,13 @@ class Tools extends Tool
             when 'paste'      then @stage.paste()
             when 'undo'       then @stage.undo.undo()
             when 'redo'       then @stage.undo.redo()
+            when 'new'        then @stage.new()
+            when 'open'       then @stage.open()
+            when 'load'       then @stage.load()
             when 'save'       then @stage.save()
             when 'saveAs'     then @stage.saveAs()
-            when 'load'       then @stage.load()
-            when 'open'       then @stage.open()
-            when 'new'        then @stage.new()
+            when 'import'     then @stage.import()
+            when 'export'     then @stage.export()
             when 'clear'      then @stage.doClear()
             when 'selectAll'  then @stage.select 'all'
             when 'deselect'   then @stage.select 'none'

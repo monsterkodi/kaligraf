@@ -115,6 +115,8 @@ class Exporter
 
         ids = items.map (item) -> item.id() 
         
+        # log 'cleanIDs', ids
+        
         ids = []
         for item in items
 

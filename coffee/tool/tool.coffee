@@ -67,6 +67,8 @@ class Tool
             if button.svg?
                 btn.innerHTML = @loadSVG button.svg
                 btn.classList.add 'toolIcon'
+                btn.classList.remove 'toolButton'
+                btn.firstChild.classList.add 'toolIconSVG'
                 
             btn.addEventListener 'mousedown', (event) => 
                 
@@ -89,7 +91,7 @@ class Tool
      
     button: (name) ->
         
-        for btn in @element.querySelectorAll '.toolButton, .toolLabel'
+        for btn in @element.querySelectorAll '.toolButton, .toolLabel, .toolIcon'
             if btn.name == name
                 return btn
 

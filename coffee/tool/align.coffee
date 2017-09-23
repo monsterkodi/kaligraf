@@ -18,22 +18,28 @@ class Align extends Tool
         @initTitle()
         @initButtons [
             text: 'L'
+            name: 'left'
             action: => @onAlign 'left'
         ,
             text: 'C'
+            name: 'center'
             action: => @onAlign 'center'
         ,
             text: 'R'
+            name: 'right'
             action: => @onAlign 'right'
         ]
         @initButtons [
             text: 'T'
+            name: 'top'
             action: => @onAlign 'top'
         ,
             text: 'M'
+            name: 'mid'
             action: => @onAlign 'mid'
         ,
             text: 'B'
+            name: 'bot'
             action: => @onAlign 'bot'
         ]
         

@@ -67,8 +67,8 @@ class Menu
                     { label: 'Middle',  accelerator: 'alt+5',               click: -> button 'align', 'mid'}
                     { label: 'Bottom',  accelerator: 'alt+6',               click: -> button 'align', 'bot'}
                     { type:  'separator'}
-                    { label: 'Space Horizontal', accelerator: 'alt+7',      click: -> post.toWins 'space', 'horizontal'}
-                    { label: 'Space Vertical',   accelerator: 'alt+8',      click: -> post.toWins 'space', 'vertical'}
+                    { label: 'Space Horizontal', accelerator: 'alt+7',      click: -> button 'space', 'horizontal'}
+                    { label: 'Space Vertical',   accelerator: 'alt+8',      click: -> button 'space', 'vertical'}
                 ]}
                 { label: 'Convert',     submenu: [
                     { label: 'Quad',    accelerator: 'command+1',           click: -> post.toWins 'convert', 'Q'}

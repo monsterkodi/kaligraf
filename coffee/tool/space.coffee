@@ -17,11 +17,13 @@ class Space extends Tool
         
         @initTitle()
         @initButtons [
-            text: 'V'
-            action: => @onSpace 'vertical'
-        ,
-            text: 'H'
+            svg:    'space-horizontal'
+            name:   'horizontal'
             action: => @onSpace 'horizontal'
+        ,
+            svg:    'space-vertical'
+            name:   'vertical'
+            action: => @onSpace 'vertical'
         ]
         
         @trans = @kali.trans
@@ -63,5 +65,8 @@ class Space extends Tool
                 when 'horizontal' then newPos.x = ra.x2 + avg
                 when 'vertical'   then newPos.y = ra.y2 + avg
             @trans.pos b, newPos
+
+        @stage.selection.update()
+        @stage.resizer.update()
             
 module.exports = Space

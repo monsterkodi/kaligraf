@@ -445,6 +445,7 @@ button
     display                 inline-flex
     margin-bottom           -1px
 
+.toolIcon
 .toolButton
 .toolLabel
     z-index                 0
@@ -452,7 +453,6 @@ button
     color                   #888
     text-align              center
     box-sizing              border-box
-    border                  1px solid #222
     margin-right            -1px
     
 .toolToggle
@@ -484,13 +484,25 @@ button
     color                   #666
 
 .toolIcon
-    // max-height              22px
     padding-top             1px
     padding-bottom          1px
+    height                 35px
+    position               relative
+
+.toolIconSVG
     opacity                 0.6
-    &:hover
+    position                absolute
+    left                    0
+    top                     4px
+    width                   25px
+    height                  25px
+    &:hover:not(:active)
+        top                 0
+        left                -3px
         opacity             1.0
-    
+        width               31px
+        height              31px
+        
 .toolSVG
     position                absolute
     left                    25%

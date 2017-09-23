@@ -83,8 +83,6 @@ button
     color                   #bbb
     &.active
         color               #fff
-    &:hover
-        background          #333
 
 .fontElem
     color                   #bbb
@@ -435,6 +433,11 @@ button
     text-align              center
     padding-top             4px
     padding-bottom          4px
+    color                   #888
+    
+.tool:hover .title
+    text-shadow             0 0 1px black
+    color                   #bbb
 
 .tools .title
     margin-top              34px
@@ -522,8 +525,17 @@ button
     width                   50%
     height                  50%
     opacity                 0.6
-
+    &:hover:active
+        opacity             1
+    &:hover:not(:active)
+        opacity             0.8
+        left                20%
+        top                 20%
+        width               60%
+        height              60%
+    
 .active .toolSVG
+.active .toolSVG:hover   
     left                    10%
     top                     10%
     width                   80%

@@ -121,11 +121,11 @@ class Tools extends Tool
                 { class: 'grid'  }
             ]            
             [
-                { class: 'align' }                
                 { class: 'group' }
-                { class: 'space' }                
                 { class: 'order' }
                 { class: 'send'  }
+                { class: 'space' }                
+                { class: 'align' }                
             ]            
         ]
         
@@ -242,8 +242,11 @@ class Tools extends Tool
     
     activateTool: (name) ->
         
-        tool = @[name]
-        
+        if name == 'tools'
+            tool = @
+        else
+            tool = @[name]
+                
         if tool.group?
             active = @getActive tool.group
             active?.deactivate()
@@ -262,7 +265,6 @@ class Tools extends Tool
         switch name
             when 'edit'
                 if not @selection.empty() 
-                    # @shapes.editItems @selection.items
                     @shapes.editItems @stage.selectedLeafItems()
                     @selection.clear()
             when 'pick' 

@@ -109,8 +109,11 @@ class Stage
         items = items.map (item) -> item.instance
 
         for item in items
-            if not @isLeaf item
+            if @isLeaf item
+                log 'leafItemAtPos', item.id()
                 return item
+        log 'no leafItemAtPos', items.length
+        null
     
     itemAtPos: (p) ->
 
@@ -150,6 +153,8 @@ class Stage
 
     isLeaf:     (item) -> not _.isFunction item.children
     isEditable: (item) -> _.isFunction(item.array) and item.type != 'text'
+    
+    groups: -> @treeItems().filter (item) -> item.type == 'g'
     
     #  0000000  00000000  000      00000000   0000000  000000000  00000000  0000000    
     # 000       000       000      000       000          000     000       000   000  
@@ -224,6 +229,7 @@ class Stage
     onDblClick: (event) =>
         
         item = @leafItemAtPos pos event
+        log 'onDblClick', item?
         if not item?
             # post.toMain 'maximizeWindow'
         else
@@ -402,7 +408,10 @@ class Stage
         @setSVG svg
             
         @pushRecent file
+        
         @kali.closeBrowser()
+        
+        post.emit 'stage', 'load', @currentFile
         
     open: ->
 

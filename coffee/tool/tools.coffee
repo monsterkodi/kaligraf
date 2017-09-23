@@ -82,17 +82,17 @@ class Tools extends Tool
                 { name: 'fill',   class: 'color' }
             ]
             [
-                { name: 'pick',    group: 'shape' }
-                { name: 'edit',    group: 'shape' }
-                { name: 'pan',     group: 'shape' }
-                { name: 'loupe',   group: 'shape' }
-                { name: 'pipette', group: 'shape', class: 'pipette'}
+                { name: 'pick',     group: 'shape' }
+                { name: 'edit',     group: 'shape' }
+                { name: 'pan',      group: 'shape' }
+                { class: 'loupe',   group: 'shape' }
+                { class: 'pipette', group: 'shape' }
             ]
             [
                 { name: 'rect',     group: 'shape' }
                 { name: 'triangle', group: 'shape' }
                 { name: 'triangle_square', group: 'shape' }
-                { name:  'image',   group: 'shape' }
+                { name: 'image',    group: 'shape' }
             ]
             [
                 { name: 'circle',   group: 'shape' }
@@ -170,7 +170,10 @@ class Tools extends Tool
             cfg[0].list = cfg.slice 1
             cfg = cfg[0]
             
-        if cfg.svg = @loadSVG cfg.name
+        if cfg.svg = @loadSVG cfg.name ? cfg.class
+            
+            if 'group' == (cfg.name ? cfg.class)
+                delete cfg.svg 
             
         else if cfg.group == 'shape'
             

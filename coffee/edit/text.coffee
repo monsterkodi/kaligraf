@@ -146,7 +146,7 @@ class Text
 
         switch combo
             
-            when 'enter'
+            when 'command+enter'
                 
                 v = @input.value
                 v = v.slice(0, @input.selectionStart) + '\n' + v.slice @input.selectionEnd

@@ -5,7 +5,7 @@
 # 000   000  000   000  000   000  000   000  000      
 #  0000000   000   000   0000000    0000000   000      
 
-{ prefs, empty, log, _ } = require 'kxk'
+{ post, prefs, empty, log, _ } = require 'kxk'
 
 { uuid } = require '../utils'
 
@@ -57,6 +57,7 @@ class Group extends Tool
                
             @selection.setItems [group]
             @done()
+            post.emit 'group', 'group'
         
     @ungroup: ->
 
@@ -70,6 +71,7 @@ class Group extends Tool
                 
             @selection.clear()
             @selection.setItems @items().filter (item) -> item not in oldItems
-            @done()        
+            @done()  
+            post.emit 'group', 'ungroup'
     
 module.exports = Group

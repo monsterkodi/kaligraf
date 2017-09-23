@@ -202,7 +202,7 @@ class Color extends Tool
     #      000     000     000   000  000   000  000       
     # 0000000      000     000   000   0000000   00000000  
     
-    @onColor: (color, prop, value) =>
+    @onColor: (color, prop, value) ->
         
         attr = {}
         
@@ -213,6 +213,9 @@ class Color extends Tool
                 attr[color] = new SVG.Color value
                 
         items = @selectedNoTextItems()
+        
+        log 'selectedNoTextItems', items.length
+        
         if not empty(attr) and not empty(items)
             @do 'color' + itemIDs items
             for item in items

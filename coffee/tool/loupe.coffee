@@ -15,7 +15,7 @@ class Loupe extends Tool
 
         super @kali, cfg
         
-        @tools = @kali.tools
+        @tools     = @kali.tools
         @selection = @stage.selection
         
         @stage.loupe = Loupe.loupe.bind @stage
@@ -38,6 +38,7 @@ class Loupe extends Tool
         @selection.setRect @rect, r
                 
     onStageStop: (drag, event) =>
+        
         @rect.remove()
         delete @rect
         @stage.loupe drag.startPos, drag.pos
@@ -49,9 +50,8 @@ class Loupe extends Tool
     #      000     000     000   000  000   000  000       
     # 0000000      000     000   000   0000000   00000000  
 
-    loupe: (p1, p2) ->
+    @loupe: (p1, p2) ->
 
-        log 'loupe', p1, p2
         viewPos1 = @viewForEvent pos p1
         viewPos2 = @viewForEvent pos p2
         viewPos  = viewPos1.mid viewPos2

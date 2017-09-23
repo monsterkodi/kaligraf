@@ -210,8 +210,8 @@ class Undo
             
     log: (msg) ->
         
-        log msg
-        log @history.map((i) -> i.class + ' ' + i.action + ' ' + i.type).join '\n'
-        log @futures.map((i) -> i.class + ' ' + i.action + ' ' + i.type).join '\n'
+        # log msg
+        # log @history.map((i) -> i.class + ' ' + i.action + ' ' + i.type).join '\n'
+        # log @futures.map((i) -> i.class + ' ' + i.action + ' ' + i.type).join '\n'
         
 module.exports = Undo

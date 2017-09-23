@@ -120,7 +120,8 @@ class Menu
                     { label:'In',       accelerator: 'command+=',   click: -> button 'zoom', 'in'  }
                 ] }
                 { label: 'Toggle',      submenu: [
-                    { label: 'Fill/Stroke', accelerator: 'command+7', click: -> action 'swapColor'}
+                    { label: 'Fill/Stroke', accelerator: 'command+6', click: -> action 'swapColor'}
+                    { label: 'Groups',      accelerator: 'command+7', click: -> button 'show', 'groups'}
                     { label: 'IDs',         accelerator: 'command+8', click: -> button 'show', 'ids'}
                 ]
                 }

@@ -32,17 +32,9 @@ class Group extends Tool
             name:   'ungroup'
             icon:   'ungroup'
         ]
-        
-        # @initButtons [
-            # text:   'IDs'
-            # name:   'ids'
-            # action: @onIDs
-            # toggle: prefs.get 'stage:ids', false
-        # ]
-        
+                
     onUngroup: => @stage.ungroup()
     onGroup:   => @stage.group()
-    onIDs:     => @stage.ids()
 
     execute: -> 
 
@@ -78,14 +70,6 @@ class Group extends Tool
                 
             @selection.clear()
             @selection.setItems @items().filter (item) -> item not in oldItems
-            @done()
-        
-    @ids: -> 
-    
-        ids = prefs.get 'stage:ids', false
-        ids = !ids
-        prefs.set 'stage:ids', ids
-        
-        @selection.showIDs ids
+            @done()        
     
 module.exports = Group

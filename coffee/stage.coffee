@@ -149,7 +149,7 @@ class Stage
                     tree = tree.concat @treeItems child
         tree
 
-    isLeaf:     (item) -> _.isFunction item.children
+    isLeaf:     (item) -> not _.isFunction item.children
     isEditable: (item) -> _.isFunction(item.array) and item.type != 'text'
     
     #  0000000  00000000  000      00000000   0000000  000000000  00000000  0000000    
@@ -179,7 +179,14 @@ class Stage
         
     selectedLeafItems: ->
         
-        @selectedItems().filter (item) => not @isLeaf item
+        # @selectedItems().filter (item) => not @isLeaf item
+        items = []
+        for item in @selectedItems()
+            if @isLeaf item 
+                items.push item
+            else 
+                items = items.concat @treeItems item
+        items
 
     sortedSelectedItems: (opt) ->
         
@@ -282,9 +289,14 @@ class Stage
     
     onLine: (prop, value) =>
         
-        for item in @selectedItems()
-            item.style switch prop
-                when 'width' then 'stroke-width': value
+        items = @selectedLeafItems()
+        if not empty items
+            log 'line'+ itemIDs items
+            @do 'line'+ itemIDs items
+            for item in items
+                item.style switch prop
+                    when 'width' then 'stroke-width': value
+            @done()
         
     #  0000000  000   000   0000000
     # 000       000   000  000
@@ -319,6 +331,7 @@ class Stage
                 
                 if svg? and svg.children().length
     
+                    @do()
                     @selection.clear()
                     
                     children = svg.children()
@@ -329,20 +342,35 @@ class Stage
                         added = last @svg.children()
                         if added.type != 'defs' 
                             items.push added
-                            if opt.id?
-                                added.id opt.id
                           
                     for item in @treeItems()
                         tag = item.node.tagName
                         if tag == 'metadata' or tag.startsWith 'sodipodi'
                             item.remove()
+
+                    if opt.id?
+                        
+                        if items.length == 1 and first(items).type == 'g'
+                            group = first items 
+                        else
+                            group = @svg.group()
                             
-                    Exporter.cleanIDs @treeItems()
+                        group.id opt.id
+                        
+                        for item in items
+                           group.add item
+                           
+                        Exporter.cleanIDs @treeItems()
+                        
+                        @selection.setItems [group]
+                    else                            
+                        Exporter.cleanIDs @treeItems()
                     
-                    if opt?.select != false
-                        for item in items        
-                            @selection.addItem item
-                    
+                        if opt?.select != false
+                            for item in items        
+                                @selection.addItem item
+                      
+                    @done()
                     return
 
     itemSVG: (items, bb, color) ->
@@ -407,7 +435,7 @@ class Stage
         opts =         
             title:          'Import'
             filters:        [ {name: 'SVG', extensions: ['svg']} ]
-            properties:     ['openFile']
+            properties:     ['openFile', 'multiSelections']
             
         dialog.showOpenDialog opts, (files) => 
             if not empty files

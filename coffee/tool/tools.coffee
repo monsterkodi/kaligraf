@@ -113,12 +113,13 @@ class Tools extends Tool
                 { class: 'font'  }
             ]
             [
-                { name:  'width', class: 'line' }
+                { name:  'width',  class: 'line' }
             ]
             [
                 { class: 'undo'  }
                 { class: 'zoom'  }
                 { class: 'grid'  }
+                { class: 'show'  }
             ]            
             [
                 { class: 'group' }

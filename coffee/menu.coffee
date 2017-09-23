@@ -106,24 +106,26 @@ class Menu
             #    000      0000000    0000000   0000000  
             
             label: 'Tool', submenu: [
-                { label: 'Text',        accelerator: 'command+t',           click: -> action 'click', 'text'}
-                { label: 'Font',        accelerator: 'command+f',           click: -> action 'click', 'font'}
+                { label: 'Text',        accelerator: 'command+t',   click: -> action 'click', 'text'}
+                { label: 'Font',        accelerator: 'command+f',   click: -> action 'click', 'font'}
                 { type:  'separator'}
                 { label: 'Zoom',        submenu: [
-                    { label:'Reset', accelerator: 'command+0', click: -> button 'zoom', 'reset' }
-                    { label:'Out',   accelerator: 'command+-', click: -> button 'zoom', 'out'  }
-                    { label:'In',    accelerator: 'command+=', click: -> button 'zoom', 'in'  }
+                    { label:'Reset',    accelerator: 'command+0',   click: -> button 'zoom', 'reset' }
+                    { label:'Out',      accelerator: 'command+-',   click: -> button 'zoom', 'out'  }
+                    { label:'In',       accelerator: 'command+=',   click: -> button 'zoom', 'in'  }
                 ] }
-                { label: 'Color',       submenu: [
-                    { label: 'Swap Fill Stroke', click: -> action 'swapColor'}
-                ] } 
+                { label: 'Toggle',      submenu: [
+                    { label: 'Fill/Stroke', accelerator: 'command+7', click: -> action 'swapColor'}
+                    { label: 'IDs',         accelerator: 'command+8', click: -> button 'show', 'ids'}
+                ]
+                }
                 { type:  'separator'}
-                { label: 'Bezier',      accelerator: 'command+b',           click: -> action 'click', 'bezier_smooth'}
-                { label: 'Line',        accelerator: 'command+l',           click: -> action 'click', 'line'}
-                { label: 'Polygon',     accelerator: 'command+p',           click: -> action 'click', 'polygon'}
+                { label: 'Bezier',      accelerator: 'command+b',   click: -> action 'click', 'bezier_smooth'}
+                { label: 'Line',        accelerator: 'command+l',   click: -> action 'click', 'line'}
+                { label: 'Polygon',     accelerator: 'command+p',   click: -> action 'click', 'polygon'}
                 { type:  'separator'}
-                { label: 'Grid',        accelerator: 'command+9',           click: -> button 'grid', 'grid'}
-                { label: 'Center',      accelerator: 'command+e',           click: -> action 'center'}
+                { label: 'Grid',        accelerator: 'command+9',   click: -> button 'grid', 'grid'}
+                { label: 'Center',      accelerator: 'command+e',   click: -> action 'center'}
             ]
         ,
             # 000   000  000  000   000  0000000     0000000   000   000

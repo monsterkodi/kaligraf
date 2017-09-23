@@ -18,17 +18,6 @@ class Undo extends Tool
         @undo = @stage.undo
                         
         @initTitle()
-        
-        @initButtons [
-            text:   '<'
-            name:   'undo'
-            action: @undo.undo
-        ,
-            text:   '>'
-            name:   'redo'
-            action: @undo.redo
-        ]
-        
         @initButtons [
             text:   '0'
             name:   'undos'
@@ -38,12 +27,35 @@ class Undo extends Tool
             name:   'redos'
             action: @undo.redoAll
         ]
-        
+        @initButtons [
+            text:   '<'
+            name:   'undo'
+            action: @undo.undo
+        ,
+            text:   '>'
+            name:   'redo'
+            action: @undo.redo
+        ]
+                
         post.on 'undo', @onUndo
         
     onUndo: (info) => 
         
         @button('undos').innerHTML = info.undos
         @button('redos').innerHTML = info.redos
-    
+        
+        if not info.undos
+            @button('undos').style.color = 'transparent'
+            @button('undo').style.color = 'transparent'
+        else
+            @button('undos').removeAttribute 'style' 
+            @button('undo').removeAttribute 'style' 
+            
+        if not info.redos
+            @button('redos').style.color = 'transparent'
+            @button('redo').style.color = 'transparent'
+        else
+            @button('redos').removeAttribute 'style'  
+            @button('redo').removeAttribute 'style'  
+        
 module.exports = Undo

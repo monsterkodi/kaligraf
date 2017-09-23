@@ -81,12 +81,12 @@ class Undo
         
         return if empty @history
         
-        @futures.unshift @history.pop()
-        
         while last(@history)? and last(@history).type != 'start'
             @futures.unshift @history.pop()
             
         @apply last @history
+        
+        @futures.unshift @history.pop()
         
         @post 'undo'
         
@@ -96,9 +96,8 @@ class Undo
         
         @futures = @history.concat @futures
         @history = []
-        @history.push @futures.shift()
         
-        @apply last @history
+        @apply first @futures
         
         @post 'undo'
         
@@ -126,6 +125,7 @@ class Undo
         return if empty @futures
         
         @history = @history.concat @futures
+        @futures = []
         
         @apply last @history
         
@@ -155,9 +155,16 @@ class Undo
     # 000         0000000   0000000      000     
     
     post: (action) ->
-        
-        post.emit 'undo', action:action, undos:@history.length, redos:@futures.length
+        @log "post #{action}"
+        post.emit 'undo', action:action, undos:@undos(), redos:@redos()
 
+    undos: -> 
+        undos = @history.filter (state) -> state.type == 'start'
+        undos.length
+        
+    redos: -> 
+        redos = @futures.filter (state) -> state.type == 'end'
+        redos.length
         
     #  0000000  000000000   0000000   000000000  00000000  
     # 000          000     000   000     000     000       
@@ -205,5 +212,6 @@ class Undo
         
         log msg
         log @history.map((i) -> i.class + ' ' + i.action + ' ' + i.type).join '\n'
+        log @futures.map((i) -> i.class + ' ' + i.action + ' ' + i.type).join '\n'
         
 module.exports = Undo

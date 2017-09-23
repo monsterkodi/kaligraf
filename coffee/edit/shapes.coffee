@@ -210,7 +210,11 @@ class Shapes
         
         eventPos = pos event 
         stagePos = @stage.stageForEvent eventPos
-                    
+          
+        if shape in ['loupe', 'pipette']
+            @kali.tools.getTool(shape).onStageDown drag, event
+            return
+        
         switch shape
             
             when 'pick'
@@ -223,19 +227,11 @@ class Shapes
                 @selection.clear()
                 @edit ?= new Edit @kali
                 @edit.stageStart drag, event
-
-            when 'pipette'
-
-                @kali.tools.getTool('pipette').onStageDown event
-                
-            when 'loupe' 
-                
-                @selection.loupe = @selection.addRect()
                 
             when 'pan' then
                     
             else
-                @do()
+                @do() # done will be called in onStop
                 @selection.clear()
   
                 if @drawing? and @draw?.handleDown event
@@ -268,19 +264,17 @@ class Shapes
             
         constrain drag, event
         
+        if shape in ['loupe', 'pipette']
+            @kali.tools.getTool(shape).onStageDrag drag, event
+            return
+        
         switch shape
             
-            when 'pipette' then @kali.tools.getTool('pipette').onStageDrag drag, event
-                    
             when 'pan'   
                 
                 @stage.panBy drag.delta
                 
-            when 'loupe' 
-                
-                r = x:drag.startPos.x, y:drag.startPos.y, x2:drag.pos.x, y2:drag.pos.y                
-                @selection.setRect @selection.loupe, r
-                
+                                
             when 'pick'
                 
                 if @selection.rect?
@@ -322,18 +316,9 @@ class Shapes
         stagePos = @stage.stageForEvent eventPos
         shape    = @kali.shapeTool() 
         
-        switch shape
-            
-            when 'loupe'
-                @selection.loupe.remove()
-                delete @selection.loupe
-                @stage.loupe drag.startPos, drag.pos
-                @stage.setToolCursor @tools.ctrlDown and 'zoom-out' or 'zoom-in'
-                return
-            
-            when 'pipette' 
-                @kali.tools.getTool('pipette').onStageStop drag, event
-                return
+        if shape in ['loupe', 'pipette']
+            @kali.tools.getTool(shape).onStageStop drag, event 
+            return
             
         if @selection.rect?
             @selection.endRect eventPos
@@ -365,7 +350,7 @@ class Shapes
                 
             if not @draw? or @draw.handleStop event
                 @endDrawing()
-                @done()
+                @done() # started in handleMouseDown
 
     # 00000000  000   000  0000000        0000000    00000000    0000000   000   000  
     # 000       0000  000  000   000      000   000  000   000  000   000  000 0 000  

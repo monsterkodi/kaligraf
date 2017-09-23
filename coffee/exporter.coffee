@@ -5,7 +5,7 @@
 # 000        000 000   000        000   000  000   000     000     000       000   000
 # 00000000  000   000  000         0000000   000   000     000     00000000  000   000
 
-{ resolve, fs, log, _ } = require 'kxk'
+{ empty, resolve, fs, log, _ } = require 'kxk'
 
 { growBox, uuid } = require './utils'
 
@@ -113,6 +113,8 @@ class Exporter
     
     @cleanIDs: (items) ->
 
+        return if empty items
+        
         ids = items.map (item) -> item.id() 
         
         # log 'cleanIDs', ids
@@ -120,7 +122,7 @@ class Exporter
         ids = []
         for item in items
 
-            while item.id().startsWith('Svgjs') or item.id() in ids
+            while not item.id()? or item.id().startsWith('Svgjs') or item.id() in ids
                 uuid item
                 
             ids.push item.id()

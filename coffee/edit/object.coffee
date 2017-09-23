@@ -490,6 +490,12 @@ class Object
                             point.splice 1, 0, midp.x, midp.y
 
                     point[0] = 'S'
+                    
+                when 'P'
+                    
+                    point[0] = point[point.length-2]
+                    point[1] = point[point.length-1]
+                    point.splice 2, point.length-2
 
             @initCtrlDots   index, point
             @updateCtrlDots index, point

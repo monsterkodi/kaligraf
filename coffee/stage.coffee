@@ -47,7 +47,6 @@ class Stage
         @element.addEventListener 'dblclick', @onDblClick
         
         post.on 'stage', @onStage
-        post.on 'color', @onColor
         post.on 'line',  @onLine
 
         @zoom  = 1
@@ -180,6 +179,7 @@ class Stage
     selectedLeafItems: ->
         
         # @selectedItems().filter (item) => not @isLeaf item
+        
         items = []
         for item in @selectedItems()
             if @isLeaf item 
@@ -188,6 +188,8 @@ class Stage
                 items = items.concat @treeItems item
         items
 
+    selectedNoTextItems: -> @selectedLeafItems().filter (item) -> item.type != 'text'
+        
     sortedSelectedItems: (opt) ->
         
         items = @selectedItems opt
@@ -203,7 +205,7 @@ class Stage
     onMove: (event) =>
 
         if @kali.shapeTool() == 'loupe'
-            @setToolCursor @kali.tools.ctrlDown and 'zoom-out' or 'zoom-in'
+            @kali.tools.getTool('loupe').onMove event
 
         @shapes.onMove event
             
@@ -261,26 +263,7 @@ class Stage
         
         prefs.set 'stage:color', @color.toHex()    
         prefs.set 'stage:alpha', @alpha  
-    
-    onColor: (color, prop, value) =>
-        
-        attr = {}
-        
-        switch prop
-            when 'alpha'
-                attr[color + '-opacity'] = value
-            when 'color'
-                attr[color] = new SVG.Color value
-                
-        items = @selectedLeafItems()
-        if not empty(attr) and not empty(items)
-            @do 'color' + itemIDs items
-            for item in items
-                item.style attr
-                if prop == 'alpha'
-                    item.node.removeAttribute 'opacity'
-            @done()
-                
+                    
     # 000      000  000   000  00000000  
     # 000      000  0000  000  000       
     # 000      000  000 0 000  0000000   
@@ -309,7 +292,7 @@ class Stage
     setSVG: (svg) ->
         
         @clear @currentFile
-        @addSVG svg, select:false
+        @addSVG svg, select:false, nodo:true
     
     addSVG: (svg, opt) ->
 
@@ -331,7 +314,7 @@ class Stage
                 
                 if svg? and svg.children().length
     
-                    @do()
+                    @do() if not opt?.nodo
                     @selection.clear()
                     
                     children = svg.children()
@@ -370,7 +353,7 @@ class Stage
                             for item in items        
                                 @selection.addItem item
                       
-                    @done()
+                    @done() if not opt?.nodo
                     return
 
     itemSVG: (items, bb, color) ->
@@ -406,6 +389,8 @@ class Stage
     
     load: (file=@currentFile) ->
 
+        @undo.clear()
+        
         @currentFile = file
         
         try
@@ -456,8 +441,7 @@ class Stage
         @currentFile = file
         
         if @currentFile == 'untitled.svg'
-            @saveAs()
-            return
+            return @saveAs()
         
         Exporter.save @svg, file:@currentFile, color:@color, alpha:@alpha
                 
@@ -615,39 +599,6 @@ class Stage
     itemsCenter: -> @stageForEvent boxCenter boxForItems @items()
 
     centerAtStagePos: (stagePos) -> @moveViewBox stagePos.minus @stageCenter()
-
-    # 000       0000000   000   000  00000000   00000000
-    # 000      000   000  000   000  000   000  000
-    # 000      000   000  000   000  00000000   0000000
-    # 000      000   000  000   000  000        000
-    # 0000000   0000000    0000000   000        00000000
-
-    loupe: (p1, p2) ->
-
-        log 'loupe', p1, p2
-        viewPos1 = @viewForEvent pos p1
-        viewPos2 = @viewForEvent pos p2
-        viewPos  = viewPos1.mid viewPos2
-
-        sc = @stageForView viewPos
-
-        sd = @stageForView(viewPos1).sub @stageForView(viewPos2)
-        dw = Math.abs sd.x
-        dh = Math.abs sd.y
-
-        if dw == 0 or dh == 0
-            out = @kali.tools.ctrlDown
-            @zoomAtPos viewPos, sc, out and 0.75 or 1.25
-            return
-        else
-            vb = @svg.viewbox()
-            zw = vb.width  / dw
-            zh = vb.height / dh
-            z = Math.min zw, zh
-
-        if out then z = 1.0/z
-
-        @setZoom @zoom * z, sc
 
     # 000   000  000   000  00000000  00000000  000
     # 000 0 000  000   000  000       000       000

@@ -5,9 +5,9 @@
 # 000       000   000  000      000   000  000   000
 #  0000000   0000000   0000000   0000000   000   000
 
-{ elem, drag, stopEvent, post, prefs, clamp, first, pos, log, $, _ } = require 'kxk'
+{ empty, elem, drag, stopEvent, post, prefs, clamp, first, pos, log, $, _ } = require 'kxk'
 
-{ colorGradient, grayGradient, checkersPattern } = require '../utils'
+{ itemIDs, colorGradient, grayGradient, checkersPattern } = require '../utils'
 
 Tool    = require './tool'
 Palette = require './palette'
@@ -17,7 +17,9 @@ class Color extends Tool
     constructor: (@kali, cfg) ->
 
         super @kali, cfg
-
+        
+        @stage.onColor = Color.onColor.bind @stage
+        
         @svg = SVG(@element).size '100%', '100%'
 
         @g = @svg.group()
@@ -50,6 +52,13 @@ class Color extends Tool
     # 000        000   000  000      000          000        000     000
     # 000        000   000  0000000  00000000     000        000     00000000
 
+    createPalette: ->
+        
+        @kali.palette = new Palette @kali
+        @kali.palette.setProxy @fill()
+        
+        post.on 'color', @stage.onColor
+    
     onPalette: (action, value) =>
 
         if action == 'change' and value.proxy == @name
@@ -74,22 +83,24 @@ class Color extends Tool
     # 000       000  000      000                 000     000     000   000  000   000  000  000   000
     # 000       000  0000000  0000000        0000000      000     000   000   0000000   000   000  00000000
 
+    fill: ->  @kali.tools.getTool 'fill'
+    initFill: ->
+        fill = @fill()
+        @element.appendChild fill.element
+        fill.element.style.left   = "#{@kali.toolSize/6}px"
+        fill.element.style.top    = "#{@kali.toolSize/6}px"
+        fill.element.style.width  = "#{2*@kali.toolSize/3}px"
+        fill.element.style.height = "#{2*@kali.toolSize/3}px"
+    
     initChildren: ->
 
         super
 
         if @name == 'stroke'
 
-            fill = first @children
-            @element.appendChild fill.element
-            fill.element.style.left   = "#{@kali.toolSize/6}px"
-            fill.element.style.top    = "#{@kali.toolSize/6}px"
-            fill.element.style.width  = "#{2*@kali.toolSize/3}px"
-            fill.element.style.height = "#{2*@kali.toolSize/3}px"
+            @initFill()
             @showChildren()
-
-            @kali.palette = new Palette @kali
-            @kali.palette.setProxy fill
+            @createPalette()
 
     hideChildren: -> post.emit 'palette', 'hide'
     
@@ -184,4 +195,30 @@ class Color extends Tool
         @top.style fill: @color
         @bot.style fill: @color, 'fill-opacity': @alpha
 
+        
+    #  0000000  000000000   0000000    0000000   00000000  
+    # 000          000     000   000  000        000       
+    # 0000000      000     000000000  000  0000  0000000   
+    #      000     000     000   000  000   000  000       
+    # 0000000      000     000   000   0000000   00000000  
+    
+    @onColor: (color, prop, value) =>
+        
+        attr = {}
+        
+        switch prop
+            when 'alpha'
+                attr[color + '-opacity'] = value
+            when 'color'
+                attr[color] = new SVG.Color value
+                
+        items = @selectedNoTextItems()
+        if not empty(attr) and not empty(items)
+            @do 'color' + itemIDs items
+            for item in items
+                item.style attr
+                if prop == 'alpha'
+                    item.node.removeAttribute 'opacity'
+            @done()
+        
 module.exports = Color

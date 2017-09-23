@@ -79,6 +79,7 @@ class Menu
                     { label: 'Cubic',   accelerator: 'command+2',           click: -> post.toWins 'convert', 'C'}
                     { label: 'Smooth',  accelerator: 'command+3',           click: -> post.toWins 'convert', 'S'}
                     { label: 'Divide',  accelerator: 'command+4',           click: -> post.toWins 'convert', 'D'}
+                    { label: 'Polygon', accelerator: 'command+5',           click: -> post.toWins 'convert', 'P'}
                 ]}
                 { label: 'Order', submenu: [
                     { label: 'Front',       accelerator: 'command+alt+up',  click: -> button 'send',  'front'}

@@ -60,8 +60,10 @@ class Kali
         recent = _.clone prefs.get 'recent', []
         if empty recent
             post.emit 'tool', 'open'
+        else if @browser?
+            @browser.openFile @browser.selectedFile()
         else
-            @browser ?= new Browser @
+            @browser = new Browser @
             @browser.browseRecent recent
             
     closeBrowser: ->

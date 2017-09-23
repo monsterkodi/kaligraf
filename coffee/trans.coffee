@@ -26,6 +26,11 @@ class Trans
     transform: (item, p) -> pos new SVG.Point(p).transform item.transform().matrix
     inverse:   (item, p) -> pos new SVG.Point(p).transform item.transform().matrix.inverse()
     
+    follow: (follower, followee) ->
+        follower.transform followee.transform()
+        for ancestor in followee.parents()
+            follower.transform ancestor.transform(), relative:true
+    
     getScale: (item) -> pos item.transform('scaleX'), item.transform('scaleY')
     setScale: (item, s, c) ->
         if c?

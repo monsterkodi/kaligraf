@@ -220,6 +220,7 @@ class Stage
         for item in items
             @moveItem item, delta
         @done()
+        post.emit 'stage', 'moveItems'
 
     moveItem: (item, delta) ->
 

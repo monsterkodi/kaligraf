@@ -82,14 +82,13 @@ class Exporter
                     log 'clean sodipodi', item.node.getAttribute attr[i].name
                     item.node.removeAttribute attr[i].name
 
-        if item.type == 'defs'
-            if item.children?().length == 0 and item.node.innerHTML.length == 0
-                # log 'clean defs', item.id(), item.children?().length, item.node.innerHTML
-                item.remove()
+        if item.type in ['defs', 'g']
+            if item.children?().length == 0
+                return item.remove()
         else if item.type.startsWith 'inkscape:'
-            item.remove()
+            return item.remove()
         else if item.type.startsWith 'sodipodi:'
-            item.remove()
+            return item.remove()
                     
         if _.isFunction item.children
             
@@ -103,7 +102,7 @@ class Exporter
         # else
             # log 'no children', item.type
                     
-        log "opacity: #{item.node.getAttribute 'opacity'}" if item.node.getAttribute 'opacity'
+        # log "opacity: #{item.node.getAttribute 'opacity'}" if item.node.getAttribute 'opacity'
         
     # 000  0000000     0000000  
     # 000  000   000  000       

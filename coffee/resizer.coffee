@@ -50,33 +50,34 @@ class Resizer
     # 000   000   0000000      000     000   000     000     000   0000000   000   000  
     
     onRotation: (drag, event) =>
-        
-        @do 'rotate'
-        
+                
         if Math.abs(drag.delta.x) > Math.abs(drag.delta.y)
             d = drag.delta.x
         else
             d = drag.delta.y
 
-        sp = @stage.stageForEvent drag.lastPos
+        sp = @stage.stageForEvent drag.startPos
         ep = @stage.stageForEvent drag.pos
         v1 = sp.minus @rotationCenter 
         v2 = ep.minus @rotationCenter
         angle = v1.rotation v2
-        return if angle == 0
-            
+        
+        if event.shiftKey
+            angle = Math.round(angle/15) * 15
+        
+        @do 'rotate'
+        
         transmat = new SVG.Matrix().around @rotationCenter.x, @rotationCenter.y, new SVG.Matrix().rotate angle
 
-        for item in @selection.items
-            oldCenter = @trans.center item
-            @trans.rotation item, angle + @trans.rotation item
-            newCenter = pos new SVG.Point(oldCenter).transform transmat
+        for {item, rotation, center} in @itemRotation
+            @trans.rotation item, angle + rotation
+            newCenter = pos new SVG.Point(center).transform transmat
             @trans.center item, newCenter
             
         @selection.update()
         
         p = boxPos @rect.bbox(), opposide @rotationCorner
-        @gg.transform rotation:@gg.transform('rotation')+angle, cx:p.x, cy:p.y
+        @gg.transform rotation:angle, cx:p.x, cy:p.y
         
         @done()
     
@@ -87,8 +88,6 @@ class Resizer
     # 000   000  00000000  0000000   000  0000000  00000000  
 
     onResize: (drag, event) =>
-
-        @do 'resize'
         
         dx = drag.delta.x
         dy = drag.delta.y
@@ -127,6 +126,8 @@ class Resizer
         resizeCenter = boxPos @selection.bbox(), opposide center
         transmat = new SVG.Matrix().around resizeCenter.x, resizeCenter.y, new SVG.Matrix().scale sx, sy
 
+        @do 'resize'
+                
         for item in @selection.items
             
             @trans.resize item, transmat, pos sx, sy
@@ -256,11 +257,18 @@ class Resizer
         @gg.transform rotation:0
         @gg.transform x:0, y:0
         @updateBox()
+        
+        delete @itemRotation
 
     onStart: =>
         
         if @kali.shapeTool() != 'pick'
             @kali.tools.activateTool 'pick'
+            
+        @itemRotation = @selection.items.map (item) => 
+            item:       item
+            rotation:   @trans.rotation item 
+            center:     @trans.center item 
         
     # 0000000    00000000    0000000    0000000
     # 000   000  000   000  000   000  000

@@ -5,7 +5,7 @@
 # 000       000   000  000  0000     000   
 # 000        0000000   000   000     000   
 
-{ stopEvent, prefs, clamp, elem, post, log, _ } = require 'kxk'
+{ stopEvent, prefs, clamp, empty, elem, post, log, _ } = require 'kxk'
 
 Tool     = require './tool'
 FontList = require './fontlist'
@@ -16,6 +16,8 @@ class Font extends Tool
         
         super @kali, cfg
 
+        @stage.setFontProp = Font.setFontProp.bind @stage
+        
         @bold   = prefs.get 'font:bold',   false
         @italic = prefs.get 'font:italic', false
         @weight = prefs.get 'font:weight', 'normal'
@@ -98,9 +100,12 @@ class Font extends Tool
     onFont: (prop, value) =>
         
         if prop == 'family'
+            
             @family = value
             @title.style.fontFamily = @family
             prefs.set 'font:family', @family
+            
+        @stage.setFontProp prop, value
         
     #  0000000  000      000   0000000  000   000  
     # 000       000      000  000       000  000   
@@ -124,6 +129,7 @@ class Font extends Tool
     onReset: => @setSize 100
 
     setSize: (@size) =>
+        
         @button('size').innerHTML = "#{parseInt @size}"
         post.emit 'font', 'size', @size
         prefs.set 'font:size', @size
@@ -138,5 +144,23 @@ class Font extends Tool
         
         @list = new FontList @kali
         @list.show()
-    
+
+    #  0000000  000000000   0000000    0000000   00000000    
+    # 000          000     000   000  000        000         
+    # 0000000      000     000000000  000  0000  0000000     
+    #      000     000     000   000  000   000  000         
+    # 0000000      000     000   000   0000000   00000000    
+        
+    @setFontProp: (prop, value) ->
+        
+        textItems = @selectedItems type:'text' 
+        if not empty textItems
+            @do()
+            for item in textItems
+                item.font prop, value
+                
+            @selection.update()
+            @resizer.update()
+            @done()
+        
 module.exports = Font

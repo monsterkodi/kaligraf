@@ -99,7 +99,7 @@ class Shapes
                 
                 e = @svg.text 'text'
                 e.leading 1.15
-                e.font 'size', 100
+                e.font 'size',   @kali.tools.font.size
                 e.font 'weight', @kali.tools.font.weight
                 e.font 'style',  @kali.tools.font.style
                 e.font 'family', @kali.tools.font.family

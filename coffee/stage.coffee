@@ -49,7 +49,6 @@ class Stage
         post.on 'stage', @onStage
         post.on 'color', @onColor
         post.on 'line',  @onLine
-        post.on 'font',  @onFont
 
         @zoom  = 1
         @alpha = 1
@@ -274,16 +273,6 @@ class Stage
                 if prop == 'alpha'
                     item.node.removeAttribute 'opacity'
             @done()
-
-    onFont: (prop, value) =>
-        
-        @do()
-        for item in @selectedItems(type:'text')
-            item.font prop, value
-            
-        @selection.update()
-        @resizer.update()
-        @done()
                 
     # 000      000  000   000  00000000  
     # 000      000  0000  000  000       

@@ -257,6 +257,7 @@ class Edit
         if object = @objectForItem item 
             return object
             
+        log "editable? #{@stage.isEditable item}"
         if @stage.isEditable item
 
             object = new Object @, item
@@ -274,8 +275,9 @@ class Edit
         
         eventPos = pos event
         
-        item = @stage.itemAtPos eventPos
-        
+        # item = @stage.itemAtPos eventPos
+        item = @stage.leafItemAtPos eventPos, noType: 'text'
+        log 'pick start', item?.id(), @empty()
         if @empty()
             if item?
                 @addItem item, join:event.shiftKey
@@ -298,7 +300,7 @@ class Edit
             @moveRect eventPos, join:event.shiftKey
         else 
             if @empty()
-                @addItem @stage.itemAtPos eventPos
+                @addItem @stage.leafItemAtPos eventPos, noType: 'text'
             else
                 @dotsel.moveRect eventPos, join:event.shiftKey
 
@@ -319,7 +321,7 @@ class Edit
                 
                 eventPos = pos event
                 
-                if item = @stage.itemAtPos eventPos
+                if item = @stage.leafItemAtPos(eventPos, noType: 'text')
                     object = @objectForItem item
                     if event.shiftKey and object
                         @delItem item

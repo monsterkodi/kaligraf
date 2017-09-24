@@ -95,4 +95,6 @@ class Align extends Tool
         @stage.selection.update()
         @stage.resizer.update()
         
+        post.emit 'align', side
+        
 module.exports = Align

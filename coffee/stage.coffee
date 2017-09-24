@@ -95,43 +95,40 @@ class Stage
     # 000     000     000       000 0 000
     # 000     000     00000000  000   000
 
-    leafItemAtPos: (p) ->
+    pickRect: (p) ->
         
         r = @svg.node.createSVGRect()
         r.x      = p.x - @viewPos().x
         r.y      = p.y - @viewPos().y
         r.width  = 1
         r.height = 1
-
-        items = @svg.node.getIntersectionList r, null
+        r
+    
+    pickItems: (eventPos, opt) ->
+        
+        items = @svg.node.getIntersectionList @pickRect(eventPos), null
         items = [].slice.call(items, 0).reverse()
         items = items.filter (item) -> item.instance
         items = items.map (item) -> item.instance
+        @filterItems items, opt
+        
+    leafItemAtPos: (p, opt) ->
 
-        for item in items
+        for item in @pickItems(p, opt)
             if @isLeaf item
-                log 'leafItemAtPos', item.id()
+                log 'leafItemAtPos', item.id(), opt
                 return item
-        log 'no leafItemAtPos', items.length
+        log 'no leafItemAtPos', @pickItems(p).length
         null
     
-    itemAtPos: (p) ->
+    itemAtPos: (p, opt) ->
 
-        r = @svg.node.createSVGRect()
-        r.x      = p.x - @viewPos().x
-        r.y      = p.y - @viewPos().y
-        r.width  = 1
-        r.height = 1
-
-        items = @svg.node.getIntersectionList r, null
-        items = [].slice.call(items, 0).reverse()
-
-        for item in items
+        for item in @pickItems(p, opt)
             
-            if item.instance in @items()
-                return item.instance
-            else if item.instance in @treeItems()
-                return @rootItem item.instance
+            if item in @items()
+                return item
+            else if item in @treeItems()
+                return @rootItem item
 
     rootItem: (item) ->
         
@@ -140,21 +137,30 @@ class Stage
 
     items: -> @svg.children().filter (child) -> child.type != 'defs'
     
-    treeItems: (item=@svg) -> 
+    treeItems: (item=@svg, opt) -> 
         
-        tree = []
+        items = []
         children = item.children?()
         if not empty children
             for child in children
                 if child.type != 'defs'
-                    tree.push child
-                    tree = tree.concat @treeItems child
-        tree
+                    items.push child
+                    items = items.concat @treeItems child
+        @filterItems items, opt
 
     isLeaf:     (item) -> not _.isFunction item.children
     isEditable: (item) -> _.isFunction(item.array) and item.type != 'text'
     
     groups: -> @treeItems().filter (item) -> item.type == 'g'
+    
+    filterItems: (items, opt) ->
+        return items if not opt?
+        items.filter (item) -> 
+            if opt.type    then return item.type == opt.type
+            if opt.types   then return item.type in opt.types
+            if opt.noType  then return item.type != opt.noType
+            if opt.noTypes then return item.type not in opt.types
+            return true
     
     #  0000000  00000000  000      00000000   0000000  000000000  00000000  0000000    
     # 000       000       000      000       000          000     000       000   000  
@@ -177,23 +183,20 @@ class Stage
                 @shapes.edit.items()
             else
                 []
-        if opt?.type?
-            items = items.filter (item) -> item.type == opt.type
-        items
+
+        @filterItems items, opt
         
-    selectedLeafItems: ->
-        
-        # @selectedItems().filter (item) => not @isLeaf item
-        
+    selectedLeafItems: (opt) ->
+                
         items = []
-        for item in @selectedItems()
+        for item in @selectedItems opt
             if @isLeaf item 
                 items.push item
             else 
                 items = items.concat @treeItems item
         items
 
-    selectedNoTextItems: -> @selectedLeafItems().filter (item) -> item.type != 'text'
+    selectedNoTextItems: -> @selectedLeafItems noType:'text'
         
     sortedSelectedItems: (opt) ->
         
@@ -227,6 +230,12 @@ class Stage
         center = @kali.trans.center item
         @kali.trans.center item, center.plus delta.times 1.0/@zoom
 
+    # 0000000    0000000    000       0000000  000      000   0000000  000   000  
+    # 000   000  000   000  000      000       000      000  000       000  000   
+    # 000   000  0000000    000      000       000      000  000       0000000    
+    # 000   000  000   000  000      000       000      000  000       000  000   
+    # 0000000    0000000    0000000   0000000  0000000  000   0000000  000   000  
+    
     onDblClick: (event) =>
         
         item = @leafItemAtPos pos event
@@ -558,7 +567,7 @@ class Stage
     #      000  000       000      000       000          000     
     # 0000000   00000000  0000000  00000000   0000000     000     
     
-    select: (select) ->
+    select: (select) -> # move to shapes?
 
         switch select
             when 'none'
@@ -623,6 +632,16 @@ class Stage
         stagePos = @stageForView viewPos
         @zoomAtPos viewPos, stagePos, (1.0 - event.deltaY/5000.0)
 
+    #  0000000  000   000  00000000    0000000   0000000   00000000   
+    # 000       000   000  000   000  000       000   000  000   000  
+    # 000       000   000  0000000    0000000   000   000  0000000    
+    # 000       000   000  000   000       000  000   000  000   000  
+    #  0000000   0000000   000   000  0000000    0000000   000   000  
+    
+    setToolCursor: (tool, opt) -> @setCursor Cursor.forTool tool, opt
+        
+    setCursor: (cursor) -> @svg.style cursor: cursor
+        
     # 0000000   0000000    0000000   00     00
     #    000   000   000  000   000  000   000
     #   000    000   000  000   000  000000000
@@ -634,10 +653,6 @@ class Stage
         vc = @viewCenter()
         vc.x = 560.5 if @viewSize().x > 1120
         vc.minus(pos(@kali.toolSize+0.5,@kali.toolSize/2+0.5)).scale(1/zoom)
-
-    setToolCursor: (tool, opt) -> @setCursor Cursor.forTool tool, opt
-        
-    setCursor: (cursor) -> @svg.style cursor: cursor
 
     resetView: (zoom=1) => 
 

@@ -44,6 +44,7 @@ class Show extends Tool
                 when 'group'   then @updateGroups()
                 when 'ungroup' then @refreshGroups()
         post.on 'resizer', @updateGroups
+        post.on 'align',   @updateGroups
         post.on 'undo',    @refreshGroups
         
         @showGroups groups

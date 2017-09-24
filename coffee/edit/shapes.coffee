@@ -61,19 +61,21 @@ class Shapes
     
     addShape: (shape, stagePos) ->
         
+        root = @stage.activeLayer()
+        
         switch shape 
             
             when 'triangle'
                 
-                e = @svg.polygon '-0.50,0.50 0,-0.366 0.50,0.50'
+                e = root.polygon '-0.50,0.50 0,-0.366 0.50,0.50'
 
             when 'triangle_square'
                 
-                e = @svg.polygon '0,0 1,1 0,1'
+                e = root.polygon '0,0 1,1 0,1'
                 
             when 'line', 'polyline', 'polygon'
                 
-                e = @svg[shape]()
+                e = root[shape]()
                 e.plot [[stagePos.x, stagePos.y], [stagePos.x, stagePos.y]]
                 
             when 'bezier_smooth', 'bezier_quad', 'bezier_cube'
@@ -86,18 +88,18 @@ class Shapes
                     when 'bezier_cube'   then ['C', stagePos.x, stagePos.y, stagePos.x, stagePos.y, stagePos.x, stagePos.y]
                     
                 a = new SVG.PathArray arr
-                e = @svg.path()
+                e = root.path()
                 e.plot a
 
             when 'pie' 
-                e = @svg.path 'M0,0 h1 a1,1 0 1,1 -1,-1,z'
+                e = root.path 'M0,0 h1 a1,1 0 1,1 -1,-1,z'
                 
             when 'arc'
-                e = @svg.path 'M0,0 a1,1 0 0,0 -1,-1'
+                e = root.path 'M0,0 a1,1 0 0,0 -1,-1'
                 
             when 'text'
                 
-                e = @svg.text 'text'
+                e = root.text 'text'
                 e.leading 1.15
                 e.font 'size',   @kali.tools.font.size
                 e.font 'weight', @kali.tools.font.weight
@@ -106,12 +108,12 @@ class Shapes
                 
             when 'image'
                 
-                e = @svg.image 'file://' + resolve '~/Desktop/kaligraf.png'
+                e = root.image 'file://' + resolve '~/Desktop/kaligraf.png'
                 e.loaded (loader) ->
                     @size loader.width, loader.height
                 
             else
-                e = @svg[shape]()
+                e = root[shape]()
               
         uuid e
                 

@@ -68,6 +68,7 @@ class Stage
         selection: @selection.state()
         shapes:    @shapes.state()
         color:     @color.toHex()
+        layers:    @storeLayers()
         alpha:     @alpha
         svg:       @getSVG()
         
@@ -75,6 +76,7 @@ class Stage
         
         @setSVG state.svg
         @setColor state.color, state.alpha
+        @restoreLayers state.layers
         @selection.restore state.selection
         @shapes.restore state.shapes
     
@@ -108,17 +110,19 @@ class Stage
         
         items = @svg.node.getIntersectionList @pickRect(eventPos), null
         items = [].slice.call(items, 0).reverse()
-        items = items.filter (item) -> item.instance
+        items = items.filter (item) => item.instance? and item.instance != @svg
         items = items.map (item) -> item.instance
-        @filterItems items, opt
+        items = items.filter (item) => return item not in @layers
+        items = @filterItems items, opt
+        items
         
     leafItemAtPos: (p, opt) ->
 
         for item in @pickItems(p, opt)
             if @isLeaf item
-                log 'leafItemAtPos', item.id(), opt
+                # log 'leafItemAtPos', item.id(), opt
                 return item
-        log 'no leafItemAtPos', @pickItems(p).length
+        # log 'no leafItemAtPos', @pickItems(p, opt).length
         null
     
     itemAtPos: (p, opt) ->
@@ -126,16 +130,29 @@ class Stage
         for item in @pickItems(p, opt)
             
             if item in @items()
+                # log 'itemAtPos top level', item.id(), opt
                 return item
             else if item in @treeItems()
+                # log 'itemAtPos tree item', item.id(), opt
                 return @rootItem item
+                
+        # log 'no itemAtPos', @pickItems(p, opt).length
 
     rootItem: (item) ->
         
-        if item.parent() == @svg then item
+        if item.parent() == @svg or item.parent() in @layers then item
         else @rootItem item.parent()
 
-    items: -> @svg.children().filter (child) -> child.type != 'defs'
+    items: -> 
+        if @numLayers()
+            items = []
+            for layer in @layers
+                items = items.concat layer.children()
+            items
+        else
+            @svg.children().filter (child) -> child.type != 'defs'
+            
+    groups: -> @treeItems().filter (item) => item.type == 'g' and item not in @layers
     
     treeItems: (item=@svg, opt) -> 
         
@@ -150,8 +167,6 @@ class Stage
 
     isLeaf:     (item) -> not _.isFunction item.children
     isEditable: (item) -> _.isFunction(item.array) and item.type != 'text'
-    
-    groups: -> @treeItems().filter (item) -> item.type == 'g'
     
     filterItems: (items, opt) ->
         return items if not opt?
@@ -488,7 +503,7 @@ class Stage
         bb = bboxForItems items
         growBox bb
 
-        svg = @Exporter.itemSVG items, viewbox:bb
+        svg = Exporter.itemSVG items, viewbox:bb
         clipboard.writeText svg
 
         for item in selected

@@ -7,8 +7,6 @@
 
 { setStyle, keyinfo, stopEvent, empty, first, post, prefs, elem, log, $, _ } = require 'kxk'
 
-{ fixSVG } = require './utils' 
-
 Tools    = require './tool/tools'
 Stage    = require './stage'
 Trans    = require './trans'
@@ -18,8 +16,6 @@ FileInfo = require './fileinfo'
 class Kali
 
     constructor: (element) ->
-        
-        fixSVG()
         
         prefs.init()
         @setStyle 'style'

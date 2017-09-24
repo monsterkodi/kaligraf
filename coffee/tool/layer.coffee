@@ -16,7 +16,11 @@ class Layer extends Tool
         
         super @kali, cfg
 
-        @bindStage ['numLayers', 'activeLayer', 'clampLayer', 'layerAt', 'addLayer', 'delLayer', 'activateLayer', 'postLayer']
+        @bindStage ['numLayers', 'layerAt', 'activeLayer', 'clampLayer', 
+            'activateLayer', 'selectLayer', 'lowerLayer', 'raiseLayer',
+            'newLayer', 'addLayer', 'delLayer', 'dupLayer', 'createLayer',
+            'postLayer', 'storeLayers', 'restoreLayers', 'layerForItem',
+            'indexOfLayer', 'activateSelectionLayer']
         
         @stage.layers = []
         
@@ -28,34 +32,38 @@ class Layer extends Tool
         ,
             text:   '1'
             name:   'layer'
+            action: @onLayer
         ,
             text:   '>'
             name:   'incr'
             action: @onIncr
         ]
         @initButtons [
+            text:   '-'
+            name:   'lower'
+            action: @stage.lowerLayer
+        ,
             text:   'add'
             name:   'add'
             action: @stage.addLayer
         ,
-            text:   'del'
-            name:   'del'
-            action: @stage.delLayer
+            text:   '+'
+            name:   'raise'
+            action: @stage.raiseLayer
         ]
         
         post.on 'stage', @onStage
+        post.on 'selection', @onSelection
         
         @stage.activateLayer 0
         
-    onIncr:  => @selectLayer @stage.layerIndex + 1
-    onDecr:  => @selectLayer @stage.layerIndex - 1
-    selectLayer: (index) ->
-        
-        @stage.activateLayer index
-        if @stage.numLayers()
-            @stage.selection.setItems [@stage.activeLayer()]
+    onIncr:  => @stage.selectLayer @stage.layerIndex + 1
+    onDecr:  => @stage.selectLayer @stage.layerIndex - 1
+    onLayer: =>
+        if @stage.activeLayer().children().length == @stage.selection.length()
+            @stage.selection.clear()
         else
-            @stage.selection.setItems @stage.items()
+            @stage.selectLayer()
     
     #  0000000  000      000   0000000  000   000  
     # 000       000      000  000       000  000   
@@ -84,6 +92,20 @@ class Layer extends Tool
         
         @list = new LayerList @kali
         @list.show()
+       
+    #  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000  
+    # 000       000       000      000       000          000     000  000   000  0000  000  
+    # 0000000   0000000   000      0000000   000          000     000  000   000  000 0 000  
+    #      000  000       000      000       000          000     000  000   000  000  0000  
+    # 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000  
+    
+    onSelection: (action, items, item) => @stage.activateSelectionLayer()
+
+    activateSelectionLayer: ->
+        
+        return if not @numLayers()
+        return if @selection.empty()
+        @activateLayer _.max @selectedItems().map (item) => @indexOfLayer @layerForItem item
             
     #  0000000  000000000   0000000    0000000   00000000  
     # 000          000     000   000  000        000       
@@ -117,6 +139,12 @@ class Layer extends Tool
             @stage.layers = []
             @stage.activateLayer 0            
            
+    # 000       0000000   000   000  00000000  00000000   
+    # 000      000   000   000 000   000       000   000  
+    # 000      000000000    00000    0000000   0000000    
+    # 000      000   000     000     000       000   000  
+    # 0000000  000   000     000     00000000  000   000  
+    
     layerAt: (index) -> 
         index = @clampLayer index
         @numLayers() and @layers[index] or @svg
@@ -124,15 +152,52 @@ class Layer extends Tool
     clampLayer: (index) -> clamp 0, @numLayers()-1, index
     numLayers: -> @layers.length
     postLayer: -> post.emit 'stage', 'layer', active:@layerIndex, num:@layers.length
+    
+    #  0000000    0000000  000000000  000  000   000  00000000  
+    # 000   000  000          000     000  000   000  000       
+    # 000000000  000          000     000   000 000   0000000   
+    # 000   000  000          000     000     000     000       
+    # 000   000   0000000     000     000      0      00000000  
+    
+    layerForItem: (item) -> item.parents()[0]
+        
+    indexOfLayer: (layer) -> @layers.indexOf layer
+        
     activeLayer: -> @layerAt @layerIndex
     activateLayer: (index) ->
         
         @layerIndex = @clampLayer index
-        log "activateLayer #{index} #{@layerIndex}"
         @postLayer()
-    
-    addLayer: ->
+
+    storeLayers: -> 
+        layerIndex: @layerIndex
+        layers:     @layers.map (layer) -> layer.id()
         
+    restoreLayers: (state) ->
+        @layerIndex = state.layerIndex
+        layerIDs    = state.layers
+        if not _.isEqual(layerIDs, @layers.map (layer) -> layer.id())
+            @layers = []
+            for id in layerIDs
+                @layers.push SVG.get id
+            @postLayer()
+        
+    #  0000000   0000000    0000000    
+    # 000   000  000   000  000   000  
+    # 000000000  000   000  000   000  
+    # 000   000  000   000  000   000  
+    # 000   000  0000000    0000000    
+    
+    dupLayer: -> 
+        
+        @selection.setItems @activeLayer().children()
+        @createLayer selection:'copy'
+        
+    newLayer: -> @createLayer selection:'keep'
+    addLayer: -> @createLayer selection:'move'
+    
+    createLayer: (opt) ->
+        @do()
         if not @numLayers()
             layer = @svg.nested()
             layer.id "layer #{@numLayers()}"
@@ -143,16 +208,33 @@ class Layer extends Tool
         layer = @svg.nested()
         layer.id "layer #{@numLayers()}"
         @layers.push layer
-        log 'addLayer', @numLayers()
+        # log 'opt', opt
+        switch opt.selection 
+            when 'move'
+                log 'moveSelection', @selectedItems().length
+                for item in @selectedItems()
+                    item.toParent layer
+            when 'copy'
+                for item in @selectedItems()
+                    item.clone().addTo layer
+            when 'keep' then
+            else
+                log 'layer.createLayer wrong option?', opt
         
-        for item in @selectedItems()
-            item.toParent layer
+        @selectLayer @numLayers()-1
+        @done()
         
-        @activateLayer @numLayers()-1
-        
+    # 0000000    00000000  000      
+    # 000   000  000       000      
+    # 000   000  0000000   000      
+    # 000   000  000       000      
+    # 0000000    00000000  0000000  
+    
     delLayer: ->
         
         if @numLayers() == 0 then return
+        
+        @do()
         if @numLayers() == 2
             for item in @layers[0].children()
                 item.toParent item.doc()
@@ -166,6 +248,55 @@ class Layer extends Tool
             log 'delLayer', @layerIndex, layer?
             layer?.remove()
             
-        @activateLayer @layerIndex
+        @selectLayer @layerIndex
+        @done()
+
+    # 000       0000000   000   000  00000000  00000000   
+    # 000      000   000  000 0 000  000       000   000  
+    # 000      000   000  000000000  0000000   0000000    
+    # 000      000   000  000   000  000       000   000  
+    # 0000000   0000000   00     00  00000000  000   000  
+    
+    lowerLayer: ->
+        
+        if @numLayers() == 0 then return
+        if @layerIndex == 0 then return
+        @do()
+        [layer] = @layers.splice @layerIndex, 1
+        layer.backward()
+        @layers.splice @layerIndex-1, 0, layer
+        @selectLayer @layerIndex-1
+        @done()
+        
+    # 00000000    0000000   000   0000000  00000000  
+    # 000   000  000   000  000  000       000       
+    # 0000000    000000000  000  0000000   0000000   
+    # 000   000  000   000  000       000  000       
+    # 000   000  000   000  000  0000000   00000000  
+    
+    raiseLayer: ->
+        if @numLayers() == 0 then return
+        if @layerIndex >= @numLayers()-1 then return
+        @do()
+        [layer] = @layers.splice @layerIndex, 1
+        layer.forward()
+        @layers.splice @layerIndex+1, 0, layer
+        @selectLayer @layerIndex+1        
+        @done()
+        
+    #  0000000  00000000  000      00000000   0000000  000000000  
+    # 000       000       000      000       000          000     
+    # 0000000   0000000   000      0000000   000          000     
+    #      000  000       000      000       000          000     
+    # 0000000   00000000  0000000  00000000   0000000     000     
+    
+    selectLayer: (index=@layerIndex) =>
+        
+        @activateLayer index
+        
+        if @numLayers()
+            @selection.setItems @activeLayer().children()
+        else
+            @selection.setItems @items()
         
 module.exports = Layer

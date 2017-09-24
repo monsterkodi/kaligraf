@@ -216,11 +216,11 @@ class Color extends Tool
                 
         items = @selectedNoTextItems()
         
-        log 'selectedNoTextItems', items.length
+        # log 'selectedNoTextItems', items.length
         
         if empty items
              items = @selectedItems type:'text'
-             log 'selectedTextItems', items.length
+             # log 'selectedTextItems', items.length
         
         if not empty(attr) and not empty(items)
             @do 'color' + itemIDs items

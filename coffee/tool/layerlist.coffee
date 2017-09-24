@@ -5,9 +5,9 @@
 # 000      000   000     000     000       000   000  000      000       000     000   
 # 0000000  000   000     000     00000000  000   000  0000000  000  0000000      000   
 
-{ stopEvent, childIndex, prefs, keyinfo, elem, drag, clamp, last, post, log, _ } = require 'kxk'
+{ stopEvent, empty, setStyle, childIndex, prefs, keyinfo, elem, drag, clamp, last, post, log, _ } = require 'kxk'
 
-{ bboxForItems, winTitle } = require '../utils'
+{ bboxForItems, winTitle, contrastColor } = require '../utils'
 
 Exporter = require '../exporter'
 
@@ -24,16 +24,23 @@ class LayerList
         
         @title = winTitle close:@onClose, buttons: [
             text: 'new'
-            action: @newLayer
+            action: @stage.newLayer
+        ,
+            text: 'add'
+            action: @stage.addLayer
         ,
             text: 'del'
-            action: @delLayer
+            action: @stage.delLayer
+        ,
+            text: 'dup'
+            action: @stage.dupLayer
         ]
             
         @element.appendChild @title 
         
         @drag = new drag
             target: @element
+            onStart: => @element.focus()
             onMove: (drag) => 
                 x = parseInt(@element.style.left) + drag.delta.x
                 y = parseInt(@element.style.top)  + drag.delta.y
@@ -46,7 +53,8 @@ class LayerList
         @element.addEventListener 'keydown', @onKeyDown
                 
         @scroll = elem 'div', class: 'layerListScroll'
-        @scroll.addEventListener  'click', @onClick
+        # @scroll.addEventListener  'click', @onClick
+        @scroll.addEventListener  'mousedown', @onClick
         @element.appendChild @scroll
         
         @element.appendChild elem class:'layerListFooter'
@@ -55,21 +63,24 @@ class LayerList
         
     onStage: (action, info) =>
         
-        switch action 
+        switch action
             
             when 'layer' then @refreshLayers()
-            when 'color' then @scroll.style.background = info.hex
+            when 'color' 
+                @scroll.style.background = info.hex
+                if not empty document.styleSheets
+                    setStyle '.layerListLayer.active', 'border-color', contrastColor info.hex
         
     refreshLayers: ->
-        
+        # log 'refreshLayers'
         @scroll.innerHTML = ''
         for index in [0...Math.max(1, @stage.numLayers())]
             layerDiv = elem class:'layerListLayer'
             layerSvg = SVG(layerDiv).size '100%', '100%'
             layerSvg.addClass 'layerListLayerSVG'
-            layerSvg.svg Exporter.svg @stage.layerAt(index), viewbox:bboxForItems @stage.items()
-            
-            log "layer #{index}", layerSvg.children().length
+            layerSvg.svg Exporter.svg @stage.layerAt(index), viewbox:bboxForItems @stage.svg.children()
+            if index == @stage.layerIndex
+                layerDiv.classList.add 'active'
             @scroll.insertBefore layerDiv, @scroll.firstChild
         
     #  0000000  000   000   0000000   000   000
@@ -100,7 +111,7 @@ class LayerList
         @element.focus()
         
         @refreshLayers()
-        @active()?.scrollIntoViewIfNeeded false
+        # @active()?.scrollIntoViewIfNeeded false
         
     onClose: => @hide()
     
@@ -111,7 +122,7 @@ class LayerList
     # 000   000   0000000     000     000      0      00000000  
     
     active: -> @scroll.querySelector '.active'
-    activeIndex: -> not @active() and -1 or childIndex @active()
+    activeIndex: -> not @active() and -1 or @scroll.children.length - 1 - childIndex @active()
         
     # 000   000   0000000   000   000  000   0000000    0000000   000000000  00000000  
     # 0000  000  000   000  000   000  000  000        000   000     000     000       
@@ -127,17 +138,13 @@ class LayerList
     #      000  000       000      000       000          000     
     # 0000000   00000000  0000000  00000000   0000000     000     
     
-    select: (index, opt) ->
-        
-        index = clamp 0, @scroll.children.length-1, index
-        @active()?.classList.remove 'active'
-        @scroll.children[index].classList.add 'active'
-        @active().scrollIntoViewIfNeeded false
-        if opt?.emit != false
-            post.emit 'layer', 'active', @activeIndex()
-        prefs.set "layerlist:selected", index
+    select: (index, opt) -> @stage.activateLayer index
 
-    onClick: (event) => @select childIndex event.target
+    onClick: (event) => 
+        
+        @element.focus()
+        @select @scroll.children.length - 1 - childIndex event.target
+        stopEvent event
     
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
@@ -149,10 +156,12 @@ class LayerList
         
         {mod, key, combo, char} = keyinfo.forEvent event
         
+        log "layerlist.onKeyDown #{combo}"
+        
         switch combo
             
-            when 'up'            then @navigate -1
-            when 'down'          then @navigate +1
+            when 'up'            then @navigate +1
+            when 'down'          then @navigate -1
             when 'command+up'    then stopEvent(event); @select 0
             when 'command+down'  then stopEvent(event); @select @scroll.children.length-1
             when 'esc', 'enter'  then return @hide()

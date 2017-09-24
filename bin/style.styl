@@ -5,6 +5,8 @@
 // 000   000  000   000  000   000     000
 // 0000000     0000000   0000000       000
 
+scrollhandleWidth = 6px
+
 toolSize = 66px
 
 body
@@ -99,7 +101,6 @@ button
 .winTitle
     border-top-left-radius  6px
     border-top-right-radius 6px
-    border-bottom           1px solid #333
     box-sizing              border-box
 
 .winTitleText
@@ -304,15 +305,26 @@ button
 .layerList
     cursor                  -webkit-grab
     position                absolute
-    overflow                hidden
+    overflow                hidden  
     border-radius           6px
+    border                  1px solid #222
     
 .layerListScroll
-    overflow-y              auto
+    overflow-y              auto //scroll
     box-sizing              border-box
-    max-height              402px
+    max-height              600px
     margin                  0
     padding                 0
+    cursor                  pointer
+    &::-webkit-scrollbar
+        width               scrollhandleWidth
+        background          transparent
+        
+    &::-webkit-scrollbar-track
+        border-left         1px solid #222
+    &::-webkit-scrollbar-thumb
+        width               scrollhandleWidth
+        background          #222
     
 .layerListFooter
     display                 block
@@ -325,9 +337,12 @@ button
     height                  120px
     cursor                  pointer
     box-sizing              border-box
-    border-bottom           1px solid #333
+    border-bottom           1px solid #222
+    &.active
+        border              1px solid #fff
     
 .layerListLayerSVG
+    pointer-events          none
     display                 block
     margin                  0
     padding                 0
@@ -613,14 +628,12 @@ button
 //      000  000       000   000  000   000  000      000      000   000  000   000  000   000
 // 0000000    0000000  000   000   0000000   0000000  0000000  0000000    000   000  000   000
 
-scrollhandleWidth     = 6px
+// ::-webkit-scrollbar
+    // width               scrollhandleWidth
+    // height              scrollhandleWidth
+    // background-color    transparent
 
-::-webkit-scrollbar
-    width               scrollhandleWidth
-    height              scrollhandleWidth
-    background-color    transparent
-
-::-webkit-scrollbar-track
-    background-color    transparent
+// ::-webkit-scrollbar-track
+    // background-color    transparent
 
 

@@ -9,21 +9,7 @@
 uuid = require 'uuid/v4'
     
 module.exports = 
-    
-    # 00000000  000  000   000   0000000  000   000   0000000   
-    # 000       000   000 000   000       000   000  000        
-    # 000000    000    00000    0000000    000 000   000  0000  
-    # 000       000   000 000        000     000     000   000  
-    # 000       000  000   000  0000000       0       0000000   
-    
-    fixSVG: ->
         
-        svgElem = SVG.Element.prototype
-        svgElem['oldAfter']  = svgElem['after']
-        svgElem['oldBefore'] = svgElem['before']
-        svgElem['after']     = (other) -> other.oldAfter  @
-        svgElem['before']    = (other) -> other.oldBefore @
-    
     #  0000000  000   000   0000000   000  000000000  00000000  00     00   0000000  
     # 000       000   000  000        000     000     000       000   000  000       
     # 0000000    000 000   000  0000  000     000     0000000   000000000  0000000   
@@ -59,7 +45,7 @@ module.exports =
     uuid: (item) -> 
         
         id = item.type[0].toUpperCase() + "-" + uuid().slice(0,8).splice 2,0,'-'
-        log item.id(), id
+        # log item.id(), id
         item.id id
         
     # 0000000     0000000   000   000  

@@ -5,7 +5,7 @@
 # 000   000  000   000  000   000  000   000       000  000       000   000
 # 0000000    000   000   0000000   00     00  0000000   00000000  000   000
 
-{   setStyle, childIndex, stopEvent, keyinfo, drag, elem, fileName, dirExists, 
+{   childIndex, stopEvent, keyinfo, drag, elem, fileName, dirExists, 
     first, prefs, resolve, childp, fs, os, path, empty, clamp, pos, log, $, _ } = require 'kxk'
 
 { winTitle } = require './utils'

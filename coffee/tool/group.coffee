@@ -58,7 +58,7 @@ class Group extends Tool
             
             @do()
             group = @svg.group()
-            group.after last sortedItems
+            last(sortedItems).after group
             uuid group
             
             for item in sortedItems
@@ -84,7 +84,7 @@ class Group extends Tool
             for group in groups
                 for child in group.children()
                     child.toParent group.parent()
-                    child.before group
+                    group.before child
                 group.remove()
                 
             @selection.clear()

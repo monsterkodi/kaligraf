@@ -83,6 +83,9 @@ class Selection
     
     addItem: (item, o = join:true) ->
         
+        if not item
+            log 'addItem null item?', item
+            return
         if not o.join then @clear()
             
         if item not in @items
@@ -117,8 +120,9 @@ class Selection
             return true
             
         false
-            
-    empty: -> @items.length <= 0
+      
+    length: -> @items.length
+    empty:  -> @items.length <= 0
     contains: (item) -> item in @items
 
     # 000  000000000  00000000  00     00   0000000    
@@ -287,11 +291,13 @@ class Selection
         eventPos = pos event
         
         if item = @stage.itemAtPos eventPos
+            log 'stageStart', item.id()
             if not @contains item
                 @addItem item, join:event.shiftKey
             else # if not switched
                 if event.shiftKey then @delItem item
         else
+            log 'stageStart start rect'
             @startRect eventPos, join:event.shiftKey
     
     # 00     00   0000000   000   000  00000000  

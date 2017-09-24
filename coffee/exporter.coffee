@@ -7,7 +7,7 @@
 
 { empty, resolve, fs, log, _ } = require 'kxk'
 
-{ growBox, uuid } = require './utils'
+{ bboxForItems, growBox, uuid } = require './utils'
 
 class Exporter
 
@@ -17,9 +17,9 @@ class Exporter
     #      000     000     000   000  
     # 0000000       0       0000000   
     
-    @svg: (svg, opt) ->
+    @svg: (root, opt) ->
         
-        bb = svg.bbox()
+        bb = opt?.viewbox ? root.bbox()
         growBox bb
 
         svgStr = """
@@ -30,14 +30,33 @@ class Exporter
             xmlns:svgjs="http://svgjs.com/svgjs"
             """
 
-        rgba = "#{opt.color.r}, #{opt.color.g}, #{opt.color.b}, #{opt.alpha}"
-
-        svgStr += "\nstyle=\"stroke-linecap: round; stroke-linejoin: round; background: rgba(#{rgba});\""
+        if opt?.color and opt?.alpha
+            rgba = "background: rgba(#{opt.color.r}, #{opt.color.g}, #{opt.color.b}, #{opt.alpha});"
+        else rgba = ''
+        svgStr += "\nstyle=\"stroke-linecap: round; stroke-linejoin: round;#{rgba}\""
         svgStr += "\nviewBox=\"#{bb.x} #{bb.y} #{bb.width} #{bb.height}\">"
         
-        Exporter.clean svg
+        Exporter.clean root
                 
-        for item in svg.children()                    
+        for item in root.children()                    
+            svgStr += '\n'
+            svgStr += item.svg()
+            
+        svgStr += '</svg>'
+
+    @itemSVG: (items, opt) ->
+
+        bb = opt?.viewbox ? bboxForItems items
+        
+        svgStr = """
+            <svg width="100%" height="100%"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg" 
+            """
+        svgStr += "\nstyle=\"stroke-linecap: round; stroke-linejoin: round;\""
+        svgStr += "\nviewBox=\"#{bb.x} #{bb.y} #{bb.width} #{bb.height}\">"
+        
+        for item in items
             svgStr += '\n'
             svgStr += item.svg()
             

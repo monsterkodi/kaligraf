@@ -19,10 +19,19 @@ class FileInfo
         @file = elem 'span', class: 'fileInfoText'
         @element.appendChild @file
         
-        post.on 'file',  @onFile
+        @dirty = elem 'span', class: 'fileInfoDirty'
+        @element.appendChild @dirty
+        
+        post.on 'file', @onFile
+        post.on 'undo', @onUndo
         
     onFile: (file) =>
         
         @file.innerHTML = fileName file
+        
+    onUndo: (info) =>
+        
+        @dirty.style.display    = info.undos and 'inline-block' or 'none'
+        @dirty.style.background = info.undos and '#f80' or '#222'
         
 module.exports = FileInfo

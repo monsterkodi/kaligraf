@@ -275,7 +275,7 @@ class Stage
         @kali.element.style.background = @color.toHex()
         document.body.style.background = @color.toHex()
         
-        post.emit 'stage', 'color', @color.toHex(), @alpha
+        post.emit 'stage', 'color', color:@color, hex:@color.toHex(), alpha:@alpha
         
         prefs.set 'stage:color', @color.toHex()    
         prefs.set 'stage:alpha', @alpha  
@@ -371,31 +371,6 @@ class Stage
                       
                     @done() if not opt?.nodo
                     return
-
-    itemSVG: (items, bb, color) ->
-
-        svgStr = """
-            <svg width="100%" height="100%"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg" 
-            """
-
-        if color
-            svgStr += """
-            xmlns:xlink="http://www.w3.org/1999/xlink"
-            xmlns:svgjs="http://svgjs.com/svgjs"
-            """
-
-        style  = "stroke-linecap: round; stroke-linejoin: round; "
-        style += "background: #{color};" if color
-        svgStr += "\nstyle=\"#{style}\""
-        svgStr += "\nviewBox=\"#{bb.x} #{bb.y} #{bb.width} #{bb.height}\">"
-        for item in items
-            svgStr += '\n'
-            svgStr += item.svg()
-        svgStr += '</svg>'
-
-        svgStr
 
     # 000       0000000    0000000   0000000    
     # 000      000   000  000   000  000   000  
@@ -513,7 +488,7 @@ class Stage
         bb = bboxForItems items
         growBox bb
 
-        svg = @itemSVG items, bb
+        svg = @Exporter.itemSVG items, viewbox:bb
         clipboard.writeText svg
 
         for item in selected

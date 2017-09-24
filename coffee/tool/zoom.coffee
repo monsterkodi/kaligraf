@@ -31,7 +31,7 @@ class Zoom extends Tool
             name:   'out'
             action: @zoomOut
         ,
-            text:   'o'
+            text:   'O'
             name:   'center'
             action: @center
         ,

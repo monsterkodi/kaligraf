@@ -19,7 +19,7 @@ class Line extends Tool
         
         @initButtons [
             text:   '-'
-            name:   'out'
+            name:   'decr'
             action: @onDecr
         ,
             text:   '1'
@@ -27,7 +27,7 @@ class Line extends Tool
             action: @onReset
         ,
             text:   '+'
-            name:   'in'
+            name:   'incr'
             action: @onIncr
         ]
         

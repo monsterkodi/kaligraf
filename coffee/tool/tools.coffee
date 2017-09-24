@@ -118,17 +118,18 @@ class Tools extends Tool
                 { name:  'width',  class: 'line' }
             ]
             [
-                { class: 'undo'  }
-                { class: 'zoom'  }
-                { class: 'grid'  }
-                { class: 'show'  }
-            ]            
-            [
                 { class: 'group' }
                 { class: 'order' }
                 { class: 'send'  }
                 { class: 'space' }                
                 { class: 'align' }                
+            ]            
+            [
+                { class: 'layer' }
+                { class: 'undo'  }
+                { class: 'zoom'  }
+                { class: 'grid'  }
+                { class: 'show'  }
             ]            
         ]
         
@@ -194,7 +195,8 @@ class Tools extends Tool
     loadPrefs: ->
         
         @clickTool prefs.get 'activeTool', 'pick' 
-        @clickTool 'font' if prefs.get 'fontlist:visible', false
+        @clickTool 'font'  if prefs.get 'fontlist:visible', false
+        @clickTool 'layer' if prefs.get 'layerlist:visible', false
         
         if recent = first prefs.get 'recent', []
             @stage.load recent

@@ -5,9 +5,9 @@
 # 000      000   000     000     000       000   000  000      000       000     000   
 # 0000000  000   000     000     00000000  000   000  0000000  000  0000000      000   
 
-{ stopEvent, empty, setStyle, childIndex, prefs, keyinfo, elem, drag, clamp, last, post, log, _ } = require 'kxk'
+{ stopEvent, empty, setStyle, childIndex, prefs, keyinfo, elem, clamp, last, post, log, _ } = require 'kxk'
 
-{ bboxForItems, winTitle, contrastColor } = require '../utils'
+{ ensureInSize, bboxForItems, winTitle, contrastColor } = require '../utils'
 
 Exporter = require '../exporter'
 
@@ -18,8 +18,6 @@ class LayerList
         @stage = @kali.stage
         
         @element = elem 'div', class: 'layerList'
-        @element.style.left = "#{prefs.get 'layerlist:pos:x', 64}px"
-        @element.style.top  = "#{prefs.get 'layerlist:pos:y', 34}px"
         @element.tabIndex   = 100
         
         @title = winTitle close:@onClose, buttons: [
@@ -37,23 +35,12 @@ class LayerList
         ]
             
         @element.appendChild @title 
-        
-        @drag = new drag
-            target: @element
-            onStart: => @element.focus()
-            onMove: (drag) => 
-                x = parseInt(@element.style.left) + drag.delta.x
-                y = parseInt(@element.style.top)  + drag.delta.y
-                prefs.set 'layerlist:pos:x', x
-                prefs.set 'layerlist:pos:y', y
-                @element.style.left = "#{x}px"
-                @element.style.top  = "#{y}px"
-        
+                
+        @element.addEventListener 'mousedown', (event) => stopEvent(event); @element.focus()
         @element.addEventListener 'wheel', (event) -> event.stopPropagation()
         @element.addEventListener 'keydown', @onKeyDown
                 
         @scroll = elem 'div', class: 'layerListScroll'
-        # @scroll.addEventListener  'click', @onClick
         @scroll.addEventListener  'mousedown', @onClick
         @element.appendChild @scroll
         
@@ -61,18 +48,29 @@ class LayerList
         
         @kali.insertBelowTools @element
         
+        post.on 'resize', @onResize
+        
+    onResize: (size) => 
+        
+        er = @element.getBoundingClientRect()
+        sr = @scroll.getBoundingClientRect()
+        if size.y < er.height
+            @scroll.style.maxHeight = "#{size.y-er.height+sr.height}px" 
+        else if sr.height < 600
+            @scroll.style.maxHeight = "#{Math.min 600, size.y-er.height+sr.height}px" 
+            
     onStage: (action, info) =>
         
         switch action
             
-            when 'layer' then @refreshLayers()
+            when 'layer', 'moveItems' then @update()
             when 'color' 
                 @scroll.style.background = info.hex
                 if not empty document.styleSheets
                     setStyle '.layerListLayer.active', 'border-color', contrastColor info.hex
         
-    refreshLayers: ->
-        # log 'refreshLayers'
+    update: =>
+        # log 'layerlist.update'
         @scroll.innerHTML = ''
         for index in [0...Math.max(1, @stage.numLayers())]
             layerDiv = elem class:'layerListLayer'
@@ -81,6 +79,7 @@ class LayerList
             layerSvg.svg Exporter.svg @stage.layerAt(index), viewbox:bboxForItems @stage.svg.children()
             if index == @stage.layerIndex
                 layerDiv.classList.add 'active'
+            log "update #{index}"
             @scroll.insertBefore layerDiv, @scroll.firstChild
         
     #  0000000  000   000   0000000   000   000
@@ -96,7 +95,9 @@ class LayerList
         
         prefs.set 'layerlist:visible', false
         
-        post.removeListener 'stage', @onStage
+        post.removeListener 'stage',   @onStage
+        post.removeListener 'resizer', @update
+        post.removeListener 'align',   @update
         
         @element.style.display = 'none'
         @element.blur()
@@ -105,12 +106,14 @@ class LayerList
         
         prefs.set 'layerlist:visible', true
         
-        post.on 'stage', @onStage
+        post.on 'stage',   @onStage
+        post.on 'resizer', @update
+        post.on 'align',   @update
         
         @element.style.display = 'block'
         @element.focus()
         
-        @refreshLayers()
+        @update()
         # @active()?.scrollIntoViewIfNeeded false
         
     onClose: => @hide()

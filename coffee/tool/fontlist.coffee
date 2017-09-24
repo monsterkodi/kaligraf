@@ -7,7 +7,7 @@
 
 { stopEvent, childIndex, prefs, keyinfo, elem, drag, clamp, last, post, log, _ } = require 'kxk'
 
-{ winTitle } = require '../utils'
+{ winTitle, ensureInSize } = require '../utils'
 
 fontManager = require 'font-manager' 
 
@@ -185,6 +185,8 @@ class FontList
         @activeGroup = @groupForFamily @kali.tools.getTool('font').family        
         @activeGroup ?= 'Sans'
         @showGroup @activeGroup
+        
+        post.on 'resize', @onResize
 
     groupForFamily: (family) ->
         
@@ -223,6 +225,10 @@ class FontList
         @active().scrollIntoViewIfNeeded false
     
     onClose: => @hide()
+  
+    onResize: (size) => 
+        log 'fontlist on resize'
+        ensureInSize @element, size
     
     #  0000000    0000000  000000000  000  000   000  00000000  
     # 000   000  000          000     000  000   000  000       

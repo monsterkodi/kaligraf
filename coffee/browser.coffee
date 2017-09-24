@@ -6,7 +6,7 @@
 # 0000000    000   000   0000000   00     00  0000000   00000000  000   000
 
 {   childIndex, stopEvent, keyinfo, drag, elem, fileName, dirExists, 
-    first, prefs, resolve, childp, fs, os, path, empty, clamp, pos, log, $, _ } = require 'kxk'
+    post, first, prefs, resolve, childp, fs, os, path, empty, clamp, pos, log, $, _ } = require 'kxk'
 
 { winTitle } = require './utils'
 
@@ -17,6 +17,8 @@ class Browser
 
     constructor: (@kali) ->
 
+        @stage = @kali.stage
+        
         @element = elem 'div', class: 'browser fill'
         @element.tabIndex = 100
         @element.addEventListener 'wheel',   @onWheel
@@ -57,7 +59,10 @@ class Browser
             onStop: @onStop
         
         @element.focus()
-        @resize()
+        
+        post.on 'resize', @onResize
+        
+        @onResize @stage.viewSize()
         
     #  0000000   00000000   00000000  000   000  
     # 000   000  000   000  000       0000  000  
@@ -200,7 +205,7 @@ class Browser
     # 000   000  000            000  000   000     000         
     # 000   000  00000000  0000000   000  0000000  00000000    
     
-    resize: ->
+    onResize: =>
         
         br = @element.getBoundingClientRect()
         @setScale br.height/1400, pos(br.width/2, br.height/2)
@@ -343,8 +348,8 @@ class Browser
                 
     openFile: (file) ->
         
-        @kali.stage.load file
-        @kali.stage.centerSelection()
+        @stage.load file
+        @stage.centerSelection()
         @close()
         
     selectedFile: -> @selectedItem().getAttribute 'file'

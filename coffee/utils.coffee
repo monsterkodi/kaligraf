@@ -291,11 +291,24 @@ module.exports =
     elemProp: (element, prop) ->
         
         return null if not element?
-
-        # a = element.getAttribute? prop
-        # return a if a != null and a != ''
         return element[prop] if element[prop]?
         module.exports.elemProp element.parentNode, prop
+
+    # 00000000  000   000   0000000  000   000  00000000   00000000  000  000   000   0000000  000  0000000  00000000  
+    # 000       0000  000  000       000   000  000   000  000       000  0000  000  000       000     000   000       
+    # 0000000   000 0 000  0000000   000   000  0000000    0000000   000  000 0 000  0000000   000    000    0000000   
+    # 000       000  0000       000  000   000  000   000  000       000  000  0000       000  000   000     000       
+    # 00000000  000   000  0000000    0000000   000   000  00000000  000  000   000  0000000   000  0000000  00000000  
+    
+    ensureInSize: (element, size) ->
+        
+        br = element.getBoundingClientRect()
+        if br.left + br.width > size.x then element.style.left = "#{size.x - br.width}px"
+        if br.top + br.height > size.y then element.style.top  = "#{size.y - br.height}px"
+            
+        br = element.getBoundingClientRect()
+        if br.top  < 0 then element.style.top = '0'
+        if br.left < 0 then element.style.left = '0'
         
     #  0000000   0000000   000   000   0000000  000000000  00000000    0000000   000  000   000  
     # 000       000   000  0000  000  000          000     000   000  000   000  000  0000  000  

@@ -46,8 +46,9 @@ class Stage
         @element.addEventListener 'mousemove', @onMove
         @element.addEventListener 'dblclick', @onDblClick
         
-        post.on 'stage', @onStage
-        post.on 'line',  @onLine
+        post.on 'stage',  @onStage
+        post.on 'resize', @onResize
+        post.on 'line',   @onLine
 
         @zoom  = 1
         @alpha = 1
@@ -648,6 +649,8 @@ class Stage
     #    000     000  000       000   000  000   000  000   000   000 000
     #     0      000  00000000  00     00  0000000     0000000   000   000
 
+    onResize: => @resetSize()
+    
     resetSize: =>
 
         box = @svg.viewbox()

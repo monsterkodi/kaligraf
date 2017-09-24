@@ -105,7 +105,7 @@ class Font extends Tool
             @title.style.fontFamily = @family
             prefs.set 'font:family', @family
             
-        @stage.setFontProp prop, value
+        @stage.setFontProp prop, value        
         
     #  0000000  000      000   0000000  000   000  
     # 000       000      000  000       000  000   

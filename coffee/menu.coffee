@@ -111,6 +111,9 @@ class Menu
             #    000      0000000    0000000   0000000  
             
             label: 'Tool', submenu: [
+                
+                { label: 'Layers',      accelerator: 'command+l',   click: -> action 'click', 'layer'}
+                { type:  'separator'}
                 { label: 'Text',        accelerator: 'command+t',   click: -> action 'click', 'text'}
                 { label: 'Font',        accelerator: 'command+f',   click: -> action 'click', 'font'}
                 { type:  'separator'}
@@ -126,9 +129,9 @@ class Menu
                 ]
                 }
                 { type:  'separator'}
-                { label: 'Bezier',      accelerator: 'command+b',   click: -> action 'click', 'bezier_smooth'}
-                { label: 'Line',        accelerator: 'command+l',   click: -> action 'click', 'line'}
-                { label: 'Polygon',     accelerator: 'command+p',   click: -> action 'click', 'polygon'}
+                { label: 'Bezier',      accelerator: 'command+b',       click: -> action 'click', 'bezier_smooth'}
+                { label: 'Polygon',     accelerator: 'command+p',       click: -> action 'click', 'polygon'}
+                { label: 'Line',        accelerator: 'command+shift+p', click: -> action 'click', 'line'}
                 { type:  'separator'}
                 { label: 'Grid',        accelerator: 'command+9',   click: -> button 'grid', 'grid'}
                 { label: 'Center',      accelerator: 'command+e',   click: -> action 'center'}

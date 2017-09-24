@@ -52,7 +52,7 @@ class Layer extends Tool
             action: @stage.raiseLayer
         ]
         
-        post.on 'stage', @onStage
+        post.on 'stage',     @onStage
         post.on 'selection', @onSelection
         
         @stage.activateLayer 0
@@ -170,10 +170,12 @@ class Layer extends Tool
         @postLayer()
 
     storeLayers: -> 
+        
         layerIndex: @layerIndex
         layers:     @layers.map (layer) -> layer.id()
         
     restoreLayers: (state) ->
+        
         @layerIndex = state.layerIndex
         layerIDs    = state.layers
         if not _.isEqual(layerIDs, @layers.map (layer) -> layer.id())

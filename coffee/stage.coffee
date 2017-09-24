@@ -618,7 +618,7 @@ class Stage
     itemsCenter: -> @stageForEvent boxCenter boxForItems @items()
 
     centerAtStagePos: (stagePos) -> @moveViewBox stagePos.minus @stageCenter()
-
+    
     # 000   000  000   000  00000000  00000000  000
     # 000 0 000  000   000  000       000       000
     # 000000000  000000000  0000000   0000000   000
@@ -641,63 +641,7 @@ class Stage
     setToolCursor: (tool, opt) -> @setCursor Cursor.forTool tool, opt
         
     setCursor: (cursor) -> @svg.style cursor: cursor
-        
-    # 0000000   0000000    0000000   00     00
-    #    000   000   000  000   000  000   000
-    #   000    000   000  000   000  000000000
-    #  000     000   000  000   000  000 0 000
-    # 0000000   0000000    0000000   000   000
-
-    toolCenter: (zoom) ->
-
-        vc = @viewCenter()
-        vc.x = 560.5 if @viewSize().x > 1120
-        vc.minus(pos(@kali.toolSize+0.5,@kali.toolSize/2+0.5)).scale(1/zoom)
-
-    resetView: (zoom=1) => 
-
-        @setZoom zoom, @toolCenter zoom
-
-    centerSelection: ->
-
-        items = @selectedOrAllItems()
-        if items.length <= 0
-            @centerAtStagePos @toolCenter @zoom
-            return
-
-        b = boxForItems items, @viewPos()
-        v = @svg.viewbox()
-        w = (b.w / @zoom) / v.width
-        h = (b.h / @zoom) / v.height
-        z = 0.8 * @zoom / Math.max(w, h)
-
-        @setZoom z, @stageForView boxCenter b
-
-    setZoom: (z, sc) ->
-
-        z = clamp 0.01, 1000, z
-
-        @zoom = z
-        
-        @resetSize()
-        @centerAtStagePos sc if sc?
-
-    zoomAtPos: (viewPos, stagePos, factor) ->
-
-        @zoom = clamp 0.01, 1000, @zoom * factor
-        
-        delta = viewPos.minus @viewForStage stagePos
-        delta.scale -1.0/@zoom
-        
-        box = @svg.viewbox()
-        
-        box.width  = @viewSize().x / @zoom
-        box.height = @viewSize().y / @zoom
-        box.x += delta.x
-        box.y += delta.y
-
-        @setViewBox box
-        
+                
     # 00000000    0000000   000   000
     # 000   000  000   000  0000  000
     # 00000000   000000000  000 0 000

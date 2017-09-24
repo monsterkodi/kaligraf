@@ -19,7 +19,8 @@ class Show extends Tool
         
         @trans     = @kali.trans
         @selection = @stage.selection
-        @stage.ids = Show.ids.bind @stage
+        
+        @bindStage 'ids'
         
         @initTitle()
                 
@@ -57,7 +58,7 @@ class Show extends Tool
     #      000     000     000   000  000   000  000         
     # 0000000      000     000   000   0000000   00000000    
             
-    @ids: -> 
+    ids: -> 
     
         ids = prefs.get 'stage:ids', false
         ids = !ids

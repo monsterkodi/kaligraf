@@ -17,9 +17,7 @@ class Color extends Tool
     constructor: (@kali, cfg) ->
 
         super @kali, cfg
-        
-        @stage.onColor = Color.onColor.bind @stage
-        
+                
         @svg = SVG(@element).size '100%', '100%'
 
         @g = @svg.group()
@@ -53,6 +51,10 @@ class Color extends Tool
     # 000        000   000  0000000  00000000     000        000     00000000
 
     createPalette: ->
+        
+        log "#{@name}", @onColor?
+        
+        @bindStage 'onColor'
         
         @kali.palette = new Palette @kali
         @kali.palette.setProxy @fill()
@@ -202,7 +204,7 @@ class Color extends Tool
     #      000     000     000   000  000   000  000       
     # 0000000      000     000   000   0000000   00000000  
     
-    @onColor: (color, prop, value) ->
+    onColor: (color, prop, value) ->
         
         attr = {}
         

@@ -16,7 +16,7 @@ class Font extends Tool
         
         super @kali, cfg
 
-        @stage.setFontProp = Font.setFontProp.bind @stage
+        @bindStage 'setFontProp'
         
         @bold   = prefs.get 'font:bold',   false
         @italic = prefs.get 'font:italic', false
@@ -151,7 +151,7 @@ class Font extends Tool
     #      000     000     000   000  000   000  000         
     # 0000000      000     000   000   0000000   00000000    
         
-    @setFontProp: (prop, value) ->
+    setFontProp: (prop, value) ->
         
         textItems = @selectedItems type:'text' 
         if not empty textItems

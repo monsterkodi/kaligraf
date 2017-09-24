@@ -18,7 +18,7 @@ class Loupe extends Tool
         @tools     = @kali.tools
         @selection = @stage.selection
         
-        @stage.loupe = Loupe.loupe.bind @stage
+        @bindStage 'loupe'
         
     # 0000000     0000000   000   000  000   000  
     # 000   000  000   000  000 0 000  0000  000  
@@ -50,7 +50,7 @@ class Loupe extends Tool
     #      000     000     000   000  000   000  000       
     # 0000000      000     000   000   0000000   00000000  
 
-    @loupe: (p1, p2) ->
+    loupe: (p1, p2) ->
 
         viewPos1 = @viewForEvent pos p1
         viewPos2 = @viewForEvent pos p2

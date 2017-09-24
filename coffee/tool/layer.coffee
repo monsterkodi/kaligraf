@@ -237,19 +237,16 @@ class Layer extends Tool
         if @numLayers() == 0 then return
         
         @do()
-        if @numLayers() == 2
+
+        [layer] = @layers.splice @layerIndex, 1
+        layer?.remove()
+
+        if @numLayers() == 1
             for item in @layers[0].children()
                 item.toParent item.doc()
-            for item in @layers[1].children()
-                item.toParent item.doc()
             @layers[0].remove()
-            @layers[1].remove()
             @layers = []
-        else
-            [layer] = @layers.splice @layerIndex, 1
-            log 'delLayer', @layerIndex, layer?
-            layer?.remove()
-            
+        
         @selectLayer @layerIndex
         @done()
 

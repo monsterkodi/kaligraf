@@ -20,19 +20,21 @@ class LayerList
         @element = elem 'div', class: 'layerList'
         @element.tabIndex   = 100
         
-        @title = winTitle close:@onClose, buttons: [
-            text: 'new'
-            action: @stage.newLayer
-        ,
-            text: 'add'
-            action: @stage.addLayer
-        ,
-            text: 'del'
-            action: @stage.delLayer
-        ,
-            text: 'dup'
-            action: @stage.dupLayer
-        ]
+        @title = winTitle 
+            close:  @onClose 
+            buttons: [
+                text: 'new'
+                action: @stage.newLayer
+            ,
+                text: 'add'
+                action: @stage.addLayer
+            ,
+                text: 'del'
+                action: @stage.delLayer
+            ,
+                text: 'dup'
+                action: @stage.dupLayer
+            ]
             
         @element.appendChild @title 
                 
@@ -49,16 +51,7 @@ class LayerList
         @kali.insertBelowTools @element
         
         post.on 'resize', @onResize
-        
-    onResize: (size) => 
-        
-        er = @element.getBoundingClientRect()
-        sr = @scroll.getBoundingClientRect()
-        if size.y < er.height
-            @scroll.style.maxHeight = "#{size.y-er.height+sr.height}px" 
-        else if sr.height < 600
-            @scroll.style.maxHeight = "#{Math.min 600, size.y-er.height+sr.height}px" 
-            
+                    
     onStage: (action, info) =>
         
         switch action
@@ -69,6 +62,12 @@ class LayerList
                 if not empty document.styleSheets
                     setStyle '.layerListLayer.active', 'border-color', contrastColor info.hex
         
+    # 000   000  00000000   0000000     0000000   000000000  00000000  
+    # 000   000  000   000  000   000  000   000     000     000       
+    # 000   000  00000000   000   000  000000000     000     0000000   
+    # 000   000  000        000   000  000   000     000     000       
+    #  0000000   000        0000000    000   000     000     00000000  
+    
     update: =>
         # log 'layerlist.update'
         @scroll.innerHTML = ''
@@ -79,8 +78,18 @@ class LayerList
             layerSvg.svg Exporter.svg @stage.layerAt(index), viewbox:bboxForItems @stage.svg.children()
             if index == @stage.layerIndex
                 layerDiv.classList.add 'active'
-            log "update #{index}"
             @scroll.insertBefore layerDiv, @scroll.firstChild
+            
+        @onResize @stage.viewSize()
+        @active()?.scrollIntoViewIfNeeded false
+        
+    onResize: (size) => 
+        
+        er = @element.getBoundingClientRect()
+        sr = @scroll.getBoundingClientRect()
+        @scroll.style.maxHeight = "#{size.y-er.height+sr.height}px" 
+
+    onUndo: (action) => @update() if action == 'done'
         
     #  0000000  000   000   0000000   000   000
     # 000       000   000  000   000  000 0 000
@@ -96,8 +105,7 @@ class LayerList
         prefs.set 'layerlist:visible', false
         
         post.removeListener 'stage',   @onStage
-        post.removeListener 'resizer', @update
-        post.removeListener 'align',   @update
+        post.removeListener 'undo',    @onUndo
         
         @element.style.display = 'none'
         @element.blur()
@@ -107,14 +115,12 @@ class LayerList
         prefs.set 'layerlist:visible', true
         
         post.on 'stage',   @onStage
-        post.on 'resizer', @update
-        post.on 'align',   @update
+        post.on 'undo',    @onUndo
         
         @element.style.display = 'block'
         @element.focus()
         
         @update()
-        # @active()?.scrollIntoViewIfNeeded false
         
     onClose: => @hide()
     

@@ -107,6 +107,9 @@ class Selection
         if not @empty()
             
             for item in @items
+                if not item?
+                    log 'selection.clear wtf?'
+                    continue 
                 item.forget 'itemRectWhite'
                 item.forget 'itemRectBlack'
                 item.forget 'itemIDRect'

@@ -136,6 +136,7 @@ class Resizer
             
         @selection.update()
         @update()
+        
         @done()
         
         post.emit 'resizer', 'resize'

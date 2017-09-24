@@ -407,12 +407,37 @@ class Stage
             return
 
         @setSVG svg
-            
+        
         @pushRecent file
         
         @kali.closeBrowser()
         
         post.emit 'stage', 'load', @currentFile
+        
+        @loadLayers()
+        
+    loadLayers: ->
+        
+        for item in @items()
+            if item.type != 'svg'
+                log 'no svg', item.type
+                return
+            
+        for item in @items()
+            transform = item.transform()
+            if not _.isEqual transform.matrix, new SVG.Matrix()
+                log transform
+  
+        layerIDs = @items().map (item) -> item.id()
+        log 'restoreLayers', layerIDs
+        
+        @layers = []
+        for id in layerIDs
+            @layers.push SVG.get id
+        log "numLayers #{@numLayers()} active #{@layerIndex}"
+        @layerIndex = @numLayers()-1
+        
+        @postLayer()
         
     open: ->
 

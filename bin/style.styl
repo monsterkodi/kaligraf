@@ -79,10 +79,8 @@ button
 button
 .tool
 .item
-.winTitleClose
-.winTitleButton
     font()
-    color                   #bbb
+    color                   #333
     &.active
         color               #fff
 
@@ -99,17 +97,27 @@ button
 // 00     00  000  000   000     000     000     000     0000000  00000000
 
 .winTitle
-    border-top-left-radius  6px
-    border-top-right-radius 6px
     box-sizing              border-box
 
+.winTitleFontList
+    border-top-left-radius  6px
+    border-top-right-radius 6px
+    
+.winTitleText
+.winTitleButton
+    color                   #888    
+.winTitleClose
+    color                   #333    
+    float right
+    
 .winTitleText
 .winTitleButton
 .winTitleClose
+    font()
     box-sizing              border-box
-    color                   #333
     &:hover
         background          #222
+        color               #fff
     &.active
         color               #bbb
         background          #333
@@ -308,13 +316,13 @@ button
     top                     0
     right                   0
     overflow                hidden  
-    border-bottom-left-radius           6px
+    border-bottom-left-radius 6px
+    border-top-left-radius 6px
     border                  1px solid #222
     
 .layerListScroll
     overflow-y              auto //scroll
     box-sizing              border-box
-    // max-height              600px
     margin                  0
     padding                 0
     cursor                  pointer

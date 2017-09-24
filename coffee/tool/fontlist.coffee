@@ -128,7 +128,7 @@ class FontList
             text:   group
             class: "fontListGroup_#{group}"
             action: => @showGroup group
-            
+        @title.classList.add 'winTitleFontList' 
         @element.appendChild @title 
         
         @drag = new drag

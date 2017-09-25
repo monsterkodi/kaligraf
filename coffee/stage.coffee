@@ -415,45 +415,7 @@ class Stage
         post.emit 'stage', 'load', @currentFile
         
         @loadLayers()
-        
-    loadLayers: ->
-        
-        gotSvg = false
-        gotGrp = false
-        
-        for item in @items()
-            if item.type == 'svg'
-                gotSvg = true
-            else
-                gotGrp = true
                 
-        return false if not gotSvg        
-
-        if gotGrp
-            newLayer = @svg.nested()
-            newLayer.id "layer-#{@numLayers()}"
-            log 'non svg stuff on top level:'
-            for item in @items()
-                if item.type != 'svg'
-                    log 'item.type'
-                    newLayer.add item
-            
-        for item in @items()
-            transform = item.transform()
-            if not _.isEqual transform.matrix, new SVG.Matrix()
-                log transform
-  
-        layerIDs = @items().map (item) -> item.id()
-        log 'restoreLayers', layerIDs
-        
-        @layers = []
-        for id in layerIDs
-            @layers.push SVG.get id
-        log "numLayers #{@numLayers()} active #{@layerIndex}"
-        @layerIndex = @numLayers()-1
-        
-        @postLayer()
-        
     open: ->
 
         opts =         

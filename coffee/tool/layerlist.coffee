@@ -30,7 +30,7 @@ class LayerList
                 action: @stage.addLayer
             ,
                 text: 'dup'
-                action: @stage.dupLayer
+                action: @stage.duplicateLayer
             ]
             
         @element.appendChild @title 
@@ -66,8 +66,18 @@ class LayerList
     #  0000000   000        0000000    000   000     000     00000000  
     
     update: =>
-        log 'layerlist.update'
+
         @scroll.innerHTML = ''
+        
+        for index in [0...Math.max(1, @stage.numLayers())]
+            @stage.layerAt(index).show()
+            
+        @viewbox = bboxForItems @stage.items()
+
+        for index in [0...Math.max(1, @stage.numLayers())]
+            layer = @stage.layerAt index 
+            layer.hide() if layer.data 'hidden'
+        
         for index in [0...Math.max(1, @stage.numLayers())]
             @scroll.insertBefore @layerDiv(index), @scroll.firstChild
             
@@ -79,10 +89,13 @@ class LayerList
     
     layerDiv: (index) ->
         
+        layer = @stage.layerAt index 
+        
         div = elem class:'layerListLayer'
         svg = SVG(div).size '100%', '100%'
         svg.addClass 'layerListSVG'
-        svg.svg Exporter.svg @stage.layerAt(index), viewbox:bboxForItems @stage.svg.children()
+        if not empty @stage.items()
+            svg.svg Exporter.svg layer, viewbox:@viewbox
         
         if index == @stage.layerIndex
             div.classList.add 'active'
@@ -90,34 +103,40 @@ class LayerList
         left  = elem class: 'layerListMenuLeft'
         right = elem class: 'layerListMenuRight'
             
-        addButton = (menu, icon) =>
-            btn = elem class: 'layerListButton', 'mousedown': _.partial @onButtonAction, index, icon
+        addButton = (menu, action, icon) =>
+            icon ?= action
+            btn = elem class: 'layerListButton', 'mousedown': _.partial @onButtonAction, index, action
             btn.innerHTML = Exporter.loadSVG "layer-#{icon}"
             menu.appendChild btn
         
-        for icon in ['hide', 'disable']
-            addButton left, icon
+        addButton left, 'hide',    layer.data('hidden')   and 'hidden'   or 'hide'
+        addButton left, 'disable', layer.data('disabled') and 'disabled' or 'disable'
 
         if @stage.numLayers()
             addButton right, 'delete'
+            
+        addButton right, 'duplicate'
+        addButton right, 'split'
+        
         if index > 0
             addButton right, 'merge'
             
         div.appendChild left
         div.appendChild right
-                
+            
         div
 
     onButtonAction: (index, action, event) =>
-        
-        log "onButtonAction #{index} #{action} #{event?}"
+    
         stopEvent event
         
         switch action
-            when 'delete'   then @stage.delLayer    index
-            when 'merge'    then @stage.mergeLayer  index
-            when 'hide'     then @stage.toggleLayer index, 'hidden'
-            when 'disable'  then @stage.toggleLayer index, 'disabled'
+            when 'duplicate' then @stage.duplicateLayer index
+            when 'merge'     then @stage.mergeLayer     index
+            when 'delete'    then @stage.delLayer       index
+            when 'split'     then @stage.addLayer       index
+            when 'hide'      then @stage.toggleLayer    index, 'hidden'
+            when 'disable'   then @stage.toggleLayer    index, 'disabled'
         
     #  0000000    0000000  000000000  000  000   000  00000000  
     # 000   000  000          000     000  000   000  000       
@@ -128,7 +147,12 @@ class LayerList
     active:      -> @scroll.querySelector '.active'
     activeIndex: -> not @active() and -1 or @scroll.children.length - 1 - childIndex @active()
             
-    onUndo: (info) => @update() if info.action == 'done'
+    onUndo: (info) => 
+        
+        if info.action == 'done'
+            
+            @update() 
+            @onResize @stage.viewSize()
     
     onResize: (size) => 
         

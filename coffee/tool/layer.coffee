@@ -5,7 +5,7 @@
 # 000      000   000     000     000       000   000  
 # 0000000  000   000     000     00000000  000   000  
 
-{ elem, prefs, clamp, post, log, _ } = require 'kxk'
+{ elem, empty, prefs, clamp, post, log, _ } = require 'kxk'
 
 LayerList = require './layerlist'
 Tool      = require './tool'
@@ -18,9 +18,10 @@ class Layer extends Tool
 
         @bindStage ['numLayers', 'layerAt', 'activeLayer', 'clampLayer', 
             'activateLayer', 'selectLayer', 'lowerLayer', 'raiseLayer',
-            'newLayer', 'addLayer', 'delLayer', 'dupLayer', 'createLayer',
+            'newLayer', 'addLayer', 'delLayer', 'duplicateLayer', 'mergeLayer'
             'postLayer', 'storeLayers', 'restoreLayers', 'layerForItem',
-            'indexOfLayer', 'activateSelectionLayer', 'toggleLayer', 'mergeLayer']
+            'createLayer', 'indexOfLayer', 'activateSelectionLayer', 
+            'toggleLayer', 'applyLayerState', 'loadLayers']
         
         @stage.layers = []
         
@@ -64,7 +65,7 @@ class Layer extends Tool
             @stage.selection.clear()
         else
             @stage.selectLayer()
-    
+            
     #  0000000  000      000   0000000  000   000  
     # 000       000      000  000       000  000   
     # 000       000      000  000       0000000    
@@ -105,6 +106,8 @@ class Layer extends Tool
         
         return if not @numLayers()
         return if @selection.empty()
+        noItems = @selectedItems().filter (item) -> not item?
+        log 'broken selection!' if not empty noItems
         @activateLayer _.max @selectedItems().map (item) => @indexOfLayer @layerForItem item
             
     #  0000000  000000000   0000000    0000000   00000000  
@@ -144,6 +147,46 @@ class Layer extends Tool
     # 000      000000000    00000    0000000   0000000    
     # 000      000   000     000     000       000   000  
     # 0000000  000   000     000     00000000  000   000  
+
+    loadLayers: ->
+        
+        gotSvg = false
+        gotGrp = false
+        
+        for item in @items()
+            if item.type == 'svg'
+                gotSvg = true
+            else
+                gotGrp = true
+                
+        return false if not gotSvg        
+
+        if gotGrp
+            newLayer = @svg.nested()
+            newLayer.id "layer #{@numLayers()}"
+            log 'non svg stuff on top level:'
+            for item in @items()
+                if item.type != 'svg'
+                    log 'item.type'
+                    newLayer.add item
+            
+        for item in @items()
+            transform = item.transform()
+            if not _.isEqual transform.matrix, new SVG.Matrix()
+                log transform
+  
+        layerIDs = @items().map (item) -> item.id()
+        log 'restoreLayers', layerIDs
+        
+        @layers = []
+        for id in layerIDs
+            @layers.push SVG.get id
+            @applyLayerState @layers.length-1, 'hidden'
+            @applyLayerState @layers.length-1, 'disabled'
+        log "numLayers #{@numLayers()} active #{@layerIndex}"
+        @layerIndex = @numLayers()-1
+        
+        @postLayer()
     
     layerAt: (index) -> 
         index = @clampLayer index
@@ -190,7 +233,7 @@ class Layer extends Tool
     # 000   000  000   000  000   000  
     # 000   000  0000000    0000000    
     
-    dupLayer: -> 
+    duplicateLayer: -> 
         
         @selection.setItems @activeLayer().children()
         @createLayer selection:'copy', index:@layerIndex+1
@@ -280,12 +323,37 @@ class Layer extends Tool
         @selectLayer index-1
         @done()
     
+    #  0000000  000000000   0000000   000000000  00000000  
+    # 000          000     000   000     000     000       
+    # 0000000      000     000000000     000     0000000   
+    #      000     000     000   000     000     000       
+    # 0000000      000     000   000     000     00000000  
+    
     toggleLayer: (index, state) -> 
         
-        oldState = @layers[index].remember state
-        newState = !oldState
-        @layers[index].remember state, newState
-        log "toggle #{index} #{state} #{oldState} -> #{newState}"
+        @do()
+        
+        layer = @layerAt index
+        oldValue = layer.data state
+        newValue = !oldValue
+        layer.data state, newValue
+        
+        log "toggleLayer #{index} #{state}"
+        @applyLayerState index, state
+        
+        @done()
+            
+    applyLayerState: (index, state) ->
+        
+        layer = @layerAt index
+        value = layer.data state
+        switch state
+            when 'hidden' 
+                if value then layer.hide() 
+                else layer.show() 
+            when 'disabled'
+                if value then layer.style 'pointer-events', 'none'
+                else layer.style 'pointer-events', 'auto'
         
     # 000       0000000   000   000  00000000  00000000   
     # 000      000   000  000 0 000  000       000   000  

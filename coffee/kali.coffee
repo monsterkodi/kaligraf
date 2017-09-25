@@ -46,10 +46,7 @@ class Kali
         
     onResize: => 
 
-        stageSize = pos sw(), sh()
-        log stageSize
-        log @stage.viewSize()
-        post.emit 'resize', stageSize
+        post.emit 'resize', pos sw(), sh()
                 
     # 0000000    00000000    0000000   000   000   0000000  00000000  00000000   
     # 000   000  000   000  000   000  000 0 000  000       000       000   000  

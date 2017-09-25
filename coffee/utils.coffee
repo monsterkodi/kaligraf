@@ -75,11 +75,15 @@ module.exports =
         bb = null
         for item in items
             b = item.bbox()
+            continue if b.width == 0 or b.height == 0
             b = b.transform item.transform().matrix
             bb ?= b
             bb = bb.merge b
 
-        module.exports.moveBox bb, pos -offset.x, -offset.y
+        if bb?
+            module.exports.moveBox bb, pos -offset.x, -offset.y
+        else
+            new SVG.BBox()
                 
     boxCenter: (box) -> pos box.x + box.width/2.0, box.y + box.height/2.0
     boxOffset: (box) -> pos box.x, box.y

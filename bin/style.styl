@@ -311,7 +311,7 @@ button
 // 0000000  000   000     000     00000000  000   000  0000000  000  0000000      000     
 
 .layerList
-    cursor                  -webkit-grab
+    cursor                  default
     position                absolute
     top                     0
     right                   0
@@ -364,6 +364,8 @@ button
     top                     0
     left                    0
     opacity                 0
+    &.opaque
+        opacity             1
     
 .layerListMenuRight
     position                absolute

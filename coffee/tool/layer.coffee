@@ -18,10 +18,11 @@ class Layer extends Tool
 
         @bindStage ['numLayers', 'layerAt', 'activeLayer', 'clampLayer', 
             'activateLayer', 'selectLayer', 'lowerLayer', 'raiseLayer',
-            'newLayer', 'addLayer', 'delLayer', 'duplicateLayer', 'mergeLayer'
+            'delLayer', 'duplicateLayer', 'mergeLayer', 'splitLayer',
             'postLayer', 'storeLayers', 'restoreLayers', 'layerForItem',
             'createLayer', 'indexOfLayer', 'activateSelectionLayer', 
-            'toggleLayer', 'applyLayerState', 'loadLayers']
+            'toggleLayer', 'applyLayerState', 'loadLayers', 'clearSingleLayer', 
+            'swapLayers', 'moveLayer']
         
         @stage.layers = []
         
@@ -43,10 +44,6 @@ class Layer extends Tool
             text:   '-'
             name:   'lower'
             action: @stage.lowerLayer
-        ,
-            text:   'add'
-            name:   'add'
-            action: @stage.addLayer
         ,
             text:   '+'
             name:   'raise'
@@ -233,19 +230,23 @@ class Layer extends Tool
     # 000   000  000   000  000   000  
     # 000   000  0000000    0000000    
     
-    duplicateLayer: -> 
+    duplicateLayer: (index=@layerIndex) -> 
         
-        @selection.setItems @activeLayer().children()
-        @createLayer selection:'copy', index:@layerIndex+1
+        @selection.setItems @layerAt(index).children()
+        @createLayer selection:'copy', index:index+1
         
-    newLayer: -> @createLayer selection:'keep', index:@layerIndex+1
-    addLayer: -> @createLayer selection:'move', index:@layerIndex+1
+    splitLayer: (index=@layerIndex) -> 
+        
+        items = @selectedItems().filter (item) -> index == @indexOfLayer @layerForItem item
+        if not empty items
+            @selection.setItems items
+            @createLayer selection:'move', index:index+1
     
     createLayer: (opt) ->
         
-        index = opt?.index ? @numLayers()
+        index = opt?.index ? @layerIndex+1 #@numLayers()
         
-        log "createLayer #{index}", opt
+        # log "createLayer #{index}", opt
         
         @do() if not opt?.nodo
         if not @numLayers()
@@ -291,11 +292,7 @@ class Layer extends Tool
         [layer] = @layers.splice index, 1
         layer?.remove()
 
-        if @numLayers() == 1
-            for item in @layers[0].children()
-                item.toParent item.doc()
-            @layers[0].remove()
-            @layers = []
+        @clearSingleLayer()
         
         @selectLayer index
         @done()
@@ -307,22 +304,34 @@ class Layer extends Tool
     # 000   000  00000000  000   000   0000000   00000000  
     
     mergeLayer: (index) -> 
-        log "merge #{index}"
     
         if @numLayers() == 0 then return
         if index <= 0 then return
         
         @do()
         
-        for item in @layers[index].children()
+        items = @layers[index].children()
+        for item in items
             item.toParent @layers[index-1]
 
         [layer] = @layers.splice index, 1
         layer?.remove()
         
-        @selectLayer index-1
+        @clearSingleLayer()
+        
+        @selection.setItems items
+        
         @done()
     
+
+    clearSingleLayer: ->
+        
+        if @numLayers() == 1
+            for item in @layers[0].children()
+                item.toParent item.doc()
+            @layers[0].remove()
+            @layers = []
+        
     #  0000000  000000000   0000000   000000000  00000000  
     # 000          000     000   000     000     000       
     # 0000000      000     000000000     000     0000000   
@@ -338,7 +347,6 @@ class Layer extends Tool
         newValue = !oldValue
         layer.data state, newValue
         
-        log "toggleLayer #{index} #{state}"
         @applyLayerState index, state
         
         @done()
@@ -355,38 +363,63 @@ class Layer extends Tool
                 if value then layer.style 'pointer-events', 'none'
                 else layer.style 'pointer-events', 'auto'
         
-    # 000       0000000   000   000  00000000  00000000   
-    # 000      000   000  000 0 000  000       000   000  
-    # 000      000   000  000000000  0000000   0000000    
-    # 000      000   000  000   000  000       000   000  
-    # 0000000   0000000   00     00  00000000  000   000  
+    #  0000000  000   000   0000000   00000000   
+    # 000       000 0 000  000   000  000   000  
+    # 0000000   000000000  000000000  00000000   
+    #      000  000   000  000   000  000        
+    # 0000000   00     00  000   000  000        
     
-    lowerLayer: (index=@layerIndex) ->
+    lowerLayer: (index=@layerIndex) -> @moveLayer index, index-1
+    raiseLayer: (index=@layerIndex) -> @moveLayer index, index+1
+    moveLayer:  (from, to) ->
+    
+        from = @clampLayer from
+        to   = @clampLayer to
+        if from == to then return
         
-        if @numLayers() == 0 then return
-        if index == 0 then return
         @do()
-        [layer] = @layers.splice index, 1
-        layer.backward()
-        @layers.splice index-1, 0, layer
-        @selectLayer index-1
+        
+        log "from #{from} to #{to} #{@numLayers()}"
+        
+        fromLayer = @layerAt from 
+        toLayer   = @layerAt to
+        
+        @layers.splice from, 1
+        
+        if from > to
+            toLayer.before fromLayer
+            @layers.splice to, 0, fromLayer
+        else 
+            toLayer.after fromLayer
+            @layers.splice to-1, 0, fromLayer
+                    
+        @selectLayer to
         @done()
-        
-    # 00000000    0000000   000   0000000  00000000  
-    # 000   000  000   000  000  000       000       
-    # 0000000    000000000  000  0000000   0000000   
-    # 000   000  000   000  000       000  000       
-    # 000   000  000   000  000  0000000   00000000  
     
-    raiseLayer: (index=@layerIndex) ->
+    swapLayers: (indexA, indexB) ->
         
-        if @numLayers() == 0 then return
-        if index >= @numLayers()-1 then return
+        indexA = @clampLayer indexA
+        indexB = @clampLayer indexB
+        if indexA == indexB then return
+        
         @do()
-        [layer] = @layers.splice index, 1
-        layer.forward()
-        @layers.splice index+1, 0, layer
-        @selectLayer index+1        
+        
+        oldB = indexB
+        [indexA, indexB] = [indexB, indexA] if indexA > indexB
+        
+        [layerB] = @layers.splice indexB, 1
+        [layerA] = @layers.splice indexA, 1
+        
+        log indexA, indexB, layerA.position(), layerB.position()
+        beforeB = layerB.previous()
+        layerA.before layerB
+        if beforeB != layerA
+            beforeB.after layerA
+            
+        @layers.splice indexA, 0, layerB
+        @layers.splice indexB, 0, layerA
+        
+        @selectLayer oldB
         @done()
         
     #  0000000  00000000  000      00000000   0000000  000000000  

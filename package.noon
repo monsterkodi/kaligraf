@@ -10,7 +10,7 @@ scripts
 dependencies
                 colors          ^1.1.2
                 font-manager    ^0.2.2
-                kxk             ^0.16.13
+                kxk             ^0.17.1
                 svg.colorat.js  ^1.0.0
                 svg.js          ^2.6.3
                 uuid            ^3.1.0

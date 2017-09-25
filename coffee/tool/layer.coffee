@@ -20,7 +20,7 @@ class Layer extends Tool
             'activateLayer', 'selectLayer', 'lowerLayer', 'raiseLayer',
             'newLayer', 'addLayer', 'delLayer', 'dupLayer', 'createLayer',
             'postLayer', 'storeLayers', 'restoreLayers', 'layerForItem',
-            'indexOfLayer', 'activateSelectionLayer']
+            'indexOfLayer', 'activateSelectionLayer', 'toggleLayerState', 'mergeLayer']
         
         @stage.layers = []
         
@@ -193,12 +193,17 @@ class Layer extends Tool
     dupLayer: -> 
         
         @selection.setItems @activeLayer().children()
-        @createLayer selection:'copy'
+        @createLayer selection:'copy', index:@layerIndex+1
         
-    newLayer: -> @createLayer selection:'keep'
-    addLayer: -> @createLayer selection:'move'
+    newLayer: -> @createLayer selection:'keep', index:@layerIndex+1
+    addLayer: -> @createLayer selection:'move', index:@layerIndex+1
     
     createLayer: (opt) ->
+        
+        index = opt?.index ? @numLayers()
+        
+        log "createLayer #{index}", opt
+        
         @do()
         if not @numLayers()
             layer = @svg.nested()
@@ -209,7 +214,8 @@ class Layer extends Tool
             
         layer = @svg.nested()
         layer.id "layer #{@numLayers()}"
-        @layers.push layer
+        # @layers.push layer
+        @layers.splice index, 0, layer
         # log 'opt', opt
         switch opt.selection 
             when 'move'
@@ -223,7 +229,7 @@ class Layer extends Tool
             else
                 log 'layer.createLayer wrong option?', opt
         
-        @selectLayer @numLayers()-1
+        @selectLayer index
         @done()
         
     # 0000000    00000000  000      
@@ -232,13 +238,13 @@ class Layer extends Tool
     # 000   000  000       000      
     # 0000000    00000000  0000000  
     
-    delLayer: ->
+    delLayer: (index=@layerIndex) ->
         
         if @numLayers() == 0 then return
         
         @do()
 
-        [layer] = @layers.splice @layerIndex, 1
+        [layer] = @layers.splice index, 1
         layer?.remove()
 
         if @numLayers() == 1
@@ -247,24 +253,53 @@ class Layer extends Tool
             @layers[0].remove()
             @layers = []
         
-        @selectLayer @layerIndex
+        @selectLayer index
         @done()
 
+    # 00     00  00000000  00000000    0000000   00000000  
+    # 000   000  000       000   000  000        000       
+    # 000000000  0000000   0000000    000  0000  0000000   
+    # 000 0 000  000       000   000  000   000  000       
+    # 000   000  00000000  000   000   0000000   00000000  
+    
+    mergeLayer: (index) -> 
+        log "merge #{index}"
+    
+        if @numLayers() == 0 then return
+        if index <= 0 then return
+        
+        @do()
+        
+        for item in @layers[index].children()
+            item.toParent @layers[index-1]
+
+        [layer] = @layers.splice index, 1
+        layer?.remove()
+            
+        @done()
+    
+    toggleLayer: (index, state) -> 
+        
+        oldState = @layers[index].remember state
+        newState = !oldState
+        @layers[index].remember state, newState
+        log "toggle #{index} #{state} #{oldState} -> #{newState}"
+        
     # 000       0000000   000   000  00000000  00000000   
     # 000      000   000  000 0 000  000       000   000  
     # 000      000   000  000000000  0000000   0000000    
     # 000      000   000  000   000  000       000   000  
     # 0000000   0000000   00     00  00000000  000   000  
     
-    lowerLayer: ->
+    lowerLayer: (index=@layerIndex) ->
         
         if @numLayers() == 0 then return
-        if @layerIndex == 0 then return
+        if index == 0 then return
         @do()
-        [layer] = @layers.splice @layerIndex, 1
+        [layer] = @layers.splice index, 1
         layer.backward()
-        @layers.splice @layerIndex-1, 0, layer
-        @selectLayer @layerIndex-1
+        @layers.splice index-1, 0, layer
+        @selectLayer index-1
         @done()
         
     # 00000000    0000000   000   0000000  00000000  
@@ -273,14 +308,15 @@ class Layer extends Tool
     # 000   000  000   000  000       000  000       
     # 000   000  000   000  000  0000000   00000000  
     
-    raiseLayer: ->
+    raiseLayer: (index=@layerIndex) ->
+        
         if @numLayers() == 0 then return
-        if @layerIndex >= @numLayers()-1 then return
+        if index >= @numLayers()-1 then return
         @do()
-        [layer] = @layers.splice @layerIndex, 1
+        [layer] = @layers.splice index, 1
         layer.forward()
-        @layers.splice @layerIndex+1, 0, layer
-        @selectLayer @layerIndex+1        
+        @layers.splice index+1, 0, layer
+        @selectLayer index+1        
         @done()
         
     #  0000000  00000000  000      00000000   0000000  000000000  

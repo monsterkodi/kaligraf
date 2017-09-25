@@ -57,9 +57,9 @@ class Tools extends Tool
             when 'import'     then @stage.import()
             when 'export'     then @stage.export()
             when 'clear'      then @stage.doClear()
-            when 'selectAll'  then @stage.select 'all'
-            when 'deselect'   then @stage.select 'none'
-            when 'invert'     then @stage.select 'invert'
+            when 'selectAll'  then @stage.shapes.select 'all'
+            when 'deselect'   then @stage.shapes.select 'none'
+            when 'invert'     then @stage.shapes.select 'invert'
             when 'center'     then @stage.centerSelection()
             when 'swapColor'  then @stroke.swapColor()
             else log "unhandled tool action #{action} #{tool}"

@@ -5,7 +5,7 @@
 # 000      000   000     000     000       000   000  000      000       000     000   
 # 0000000  000   000     000     00000000  000   000  0000000  000  0000000      000   
 
-{ stopEvent, empty, setStyle, childIndex, prefs, keyinfo, elem, clamp, last, post, log, _ } = require 'kxk'
+{ stopEvent, drag, empty, setStyle, childIndex, prefs, keyinfo, elem, clamp, last, post, log, _ } = require 'kxk'
 
 { ensureInSize, bboxForItems, winTitle, contrastColor } = require '../utils'
 
@@ -28,9 +28,6 @@ class LayerList
             ,
                 text: 'add'
                 action: @stage.addLayer
-            ,
-                text: 'del'
-                action: @stage.delLayer
             ,
                 text: 'dup'
                 action: @stage.dupLayer
@@ -72,25 +69,64 @@ class LayerList
         # log 'layerlist.update'
         @scroll.innerHTML = ''
         for index in [0...Math.max(1, @stage.numLayers())]
-            layerDiv = elem class:'layerListLayer'
-            layerSvg = SVG(layerDiv).size '100%', '100%'
-            layerSvg.addClass 'layerListLayerSVG'
-            layerSvg.svg Exporter.svg @stage.layerAt(index), viewbox:bboxForItems @stage.svg.children()
-            if index == @stage.layerIndex
-                layerDiv.classList.add 'active'
-            @scroll.insertBefore layerDiv, @scroll.firstChild
+            @scroll.insertBefore @layerDiv(index), @scroll.firstChild
             
         @onResize @stage.viewSize()
         @active()?.scrollIntoViewIfNeeded false
         
+    # 000       0000000   000   000  00000000  00000000   
+    # 000      000   000   000 000   000       000   000  
+    # 000      000000000    00000    0000000   0000000    
+    # 000      000   000     000     000       000   000  
+    # 0000000  000   000     000     00000000  000   000  
+    
+    layerDiv: (index) ->
+        
+        div = elem class:'layerListLayer'
+        svg = SVG(div).size '100%', '100%'
+        svg.addClass 'layerListSVG'
+        svg.svg Exporter.svg @stage.layerAt(index), viewbox:bboxForItems @stage.svg.children()
+        
+        if index == @stage.layerIndex
+            div.classList.add 'active'
+            
+        menu = elem class: 'layerListMenu', children: [ 
+            elem class: 'layerListButton', text: 'X', 'mousedown': _.partial @onButtonAction, index, 'delete'
+            elem class: 'layerListButton', text: 'M', 'mousedown': _.partial @onButtonAction, index, 'merge'
+            elem class: 'layerListButton', text: 'V', 'mousedown': _.partial @onButtonAction, index, 'visible'            
+            elem class: 'layerListButton', text: 'E', 'mousedown': _.partial @onButtonAction, index, 'enabled'
+        ]
+        
+        div.appendChild menu
+        div
+
+    onButtonAction: (index, action, event) =>
+        
+        log "onButtonAction #{index} #{action} #{event?}"
+        stopEvent event
+        
+        switch action
+            when 'delete'  then @stage.delLayer    index
+            when 'merge'   then @stage.mergeLayer  index
+            when 'visible' then @stage.toggleLayer index, 'visible'
+            when 'enabled' then @stage.toggleLayer index, 'enabled'
+        
+    #  0000000    0000000  000000000  000  000   000  00000000  
+    # 000   000  000          000     000  000   000  000       
+    # 000000000  000          000     000   000 000   0000000   
+    # 000   000  000          000     000     000     000       
+    # 000   000   0000000     000     000      0      00000000  
+    
+    active:      -> @scroll.querySelector '.active'
+    activeIndex: -> not @active() and -1 or @scroll.children.length - 1 - childIndex @active()
+            
+    onUndo: (action) => @update() if action == 'done'
     onResize: (size) => 
         
         er = @element.getBoundingClientRect()
         sr = @scroll.getBoundingClientRect()
         @scroll.style.maxHeight = "#{size.y-er.height+sr.height}px" 
 
-    onUndo: (action) => @update() if action == 'done'
-        
     #  0000000  000   000   0000000   000   000
     # 000       000   000  000   000  000 0 000
     # 0000000   000000000  000   000  000000000
@@ -104,8 +140,8 @@ class LayerList
         
         prefs.set 'layerlist:visible', false
         
-        post.removeListener 'stage',   @onStage
-        post.removeListener 'undo',    @onUndo
+        post.removeListener 'stage', @onStage
+        post.removeListener 'undo',  @onUndo
         
         @element.style.display = 'none'
         @element.blur()
@@ -114,8 +150,8 @@ class LayerList
         
         prefs.set 'layerlist:visible', true
         
-        post.on 'stage',   @onStage
-        post.on 'undo',    @onUndo
+        post.on 'stage', @onStage
+        post.on 'undo',  @onUndo
         
         @element.style.display = 'block'
         @element.focus()
@@ -123,36 +159,20 @@ class LayerList
         @update()
         
     onClose: => @hide()
-    
-    #  0000000    0000000  000000000  000  000   000  00000000  
-    # 000   000  000          000     000  000   000  000       
-    # 000000000  000          000     000   000 000   0000000   
-    # 000   000  000          000     000     000     000       
-    # 000   000   0000000     000     000      0      00000000  
-    
-    active: -> @scroll.querySelector '.active'
-    activeIndex: -> not @active() and -1 or @scroll.children.length - 1 - childIndex @active()
-        
-    # 000   000   0000000   000   000  000   0000000    0000000   000000000  00000000  
-    # 0000  000  000   000  000   000  000  000        000   000     000     000       
-    # 000 0 000  000000000   000 000   000  000  0000  000000000     000     0000000   
-    # 000  0000  000   000     000     000  000   000  000   000     000     000       
-    # 000   000  000   000      0      000   0000000   000   000     000     00000000  
-    
-    navigate: (dir) -> @select @activeIndex() + dir
-
+            
     #  0000000  00000000  000      00000000   0000000  000000000  
     # 000       000       000      000       000          000     
     # 0000000   0000000   000      0000000   000          000     
     #      000  000       000      000       000          000     
     # 0000000   00000000  0000000  00000000   0000000     000     
     
-    select: (index, opt) -> @stage.activateLayer index
+    navigate: (dir) -> @activate @activeIndex() + dir
+    activate: (index, opt) -> @stage.activateLayer index
 
     onClick: (event) => 
         
         @element.focus()
-        @select @scroll.children.length - 1 - childIndex event.target
+        @activate @scroll.children.length - 1 - childIndex event.target
         stopEvent event
     
     # 000   000  00000000  000   000  
@@ -171,8 +191,8 @@ class LayerList
             
             when 'up'            then @navigate +1
             when 'down'          then @navigate -1
-            when 'command+up'    then stopEvent(event); @select 0
-            when 'command+down'  then stopEvent(event); @select @scroll.children.length-1
+            when 'command+up'    then stopEvent(event); @activate 0
+            when 'command+down'  then stopEvent(event); @activate @scroll.children.length-1
             when 'esc', 'enter'  then return @hide()
             # else
                 # log combo

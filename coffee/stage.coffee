@@ -418,10 +418,25 @@ class Stage
         
     loadLayers: ->
         
+        gotSvg = false
+        gotGrp = false
+        
         for item in @items()
-            if item.type != 'svg'
-                log 'no svg', item.type
-                return
+            if item.type == 'svg'
+                gotSvg = true
+            else
+                gotGrp = true
+                
+        return false if not gotSvg        
+
+        if gotGrp
+            newLayer = @svg.nested()
+            newLayer.id "layer-#{@numLayers()}"
+            log 'non svg stuff on top level:'
+            for item in @items()
+                if item.type != 'svg'
+                    log 'item.type'
+                    newLayer.add item
             
         for item in @items()
             transform = item.transform()

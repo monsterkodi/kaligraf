@@ -20,7 +20,7 @@ class Layer extends Tool
             'activateLayer', 'selectLayer', 'lowerLayer', 'raiseLayer',
             'newLayer', 'addLayer', 'delLayer', 'dupLayer', 'createLayer',
             'postLayer', 'storeLayers', 'restoreLayers', 'layerForItem',
-            'indexOfLayer', 'activateSelectionLayer', 'toggleLayerState', 'mergeLayer']
+            'indexOfLayer', 'activateSelectionLayer', 'toggleLayer', 'mergeLayer']
         
         @stage.layers = []
         
@@ -204,7 +204,7 @@ class Layer extends Tool
         
         log "createLayer #{index}", opt
         
-        @do()
+        @do() if not opt?.nodo
         if not @numLayers()
             layer = @svg.nested()
             layer.id "layer #{@numLayers()}"
@@ -229,8 +229,9 @@ class Layer extends Tool
             else
                 log 'layer.createLayer wrong option?', opt
         
-        @selectLayer index
-        @done()
+        if not opt?.nodo
+            @selectLayer index
+            @done() 
         
     # 0000000    00000000  000      
     # 000   000  000       000      
@@ -275,7 +276,8 @@ class Layer extends Tool
 
         [layer] = @layers.splice index, 1
         layer?.remove()
-            
+        
+        @selectLayer index-1
         @done()
     
     toggleLayer: (index, state) -> 

@@ -414,7 +414,7 @@ class Shapes
     #      000  000       000      000       000          000     
     # 0000000   00000000  0000000  00000000   0000000     000     
     
-    select: (select) -> # move to shapes?
+    select: (select) ->
 
         switch select
             when 'none'
@@ -427,16 +427,16 @@ class Shapes
                 if @edit? and not @edit.empty()
                     @edit.dotsel.addAll()
                 else if @edit? or @kali.shapeTool() == 'edit'
-                    @editItems @items()
+                    @editItems @stage.items()
                 else
-                    @selection.setItems @items()
+                    @selection.setItems @stage.items()
             when 'invert'
                 if @edit? and not @edit.empty()
                     @edit.dotsel.invert()
                 else if @edit? or @kali.shapeTool() == 'edit'
-                    @editItems @items().filter (item) => not @edit? or item not in @edit.items()
+                    @editItems @stage.items().filter (item) => not @edit? or item not in @edit.items()
                 else
-                    @selection.setItems @items().filter (item) => item not in @selection.items
+                    @selection.setItems @stage.items().filter (item) => item not in @selection.items
         
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   

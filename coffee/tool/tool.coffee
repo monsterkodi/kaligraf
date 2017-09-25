@@ -9,6 +9,8 @@
 
 { elemProp } = require '../utils'
 
+Exporter = require '../exporter'
+
 class Tool
 
     constructor: (@kali, @cfg) ->
@@ -71,7 +73,7 @@ class Tool
                 btn.classList.toggle 'active', btn.toggle
                 
             if button.icon? or button.tiny?
-                btn.innerHTML = @loadSVG button.icon ? button.tiny
+                btn.innerHTML = Exporter.loadSVG button.icon ? button.tiny
                 btn.classList.add 'toolIcon'
                 btn.classList.add 'toolTiny' if button.tiny?
                 btn.classList.remove 'toolButton'
@@ -125,17 +127,6 @@ class Tool
         @element.innerHTML = svg
         @svg = SVG.adopt(@element.firstChild)
         @svg.addClass 'toolSVG'
-
-    loadSVG: (name) ->
-        
-        svgFile = "#{__dirname}/../../svg/#{name}.svg"
-        if fileExists svgFile
-            return fs.readFileSync svgFile, encoding: 'utf8'
-
-    saveSVG: (name, svg) ->
-        
-        svgFile = "#{__dirname}/../../svg/#{name}.svg"
-        fs.writeFileSync svgFile, svg, encoding: 'utf8'
         
     # 000   000   0000000   000   000  00000000  00000000     
     # 000   000  000   000  000   000  000       000   000    
@@ -260,7 +251,7 @@ class Tool
         
         if btn.icon?
             if event?.metaKey
-                @kali.stage.addSVG @loadSVG btn.icon
+                @kali.stage.addSVG Exporter.loadSVG btn.icon
                 return
 
             if event?.ctrlKey

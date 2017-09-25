@@ -55,13 +55,16 @@ class Selection
     delete: ->  
         
         if not @empty()
+            @stage.do()
             for item in @items
                 if item.parent()?.removeElement?
                     item.remove()
                 else
                     item.clear()
                     item.node.remove()
-        @clear()
+            @clear()
+            log 'done deleted'
+            @stage.done()
         
     #  0000000  00000000  000      00000000   0000000  000000000  00000000  0000000    
     # 000       000       000      000       000          000     000       000   000  

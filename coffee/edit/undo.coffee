@@ -68,7 +68,7 @@ class Undo
             @history.splice @history.length-1, 1, state
         else   
             @history.push state
-            
+          
         @post 'done'
                     
     # 000   000  000   000  0000000     0000000   

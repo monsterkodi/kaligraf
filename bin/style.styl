@@ -316,9 +316,9 @@ button
     top                     0
     right                   0
     overflow                hidden  
-    border-bottom-left-radius 6px
-    border-top-left-radius 6px
-    border                  1px solid #222
+    border                      1px solid #222
+    border-bottom-left-radius   6px
+    border-top-left-radius      6px
     
 .layerListScroll
     overflow-y              auto //scroll
@@ -346,9 +346,10 @@ button
     margin                  0
     width                   180px
     height                  120px
+    overflow                hidden
     cursor                  pointer
     box-sizing              border-box
-    border-bottom           1px solid #222
+    border                  1px solid #222
     &.active
         border              1px solid #fff
     
@@ -358,21 +359,43 @@ button
     margin                  0
     padding                 0
     
-.layerListMenu
+.layerListMenuLeft
+    position                absolute
+    top                     0
+    left                    0
+    opacity                 0
+    
+.layerListMenuRight
     position                absolute
     top                     0
     right                   0
-    width                   20px
+    opacity                 0
+
+.layerListLayer:hover .layerListMenuLeft
+.layerListLayer:hover .layerListMenuRight
+    opacity                 1
     
 .layerListButton
     font()
+    overflow                hidden
     font-size               10px
     cursor                  default
-    color                   #888
     background              #222
-    height                  20px
-    width                   20px
+    height                  24px
+    width                   24px
     display                 block
+    padding                 3px
+    
+.layerListMenuRight .layerListButton:last-child 
+    border-bottom-left-radius 4px
+    
+.layerListMenuLeft .layerListButton:last-child
+    border-bottom-right-radius 4px
+    
+.layerListButton svg
+    opacity                 0.5
+    &:hover
+        opacity             1
     
 //  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000
 // 000       000       000      000       000          000     000  000   000  0000  000

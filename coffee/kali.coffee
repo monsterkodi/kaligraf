@@ -5,7 +5,7 @@
 # 000  000   000   000  000      000  
 # 000   000  000   000  0000000  000  
 
-{ setStyle, keyinfo, stopEvent, empty, first, post, prefs, elem, log, $, _ } = require 'kxk'
+{ setStyle, keyinfo, stopEvent, empty, first, post, prefs, elem, sw, sh, pos, log, $, _ } = require 'kxk'
 
 Tools    = require './tool/tools'
 Stage    = require './stage'
@@ -44,7 +44,12 @@ class Kali
         
         @tools.loadPrefs()
         
-    onResize: => post.emit 'resize', @stage.viewSize()
+    onResize: => 
+
+        stageSize = pos sw(), sh()
+        log stageSize
+        log @stage.viewSize()
+        post.emit 'resize', stageSize
                 
     # 0000000    00000000    0000000   000   000   0000000  00000000  00000000   
     # 000   000  000   000  000   000  000 0 000  000       000       000   000  

@@ -5,7 +5,7 @@
 # 000        000 000   000        000   000  000   000     000     000       000   000
 # 00000000  000   000  000         0000000   000   000     000     00000000  000   000
 
-{ empty, resolve, fs, log, _ } = require 'kxk'
+{ empty, resolve, fs, fileExists, log, _ } = require 'kxk'
 
 { bboxForItems, growBox, uuid } = require './utils'
 
@@ -71,7 +71,22 @@ class Exporter
     @save: (svg, opt) ->
         
         fs.writeFileSync resolve(opt.file), Exporter.svg svg, opt
-       
+
+    @saveSVG: (name, svg) ->
+        
+        svgFile = "#{__dirname}/../svg/#{name}.svg"
+        fs.writeFileSync svgFile, svg, encoding: 'utf8'
+
+    @loadSVG: (name) ->
+        
+        svgFile = "#{__dirname}/../svg/#{name}.svg"
+        # log 'loadSVG', svgFile
+        if fileExists svgFile
+            return fs.readFileSync svgFile, encoding: 'utf8'
+        # else
+            # log "Exporter.loadSVG -- warning: no such file #{svgFile}"
+        null
+        
     #  0000000  000      00000000   0000000   000   000  
     # 000       000      000       000   000  0000  000  
     # 000       000      0000000   000000000  000 0 000  

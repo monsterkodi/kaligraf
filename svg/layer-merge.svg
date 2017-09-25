@@ -1,0 +1,11 @@
+<svg width="100%" height="100%"
+version="1.1"
+xmlns="http://www.w3.org/2000/svg" 
+xmlns:xlink="http://www.w3.org/1999/xlink"
+xmlns:svgjs="http://svgjs.com/svgjs"
+style="stroke-linecap: round; stroke-linejoin: round;"
+viewBox="-132.1772117614746 -17.93131504058838 72.31260681152344 57.68014068603516">
+<polygon id="P-ee-d557ca" points="-124.17123664999045,7.525964613082323 -103.82657056267942,-13.124636302609318 -65.89065184348293,-13.124636302609318 -85.77641568822303,7.525964613082323" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 5; fill: rgb(0, 0, 0); fill-opacity: 1;"></polygon>
+<polygon id="P-ce-45d07f" points="-124.17123664999045,7.525964613082323 -103.82657056267942,-13.124636302609318 -65.89065184348293,-13.124636302609318 -85.77641568822303,7.525964613082323" style="stroke: rgb(96, 96, 96); stroke-opacity: 1; stroke-width: 5; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,-1.9799270629882812,27.416184198366185)"></polygon>
+<line id="L-ee-f00bee" x1="-96.94303692411553" y1="7.3729971988920155" x2="-96.94303692411553" y2="27.717663286203035" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 5; fill: none; fill-opacity: 0;" transform="matrix(1,0,0,1,0,0.3059348671932369)"></line>
+<g id="G-f6-085233"><line id="L-ce-9ba9d2" x1="-119.8881490526618" y1="54.63992818369732" x2="-112.08681092895607" y2="62.28829889321274" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 5; fill: none; fill-opacity: 0;" transform="matrix(0.9999999999999999,0,0,0.9999999999999999,15.296611785888672,-33.34701156616211)"></line><line id="L-9e-4f3008" x1="-102.29689642077633" y1="53.41618887017485" x2="-109.02746264514991" y2="60.45268992292904" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 5; fill: none; fill-opacity: 0;" transform="matrix(0.9999999999999999,0,0,0.9999999999999999,12.646099090576172,-31.83495308111765)"></line></g></svg>

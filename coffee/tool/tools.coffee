@@ -7,7 +7,8 @@
 
 { elem, stopEvent, post, prefs, first, last, empty, fs, path, log, _ } = require 'kxk'
 
-Tool = require './tool'
+Exporter = require '../exporter'
+Tool     = require './tool'
 
 class Tools extends Tool
 
@@ -171,14 +172,14 @@ class Tools extends Tool
             cfg[0].list = cfg.slice 1
             cfg = cfg[0]
             
-        if cfg.svg = @loadSVG cfg.name ? cfg.class
+        if cfg.svg = Exporter.loadSVG cfg.name ? cfg.class
             
             if 'group' == (cfg.name ? cfg.class)
                 delete cfg.svg 
             
         else if cfg.group == 'shape'
             
-            cfg.svg = @loadSVG 'rect'
+            cfg.svg = Exporter.loadSVG 'rect'
             
         clss = cfg.class and require("./#{cfg.class}") or Tool
         tool = new clss @kali, cfg

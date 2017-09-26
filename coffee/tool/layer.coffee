@@ -445,7 +445,8 @@ class Layer extends Tool
             toLayer.after fromLayer
             @layers.splice to, 0, fromLayer
                     
-        @selectLayer to
+        # @selectLayer to
+        @activateLayer to
         @done()
     
     swapLayers: (indexA, indexB) ->
@@ -470,7 +471,8 @@ class Layer extends Tool
         @layers.splice indexA, 0, layerB
         @layers.splice indexB, 0, layerA
         
-        @selectLayer oldB
+        # @selectLayer oldB
+        @activateLayer oldB
         @done()
         
     #  0000000  00000000  000      00000000   0000000  000000000  

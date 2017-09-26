@@ -198,9 +198,13 @@ class LayerList
             opaque = true
             hide.classList.add 'active'
             svg.style opacity: 0.1
+            
+            disable.style.display = 'none'
         else
             hide.classList.remove 'active'
             svg.style opacity: 1
+            
+            disable.style.display = 'block'
             
         if layer.data 'disabled'
             opaque = true

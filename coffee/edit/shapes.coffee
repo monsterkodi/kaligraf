@@ -222,7 +222,8 @@ class Shapes
             when 'pick'
 
                 @stopEdit()
-                @selection.stageStart drag, event
+                if not event.metaKey
+                    @selection.stageStart drag, event
                     
             when 'edit'
 

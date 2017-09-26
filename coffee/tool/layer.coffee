@@ -359,7 +359,9 @@ class Layer extends Tool
         value = layer.data state
         switch state
             when 'hidden' 
-                if value then layer.hide() 
+                if value 
+                    @selection.setItems @selectedItems().filter (item) => @layerForItem(item) != layer
+                    layer.hide()
                 else layer.show() 
             when 'disabled'
                 if value then layer.style 'pointer-events', 'none'

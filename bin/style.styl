@@ -388,6 +388,11 @@ button
     display                 block
     padding                 3px
     
+.layerListLayer:not(:hover) .layerListMenuLeft.opaque .layerListButton
+    background              rgba(0,0,0,0)
+.layerListLayer:not(:hover) .layerListMenuLeft.opaque .layerListButton:not(.active) svg
+    opacity                 1
+    
 .layerListMenuRight .layerListButton:last-child 
     border-bottom-left-radius 4px
     

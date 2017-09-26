@@ -119,6 +119,8 @@ class LayerList
     
     update: =>
 
+        log 'layerlist.update'
+        
         @scroll.innerHTML = ''
         
         for index in [0...Math.max(1, @stage.numLayers())]
@@ -134,9 +136,14 @@ class LayerList
             @scroll.insertBefore @layerDiv(index), @scroll.firstChild
 
     updateActive: (info) ->
-
-        @active()?.classList.remove 'active'
-        @layerAt(info.active)?.classList.add 'active'
+        
+        if info.num != @scroll.children.length
+            log 'layerlist.updateActive num differs -> update()'
+            @update()
+        else
+            log 'layerlist.updateActive highlight', @active()?, @active().index, @active().className, info
+            @active()?.classList.remove 'active'
+            @layerAt(info.active)?.classList.add 'active'
             
     # 000       0000000   000   000  00000000  00000000   
     # 000      000   000   000 000   000       000   000  
@@ -151,7 +158,6 @@ class LayerList
         div = elem class:'layerListLayer'
         div.index = index
         div.addEventListener 'dblclick', (event) =>
-            # log 'dblclick', event.target.index
             @stage.selectLayer event.target.index
         
         svg = SVG(div).size '100%', '100%'
@@ -217,7 +223,7 @@ class LayerList
     # 000   000  000          000     000     000     000       
     # 000   000   0000000     000     000      0      00000000  
     
-    active: -> $ @scroll, '.active' # @scroll.querySelector '.active'
+    active: -> $ @scroll, '.active'
     activeIndex: -> not @active() and -1 or @swapIndex childIndex @active()
     
     layerAt:   (index) -> @scroll.children[@swapIndex index]

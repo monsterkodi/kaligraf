@@ -180,7 +180,7 @@ class Layer extends Tool
             @layers.push SVG.get id
             @applyLayerState @layers.length-1, 'hidden'
             @applyLayerState @layers.length-1, 'disabled'
-        log "numLayers #{@numLayers()} active #{@layerIndex}"
+            
         @layerIndex = @numLayers()-1
         
         @postLayer()
@@ -191,7 +191,9 @@ class Layer extends Tool
         
     clampLayer: (index) -> clamp 0, @numLayers()-1, index
     numLayers: -> @layers.length
-    postLayer: -> post.emit 'stage', 'layer', active:@layerIndex, num:@layers.length
+    postLayer: -> 
+        log "layer.postLayer num:#{@numLayers()} active:#{@layerIndex}"
+        post.emit 'stage', 'layer', active:@layerIndex, num:@layers.length
     
     #  0000000    0000000  000000000  000  000   000  00000000  
     # 000   000  000          000     000  000   000  000       
@@ -323,7 +325,6 @@ class Layer extends Tool
         
         @done()
     
-
     clearSingleLayer: ->
         
         if @numLayers() == 1
@@ -340,16 +341,17 @@ class Layer extends Tool
     
     toggleLayer: (index, state) -> 
         
-        @do()
-        
-        layer = @layerAt index
-        oldValue = layer.data state
-        newValue = !oldValue
-        layer.data state, newValue
-        
-        @applyLayerState index, state
-        
-        @done()
+        if layer = @layerAt index
+            
+            @do "layer#{index}#{state}"
+            
+            oldValue = layer.data state
+            newValue = !oldValue
+            layer.data state, newValue
+            
+            @applyLayerState index, state
+            
+            @done()
             
     applyLayerState: (index, state) ->
         
@@ -391,7 +393,7 @@ class Layer extends Tool
             @layers.splice to, 0, fromLayer
         else 
             toLayer.after fromLayer
-            @layers.splice to-1, 0, fromLayer
+            @layers.splice to, 0, fromLayer
                     
         @selectLayer to
         @done()
@@ -430,11 +432,16 @@ class Layer extends Tool
     
     selectLayer: (index=@layerIndex) =>
         
-        @activateLayer index
-        
-        if @numLayers()
-            @selection.setItems @activeLayer().children()
-        else
-            @selection.setItems @items()
+        if layer = @layerAt index
+            
+            if layer.data 'hidden'
+                @toggleLayer index, 'hidden'
+
+            @activateLayer index
+            
+            if @numLayers()
+                @selection.setItems @activeLayer().children()
+            else
+                @selection.setItems @items()
         
 module.exports = Layer

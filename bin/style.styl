@@ -390,8 +390,10 @@ button
     
 .layerListLayer:not(:hover) .layerListMenuLeft.opaque .layerListButton
     background              rgba(0,0,0,0)
-.layerListLayer:not(:hover) .layerListMenuLeft.opaque .layerListButton:not(.active) svg
+.layerListLayer:not(:hover) .layerListMenuLeft.opaque .layerListButton.active svg
     opacity                 1
+.layerListLayer:not(:hover) .layerListMenuLeft.opaque .layerListButton:not(.active) svg
+    opacity                 0
     
 .layerListMenuRight .layerListButton:last-child 
     border-bottom-left-radius 4px

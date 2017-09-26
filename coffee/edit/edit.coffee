@@ -380,7 +380,7 @@ class Edit
 
         r = normRect rect
         
-        for item in @kali.items()
+        for item in @stage.pickableItems()
 
             rb = item.rbox()
             if rectsIntersect r, rb

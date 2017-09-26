@@ -9,7 +9,7 @@
 
 {   opposide,  rectSize, rectOffset, 
     moveBox,   zoomBox,  scaleBox,
-    boxOffset, boxPos,   boxSize, boxForItems } = require './utils'
+    boxOffset, boxPos,   boxSize } = require './utils'
 
 Cursor = require './cursor'
     

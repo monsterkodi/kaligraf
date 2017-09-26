@@ -75,7 +75,7 @@ module.exports =
         bb = null
         for item in items
             b = item.bbox()
-            continue if b.width == 0 or b.height == 0
+            continue if b.width == 0 == b.height 
             b = b.transform item.transform().matrix
             bb ?= b
             bb = bb.merge b

@@ -139,10 +139,6 @@ class Selection
     
     addRectForItem: (item) ->
 
-        if not item?.remember?
-            log 'dafuk', item
-            return
-        
         r = @rectsWhite.rect()
         item.remember 'itemRectWhite', r
 
@@ -185,8 +181,8 @@ class Selection
             r.attr
                 x:      box.x
                 y:      box.y
-                width:  box.width
-                height: box.height
+                width:  Math.max 1, box.width
+                height: Math.max 1, box.height
                 
             r.transform item.transform()
 
@@ -195,8 +191,8 @@ class Selection
             r.attr
                 x:      box.x
                 y:      box.y
-                width:  box.width
-                height: box.height
+                width:  Math.max 1, box.width
+                height: Math.max 1, box.height
                 
             r.transform item.transform()
             
@@ -297,13 +293,13 @@ class Selection
         eventPos = pos event
         
         if item = @stage.itemAtPos eventPos
-            # log 'Selection.stageStart', item.id()
+            # log 'Selection.stageStart', item?.id()
             if not @contains item
                 @addItem item, join:event.shiftKey
             else # if not switched
                 if event.shiftKey then @delItem item
         else
-            # log 'Selection.stageStart start rect'
+            # log 'Selection.stageStart rect'
             @startRect eventPos, join:event.shiftKey
     
     # 00     00   0000000   000   000  00000000  
@@ -378,16 +374,18 @@ class Selection
 
         r = @stageRect normRect rect
         
-        for child in @kali.items()
+        # log 'Selection.selectInRect', rect
+        
+        for child in @stage.pickableItems()
 
             rb = @trans.rect child
-            
+             
             if rectsIntersect r, rb
-                
+                 
                 @addItem child
-                
+                 
             else if not opt.join
-                
+                 
                 @delItem child
         
     offsetRect: (r) ->

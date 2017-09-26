@@ -145,8 +145,8 @@ class LayerList
             @log 'LayerList.updateActive num differs -> update()'
             @update()
         else
-            @log 'LayerList.updateActive highlight', @active()?, @active().index, @active().className, info
-            @active()?.classList.remove 'active'
+            log 'LayerList.updateActive highlight', @activeLayer()?, @activeLayer().index, @activeLayer().className, info
+            @activeLayer()?.classList.remove 'active'
             @layerAt(info.active)?.classList.add 'active'
             
     # 000       0000000   000   000  00000000  00000000   
@@ -188,16 +188,29 @@ class LayerList
             menu.appendChild btn
             btn
         
-        addButton left, 'hide',    layer.data('hidden')   and 'hidden'   or 'hide'
-        addButton left, 'disable', layer.data('disabled') and 'disabled' or 'disable'
+        hide    = addButton left, 'hide',    layer.data('hidden')   and 'hidden'   or 'hide'
+        disable = addButton left, 'disable', layer.data('disabled') and 'disabled' or 'disable'
 
-        opaque = layer.data('hidden') == true or layer.data('disabled') == true
+        opaque = false
+        if layer.data 'hidden'
+            opaque = true
+            hide.classList.add 'active'
+        else
+            hide.classList.remove 'active'
+            
+        if layer.data 'disabled'
+            opaque = true
+            disable.classList.add 'active'
+        else
+            disable.classList.remove 'active'
+            
         left.classList.toggle 'opaque', opaque
+        
+        addButton right, 'duplicate'
         
         if @stage.numLayers()
             addButton right, 'delete'
             
-        addButton right, 'duplicate'
         addButton right, 'split'
         
         if index > 0
@@ -227,8 +240,8 @@ class LayerList
     # 000   000  000          000     000     000     000       
     # 000   000   0000000     000     000      0      00000000  
     
-    active: -> $ @scroll, '.active'
-    activeIndex: -> not @active() and -1 or @swapIndex childIndex @active()
+    activeLayer: -> $ @scroll, '.layerListLayer.active'
+    activeIndex: -> not @activeLayer() and -1 or @swapIndex childIndex @activeLayer()
     
     layerAt:   (index) -> @scroll.children[@swapIndex index]
     layerAtY: (y) => 

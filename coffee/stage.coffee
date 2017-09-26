@@ -107,23 +107,28 @@ class Stage
         r.height = 1
         r
     
+    pickableLayers: -> @layers.filter (layer) -> not layer.data 'disabled'
+    disabledLayers: -> @layers.filter (layer) -> layer.data 'disabled'
+        
     pickItems: (eventPos, opt) ->
         
+        pickableLayers = @pickableLayers()
         items = @svg.node.getIntersectionList @pickRect(eventPos), null
         items = [].slice.call(items, 0).reverse()
         items = items.filter (item) => item.instance? and item.instance != @svg
         items = items.map (item) -> item.instance
-        items = items.filter (item) => return item not in @layers
+        items = items.filter (item) => item in pickableLayers
         items = @filterItems items, opt
+        # log 'Stage.pickItems', items.length
         items
         
     leafItemAtPos: (p, opt) ->
 
         for item in @pickItems(p, opt)
             if @isLeaf item
-                # log 'leafItemAtPos', item.id(), opt
+                # log 'Stage.leafItemAtPos', item.id()
                 return item
-        # log 'no leafItemAtPos', @pickItems(p, opt).length
+        # log 'Stage.leafItemAtPos null'
         null
     
     itemAtPos: (p, opt) ->
@@ -131,14 +136,14 @@ class Stage
         for item in @pickItems(p, opt)
             
             if item in @items()
-                # log 'itemAtPos top level', item.id(), opt
+                # log 'Stage.itemAtPos', item.id()
                 return item
             else if item in @treeItems()
-                # log 'itemAtPos tree item', item.id(), opt
+                # log 'Stage.itemAtPos rootItem', @rootItem(item).id()
                 return @rootItem item
+        # log 'Stage.itemAtPos null'
+        null
                 
-        # log 'no itemAtPos', @pickItems(p, opt).length
-
     rootItem: (item) ->
         
         if item.parent() == @svg or item.parent() in @layers then item
@@ -152,6 +157,11 @@ class Stage
             items
         else
             @svg.children().filter (child) -> child.type != 'defs'
+            
+    pickableItems: -> 
+        
+        pickableLayers = @pickableLayers()
+        @items().filter (item) => @layerForItem(item) in pickableLayers
             
     groups: -> @treeItems().filter (item) => item.type == 'g' and item not in @layers
     

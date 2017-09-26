@@ -296,7 +296,7 @@ class Layer extends Tool
 
         @clearSingleLayer()
         
-        @selectLayer index
+        @selectLayer index-1
         @done()
 
     # 00     00  00000000  00000000    0000000   00000000  
@@ -364,7 +364,9 @@ class Layer extends Tool
                     layer.hide()
                 else layer.show() 
             when 'disabled'
-                if value then layer.style 'pointer-events', 'none'
+                if value 
+                    @selection.setItems @selectedItems().filter (item) => @layerForItem(item) != layer
+                    layer.style 'pointer-events', 'none'
                 else layer.style 'pointer-events', 'auto'
         
     #  0000000  000   000   0000000   00000000   
@@ -433,8 +435,8 @@ class Layer extends Tool
         
         if layer = @layerAt index
             
-            if layer.data 'hidden'
-                @toggleLayer index, 'hidden'
+            if layer.data 'hidden'   then @toggleLayer index, 'hidden'
+            if layer.data 'disabled' then @toggleLayer index, 'disabled'
 
             @activateLayer index
             

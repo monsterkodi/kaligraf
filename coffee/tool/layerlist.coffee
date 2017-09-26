@@ -18,7 +18,7 @@ class LayerList
         @stage = @kali.stage
         
         @element = elem 'div', class: 'layerList'
-        @element.tabIndex   = 100
+        @element.tabIndex = 100
         
         @title = winTitle 
             close:  @onClose 
@@ -66,20 +66,23 @@ class LayerList
         return 'skip' if not index?
         
         @dragLayer = @layerAt index
-        @dragLayer.style.opacity = '0'
         br = @dragLayer.getBoundingClientRect()
         
         @dragDiv = @dragLayer.cloneNode true
         @dragDiv.startIndex = index
         @dragDiv.stopIndex  = index
         @dragDiv.style.position = 'absolute'
-        @dragDiv.style.top  = "#{br.top}px"
-        @dragDiv.style.left = "#{br.left}px"
-        @dragDiv.style.width = "#{br.width}px"
-        @dragDiv.style.height = "#{br.height}px"
+        @dragDiv.style.top      = "#{br.top}px"
+        @dragDiv.style.left     = "#{br.left}px"
+        @dragDiv.style.width    = "#{br.width}px"
+        @dragDiv.style.height   = "#{br.height}px"
         @dragDiv.style.pointerEvents = 'none'
-        
+        svg = SVG.adopt @dragDiv.firstChild
+        {r,g,b} = new SVG.Color @stage.color
+        svg.style 
+            'background': "rgba(#{r},#{g},#{b},1)"
         document.body.appendChild @dragDiv
+        @dragLayer.style.opacity = '0'
 
     onDragMove: (d,e) =>
         
@@ -106,8 +109,7 @@ class LayerList
         
         switch action
             
-            when 'layer'     then @updateActive info
-            when 'moveItems' then @update()
+            when 'layer' then @updateActive info
             when 'color' 
                 @scroll.style.background = info.hex
                 if not empty document.styleSheets
@@ -140,10 +142,10 @@ class LayerList
     updateActive: (info) ->
         
         if info.num != @scroll.children.length
-            log 'LayerList.updateActive num differs -> update()'
+            @log 'LayerList.updateActive num differs -> update()'
             @update()
         else
-            log 'LayerList.updateActive highlight', @active()?, @active().index, @active().className, info
+            @log 'LayerList.updateActive highlight', @active()?, @active().index, @active().className, info
             @active()?.classList.remove 'active'
             @layerAt(info.active)?.classList.add 'active'
             
@@ -334,7 +336,6 @@ class LayerList
             when 'down'          then @navigate -1
             when 'command+up',   'page up'   then stopEvent(event); @activate @scroll.children.length-1
             when 'command+down', 'page down' then stopEvent(event); @activate 0
-            when 'esc', 'enter'  then return @hide()
             # else
                 # log combo
                 
@@ -342,6 +343,6 @@ class LayerList
                 
         stopEvent event
        
-    log: -> log.apply log, [].slice.call arguments, 0
+    log: -> #log.apply log, [].slice.call arguments, 0
     
 module.exports = LayerList

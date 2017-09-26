@@ -192,7 +192,7 @@ class Layer extends Tool
     clampLayer: (index) -> clamp 0, @numLayers()-1, index
     numLayers: -> @layers.length
     postLayer: -> 
-        log "Layer.postLayer num:#{@numLayers()} active:#{@layerIndex}"
+        # log "Layer.postLayer num:#{@numLayers()} active:#{@layerIndex}"
         post.emit 'stage', 'layer', active:@layerIndex, num:@layers.length
     
     #  0000000    0000000  000000000  000  000   000  00000000  
@@ -380,8 +380,6 @@ class Layer extends Tool
         if from == to then return
         
         @do()
-        
-        log "from #{from} to #{to} #{@numLayers()}"
         
         fromLayer = @layerAt from 
         toLayer   = @layerAt to

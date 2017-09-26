@@ -297,13 +297,13 @@ class Selection
         eventPos = pos event
         
         if item = @stage.itemAtPos eventPos
-            log 'stageStart', item.id()
+            # log 'Selection.stageStart', item.id()
             if not @contains item
                 @addItem item, join:event.shiftKey
             else # if not switched
                 if event.shiftKey then @delItem item
         else
-            log 'stageStart start rect'
+            # log 'Selection.stageStart start rect'
             @startRect eventPos, join:event.shiftKey
     
     # 00     00   0000000   000   000  00000000  

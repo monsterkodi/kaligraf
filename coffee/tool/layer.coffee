@@ -161,19 +161,19 @@ class Layer extends Tool
         if gotGrp
             newLayer = @svg.nested()
             newLayer.id "layer #{@numLayers()}"
-            log 'non svg stuff on top level:'
+            log 'Layer.loadLayers -- non svg stuff on top level:'
             for item in @items()
                 if item.type != 'svg'
-                    log 'item.type'
+                    log "Layer.loadLayers -- moving item of type #{item.type} into new layer"
                     newLayer.add item
             
         for item in @items()
             transform = item.transform()
             if not _.isEqual transform.matrix, new SVG.Matrix()
-                log transform
+                log 'Layer.loadLayers top level layer with transform?', transform
   
         layerIDs = @items().map (item) -> item.id()
-        log 'restoreLayers', layerIDs
+        log 'Layer.loadLayers', layerIDs
         
         @layers = []
         for id in layerIDs
@@ -192,7 +192,7 @@ class Layer extends Tool
     clampLayer: (index) -> clamp 0, @numLayers()-1, index
     numLayers: -> @layers.length
     postLayer: -> 
-        log "layer.postLayer num:#{@numLayers()} active:#{@layerIndex}"
+        log "Layer.postLayer num:#{@numLayers()} active:#{@layerIndex}"
         post.emit 'stage', 'layer', active:@layerIndex, num:@layers.length
     
     #  0000000    0000000  000000000  000  000   000  00000000  
@@ -273,7 +273,7 @@ class Layer extends Tool
                     item.clone().addTo layer
             when 'keep' then
             else
-                log 'layer.createLayer wrong option?', opt
+                log 'Layer.createLayer wrong option?', opt
         
         if not opt?.nodo
             @selectLayer index
@@ -412,7 +412,6 @@ class Layer extends Tool
         [layerB] = @layers.splice indexB, 1
         [layerA] = @layers.splice indexA, 1
         
-        log indexA, indexB, layerA.position(), layerB.position()
         beforeB = layerB.previous()
         layerA.before layerB
         if beforeB != layerA

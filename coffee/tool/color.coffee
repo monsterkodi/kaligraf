@@ -52,8 +52,6 @@ class Color extends Tool
 
     createPalette: ->
         
-        log "#{@name}", @onColor?
-        
         @bindStage 'onColor'
         
         @kali.palette = new Palette @kali

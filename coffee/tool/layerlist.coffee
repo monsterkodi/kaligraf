@@ -62,39 +62,41 @@ class LayerList
     onDragStart: (d, e) => 
 
         index = e.target.index
-        log 'dragStart', index
+
         return 'skip' if not index?
         
-        @dragTab = @layerAt index
-        @dragDiv = @dragTab.cloneNode true
+        @dragLayer = @layerAt index
+        @dragLayer.style.opacity = '0'
+        br = @dragLayer.getBoundingClientRect()
+        
+        @dragDiv = @dragLayer.cloneNode true
         @dragDiv.startIndex = index
         @dragDiv.stopIndex  = index
-        @dragTab.style.opacity = '0'
-        br = @dragTab.getBoundingClientRect()
         @dragDiv.style.position = 'absolute'
         @dragDiv.style.top  = "#{br.top}px"
         @dragDiv.style.left = "#{br.left}px"
         @dragDiv.style.width = "#{br.width}px"
         @dragDiv.style.height = "#{br.height}px"
         @dragDiv.style.pointerEvents = 'none'
+        
         document.body.appendChild @dragDiv
 
     onDragMove: (d,e) =>
         
         @dragDiv.style.transform = "translateY(#{d.deltaSum.y}px)"
         if layer = @layerAtY d.pos.y
-            if layer.index != @dragTab.index
+            if layer.index != @dragLayer.index
                 @dragDiv.stopIndex = layer.index
-                @swapLayers layer, @dragTab
+                @swapLayers layer, @dragLayer
                         
     onDragStop: (d,e) =>
         
         { startIndex, stopIndex } = @dragDiv
         
-        @dragTab.style.opacity = ''
+        @dragLayer.style.opacity = ''
         @dragDiv.remove()
         delete @dragDiv
-        delete @dragTab
+        delete @dragLayer
         
         if startIndex != stopIndex
 
@@ -119,7 +121,7 @@ class LayerList
     
     update: =>
 
-        log 'layerlist.update'
+        @log 'LayerList.update'
         
         @scroll.innerHTML = ''
         
@@ -138,10 +140,10 @@ class LayerList
     updateActive: (info) ->
         
         if info.num != @scroll.children.length
-            log 'layerlist.updateActive num differs -> update()'
+            log 'LayerList.updateActive num differs -> update()'
             @update()
         else
-            log 'layerlist.updateActive highlight', @active()?, @active().index, @active().className, info
+            log 'LayerList.updateActive highlight', @active()?, @active().index, @active().className, info
             @active()?.classList.remove 'active'
             @layerAt(info.active)?.classList.add 'active'
             
@@ -206,7 +208,7 @@ class LayerList
 
     onButtonAction: (index, action, event) =>
     
-        log 'onButtonAction', event?
+        @log 'onButtonAction', event?
         stopEvent event
         
         switch action
@@ -312,7 +314,6 @@ class LayerList
         
         @element.focus()
         @activate @scroll.children.length - 1 - childIndex event.target
-        log 'onClick stopEvent'
         stopEvent event
     
     # 000   000  00000000  000   000  
@@ -325,7 +326,7 @@ class LayerList
         
         {mod, key, combo, char} = keyinfo.forEvent event
         
-        log "layerlist.onKeyDown #{combo}"
+        @log "LayerList.onKeyDown #{combo}"
         
         switch combo
             
@@ -340,5 +341,7 @@ class LayerList
         if combo.startsWith 'command' then return
                 
         stopEvent event
-        
+       
+    log: -> log.apply log, [].slice.call arguments, 0
+    
 module.exports = LayerList

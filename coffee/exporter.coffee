@@ -20,7 +20,7 @@ class Exporter
     @svg: (root, opt) ->
         
         bb = opt?.viewbox ? root.bbox()
-        growBox bb
+        growBox new SVG.BBox bb
 
         svgStr = """
             <svg width="100%" height="100%"

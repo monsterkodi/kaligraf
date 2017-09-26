@@ -230,6 +230,16 @@ class LayerList
         @log 'onButtonAction', event?
         stopEvent event
         
+        if event.metaKey
+            switch action
+                when 'hide'    then return @stage.soloLayer index, 'hidden'
+                when 'disable' then return @stage.soloLayer index, 'disabled'
+
+        if event.ctrlKey
+            switch action
+                when 'hide'    then return @stage.clearState 'hidden'
+                when 'disable' then return @stage.clearState 'disabled'
+                
         switch action
             when 'duplicate' then @stage.duplicateLayer index
             when 'merge'     then @stage.mergeLayer     index

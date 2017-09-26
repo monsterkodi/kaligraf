@@ -22,7 +22,7 @@ class Layer extends Tool
             'postLayer', 'storeLayers', 'restoreLayers', 'layerForItem',
             'createLayer', 'indexOfLayer', 'activateSelectionLayer', 
             'toggleLayer', 'applyLayerState', 'loadLayers', 'clearSingleLayer', 
-            'swapLayers', 'moveLayer']
+            'swapLayers', 'moveLayer', 'soloLayer', 'clearState']
         
         @stage.layers = []
         
@@ -342,7 +342,7 @@ class Layer extends Tool
     #      000     000     000   000     000     000       
     # 0000000      000     000   000     000     00000000  
     
-    toggleLayer: (index, state) -> 
+    toggleLayer: (index, state) ->
         
         if layer = @layerAt index
             
@@ -354,14 +354,59 @@ class Layer extends Tool
             
             @applyLayerState index, state
             
+            
+            if state == 'hidden' and newValue
+                layer.data 'disabled', true
+                @applyLayerState index, 'disabled'
+            if state == 'disabled' and not newValue
+                layer.data 'hidden', false
+                @applyLayerState index, 'hidden'
+                
+            
             @done()
+
+    soloLayer: (index, state) ->
+        
+        if layer = @layerAt index
+            
+            @do "layer#{index}solo#{state}"
+            
+            for layerIndex in [0...@numLayers()]
+                @layers[layerIndex].data state, index != layerIndex
+                @applyLayerState layerIndex, state
+
+                if state == 'hidden'
+                    @layers[layerIndex].data 'disabled', index != layerIndex
+                    @applyLayerState layerIndex, 'disabled'
+                    
+            if state == 'disabled'
+                layer.data 'hidden', false
+                @applyLayerState index, 'hidden'
+                
+            @activateLayer index
+                
+            @done()
+
+    clearState: (state) ->
+        
+        @do "layerclear#{state}"
+        
+        for layerIndex in [0...@numLayers()]
+            @layers[layerIndex].data state, false
+            @applyLayerState layerIndex, state
+        
+            if state == 'disabled'
+                @layers[layerIndex].data 'hidden', false
+                @applyLayerState layerIndex, 'hidden'
+            
+        @done()
             
     applyLayerState: (index, state) ->
         
         layer = @layerAt index
         value = layer.data state
         switch state
-            when 'hidden' 
+            when 'hidden'
                 if value 
                     @selection.setItems @selectedItems().filter (item) => @layerForItem(item) != layer
                     layer.hide()

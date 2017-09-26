@@ -283,6 +283,7 @@ class Resizer
 
     onDragStart: (drag, event) =>
 
+        log 'Resizer.onDragStart'
         @onStart()
             
         if event?.shiftKey

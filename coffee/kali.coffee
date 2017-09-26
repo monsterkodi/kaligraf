@@ -70,8 +70,6 @@ class Kali
         @browser?.del()
         delete @browser
         
-    items: -> @stage.items()
-    
     insertBelowTools: (child) -> @element.insertBefore child, @toolDiv
     insertAboveTools: (child) -> 
         @element.appendChild child

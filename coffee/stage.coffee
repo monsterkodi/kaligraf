@@ -113,13 +113,18 @@ class Stage
     pickItems: (eventPos, opt) ->
         
         pickableLayers = @pickableLayers()
+        # log 'Stage.pickItems pickableLayers', pickableLayers.length
         items = @svg.node.getIntersectionList @pickRect(eventPos), null
         items = [].slice.call(items, 0).reverse()
         items = items.filter (item) => item.instance? and item.instance != @svg
         items = items.map (item) -> item.instance
-        items = items.filter (item) => item in pickableLayers
+        log 'Stage.pickItems pickedItems:', items.map((item) -> item.id()).join ' '
+        items = items.filter (item) => 
+            log "Stage.pickItems item #{item.id()} parents:", item.parents().map((p) -> p.id()).join ' '
+            @layerForItem(item) in pickableLayers
+        log 'Stage.pickItems pickedItems', items.map (item) -> item.id()
         items = @filterItems items, opt
-        # log 'Stage.pickItems', items.length
+        log 'Stage.pickItems pickedItems', items.length, opt
         items
         
     leafItemAtPos: (p, opt) ->
@@ -132,16 +137,14 @@ class Stage
         null
     
     itemAtPos: (p, opt) ->
-
+        log 'Stage.itemAtPos', p, opt, @pickItems(p, opt)
         for item in @pickItems(p, opt)
-            
-            if item in @items()
-                # log 'Stage.itemAtPos', item.id()
+            # return @rootItem item
+            if item in @pickableItems()
                 return item
             else if item in @treeItems()
-                # log 'Stage.itemAtPos rootItem', @rootItem(item).id()
                 return @rootItem item
-        # log 'Stage.itemAtPos null'
+        log 'Stage.itemAtPos null'
         null
                 
     rootItem: (item) ->
@@ -197,7 +200,7 @@ class Stage
     selectedOrAllItems: -> 
         
         items = @selectedItems() 
-        items = @items() if empty items
+        items = @pickableItems() if empty items
         items
         
     selectedItems: (opt) ->
@@ -507,9 +510,10 @@ class Stage
 
     copy: ->
 
-        selected = _.clone @selection.items
-        items = @selection.empty() and @items() or selected
+        items = @selectedOrAllItems()
         return if items.length <= 0
+        
+        selected = _.clone @selection.items
 
         @selection.clear()
 

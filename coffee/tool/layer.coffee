@@ -201,7 +201,10 @@ class Layer extends Tool
     # 000   000  000          000     000     000     000       
     # 000   000   0000000     000     000      0      00000000  
     
-    layerForItem: (item) -> item.parents()[0]
+    layerForItem: (item) ->
+        
+        parents = item.parents()
+        parents[parents.length-2]
         
     indexOfLayer: (layer) -> @layers.indexOf layer
         

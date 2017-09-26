@@ -131,28 +131,7 @@ class Shapes
                 fill:           'none'
                 'fill-opacity': 0.0
         e
-        
-    #  0000000  000000000   0000000   00000000   000000000  
-    # 000          000     000   000  000   000     000     
-    # 0000000      000     000000000  0000000       000     
-    #      000     000     000   000  000   000     000     
-    # 0000000      000     000   000  000   000     000     
-    
-    onStart: (drag, event) => 
-
-        delete drag.shift
-        
-        @clearText()
-        
-        shape = @kali.shapeTool()
-        if shape == 'text'
-            if item = @stage.itemAtPos pos event
-                if item.type == 'text'
-                    @editTextItem item
-                    return
-                            
-        @handleMouseDown event
-        
+                
     # 000000000  00000000  000   000  000000000  
     #    000     000        000 000      000     
     #    000     0000000     00000       000     
@@ -187,7 +166,28 @@ class Shapes
                 @tools.clickTool s
                 return s
         shape
+
+    #  0000000  000000000   0000000   00000000   000000000  
+    # 000          000     000   000  000   000     000     
+    # 0000000      000     000000000  0000000       000     
+    #      000     000     000   000  000   000     000     
+    # 0000000      000     000   000  000   000     000     
     
+    onStart: (drag, event) => 
+
+        delete drag.shift
+        
+        @clearText()
+        
+        shape = @kali.shapeTool()
+        if shape == 'text'
+            if item = @stage.itemAtPos pos event
+                if item.type == 'text'
+                    @editTextItem item
+                    return
+                            
+        @handleMouseDown event
+        
     # 0000000     0000000   000   000  000   000  
     # 000   000  000   000  000 0 000  0000  000  
     # 000   000  000   000  000000000  000 0 000  
@@ -223,6 +223,7 @@ class Shapes
 
                 @stopEdit()
                 if not event.metaKey
+                    log 'Shapes.handleMouseDown start selection rect', @stage.itemAtPos eventPos
                     @selection.stageStart drag, event
                     
             when 'edit'
@@ -418,26 +419,32 @@ class Shapes
     select: (select) ->
 
         switch select
+            
             when 'none'
+                
                 if @edit? and not @edit.dotsel.empty()
                     @edit.dotsel.clear()
                 else
                     @stopEdit()
                     @selection.clear()
+                    
             when 'all'
+                
                 if @edit? and not @edit.empty()
                     @edit.dotsel.addAll()
                 else if @edit? or @kali.shapeTool() == 'edit'
-                    @editItems @stage.items()
+                    @editItems @stage.pickableItems()
                 else
-                    @selection.setItems @stage.items()
+                    @selection.setItems @stage.pickableItems()
+                    
             when 'invert'
+                
                 if @edit? and not @edit.empty()
                     @edit.dotsel.invert()
                 else if @edit? or @kali.shapeTool() == 'edit'
-                    @editItems @stage.items().filter (item) => not @edit? or item not in @edit.items()
+                    @editItems @stage.pickableItems().filter (item) => not @edit? or item not in @edit.items()
                 else
-                    @selection.setItems @stage.items().filter (item) => item not in @selection.items
+                    @selection.setItems @stage.pickableItems().filter (item) => item not in @selection.items
         
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   

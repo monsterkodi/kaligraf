@@ -145,8 +145,10 @@ class LayerList
             @log 'LayerList.updateActive num differs -> update()'
             @update()
         else
-            log 'LayerList.updateActive highlight', @activeLayer()?, @activeLayer().index, @activeLayer().className, info
-            @activeLayer()?.classList.remove 'active'
+            @log 'LayerList.updateActive highlight', @activeLayer()?
+            if @activeLayer()
+                @log 'LayerList.updateActive highlight', @activeLayer().index, @activeLayer().className, info
+                @activeLayer()?.classList.remove 'active'
             @layerAt(info.active)?.classList.add 'active'
             
     # 000       0000000   000   000  00000000  00000000   
@@ -166,7 +168,7 @@ class LayerList
         
         svg = SVG(div).size '100%', '100%'
         svg.addClass 'layerListSVG'
-        if not empty @stage.items()
+        if not empty layer.children()
             svg.svg Exporter.svg layer, viewbox:@viewbox
         
         if index == @stage.layerIndex
@@ -195,8 +197,10 @@ class LayerList
         if layer.data 'hidden'
             opaque = true
             hide.classList.add 'active'
+            svg.style opacity: 0.1
         else
             hide.classList.remove 'active'
+            svg.style opacity: 1
             
         if layer.data 'disabled'
             opaque = true

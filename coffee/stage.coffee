@@ -354,6 +354,8 @@ class Stage
 
         e = elem 'div'
         e.innerHTML = svg
+        
+        parent = opt?.parent ? @svg
 
         for elemChild in e.children
             
@@ -376,12 +378,17 @@ class Stage
                     items = []
                                             
                     for child in children
-                        @svg.add child
-                        added = last @svg.children()
-                        if added.type != 'defs' 
-                            items.push added
+                        if child.type == 'defs'
+                            parent.add child
+                        else if opt?.id and child.type == 'svg'
+                            g = svg.group()
+                            for layerChild in child.children()
+                                layerChild.toParent g
+                            items.push g
+                        else
+                            items.push child
                           
-                    for item in @treeItems()
+                    for item in items
                         tag = item.node.tagName
                         if tag == 'metadata' or tag.startsWith 'sodipodi'
                             item.remove()
@@ -391,22 +398,27 @@ class Stage
                         if items.length == 1 and first(items).type == 'g'
                             group = first items 
                         else
-                            group = @svg.group()
+                            group = svg.group()
                             
                         group.id opt.id
                         
                         for item in items
-                           group.add item
+                           group.add item if item != group
                            
-                        Exporter.cleanIDs @treeItems()
+                        items = [group]
+                           
+                        # Exporter.cleanIDs @treeItems()
                         
-                        @selection.setItems [group]
-                    else                            
-                        Exporter.cleanIDs @treeItems()
+                        # @selection.setItems [group]
+
+                    for item in items
+                        parent.add item
+                        
+                    Exporter.cleanIDs items
                     
-                        if opt?.select != false
-                            for item in items        
-                                @selection.addItem item
+                    if opt?.select != false
+                        for item in items        
+                            @selection.addItem item
                       
                     @done() if not opt?.nodo
                     return
@@ -454,7 +466,7 @@ class Stage
 
     import: ->
         
-        opts =         
+        opts = 
             title:          'Import'
             filters:        [ {name: 'SVG', extensions: ['svg']} ]
             properties:     ['openFile', 'multiSelections']
@@ -464,7 +476,10 @@ class Stage
                 @do()
                 for file in files
                     svg = fs.readFileSync file, encoding: 'utf8'
-                    @addSVG svg, color:false, id:fileName file
+                    @addSVG svg, 
+                        color:  false
+                        id:     fileName file
+                        parent: @activeLayer()
                 @done()
                 
     #  0000000   0000000   000   000  00000000

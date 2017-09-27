@@ -109,6 +109,7 @@ class LayerList
         
         switch action
             
+            when 'load'  then @scroll.style.background = @stage.color.toHex()
             when 'layer' then @updateActive info
             when 'color' 
                 @scroll.style.background = info.hex
@@ -216,7 +217,7 @@ class LayerList
         
         addButton right, 'duplicate'
         
-        if @stage.numLayers()
+        if @stage.numLayers() > 1
             addButton right, 'delete'
             
         addButton right, 'split'
@@ -329,6 +330,8 @@ class LayerList
         
         @element.style.display = 'block'
         @element.focus()
+        
+        @scroll.style.background = @stage.color.toHex()
         
         @update()
         

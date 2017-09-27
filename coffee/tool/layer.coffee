@@ -185,12 +185,9 @@ class Layer extends Tool
         
         @postLayer()
     
-    layerAt: (index) -> 
-        index = @clampLayer index
-        @numLayers() and @layers[index] or @svg
-        
+    numLayers: -> @getLayers().length
+    layerAt:    (index) -> @getLayers()[@clampLayer index]
     clampLayer: (index) -> clamp 0, @numLayers()-1, index
-    numLayers: -> @layers.length
     postLayer: -> 
         # log "Layer.postLayer num:#{@numLayers()} active:#{@layerIndex}"
         post.emit 'stage', 'layer', active:@layerIndex, num:@layers.length
@@ -254,7 +251,7 @@ class Layer extends Tool
         # log "createLayer #{index}", opt
         
         @do() if not opt?.nodo
-        if not @numLayers()
+        if empty @layers
             layer = @svg.nested()
             layer.id "layer #{@numLayers()}"
             for item in @items()
@@ -290,7 +287,7 @@ class Layer extends Tool
     
     delLayer: (index=@layerIndex) ->
         
-        if @numLayers() == 0 then return
+        if @numLayers() == 1 then return
         
         @do()
 
@@ -310,7 +307,7 @@ class Layer extends Tool
     
     mergeLayer: (index) -> 
     
-        if @numLayers() == 0 then return
+        if @numLayers() == 1 then return
         if index <= 0 then return
         
         @do()
@@ -330,7 +327,7 @@ class Layer extends Tool
     
     clearSingleLayer: ->
         
-        if @numLayers() == 1
+        if @layers.length == 1
             for item in @layers[0].children()
                 item.toParent item.doc()
             @layers[0].remove()
@@ -372,11 +369,11 @@ class Layer extends Tool
             @do "layer#{index}solo#{state}"
             
             for layerIndex in [0...@numLayers()]
-                @layers[layerIndex].data state, index != layerIndex
+                @layerAt(layerIndex).data state, index != layerIndex
                 @applyLayerState layerIndex, state
 
                 if state == 'hidden'
-                    @layers[layerIndex].data 'disabled', index != layerIndex
+                    @layerAt(layerIndex).data 'disabled', index != layerIndex
                     @applyLayerState layerIndex, 'disabled'
                     
             if state == 'disabled'
@@ -392,11 +389,11 @@ class Layer extends Tool
         @do "layerclear#{state}"
         
         for layerIndex in [0...@numLayers()]
-            @layers[layerIndex].data state, false
+            @layerAt(layerIndex).data state, false
             @applyLayerState layerIndex, state
         
             if state == 'disabled'
-                @layers[layerIndex].data 'hidden', false
+                @layerAt(layerIndex).data 'hidden', false
                 @applyLayerState layerIndex, 'hidden'
             
         @done()
@@ -489,10 +486,6 @@ class Layer extends Tool
             if layer.data 'disabled' then @toggleLayer index, 'disabled'
 
             @activateLayer index
-            
-            if @numLayers()
-                @selection.setItems @activeLayer().children()
-            else
-                @selection.setItems @items()
+            @selection.setItems @activeLayer().children()
         
 module.exports = Layer

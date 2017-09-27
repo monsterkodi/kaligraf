@@ -107,13 +107,14 @@ class Stage
         r.height = 1
         r
     
-    pickableLayers: -> @layers.filter (layer) -> not layer.data 'disabled'
-    disabledLayers: -> @layers.filter (layer) -> layer.data 'disabled'
+    getLayers: -> empty(@layers) and [@svg] or @layers
+    pickableLayers: -> @getLayers().filter (layer) -> not layer.data 'disabled'
+    disabledLayers: -> @getLayers().filter (layer) -> layer.data 'disabled'
         
     pickItems: (eventPos, opt) ->
         
         pickableLayers = @pickableLayers()
-        # log 'Stage.pickItems pickableLayers', pickableLayers.length
+        log 'Stage.pickItems pickableLayers', pickableLayers.length
         items = @svg.node.getIntersectionList @pickRect(eventPos), null
         items = [].slice.call(items, 0).reverse()
         items = items.filter (item) => item.instance? and item.instance != @svg
@@ -149,33 +150,32 @@ class Stage
                 
     rootItem: (item) ->
         
-        if item.parent() == @svg or item.parent() in @layers then item
+        if item.parent() in @getLayers() then item
         else @rootItem item.parent()
 
     items: -> 
-        if @numLayers()
-            items = []
-            for layer in @layers
-                items = items.concat layer.children()
-            items
-        else
-            @svg.children().filter (child) -> child.type != 'defs'
+        
+        items = []
+        for layer in @getLayers()
+            items = items.concat layer.children()
+        items.filter (item) -> item.type != 'defs'
             
     pickableItems: -> 
         
         pickableLayers = @pickableLayers()
         @items().filter (item) => @layerForItem(item) in pickableLayers
             
-    groups: -> @treeItems().filter (item) => item.type == 'g' and item not in @layers
+    groups: -> @treeItems().filter (item) => item.type == 'g' #and item not in @getLayers()
     
     treeItems: (item=@svg, opt) -> 
         
         items = []
+        layers = @getLayers()
         children = item.children?()
         if not empty children
             for child in children
                 if child.type != 'defs'
-                    items.push child
+                    items.push child if item not in layers
                     items = items.concat @treeItems child
         @filterItems items, opt
 
@@ -349,11 +349,11 @@ class Stage
             if elemChild.tagName == 'svg'
     
                 if opt?.color != false
-                    
+                    log 'Stage.addSVG elemChild.style.background:', elemChild.style.background
                     if elemChild.style.background
                         @setColor elemChild.style.background
                     else
-                        @setColor "#222", 0
+                        @setColor "#333", 0
     
                 svg = SVG.adopt elemChild
                 

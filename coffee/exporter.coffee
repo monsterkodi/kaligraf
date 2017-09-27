@@ -80,11 +80,8 @@ class Exporter
     @loadSVG: (name) ->
         
         svgFile = "#{__dirname}/../svg/#{name}.svg"
-        # log 'loadSVG', svgFile
         if fileExists svgFile
             return fs.readFileSync svgFile, encoding: 'utf8'
-        # else
-            # log "Exporter.loadSVG -- warning: no such file #{svgFile}"
         null
         
     #  0000000  000      00000000   0000000   000   000  
@@ -133,10 +130,6 @@ class Exporter
             
             for i in [0...item.lines().length()]
                 Exporter.clean item.lines().get i 
-        # else
-            # log 'no children', item.type
-                    
-        # log "opacity: #{item.node.getAttribute 'opacity'}" if item.node.getAttribute 'opacity'
         
     # 000  0000000     0000000  
     # 000  000   000  000       
@@ -147,10 +140,6 @@ class Exporter
     @cleanIDs: (items) ->
 
         return if empty items
-        
-        ids = items.map (item) -> item.id() 
-        
-        # log 'cleanIDs', ids
         
         ids = []
         for item in items

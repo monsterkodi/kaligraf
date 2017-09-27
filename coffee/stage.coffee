@@ -35,6 +35,7 @@ class Stage
 
         @svg = SVG(@element).size '100%', '100%'
         @svg.addClass 'stageSVG'
+        @svg.id 'kaligraf'
         @svg.clear()
 
         @kali.stage = @
@@ -123,16 +124,17 @@ class Stage
     pickItems: (eventPos, opt) ->
         
         pickableLayers = @pickableLayers()
-        @log 'Stage.pickItems pickableLayers', pickableLayers.length
+        @log 'Stage.pickItems pickableLayers', pickableLayers.length, itemIDs pickableLayers, ' '
         items = @svg.node.getIntersectionList @pickRect(eventPos), null
         items = [].slice.call(items, 0).reverse()
         items = items.filter (item) => item.instance? and item.instance != @svg
         items = items.map (item) -> item.instance
-        @log 'Stage.pickItems pickedItems:', items.map((item) -> item.id()).join ' '
+        @log 'Stage.pickItems pickedItems:', itemIDs items, ' '
         items = items.filter (item) => 
-            @log "Stage.pickItems item #{item.id()} parents:", item.parents().map((p) -> p.id()).join ' '
+            @log "Stage.pickItems item #{item.id()} parents:", itemIDs item.parents(), ' '
+            @log "Stage.pickItems item #{item.id()} layer:", @layerForItem(item).id()
             @layerForItem(item) in pickableLayers
-        @log 'Stage.pickItems pickedItems', items.map (item) -> item.id()
+        @log 'Stage.pickItems pickedItems', itemIDs items, ' '
         items = @filterItems items, opt
         @log 'Stage.pickItems pickedItems', items.length, opt
         items
@@ -330,7 +332,6 @@ class Stage
         
         items = @selectedLeafItems()
         if not empty items
-            log 'line'+ itemIDs items
             @do 'line'+ itemIDs items
             for item in items
                 item.style switch prop
@@ -407,10 +408,6 @@ class Stage
                            
                         items = [group]
                            
-                        # Exporter.cleanIDs @treeItems()
-                        
-                        # @selection.setItems [group]
-
                     for item in items
                         parent.add item
                         
@@ -446,6 +443,8 @@ class Stage
         @pushRecent file
         
         @kali.closeBrowser()
+        
+        post.emit 'stage', 'layer', active:-1, num:0
         
         @loadLayers()
         

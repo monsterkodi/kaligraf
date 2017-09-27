@@ -213,7 +213,10 @@ class Layer extends Tool
     layerForItem: (item) ->
         
         parents = item.parents()
-        parents[parents.length-2]
+        if parents[parents.length-2] in @getLayers()
+            parents[parents.length-2]
+        else
+            parents[parents.length-1]
         
     indexOfLayer: (layer) -> @layers.indexOf layer
         

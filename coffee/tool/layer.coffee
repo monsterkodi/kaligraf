@@ -187,7 +187,7 @@ class Layer extends Tool
                 log 'Layer.loadLayers top level layer with transform?', transform
   
         layerIDs = @items().map (item) -> item.id()
-        # log 'Layer.loadLayers', layerIDs
+        log 'Layer.loadLayers', layerIDs
         
         @layers = []
         for id in layerIDs

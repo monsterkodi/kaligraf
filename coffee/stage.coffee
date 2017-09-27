@@ -26,7 +26,7 @@ Cursor    = require './cursor'
 
 class Stage
     
-    log: -> #log.apply log, [].slice.call arguments, 0
+    log: -> log.apply log, [].slice.call arguments, 0
     
     constructor: (@kali) ->
 
@@ -167,7 +167,7 @@ class Stage
         items = []
         for layer in @getLayers()
             items = items.concat layer.children()
-        items.filter (item) -> item.type != 'defs'
+        items = items.filter (item) -> item.type != 'defs'
         @filterItems items, opt
             
     pickableItems: (opt) -> 
@@ -672,10 +672,12 @@ class Stage
     setViewBox: (box) ->
 
         @svg.viewbox box
-
+        
         box = @svg.viewbox()
         
         box.zoom = @zoom
+        
+        @log 'Stage.setViewBox', box
         post.emit 'stage', 'viewbox', box
         post.emit 'stage', 'zoom',    @zoom
         

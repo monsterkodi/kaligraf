@@ -7,7 +7,7 @@
 
 { clamp, elem, post, pos, log, _ } = require 'kxk'
 
-{ boxForItems, boxCenter } = require '../utils'
+{ boxForItems, bboxForItems, boxCenter, moveBox, zoomBox, scaleBox } = require '../utils'
 
 Tool = require './tool'
 
@@ -116,17 +116,34 @@ class Zoom extends Tool
     centerSelection: ->
 
         items = @selectedOrAllItems()
+        
         if items.length <= 0
             @centerAtStagePos @toolCenter @zoom
             return
 
+        list = @kali.tools.getTool('layer').list
+        
+        lv = list?.isVisible()
+        lw = lv and list.element.getBoundingClientRect().width or 0
+        
         b = boxForItems items, @viewPos()
-        v = @svg.viewbox()
-        w = (b.w / @zoom) / v.width
-        h = (b.h / @zoom) / v.height
-        z = 0.8 * @zoom / Math.max(w, h)
-
-        @setZoom z, @stageForView boxCenter b
+        v = @viewSize()
+        v.x -= 60 + lw
+        w = (b.w / @zoom) /  v.x
+        h = (b.h / @zoom) /  v.y
+        z = 0.9 / Math.max(w, h)
+        
+        @setZoom z
+        
+        c = boxCenter bboxForItems items
+        v.x += 120
+        o = c.minus v.times 0.5/z
+        
+        @setViewBox 
+            x:      o.x
+            y:      o.y
+            width:  @viewSize().x/@zoom
+            height: @viewSize().y/@zoom
         
     # 00000000   00000000   0000000  00000000  000000000  
     # 000   000  000       000       000          000     

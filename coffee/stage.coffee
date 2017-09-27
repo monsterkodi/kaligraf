@@ -470,7 +470,7 @@ class Stage
         
         Exporter.save @svg, file:@currentFile, color:@color, alpha:@alpha
                 
-        post.emit 'file', @currentFile
+        post.emit 'stage', 'save', @currentFile
                         
     saveAs: ->
 
@@ -566,7 +566,7 @@ class Stage
         @selection.clear()
         @svg.clear()
         
-        post.emit 'file', @currentFile
+        post.emit 'stage', 'load', @currentFile
                 
     # 000   000  000  00000000  000   000
     # 000   000  000  000       000 0 000

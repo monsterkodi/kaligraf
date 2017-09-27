@@ -442,7 +442,6 @@ class Layer extends Tool
             toLayer.after fromLayer
             @layers.splice to, 0, fromLayer
                     
-        # @selectLayer to
         @activateLayer to
         @done()
     
@@ -468,7 +467,6 @@ class Layer extends Tool
         @layers.splice indexA, 0, layerB
         @layers.splice indexB, 0, layerA
         
-        # @selectLayer oldB
         @activateLayer oldB
         @done()
         

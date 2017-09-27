@@ -22,16 +22,17 @@ class FileInfo
         @dirty = elem 'span', class: 'fileInfoDirty'
         @element.appendChild @dirty
         
-        post.on 'file', @onFile
-        post.on 'undo', @onUndo
+        post.on 'stage', @onStage
+        post.on 'undo',  @onUndo
         
-    onFile: (file) =>
+    onStage: (action, file) =>
         
-        @file.innerHTML = fileName file
+        if action == 'load'
+            @file.innerHTML = fileName file
         
     onUndo: (info) =>
         
-        @dirty.style.display    = info.undos and 'inline-block' or 'none'
-        @dirty.style.background = info.undos and '#f80' or '#222'
+        @dirty.style.display    = info.dirty and 'inline-block' or 'none'
+        @dirty.style.background = info.dirty and '#f80' or '#222'
         
 module.exports = FileInfo

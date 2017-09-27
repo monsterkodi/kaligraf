@@ -15,6 +15,8 @@ class Undo
         
         @stage = @kali.stage
         
+        post.on 'stage', @onStage
+        
         @clear()
 
     #  0000000  000      00000000   0000000   00000000   
@@ -25,10 +27,16 @@ class Undo
     
     clear: ->
         
-        @history = []
-        @futures = []
-        
+        @history   = []
+        @futures   = []
+        @savePoint = 0
         @post 'clear'
+       
+    onStage: (action) =>
+        
+        if action == 'save'
+            @savePoint = @history.length
+            @post 'save'
         
     # 0000000     0000000   
     # 000   000  000   000  
@@ -155,8 +163,16 @@ class Undo
     # 000         0000000   0000000      000     
     
     post: (action) ->
+        
         @log "post #{action}"
-        post.emit 'undo', action:action, undos:@undos(), redos:@redos()
+        
+        info = 
+            action: action
+            undos:  @undos()
+            redos:  @redos()
+            dirty:  @savePoint != @history.length
+                
+        post.emit 'undo', info
 
     undos: -> 
         undos = @history.filter (state) -> state.type == 'start'

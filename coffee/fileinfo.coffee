@@ -14,7 +14,7 @@ class FileInfo
     constructor: (@kali) ->
 
         @element = elem id: 'fileInfo'
-        @kali.element.insertBefore @element, @kali.stage.element
+        @kali.element.insertBefore @element, @kali.stage.element.nextSibling
         
         @file = elem 'span', class: 'fileInfoText'
         @element.appendChild @file

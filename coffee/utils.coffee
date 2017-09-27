@@ -42,7 +42,7 @@ module.exports =
     
     itemIDs: (items) -> (items.map (item) -> item.id()).join ''   
     
-    uuid: (item) -> 
+    uuid: (item) ->
         
         id = item.type[0].toUpperCase() + "-" + uuid().slice(0,8).splice 2,0,'-'
         # log item.id(), id

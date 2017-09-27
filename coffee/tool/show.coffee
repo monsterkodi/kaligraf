@@ -13,6 +13,8 @@ Tool = require './tool'
 
 class Show extends Tool
         
+    log: -> #log.apply log, [].slice.call arguments, 0
+    
     constructor: (@kali, cfg) ->
         
         super @kali, cfg
@@ -40,13 +42,7 @@ class Show extends Tool
         ]
         
         post.on 'stage', @onStage
-        post.on 'group', (action) => 
-            switch action
-                when 'group'   then @updateGroups()
-                when 'ungroup' then @refreshGroups()
-        post.on 'resizer', @updateGroups
-        post.on 'align',   @updateGroups
-        post.on 'undo',    @refreshGroups
+        post.on 'undo',  @onUndo
         
         @showGroups groups
         
@@ -66,19 +62,20 @@ class Show extends Tool
         
         @selection.showIDs ids
         
-    onStage: (action) => 
+    onStage: (action) =>
     
         if @grps?
-    
+            # @log "Show.onStage #{action}"
             switch action 
-                when 'load'      then @refreshGroups()
-                when 'moveItems' then @updateGroups()
+                when 'load' then @refreshGroups()
                 when 'viewbox' 
                     @grps.viewbox @stage.svg.viewbox()
                     @grps.style 'stroke-width': 1/@stage.zoom
                 when 'color'
                     @grps.style stroke: contrastColor @stage.color
-        
+                    
+    onUndo: (info) => if info.action == 'done' then @refreshGroups()
+                    
     #  0000000   00000000    0000000   000   000  00000000    0000000  
     # 000        000   000  000   000  000   000  000   000  000       
     # 000  0000  0000000    000   000  000   000  00000000   0000000   
@@ -109,13 +106,14 @@ class Show extends Tool
                 @grps = SVG(@selection.element).size '100%', '100%'
                 @grps.viewbox @stage.svg.viewbox()
                 @grps.addClass 'groupRects'
+                @grps.clear()
                 @grps.style 
                     stroke: contrastColor @stage.color
                     'stroke-width': 1/@stage.zoom
                 @selection.element.insertBefore @grps.node, @selection.rectsBlack.node.nextSibling
-            @grps.clear()
-            @updateGroups()
+            @refreshGroups()
         else
+            @log 'Show.showGroups false'
             @clearGroups()
             @grps?.remove()
             delete @grps
@@ -127,8 +125,8 @@ class Show extends Tool
     #  0000000  0000000  00000000  000   000  000   000  
     
     clearGroups: ->
-            
         if @grps
+            @log 'Show.clearGroups'
             for group in @stage.groups()
                 group.forget 'groupRect'
             @grps.clear()
@@ -146,6 +144,7 @@ class Show extends Tool
             @grps.viewbox @stage.svg.viewbox()
             @grps.style 'stroke-width', 1/@stage.zoom
         
+            @log 'Show.updateGroups', @grps?, @stage.groups().length
             for group in @stage.groups()
                 @updateGroup group
             
@@ -158,13 +157,17 @@ class Show extends Tool
             box = group.bbox()
             
             if not rect = group.remember 'groupRect'    
-                rect = @grps.rect box.width-2*o, box.height-2*o
+                rect = @grps.rect()
                 rect.addClass  'groupRect'
                 group.remember 'groupRect', rect
-            else    
-                rect.attr width:box.width-2*o, height:box.height-2*o
                 
-            rect.attr x:box.x+o, y:box.y+o
+            rect.attr 
+                width:  box.width-2*o
+                height: box.height-2*o
+                x:      box.x+o
+                y:      box.y+o
+               
+            # @log 'Show.updateGroup', group.id(), rect
             @trans.follow rect, group
     
 module.exports = Show

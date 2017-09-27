@@ -13,6 +13,8 @@ Exporter = require '../exporter'
 
 class LayerList
     
+    log: -> #log.apply log, [].slice.call arguments, 0
+    
     constructor: (@kali) ->
         
         @stage = @kali.stage
@@ -124,7 +126,7 @@ class LayerList
     
     update: =>
 
-        @log 'LayerList.update'
+        @log 'LayerList.update', @stage.numLayers()
         
         @scroll.innerHTML = ''
         
@@ -377,6 +379,4 @@ class LayerList
                 
         stopEvent event
        
-    log: -> #log.apply log, [].slice.call arguments, 0
-    
 module.exports = LayerList

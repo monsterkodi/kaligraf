@@ -223,7 +223,7 @@ class Shapes
 
                 @stopEdit()
                 if not event.metaKey
-                    log 'Shapes.handleMouseDown start selection rect', @stage.itemAtPos eventPos
+                    # log 'Shapes.handleMouseDown start selection rect', @stage.itemAtPos eventPos
                     @selection.stageStart drag, event
                     
             when 'edit'

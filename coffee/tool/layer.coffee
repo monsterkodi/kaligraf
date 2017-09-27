@@ -7,11 +7,15 @@
 
 { elem, empty, prefs, clamp, post, log, _ } = require 'kxk'
 
+{ uuid } = require '../utils'
+
 LayerList = require './layerlist'
 Tool      = require './tool'
 
 class Layer extends Tool
-
+    
+    log: -> log.apply log, [].slice.call arguments, 0
+    
     constructor: (@kali, cfg) ->
         
         super @kali, cfg
@@ -104,7 +108,7 @@ class Layer extends Tool
         return if not @numLayers()
         return if @selection.empty()
         noItems = @selectedItems().filter (item) -> not item?
-        log 'broken selection!' if not empty noItems
+        log 'Layer.activateSelectionLayer -- broken selection!' if not empty noItems
         @activateLayer _.max @selectedItems().map (item) => @indexOfLayer @layerForItem item
             
     #  0000000  000000000   0000000    0000000   00000000  
@@ -116,12 +120,14 @@ class Layer extends Tool
     onStage: (action, info) =>
         
         if action == 'layer'
+            
+            # @log "Layer.onStage layer #{info.active} #{@stage.activeLayer().id()}"
             @button('layer').innerHTML = "#{info.active}"
             
             if not info.num
                 @button('layer').style.color = 'transparent'
-                @button('incr').style.color = 'transparent'
-                @button('decr').style.color = 'transparent'
+                @button('incr').style.color  = 'transparent'
+                @button('decr').style.color  = 'transparent'
             else
                 @button('layer').removeAttribute 'style' 
             
@@ -134,16 +140,12 @@ class Layer extends Tool
                     @button('incr').style.color = 'transparent'
                 else
                     @button('incr').removeAttribute 'style' 
-                    
-        if action == 'load'
-            @stage.layers = []
-            @stage.activateLayer 0            
-           
-    # 000       0000000   000   000  00000000  00000000   
-    # 000      000   000   000 000   000       000   000  
-    # 000      000000000    00000    0000000   0000000    
-    # 000      000   000     000     000       000   000  
-    # 0000000  000   000     000     00000000  000   000  
+                               
+    # 000       0000000    0000000   0000000          000       0000000   000   000  00000000  00000000    0000000  
+    # 000      000   000  000   000  000   000        000      000   000   000 000   000       000   000  000       
+    # 000      000   000  000000000  000   000        000      000000000    00000    0000000   0000000    0000000   
+    # 000      000   000  000   000  000   000        000      000   000     000     000       000   000       000  
+    # 0000000   0000000   000   000  0000000          0000000  000   000     000     00000000  000   000  0000000   
 
     loadLayers: ->
         
@@ -153,7 +155,7 @@ class Layer extends Tool
         for item in @items()
             if item.type == 'svg'
                 gotSvg = true
-            else
+            else if item.type != 'defs'
                 gotGrp = true
                 
         return false if not gotSvg        
@@ -163,17 +165,29 @@ class Layer extends Tool
             newLayer.id "layer #{@numLayers()}"
             log 'Layer.loadLayers -- non svg stuff on top level:'
             for item in @items()
-                if item.type != 'svg'
+                if item.type not in ['svg', 'defs']
                     log "Layer.loadLayers -- moving item of type #{item.type} into new layer"
                     newLayer.add item
-            
+
+        layerIDs = @items().map (item) -> item.id()
+        # log 'Layer.loadLayers', layerIDs
+           
+        layerIDs = []
+        
         for item in @items()
+            
+            id = item.id()
+            if id in layerIDs or not id.startsWith 'S-'
+                id = uuid item
+                item.id id
+            layerIDs.push id
+                
             transform = item.transform()
             if not _.isEqual transform.matrix, new SVG.Matrix()
                 log 'Layer.loadLayers top level layer with transform?', transform
   
         layerIDs = @items().map (item) -> item.id()
-        log 'Layer.loadLayers', layerIDs
+        # log 'Layer.loadLayers', layerIDs
         
         @layers = []
         for id in layerIDs
@@ -182,15 +196,13 @@ class Layer extends Tool
             @applyLayerState @layers.length-1, 'disabled'
             
         @layerIndex = @numLayers()-1
-        
-        @postLayer()
     
     numLayers: -> @getLayers().length
     layerAt:    (index) -> @getLayers()[@clampLayer index]
     clampLayer: (index) -> clamp 0, @numLayers()-1, index
     postLayer: -> 
-        # log "Layer.postLayer num:#{@numLayers()} active:#{@layerIndex}"
-        post.emit 'stage', 'layer', active:@layerIndex, num:@layers.length
+        @log "Layer.postLayer num:#{@numLayers()} active:#{@layerIndex}"
+        post.emit 'stage', 'layer', active:@layerIndex, num:@numLayers()
     
     #  0000000    0000000  000000000  000  000   000  00000000  
     # 000   000  000          000     000  000   000  000       
@@ -207,8 +219,8 @@ class Layer extends Tool
         
     activeLayer: -> @layerAt @layerIndex
     activateLayer: (index) ->
-        
         @layerIndex = @clampLayer index
+        @log 'Layer.activateLayer', index, @layerIndex
         @postLayer()
 
     storeLayers: -> 
@@ -239,7 +251,7 @@ class Layer extends Tool
         
     splitLayer: (index=@layerIndex) -> 
         
-        items = @selectedItems().filter (item) -> index == @indexOfLayer @layerForItem item
+        items = @selectedItems().filter (item) => index == @indexOfLayer @layerForItem item
         if not empty items
             @selection.setItems items
             @createLayer selection:'move', index:index+1
@@ -428,7 +440,7 @@ class Layer extends Tool
         to   = @clampLayer to
         if from == to then return
         
-        @do()
+        @do 'layerOrder'
         
         fromLayer = @layerAt from 
         toLayer   = @layerAt to
@@ -451,7 +463,7 @@ class Layer extends Tool
         indexB = @clampLayer indexB
         if indexA == indexB then return
         
-        @do()
+        @do 'layerOrder'
         
         oldB = indexB
         [indexA, indexB] = [indexB, indexA] if indexA > indexB

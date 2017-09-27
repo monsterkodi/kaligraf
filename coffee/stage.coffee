@@ -25,7 +25,9 @@ Exporter  = require './exporter'
 Cursor    = require './cursor'
 
 class Stage
-
+    
+    log: -> #log.apply log, [].slice.call arguments, 0
+    
     constructor: (@kali) ->
 
         @element = elem 'div', id: 'stage'
@@ -107,45 +109,52 @@ class Stage
         r.height = 1
         r
     
-    getLayers: -> empty(@layers) and [@svg] or @layers
-    pickableLayers: -> @getLayers().filter (layer) -> not layer.data 'disabled'
-    disabledLayers: -> @getLayers().filter (layer) -> layer.data 'disabled'
+    getLayers: (opt) -> 
+        
+        layers = empty(@layers) and [@svg] or @layers
+        if opt?.pickable
+            layers = layers.filter (layer) -> not layer.data 'disabled'
+        # @log 'Stage.getLayers', layers.length 
+        layers
+        
+    pickableLayers: -> @getLayers pickable:true 
+    disabledLayers: -> @getLayers pickable:false
         
     pickItems: (eventPos, opt) ->
         
         pickableLayers = @pickableLayers()
-        log 'Stage.pickItems pickableLayers', pickableLayers.length
+        @log 'Stage.pickItems pickableLayers', pickableLayers.length
         items = @svg.node.getIntersectionList @pickRect(eventPos), null
         items = [].slice.call(items, 0).reverse()
         items = items.filter (item) => item.instance? and item.instance != @svg
         items = items.map (item) -> item.instance
-        log 'Stage.pickItems pickedItems:', items.map((item) -> item.id()).join ' '
+        @log 'Stage.pickItems pickedItems:', items.map((item) -> item.id()).join ' '
         items = items.filter (item) => 
-            log "Stage.pickItems item #{item.id()} parents:", item.parents().map((p) -> p.id()).join ' '
+            @log "Stage.pickItems item #{item.id()} parents:", item.parents().map((p) -> p.id()).join ' '
             @layerForItem(item) in pickableLayers
-        log 'Stage.pickItems pickedItems', items.map (item) -> item.id()
+        @log 'Stage.pickItems pickedItems', items.map (item) -> item.id()
         items = @filterItems items, opt
-        log 'Stage.pickItems pickedItems', items.length, opt
+        @log 'Stage.pickItems pickedItems', items.length, opt
         items
         
     leafItemAtPos: (p, opt) ->
 
         for item in @pickItems(p, opt)
             if @isLeaf item
-                # log 'Stage.leafItemAtPos', item.id()
+                # @log 'Stage.leafItemAtPos', item.id()
                 return item
-        # log 'Stage.leafItemAtPos null'
+        # @log 'Stage.leafItemAtPos null'
         null
     
     itemAtPos: (p, opt) ->
-        log 'Stage.itemAtPos', p, opt, @pickItems(p, opt)
+        @log 'Stage.itemAtPos', p, opt, @pickItems(p, opt)
         for item in @pickItems(p, opt)
             # return @rootItem item
             if item in @pickableItems()
                 return item
             else if item in @treeItems()
                 return @rootItem item
-        log 'Stage.itemAtPos null'
+        @log 'Stage.itemAtPos null'
         null
                 
     rootItem: (item) ->
@@ -153,42 +162,44 @@ class Stage
         if item.parent() in @getLayers() then item
         else @rootItem item.parent()
 
-    items: -> 
+    items: (opt) -> 
         
         items = []
         for layer in @getLayers()
             items = items.concat layer.children()
         items.filter (item) -> item.type != 'defs'
+        @filterItems items, opt
             
-    pickableItems: -> 
+    pickableItems: (opt) -> 
         
         pickableLayers = @pickableLayers()
-        @items().filter (item) => @layerForItem(item) in pickableLayers
+        @items(opt).filter (item) => @layerForItem(item) in pickableLayers
             
-    groups: -> @treeItems().filter (item) => item.type == 'g' #and item not in @getLayers()
+    groups: -> @treeItems @svg, pickable:false, type:'g' 
     
     treeItems: (item=@svg, opt) -> 
         
-        items = []
-        layers = @getLayers()
-        children = item.children?()
-        if not empty children
-            for child in children
-                if child.type != 'defs'
-                    items.push child if item not in layers
-                    items = items.concat @treeItems child
-        @filterItems items, opt
+        items = [] 
+        
+        if item != @svg and item.type != 'defs' and item not in @getLayers()
+            items = @filterItems [item], opt
+
+        for child in item.children?() ? []
+            items = items.concat @treeItems child, opt
+            
+        items
 
     isLeaf:     (item) -> not _.isFunction item.children
     isEditable: (item) -> _.isFunction(item.array) and item.type != 'text'
     
     filterItems: (items, opt) ->
         return items if not opt?
-        items.filter (item) -> 
-            if opt.type    then return item.type == opt.type
-            if opt.types   then return item.type in opt.types
-            if opt.noType  then return item.type != opt.noType
-            if opt.noTypes then return item.type not in opt.types
+        items.filter (item) => 
+            if opt.pickable then return false if @layerForItem(item) not in @pickableLayers()
+            if opt.noType   then return false if item.type == opt.noType
+            if opt.noTypes  then return false if item.type in opt.noTypes
+            if opt.type     then return item.type == opt.type
+            if opt.types    then return item.type in opt.types
             return true
     
     #  0000000  00000000  000      00000000   0000000  000000000  00000000  0000000    
@@ -349,7 +360,6 @@ class Stage
             if elemChild.tagName == 'svg'
     
                 if opt?.color != false
-                    log 'Stage.addSVG elemChild.style.background:', elemChild.style.background
                     if elemChild.style.background
                         @setColor elemChild.style.background
                     else
@@ -425,9 +435,11 @@ class Stage
         
         @kali.closeBrowser()
         
+        @loadLayers()
+        
         post.emit 'stage', 'load', @currentFile
         
-        @loadLayers()
+        @postLayer()
                 
     open: ->
 
@@ -561,6 +573,9 @@ class Stage
     
     clear: (file=@currentFile) ->
 
+        @layers = []
+        @postLayer()
+        
         @currentFile = file
         @shapes.edit?.clear()
         @selection.clear()
@@ -706,5 +721,5 @@ class Stage
         return if 'unhandled' != @shapes   .handleKey mod, key, combo, char, event, down
 
         'unhandled'
-
+            
 module.exports = Stage

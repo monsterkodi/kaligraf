@@ -26,7 +26,7 @@ Cursor    = require './cursor'
 
 class Stage
     
-    log: -> log.apply log, [].slice.call arguments, 0
+    log: -> #log.apply log, [].slice.call arguments, 0
     
     constructor: (@kali) ->
 
@@ -127,9 +127,15 @@ class Stage
         @log 'Stage.pickItems pickableLayers', pickableLayers.length, itemIDs pickableLayers, ' '
         items = @svg.node.getIntersectionList @pickRect(eventPos), null
         items = [].slice.call(items, 0).reverse()
+        @log 'Stage.pickItems intersections:', items.length
+        for item in items
+            if not item.instance?
+                @log 'adopt!?', item.tagName
+                SVG.adopt item
         items = items.filter (item) => item.instance? and item.instance != @svg
+        @log 'Stage.pickItems intersection instances:', items.length
         items = items.map (item) -> item.instance
-        # @log 'Stage.pickItems pickedItems:', itemIDs items, ' '
+        @log 'Stage.pickItems pickedItems:', itemIDs items, ' '
         items = items.filter (item) => 
             @log "Stage.pickItems item #{item.id()} parents:", itemIDs item.parents(), ' '
             @log "Stage.pickItems item #{item.id()} layer:", @layerForItem(item).id()
@@ -149,8 +155,9 @@ class Stage
         null
     
     itemAtPos: (p, opt) ->
-        # @log 'Stage.itemAtPos', p
+        @log 'Stage.itemAtPos', p, 'opt', opt
         for item in @pickItems(p, opt)
+            @log 'Stage.itemAtPos picked item', item.id()
             # return @rootItem item
             if item in @pickableItems()
                 return item

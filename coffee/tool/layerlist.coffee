@@ -13,7 +13,7 @@ Exporter = require '../exporter'
 
 class LayerList
     
-    log: -> log.apply log, [].slice.call arguments, 0
+    log: -> #log.apply log, [].slice.call arguments, 0
     
     constructor: (@kali) ->
         

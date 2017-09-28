@@ -72,10 +72,12 @@ class Tool
                 btn.toggle = button.toggle
                 btn.classList.toggle 'active', btn.toggle
                 
-            if button.icon? or button.tiny?
-                btn.innerHTML = Exporter.loadSVG button.icon ? button.tiny
+            if button.icon? or button.tiny? or button.small?
+                svg = button.icon ? button.tiny ? button.small
+                btn.innerHTML = Exporter.loadSVG svg
                 btn.classList.add 'toolIcon'
                 btn.classList.add 'toolTiny' if button.tiny?
+                btn.classList.add 'toolSmall' if button.small?
                 btn.classList.remove 'toolButton'
                 btn.firstChild.classList.add 'toolIconSVG'
                 btn.icon = button.icon ? button.tiny
@@ -104,6 +106,8 @@ class Tool
         for btn in @element.querySelectorAll '.toolButton, .toolLabel, .toolIcon'
             if btn.name == name
                 return btn
+        
+    setButtonIcon: (name, svg) -> @button(name).innerHTML = Exporter.loadSVG svg
                 
     # 000000000  000  000000000  000      00000000  
     #    000     000     000     000      000       

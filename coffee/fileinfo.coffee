@@ -16,10 +16,10 @@ class FileInfo
         @element = elem id: 'fileInfo'
         @kali.element.insertBefore @element, @kali.stage.element.nextSibling
         
-        @file = elem 'span', class: 'fileInfoText'
-        @element.appendChild @file
+        @file = elem 'span', class: 'fileInfoText', mousedown: -> post.emit 'tool', 'browse'
+        @element.appendChild @file        
         
-        @dirty = elem 'span', class: 'fileInfoDirty'
+        @dirty = elem 'span', class: 'fileInfoDirty', mousedown: -> post.emit 'tool', 'save'
         @element.appendChild @dirty
         
         post.on 'stage', @onStage

@@ -112,11 +112,12 @@ class Tools extends Tool
                 { name: 'line',     group: 'shape', draw: true }
             ]
             [
-                { name:  'text',   group: 'shape' }
+                { name:  'text',    group: 'shape' }
                 { class: 'font'  }
             ]
             [
-                { name:  'width',  class: 'line' }
+                { class: 'undo'  }
+                { class: 'line', name: 'width' }
             ]
             [
                 { class: 'group' }
@@ -126,9 +127,8 @@ class Tools extends Tool
                 { class: 'align' }                
             ]            
             [
-                { class: 'layer' }
-                { class: 'undo'  }
                 { class: 'zoom'  }
+                { class: 'layer' }
                 { class: 'grid'  }
                 { class: 'show'  }
             ]            

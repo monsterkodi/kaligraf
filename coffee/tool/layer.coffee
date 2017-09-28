@@ -14,7 +14,7 @@ Tool      = require './tool'
 
 class Layer extends Tool
     
-    log: -> log.apply log, [].slice.call arguments, 0
+    log: -> #log.apply log, [].slice.call arguments, 0
     
     constructor: (@kali, cfg) ->
         
@@ -45,22 +45,25 @@ class Layer extends Tool
             action: @onIncr
         ]
         @initButtons [
-            text:   '-'
-            name:   'lower'
-            action: @stage.lowerLayer
+            small:  'layer-hide'
+            name:   'hide'
+            action: @onHide
         ,
-            text:   '+'
-            name:   'raise'
-            action: @stage.raiseLayer
+            small:  'layer-disable'
+            name:   'disable'
+            action: @onDisable
         ]
-        
+                
         post.on 'stage',     @onStage
         post.on 'selection', @onSelection
         
         @stage.activateLayer 0
+       
+    onHide:    => @stage.toggleLayer @stage.layerIndex, 'hidden'
+    onDisable: => @stage.toggleLayer @stage.layerIndex, 'disabled'
         
-    onIncr:  => @stage.selectLayer @stage.layerIndex + 1
-    onDecr:  => @stage.selectLayer @stage.layerIndex - 1
+    onIncr:  => @stage.activateLayer @stage.layerIndex + 1
+    onDecr:  => @stage.activateLayer @stage.layerIndex - 1
     onLayer: =>
         if @stage.activeLayer().children().length == @stage.selection.length()
             @stage.selection.clear()
@@ -140,6 +143,9 @@ class Layer extends Tool
                     @button('incr').style.color = 'transparent'
                 else
                     @button('incr').removeAttribute 'style' 
+                    
+                @setButtonIcon 'disable', info.disabled and 'layer-disabled' or 'layer-disable'
+                @setButtonIcon 'hide',    info.hidden   and 'layer-hidden'   or 'layer-hide'
                                
     # 000       0000000    0000000   0000000          000       0000000   000   000  00000000  00000000    0000000  
     # 000      000   000  000   000  000   000        000      000   000   000 000   000       000   000  000       
@@ -201,8 +207,13 @@ class Layer extends Tool
     layerAt:    (index) -> @getLayers()[@clampLayer index]
     clampLayer: (index) -> clamp 0, @numLayers()-1, index
     postLayer: -> 
-        @log "Layer.postLayer num:#{@numLayers()} active:#{@layerIndex}"
-        post.emit 'stage', 'layer', active:@layerIndex, num:@numLayers()
+        info = 
+            active:     @layerIndex
+            num:        @numLayers()
+            hidden:     @activeLayer().data 'hidden'
+            disabled:   @activeLayer().data 'disabled'
+        @log "Layer.postLayer", info
+        post.emit 'stage', 'layer', info
     
     #  0000000    0000000  000000000  000  000   000  00000000  
     # 000   000  000          000     000  000   000  000       
@@ -366,16 +377,15 @@ class Layer extends Tool
             
             @applyLayerState index, state
             
-            
-            if state == 'hidden' and newValue
-                layer.data 'disabled', true
+            if state == 'hidden' 
+                layer.data 'disabled', newValue
                 @applyLayerState index, 'disabled'
             if state == 'disabled' and not newValue
                 layer.data 'hidden', false
                 @applyLayerState index, 'hidden'
                 
-            
             @done()
+            @postLayer()
 
     soloLayer: (index, state) ->
         
@@ -427,7 +437,7 @@ class Layer extends Tool
                 if value 
                     @selection.setItems @selectedItems().filter (item) => @layerForItem(item) != layer
                     layer.style 'pointer-events', 'none'
-                else layer.style 'pointer-events', 'auto'
+                else layer.style 'pointer-events', 'all'
         
     #  0000000  000   000   0000000   00000000   
     # 000       000 0 000  000   000  000   000  

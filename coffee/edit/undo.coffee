@@ -52,10 +52,12 @@ class Undo
         state.action = action
         prev = last @history
         
-        if @sameState(state, prev) and prev.type != 'start'
-            # log 'sameState!'
+        noSavePoint = @savePoint != @history.length
+        
+        if noSavePoint and @sameState(state, prev) and prev.type != 'start'
+            @log 'sameState!'
         else   
-            if action? and prev? and action == prev.action and prev.type != 'start'
+            if action? and prev? and noSavePoint and action == prev.action and prev.type != 'start'
                 @history.splice @history.length-1, 1, state
             @history.push state
             

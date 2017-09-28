@@ -7,7 +7,7 @@
 
 { pos, log, _ } = require 'kxk'
 
-{ normRect, boxCenter, boxOffset, rectWidth, rectHeight, rectCenter, rectOffset } = require './utils'
+{ normRect, boxCenter, boxOffset, rectWidth, rectHeight, rectCenter, rectOffset, itemMatrix } = require './utils'
 
 class Trans
 
@@ -26,6 +26,9 @@ class Trans
     transform: (item, p) -> pos new SVG.Point(p).transform item.transform().matrix
     inverse:   (item, p) -> pos new SVG.Point(p).transform item.transform().matrix.inverse()
     
+    itemPosToView: (item, p) -> 
+        pos new SVG.Point(p).transform itemMatrix item
+                    
     follow: (follower, followee) ->
         follower.transform new SVG.Matrix()
         for ancestor in _.clone(followee.parents())

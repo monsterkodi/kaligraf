@@ -129,14 +129,14 @@ class Stage
         items = [].slice.call(items, 0).reverse()
         items = items.filter (item) => item.instance? and item.instance != @svg
         items = items.map (item) -> item.instance
-        @log 'Stage.pickItems pickedItems:', itemIDs items, ' '
+        # @log 'Stage.pickItems pickedItems:', itemIDs items, ' '
         items = items.filter (item) => 
             @log "Stage.pickItems item #{item.id()} parents:", itemIDs item.parents(), ' '
             @log "Stage.pickItems item #{item.id()} layer:", @layerForItem(item).id()
             @layerForItem(item) in pickableLayers
-        @log 'Stage.pickItems pickedItems', itemIDs items, ' '
+        # @log 'Stage.pickItems pickedItems', itemIDs items, ' '
         items = @filterItems items, opt
-        @log 'Stage.pickItems pickedItems', items.length, opt
+        @log 'Stage.pickItems pickedItems', items.length, itemIDs items, ' '
         items
         
     leafItemAtPos: (p, opt) ->
@@ -149,7 +149,7 @@ class Stage
         null
     
     itemAtPos: (p, opt) ->
-        @log 'Stage.itemAtPos', p, opt, @pickItems(p, opt)
+        # @log 'Stage.itemAtPos', p
         for item in @pickItems(p, opt)
             # return @rootItem item
             if item in @pickableItems()
@@ -222,6 +222,7 @@ class Stage
             if not @selection.empty()
                 @selection.items
             else if @shapes.edit? and not @shapes.edit.empty() 
+                log 'selectedItems edit items', itemIDs @shapes.edit.items(), ' '
                 @shapes.edit.items()
             else
                 []

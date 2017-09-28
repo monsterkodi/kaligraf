@@ -7,6 +7,8 @@
 
 { keyinfo, stopEvent, post, elem, pos, log, _ } = require 'kxk'
 
+{ itemMatrix } = require '../utils'
+
 { clipboard } = require 'electron'
 
 class Text
@@ -17,23 +19,20 @@ class Text
         
         font = @item.font()
         bbox = @item.bbox()
+        matrix = itemMatrix @item
         
         @element = elem 'div',      class:'textEdit'
         @input   = elem 'textarea', class:'textEditInput', rows: 10
         @input.style.fontFamily = font['font-family']
         @input.style.fontWeight = font['font-weight'] if font['font-weight']?
         @input.style.fontSize   = "#{font['font-size']}px"
-        @input.style.width      = "#{bbox.width+100}px"
-        @input.style.height     = "#{bbox.height*2}px"
-        @input.style.color      = 'transparent'
+        @input.style.width      = "#{bbox.width+2}px"
+        @input.style.height     = "#{bbox.height+2}px"
+        @input.style.transform = matrix.toString()
+        @input.value = @item.text()
         
         @element.appendChild @input
-
-        m = @item.transform().matrix.translate bbox.x, bbox.y
         
-        @input.style.transform = m.toString()
-        @input.style.caretColor = @stage.foregroundColor()
-        @input.value = @item.text()
         @select 'all'
 
         vbox = @stage.svg.viewbox()
@@ -51,7 +50,7 @@ class Text
     onStage: (action, vbox) =>
         
         if action == 'viewbox'
-            @element.style.transform = "translate(#{-vbox.x*vbox.zoom}px, #{-vbox.y*vbox.zoom}px) scale(#{vbox.zoom})"            
+            @element.style.transform = "translate(#{-vbox.x*vbox.zoom}px, #{-vbox.y*vbox.zoom}px) scale(#{vbox.zoom})"
         
     del: ->
 
@@ -79,10 +78,11 @@ class Text
         
         @item.text text
         bbox = @item.bbox()
-        @input.style.width  = "#{bbox.width+100}px"
-        @input.style.height = "#{bbox.height+200}px"
+        @input.style.width  = "#{bbox.width+2}px"
+        @input.style.height = "#{bbox.height+2}px"
 
     insertText: (text) ->
+        
         start = @input.selectionStart
         @input.value = @input.value.slice(0, @input.selectionStart) + text + @input.value.slice @input.selectionEnd
         @input.selectionStart = start + text.length

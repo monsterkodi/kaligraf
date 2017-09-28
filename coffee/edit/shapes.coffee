@@ -138,7 +138,10 @@ class Shapes
     #    000     000        000 000      000     
     #    000     00000000  000   000     000     
     
-    editTextItem: (item) -> @text = new Text @kali, item
+    editTextItem: (item) -> 
+    
+        @selection.clear()
+        @text = new Text @kali, item
         
     clearText: ->
         

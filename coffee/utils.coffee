@@ -45,8 +45,20 @@ module.exports =
     uuid: (item) ->
         
         id = item.type[0].toUpperCase() + "-" + uuid().slice(0,8).splice 2,0,'-'
-        # log item.id(), id
         item.id id
+
+    # 00     00   0000000   000000000  00000000   000  000   000  
+    # 000   000  000   000     000     000   000  000   000 000   
+    # 000000000  000000000     000     0000000    000    00000    
+    # 000 0 000  000   000     000     000   000  000   000 000   
+    # 000   000  000   000     000     000   000  000  000   000  
+    
+    itemMatrix: (item) ->
+        
+        m = item.transform().matrix.clone()
+        for ancestor in item.parents()
+            m = ancestor.transform().matrix.multiply m            
+        m
         
     # 0000000     0000000   000   000  
     # 000   000  000   000   000 000   
@@ -76,7 +88,7 @@ module.exports =
         for item in items
             b = item.bbox()
             continue if b.width == 0 == b.height 
-            b = b.transform item.transform().matrix
+            b = b.transform module.exports.itemMatrix item
             bb ?= b
             bb = bb.merge b
 
@@ -84,7 +96,7 @@ module.exports =
             module.exports.moveBox bb, pos -offset.x, -offset.y
         else
             new SVG.BBox()
-                
+            
     boxCenter: (box) -> pos box.x + box.width/2.0, box.y + box.height/2.0
     boxOffset: (box) -> pos box.x, box.y
     boxSize:   (box) -> pos box.width, box.height

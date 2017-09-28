@@ -277,10 +277,16 @@ button
 .textEditInput
     transform-origin        top left
     pointer-events          auto
-    background              transparent
+    // background              transparent
     border                  none
+    background              #fff
+    color                   #000
+    caret-color             #000
+    overflow                hidden
+    resize                  none
+    line-height             1.2
     &::selection
-        background          rgba(128,128,128,0.2)
+        background          rgba(0,0,0,0.2)
 
 // 00000000   0000000   000   000  000000000  000      000   0000000  000000000
 // 000       000   000  0000  000     000     000      000  000          000
@@ -322,7 +328,7 @@ button
     border-top-left-radius      6px
     
 .layerListScroll
-    overflow-y              auto //scroll
+    overflow-y              auto
     box-sizing              border-box
     margin                  0
     padding                 0
@@ -345,8 +351,6 @@ button
 .layerListLayer
     position                relative
     margin                  0
-    // width                   180px
-    // height                  120px
     width                   240px
     height                  160px
     overflow                hidden

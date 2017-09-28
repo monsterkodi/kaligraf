@@ -5,7 +5,7 @@
 #  000     000   000  000   000  000 0 000  
 # 0000000   0000000    0000000   000   000  
 
-{ clamp, elem, post, pos, log, _ } = require 'kxk'
+{ clamp, elem, empty, post, pos, log, _ } = require 'kxk'
 
 { boxForItems, bboxForItems, boxCenter, moveBox, zoomBox, scaleBox } = require '../utils'
 
@@ -117,7 +117,7 @@ class Zoom extends Tool
 
         items = @selectedOrAllItems()
         
-        if items.length <= 0
+        if empty items
             @centerAtStagePos @toolCenter @zoom
             return
 

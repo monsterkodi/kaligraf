@@ -133,12 +133,12 @@ class Ctrl
             
         itemPos = @object.posAt @index(), dot
         
-        dotPos = @trans.transform @object.item, itemPos
+        dotPos = @trans.itemPosToView @object.item, itemPos
         
         svg.cx dotPos.x
         svg.cy dotPos.y
 
-        pointPos = @trans.transform @object.item, @object.posAt @index()
+        pointPos = @trans.itemPosToView @object.item, @object.posAt @index()
         
         if dot in ['ctrl2', 'ctrls', 'ctrlq']
             @plotLine dot, dotPos, pointPos
@@ -165,10 +165,10 @@ class Ctrl
 
     updateLine: (dot, point) ->
 
-        dotPos = @trans.transform @object.item, @object.posAt @index(), dot
+        dotPos = @trans.itemPosToView @object.item, @object.posAt @index(), dot
         
         if dot in ['ctrl2', 'ctrls', 'ctrlq']
-            @plotLine dot, dotPos, @trans.transform @object.item, @object.posAt @index()
+            @plotLine dot, dotPos, @trans.itemPosToView @object.item, @object.posAt @index()
             
         if dot == 'ctrlq'
             @plotLine 'ctrlq2', dotPos, @object.dotPos @index()-1

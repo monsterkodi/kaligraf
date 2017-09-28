@@ -51,7 +51,6 @@ class Stage
         
         post.on 'stage',  @onStage
         post.on 'resize', @onResize
-        post.on 'line',   @onLine
 
         @zoom  = 1
         @alpha = 1
@@ -329,23 +328,7 @@ class Stage
         
         prefs.set 'stage:color', @color.toHex()    
         prefs.set 'stage:alpha', @alpha  
-                    
-    # 000      000  000   000  00000000  
-    # 000      000  0000  000  000       
-    # 000      000  000 0 000  0000000   
-    # 000      000  000  0000  000       
-    # 0000000  000  000   000  00000000  
-    
-    onLine: (prop, value) =>
-        
-        items = @selectedLeafItems()
-        if not empty items
-            @do 'line'+ itemIDs items
-            for item in items
-                item.style switch prop
-                    when 'width' then 'stroke-width': value
-            @done()
-        
+                            
     #  0000000  000   000   0000000
     # 000       000   000  000
     # 0000000    000 000   000  0000

@@ -100,8 +100,10 @@ class Resizer
     setAngle: (angle) ->
         
         @itemRotation = @getItemRotation()
+        @rotationCenter = boxPos @selection.bbox(), opposide 'center'
         @doRotate angle - @angle()
         delete @itemRotation
+        delete @rotationCenter
         @update()
        
     addAngle: (angle) -> @setAngle @angle() + angle

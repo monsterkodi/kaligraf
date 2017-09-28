@@ -7,6 +7,8 @@
 
 { clamp, empty, first, post, pos, log, _ } = require 'kxk'
 
+{ itemIDs } = require '../utils'
+
 Tool = require './tool'
 
 class Alpha extends Tool
@@ -52,10 +54,8 @@ class Alpha extends Tool
     #  0000000   000        0000000    000   000     000     00000000  
     
     update: =>
-        log @button('stroke').toggle
-        log @button('fill').toggle
         
-        items = @stage.selectedItems()
+        items = @stage.selectedLeafItems()
         if empty(items) or not (@button('stroke').toggle or @button('fill').toggle)
             
             @hideButton 'minus'
@@ -78,13 +78,13 @@ class Alpha extends Tool
     
     setAlpha: (alpha) -> 
         
-        items = @stage.selectedItems()
+        items = @stage.selectedLeafItems()
         return if empty items
         
         alpha = clamp 0, 1, alpha
         return if alpha == @alpha()
         
-        @stage.do()
+        @stage.do 'alpha'+itemIDs items
         for item in items
             if @button('stroke').toggle
                 item.style 'stroke-opacity': alpha
@@ -93,14 +93,21 @@ class Alpha extends Tool
         @update()
         @stage.done()
         
-    alpha: -> 
+    alpha: ->
+        
+        items = @stage.selectedLeafItems()
+        return 1 if empty items
+        # log itemIDs items, ' '
         
         alphas = []
-        items  = @stage.selection.items
         if @button('stroke').toggle
             alphas = alphas.concat items.map (item) -> item.style 'stroke-opacity'
         if @button('fill').toggle
             alphas = alphas.concat items.map (item) -> item.style 'fill-opacity'
-        _.sumBy(alphas, (a) -> parseFloat a) / alphas.length
+            
+        alphas = alphas.filter (a) -> a.length
+        alpha = _.sumBy(alphas, (a) -> parseFloat a) / alphas.length
+        # log 'alpha', alpha, alphas
+        alpha
     
 module.exports = Alpha

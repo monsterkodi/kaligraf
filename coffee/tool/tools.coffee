@@ -116,6 +116,7 @@ class Tools extends Tool
                 { class: 'font'  }
             ]
             [
+                { class: 'angle' }
                 { class: 'undo'  }
                 { class: 'line', name: 'width' }
             ]

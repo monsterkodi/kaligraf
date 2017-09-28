@@ -108,6 +108,10 @@ class Tool
                 return btn
         
     setButtonIcon: (name, svg) -> @button(name).innerHTML = Exporter.loadSVG svg
+    hideButton: (name) -> @button(name).style.color = 'transparent'
+    showButton: (name, show) -> 
+        if show? and not show then @hideButton name
+        else @button(name).removeAttribute 'style' 
                 
     # 000000000  000  000000000  000      00000000  
     #    000     000     000     000      000       

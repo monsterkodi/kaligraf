@@ -44,18 +44,10 @@ class Undo extends Tool
         @button('undos').innerHTML = info.undos
         @button('redos').innerHTML = info.redos
         
-        if not info.undos
-            @button('undos').style.color = 'transparent'
-            @button('undo').style.color = 'transparent'
-        else
-            @button('undos').removeAttribute 'style' 
-            @button('undo').removeAttribute 'style' 
+        @showButton 'undos', info.undos
+        @showButton 'undo',  info.undos
             
-        if not info.redos
-            @button('redos').style.color = 'transparent'
-            @button('redo').style.color = 'transparent'
-        else
-            @button('redos').removeAttribute 'style'  
-            @button('redo').removeAttribute 'style'  
+        @showButton 'redos', info.redos
+        @showButton 'redo',  info.redos
         
 module.exports = Undo

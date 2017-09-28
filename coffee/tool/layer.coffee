@@ -128,21 +128,14 @@ class Layer extends Tool
             @button('layer').innerHTML = "#{info.active}"
             
             if not info.num
-                @button('layer').style.color = 'transparent'
-                @button('incr').style.color  = 'transparent'
-                @button('decr').style.color  = 'transparent'
+                @hideButton 'layer'
+                @hideButton 'incr'
+                @hideButton 'decr'
             else
                 @button('layer').removeAttribute 'style' 
             
-                if not info.active
-                    @button('decr').style.color = 'transparent'
-                else
-                    @button('decr').removeAttribute 'style' 
-                    
-                if info.active == info.num-1
-                    @button('incr').style.color = 'transparent'
-                else
-                    @button('incr').removeAttribute 'style' 
+                @showButton 'decr', info.active
+                @showButton 'incr', info.active != info.num-1
                     
                 @setButtonIcon 'disable', info.disabled and 'layer-disabled' or 'layer-disable'
                 @setButtonIcon 'hide',    info.hidden   and 'layer-hidden'   or 'layer-hide'

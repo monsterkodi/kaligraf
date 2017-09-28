@@ -64,13 +64,21 @@ class Resizer
         
         if event.shiftKey
             angle = Math.round(angle/15) * 15
+            
+        @doRotate angle, round:event.shiftKey
+        
+    doRotate: (angle, opt) ->
+           
+        return if angle == 0
         
         @do 'rotate'
         
         transmat = new SVG.Matrix().around @rotationCenter.x, @rotationCenter.y, new SVG.Matrix().rotate angle
 
         for {item, rotation, center} in @itemRotation
-            @trans.rotation item, angle + rotation
+            newAngle = angle+rotation
+            newAngle = Math.round newAngle if opt?.round
+            @trans.rotation item, newAngle
             newCenter = pos new SVG.Point(center).transform transmat
             @trans.center item, newCenter
             
@@ -83,6 +91,26 @@ class Resizer
         
         post.emit 'resizer', 'rotation'
     
+    #  0000000   000   000   0000000   000      00000000  
+    # 000   000  0000  000  000        000      000       
+    # 000000000  000 0 000  000  0000  000      0000000   
+    # 000   000  000  0000  000   000  000      000       
+    # 000   000  000   000   0000000   0000000  00000000  
+    
+    setAngle: (angle) ->
+        
+        @itemRotation = @getItemRotation()
+        @doRotate angle - @angle()
+        delete @itemRotation
+        @update()
+       
+    addAngle: (angle) -> @setAngle @angle() + angle
+        
+    angle: ->
+
+        angles = @selection.items.map (item) -> item.transform().rotation
+        _.sum(angles) / angles.length
+        
     # 00000000   00000000   0000000  000  0000000  00000000  
     # 000   000  000       000       000     000   000       
     # 0000000    0000000   0000000   000    000    0000000   
@@ -259,8 +287,6 @@ class Resizer
         
     onRotStop: (drag, event) => 
         
-        @gg.transform rotation:0
-        @gg.transform x:0, y:0
         @updateBox()
         
         delete @itemRotation
@@ -269,8 +295,12 @@ class Resizer
         
         if @kali.shapeTool() != 'pick'
             @kali.tools.activateTool 'pick'
-            
-        @itemRotation = @selection.items.map (item) => 
+        
+        @itemRotation = @getItemRotation()
+        
+    getItemRotation: ->
+        
+        @selection.items.map (item) => 
             item:       item
             rotation:   @trans.rotation item 
             center:     @trans.center item 
@@ -380,6 +410,9 @@ class Resizer
             @updateBox()
     
     updateBox: ->
+        
+        @gg.transform rotation:0
+        @gg.transform x:0, y:0
         
         box = @selection.bbox()
         moveBox  box, boxOffset(@stage.svg.viewbox()).scale -1

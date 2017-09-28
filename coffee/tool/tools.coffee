@@ -116,6 +116,7 @@ class Tools extends Tool
                 { class: 'font'  }
             ]
             [
+                { class: 'alpha' }
                 { class: 'angle' }
                 { class: 'undo'  }
                 { class: 'line', name: 'width' }
@@ -173,7 +174,8 @@ class Tools extends Tool
             cfg[0].list = cfg.slice 1
             cfg = cfg[0]
             
-        if cfg.svg = Exporter.loadSVG cfg.name ? cfg.class
+        if Exporter.hasSVG cfg.name ? cfg.class
+            cfg.svg = Exporter.loadSVG cfg.name ? cfg.class
             
             if 'group' == (cfg.name ? cfg.class)
                 delete cfg.svg 

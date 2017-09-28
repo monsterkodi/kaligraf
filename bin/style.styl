@@ -594,10 +594,14 @@ button
     
 .toolToggle
     color                   #444
+    & .toolIconSVG
+        opacity             0.2
 
 .toolToggle.active
     color                   #bbb
     z-index                 1
+    & .toolIconSVG
+        opacity             0.6
     
 .toolButton
     &:hover
@@ -619,7 +623,9 @@ button
 
 .toolToggle:hover:not(.active)
     color                   #666
-
+    & .toolIconSVG
+        opacity             1
+        
 .toolIcon
     padding-top             1px
     padding-bottom          1px

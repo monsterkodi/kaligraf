@@ -36,7 +36,7 @@ class Exporter
         svgStr += "\nstyle=\"stroke-linecap: round; stroke-linejoin: round;#{rgba}\""
         svgStr += "\nviewBox=\"#{bb.x} #{bb.y} #{bb.width} #{bb.height}\">"
         
-        Exporter.clean root
+        @clean root
                 
         for item in root.children()                    
             svgStr += '\n'
@@ -70,20 +70,24 @@ class Exporter
         
     @save: (svg, opt) ->
         
-        fs.writeFileSync resolve(opt.file), Exporter.svg svg, opt
+        fs.writeFileSync resolve(opt.file), @svg svg, opt
 
     @saveSVG: (name, svg) ->
         
-        svgFile = "#{__dirname}/../svg/#{name}.svg"
-        fs.writeFileSync svgFile, svg, encoding: 'utf8'
+        fs.writeFileSync @svgFile(name), svg, encoding: 'utf8'
 
+    @hasSVG: (name) -> fileExists @svgFile name
+                
     @loadSVG: (name) ->
         
-        svgFile = "#{__dirname}/../svg/#{name}.svg"
-        if fileExists svgFile
-            return fs.readFileSync svgFile, encoding: 'utf8'
+        if @hasSVG name
+            return fs.readFileSync @svgFile(name), encoding: 'utf8'
+        else
+            log 'no such icon file', @svgFile(name)
         null
-        
+
+    @svgFile: (name) -> "#{__dirname}/../svg/#{name}.svg"
+    
     #  0000000  000      00000000   0000000   000   000  
     # 000       000      000       000   000  0000  000  
     # 000       000      0000000   000000000  000 0 000  
@@ -124,12 +128,12 @@ class Exporter
         if _.isFunction item.children
             
             for child in item.children()
-                Exporter.clean child
+                @clean child
                 
         else if item.type == 'text'
             
             for i in [0...item.lines().length()]
-                Exporter.clean item.lines().get i 
+                @clean item.lines().get i 
         
     # 000  0000000     0000000  
     # 000  000   000  000       

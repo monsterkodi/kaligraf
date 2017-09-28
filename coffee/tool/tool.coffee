@@ -68,8 +68,8 @@ class Tool
                 btn.classList.add 'toolLabel'
                 
             if button.toggle?
-                btn.classList.add 'toolToggle'
                 btn.toggle = button.toggle
+                btn.classList.add 'toolToggle'
                 btn.classList.toggle 'active', btn.toggle
                 
             if button.icon? or button.tiny? or button.small?

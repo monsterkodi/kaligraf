@@ -129,6 +129,7 @@ class Tools extends Tool
                 { class: 'align' }                
             ]            
             [
+                { class: 'wire'  }
                 { class: 'zoom'  }
                 { class: 'layer' }
                 { class: 'grid'  }
@@ -148,7 +149,7 @@ class Tools extends Tool
     
     addTool: (cfg) ->
 
-        tool = @newTool cfg        
+        tool = @newTool cfg    
 
         tail = last @children
         

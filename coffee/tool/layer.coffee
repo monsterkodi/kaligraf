@@ -45,11 +45,11 @@ class Layer extends Tool
             action: @onIncr
         ]
         @initButtons [
-            small:  'layer-hide'
+            tiny:  'layer-hide'
             name:   'hide'
             action: @onHide
         ,
-            small:  'layer-disable'
+            tiny:  'layer-disable'
             name:   'disable'
             action: @onDisable
         ]

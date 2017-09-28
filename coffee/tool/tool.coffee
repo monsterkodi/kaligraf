@@ -74,7 +74,10 @@ class Tool
                 
             if button.icon? or button.tiny? or button.small?
                 svg = button.icon ? button.tiny ? button.small
-                btn.innerHTML = Exporter.loadSVG svg
+                if Exporter.hasSVG svg
+                    btn.innerHTML = Exporter.loadSVG svg
+                else
+                    btn.innerHTML = Exporter.loadSVG 'rect'
                 btn.classList.add 'toolIcon'
                 btn.classList.add 'toolTiny' if button.tiny?
                 btn.classList.add 'toolSmall' if button.small?

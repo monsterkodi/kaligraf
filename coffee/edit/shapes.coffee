@@ -111,7 +111,6 @@ class Shapes
                 height = @trans.height e
                 e.clear()
                 e.data 'height', height
-                log e.data('height'), height
                 
             when 'image'
                 
@@ -245,6 +244,13 @@ class Shapes
             when 'pan' then
                     
             else
+                
+                if shape == 'text'
+                    item = @stage.leafItemAtPos eventPos
+                    if item?.type == 'text'
+                        @editTextItem item
+                        return
+                
                 @do() # done will be called in onStop
                 @selection.clear()
   
@@ -261,6 +267,7 @@ class Shapes
                 if @draw?
                     @draw.startDrawing @drawing, shape
                 else
+                    if shape == 'text' then stagePos.y -= @drawing.data('height')/2
                     @trans.pos @drawing, stagePos
 
     # 0000000    00000000    0000000    0000000   

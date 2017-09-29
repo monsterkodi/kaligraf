@@ -35,7 +35,6 @@ class Cursor
         
         svg = SVG.adopt tmpDiv.firstChild 
         svg.attr  width: 32, height:32
-        # svg.style overflow: 'visible'
         
         if opt?.fill
             for item in svgItems(svg, style:'fill')
@@ -75,9 +74,9 @@ class Cursor
             when 'text-cursor'                  
                 s = @kali.tools.getTool('font').size
                 s *= @kali.stage.zoom
-                s = Math.round clamp 10, 100, s
+                s = Math.round clamp 20, 128, s
                 name = "#{name}-#{s}"
-                x = s/2;  y = 0
+                x = s/2;  y = s/2
             else "unhandled tip for  cursor#{name}"
             
         cursorDir = path.join path.dirname(svgFile), 'cursor'

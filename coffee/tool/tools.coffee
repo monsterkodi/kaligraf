@@ -81,40 +81,36 @@ class Tools extends Tool
         
         tools = [
             [
-                { name: 'stroke', class: 'color' }
+                { name: 'stroke', class: 'color', popup: 'auto' }
                 { name: 'fill',   class: 'color' }
             ]
             [
-                { name: 'pick',     group: 'shape' }
-                { name: 'edit',     group: 'shape' }
-                { name: 'pan',      group: 'shape' }
-                { class: 'loupe',   group: 'shape' }
-                { class: 'pipette', group: 'shape' }
+                { name: 'pick',     group: 'shape', popup: 'temp' }
+                { name: 'edit',     group: 'shape', popup: 'temp' }
+                { name: 'pan',      group: 'shape', popup: 'temp' }
+                { class: 'loupe',   group: 'shape', popup: 'temp' }
+                { class: 'pipette', group: 'shape', popup: 'temp' }
             ]
             [
-                { name: 'rect',     group: 'shape' }
-                { name: 'triangle', group: 'shape' }
-                { name: 'triangle_square', group: 'shape' }
-                { name: 'image',    group: 'shape' }
+                { name: 'bezier_smooth', draw: true, group: 'shape', popup: 'temp' }
+                { name: 'bezier_quad',   draw: true, group: 'shape', popup: 'temp' }
+                { name: 'bezier_cube',   draw: true, group: 'shape', popup: 'temp' }
+                { name: 'polygon',       draw: true, group: 'shape', popup: 'temp' }
+                { name: 'polyline',      draw: true, group: 'shape', popup: 'temp' }
+                { name: 'line',          draw: true, group: 'shape', popup: 'temp' }
             ]
             [
-                { name: 'circle',   group: 'shape' }
-                { name: 'ellipse',  group: 'shape' }
+                { name: 'rect',             group: 'shape', popup: 'temp' }
+                { name: 'triangle',         group: 'shape', popup: 'temp' }
+                { name: 'triangle_square',  group: 'shape', popup: 'temp' }
+                { name: 'image',            group: 'shape', popup: 'temp' }
+                { name: 'circle',           group: 'shape', popup: 'temp' }
+                { name: 'ellipse',          group: 'shape', popup: 'temp' }
+                { name: 'pie', draw: true,  group: 'shape', popup: 'temp' }
+                { name: 'arc', draw: true,  group: 'shape', popup: 'temp' }                
             ]
             [
-                { name: 'bezier_smooth', group: 'shape', draw: true }
-                { name: 'bezier_quad',   group: 'shape', draw: true }
-                { name: 'bezier_cube',   group: 'shape', draw: true }
-                { name: 'pie',           group: 'shape', draw: true }
-                { name: 'arc',           group: 'shape', draw: true }
-            ]
-            [
-                { name: 'polygon',  group: 'shape', draw: true }
-                { name: 'polyline', group: 'shape', draw: true }
-                { name: 'line',     group: 'shape', draw: true }
-            ]
-            [
-                { name:  'text',    group: 'shape' }
+                { name:  'text',    group: 'shape', popup: 'temp' }
                 { class: 'font'   }
                 { class: 'anchor' }
             ]

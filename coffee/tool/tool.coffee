@@ -155,14 +155,40 @@ class Tool
 
         return if event.buttons
         
-        return if $(@element, '.toolHalo')
+        return if $(@element, '.toolHalo')?
                 
         if @parent != @kali.tools.temp
             @kali.tools.collapseTemp()
             
         if @hasChildren() and not @childrenVisible()
             @kali.tools.temp = @
+            if @cfg.popup == 'auto'
+                @showChildren()
+            else
+                @element.addEventListener 'mousemove', @onMouseMove
+                @element.addEventListener 'mousedown', @onMouseDown
+                
+    onMouseDown: (event) =>
+        
+        @popupTimeout = setTimeout @popupChildren, 100
+        @element.addEventListener 'mouseup', @onMouseUp
+        
+    onMouseUp: (event) =>
+        
+        clearTimeout @popupTimeout
+        
+    popupChildren: => 
+        
+        @toggleChildren()
+        delete @popupTimeout
+        @keepChildren = true
+                
+    onMouseMove: (event) =>
+        
+        if event.buttons != 0
+            @kali.tools.temp = @
             @showChildren()
+            @element.removeEventListener 'mousemove', @onMouseMove
 
     onMouseLeave: => log "onLeave #{@name}"
         
@@ -318,13 +344,20 @@ class Tool
                 @saveSVG @name, svg
                 return
             
+        log "click #{@name} keepChildren #{@keepChildren} parent #{@hasParent()} popup #{@cfg.popup}"
+                
         if @hasChildren() and event
-            @toggleChildren()
+            if not @childrenVisible()
+                if not @cfg.popup?
+                    @toggleChildren()
+                else if @name == @kali.shapeTool()
+                    @toggleChildren()
+            else if not @keepChildren
+                @hideChildren()
         else if @hasParent()
-            if @cfg.orient != 'down'
-                @swapParent()
-        else 
-            @hideChildren()
+            @swapParent()
+            
+        delete @keepChildren
             
         @execute()
         

@@ -27,7 +27,7 @@ class Tool
         @element.classList.add 'down' if @cfg.orient == 'down'
         @element.addEventListener 'mouseenter', @onMouseEnter
         @element.addEventListener 'mouseleave', @onMouseLeave
-
+        
         @kali.toolDiv.appendChild @element
         
         if @cfg.svg?
@@ -155,6 +155,8 @@ class Tool
 
         return if event.buttons
         
+        return if $(@element, '.toolHalo')
+                
         if @parent != @kali.tools.temp
             @kali.tools.collapseTemp()
             
@@ -162,7 +164,7 @@ class Tool
             @kali.tools.temp = @
             @showChildren()
 
-    onMouseLeave: =>
+    onMouseLeave: => log "onLeave #{@name}"
         
     #  0000000  000   000  000  000      0000000    00000000   00000000  000   000  
     # 000       000   000  000  000      000   000  000   000  000       0000  000  
@@ -195,26 +197,40 @@ class Tool
         
         @toFront()
         if @hasChildren()
+            @addHalo()
             for c in @children
                 c.show()
                 
     hideChildren: -> 
         
+        @delHalo()
         @toBack()
         if @hasChildren()
             for c in @children
                 c.hide()
 
-    toFront: ->
+    toFront: (zIndex=100) ->
         
-        @element.style.zIndex = 100
+        @element.style.zIndex = zIndex
         if @children?.length
             for c in @children
-                c.toFront()
+                c.toFront zIndex+1
 
     toBack: ->
         
         @element.style.zIndex = 1
+        
+    delHalo: -> $('.toolHalo')?.remove()
+    addHalo: (opt) -> 
+        halo = elem class: 'toolHalo'
+        halo.style.width      = "#{opt?.width ? ((@children.length+1)*66)}px"
+        halo.style.left       = "#{not opt?.x? and 66 or opt.x}px"
+        halo.style.top        = '-66px'
+        halo.style.height     = "#{3*66}px"
+        halo.style.background = 'rgba(0,0,0,0)'
+        halo.style.position   = 'absolute'
+        halo.style.zIndex     = 0
+        @element.insertBefore halo, @element.firstChild
                 
     #  0000000  000   000   0000000   00000000   
     # 000       000 0 000  000   000  000   000  
@@ -336,7 +352,7 @@ class Tool
     #    000     000   000  000   000  000   000  000      000       
     #    000      0000000    0000000    0000000   0000000  00000000  
     
-    show:    => @element.style.display = 'block'; @element.style.zIndex = 100
+    show:    => @element.style.display = 'block'
     hide:    => @element.style.display = 'none'
     visible: => @element.style.display != 'none'
     toggleVisible: => if @visible() then @hide() else @show()

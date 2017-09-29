@@ -23,12 +23,16 @@ class Palette extends Tool
 
         HEIGHT = @kali.toolSize/2
         
+        @element.style.zIndex = 1000
+                
         @mode      = 'rgb'
         @alpha     = 1
         @value     = 2.0/3
         @luminance = 0.5
 
         @svg = SVG(@element).size "#{WIDTH}", "#{HEIGHT*2}"
+        @svg.node.style.zIndex = 100
+        @svg.node.style.position = 'absolute'
         
         @gradientGRY = grayGradient @svg
         @gradientRGB = colorGradient @svg, @luminance  
@@ -332,7 +336,8 @@ class Palette extends Tool
     # 000          000     000       000  0000     000          000
     # 00000000      0      00000000  000   000     000     0000000
 
-    onMouseEnter: => 
+    onMouseEnter: => @addHalo x:0, width:255+66
+    onMouseLeave: => @delHalo()
     
     xPosEvent: (event) ->
         r = $("#stage").getBoundingClientRect()

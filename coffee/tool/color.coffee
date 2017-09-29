@@ -102,7 +102,10 @@ class Color extends Tool
             @showChildren()
             @createPalette()
 
-    hideChildren: -> post.emit 'palette', 'hide'
+    hideChildren: -> 
+        
+        @delHalo()
+        post.emit 'palette', 'hide'
     
     #  0000000  000   000   0000000   00000000   
     # 000       000 0 000  000   000  000   000  
@@ -163,6 +166,8 @@ class Color extends Tool
 
         return if event.buttons
         
+        return if $(@element, '.toolHalo')?
+        
         if @name == 'fill' and @kali.tools.temp?.name == 'stroke'
             delete @kali.tools.temp
             tempStroke = true
@@ -180,7 +185,7 @@ class Color extends Tool
             @kali.tools.temp = @
 
         post.emit 'palette', 'show', pos(@kali.toolSize,0).plus p
-
+        
         if not @kali.palette.proxy
             post.emit 'palette', 'proxy', @
 

@@ -242,10 +242,11 @@ class Stage
             if @isLeaf item 
                 items.push item
             else 
-                items = items.concat @treeItems item
+                items = items.concat @treeItems item, opt
         items
 
     selectedNoTextItems: -> @selectedLeafItems noType:'text'
+    selectedTextItems:   -> @selectedLeafItems types:['text', 'g']
         
     sortedSelectedItems: (opt) ->
         
@@ -347,7 +348,7 @@ class Stage
         e = elem 'div'
         e.innerHTML = svg
         
-        parent = opt?.parent ? @svg
+        parent = opt?.parent ? @activeLayer()
 
         for elemChild in e.children
             
@@ -385,7 +386,7 @@ class Stage
                         if tag == 'metadata' or tag.startsWith 'sodipodi'
                             item.remove()
 
-                    if opt.id?
+                    if opt?.id?
                         
                         if items.length == 1 and first(items).type == 'g'
                             group = first items 
@@ -429,7 +430,7 @@ class Stage
             log "error:", e
             return
 
-        @setSVG svg
+        @setSVG svg, parent:@svg
         
         @pushRecent file
         

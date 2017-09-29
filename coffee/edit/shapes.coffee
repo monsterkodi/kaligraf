@@ -107,6 +107,7 @@ class Shapes
                 e.font 'weight', @kali.tools.font.weight
                 e.font 'style',  @kali.tools.font.style
                 e.font 'family', @kali.tools.font.family
+                e.font 'anchor', @kali.tools.anchor.anchor
                 
             when 'image'
                 
@@ -247,6 +248,9 @@ class Shapes
                     if not @draw.continuePicking()
                         @endDrawing()
                     return
+
+                if shape in ['line', 'polyline'] and @kali.tools.getTool('width').width == 0
+                    @kali.tools.getTool('width').setWidth 1
                     
                 @drawing = @addShape shape, stagePos
                 

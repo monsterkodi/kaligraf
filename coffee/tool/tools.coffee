@@ -43,6 +43,8 @@ class Tools extends Tool
             when 'button'     then @clickToolButton  tool, button
             when 'activate'   then @activateTool     tool
             when 'browse'     then @kali.openBrowser()
+            when 'font'       then @getTool('font').toggleList()
+            when 'layer'      then @getTool('layer').toggleList()
             when 'group'      then @stage.group()
             when 'ungroup'    then @stage.ungroup()
             when 'cut'        then @stage.cut()
@@ -113,7 +115,8 @@ class Tools extends Tool
             ]
             [
                 { name:  'text',    group: 'shape' }
-                { class: 'font'  }
+                { class: 'font'   }
+                { class: 'anchor' }
             ]
             [
                 { class: 'alpha' }

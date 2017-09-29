@@ -9,7 +9,7 @@
 pkg      = require '../package.json'
 electron = require 'electron'
 
-action = (action, arg) -> post.toWins 'tool', action, arg
+action = (action, arg)  -> post.toWins 'tool', action, arg
 button = (tool, button) -> post.toWins 'tool', 'button', tool, button
 
 class Menu
@@ -112,10 +112,10 @@ class Menu
             
             label: 'Tool', submenu: [
                 
-                { label: 'Layers',      accelerator: 'command+l',   click: -> action 'click', 'layer'}
+                { label: 'Layers',      accelerator: 'command+l',   click: -> action 'layer'}
                 { type:  'separator'}
                 { label: 'Text',        accelerator: 'command+t',   click: -> action 'click', 'text'}
-                { label: 'Font',        accelerator: 'command+f',   click: -> action 'click', 'font'}
+                { label: 'Font',        accelerator: 'command+f',   click: -> action 'font'}
                 { type:  'separator'}
                 { label: 'Zoom',        submenu: [
                     { label:'Reset',    accelerator: 'command+0',   click: -> button 'zoom', 'reset' }
@@ -124,8 +124,8 @@ class Menu
                 ] }
                 { label: 'Toggle',      submenu: [
                     { label: 'Fill/Stroke', accelerator: 'command+6', click: -> action 'swapColor'}
-                    { label: 'Groups',      accelerator: 'command+7', click: -> button 'show', 'groups'}
-                    { label: 'IDs',         accelerator: 'command+8', click: -> button 'show', 'ids'}
+                    { label: 'Groups',      accelerator: 'command+shift+g', click: -> button 'show', 'groups'}
+                    { label: 'IDs',         accelerator: 'command+shift+i', click: -> button 'show', 'ids'}
                 ]
                 }
                 { type:  'separator'}

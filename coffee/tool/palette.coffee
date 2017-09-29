@@ -8,7 +8,7 @@
 
 { elem, drag, stopEvent, post, clamp, log, $, _ } = require 'kxk'
 
-{ contrastColor, colorDist, colorBrightness, colorGradient, grayGradient } = require '../utils'
+{ contrastColor, checkersPattern, colorDist, colorBrightness, colorGradient, grayGradient } = require '../utils'
 
 Tool = require './tool'
 
@@ -38,26 +38,31 @@ class Palette extends Tool
         @rgb = @grd.rect()
         @gry = @grd.rect()
         @col = @grd.rect()
+        @alp = @grd.rect()
+        
         @lum = @grd.rect()
         @lph = @grd.rect()
 
         @rgb.attr width:WIDTH, height:HEIGHT,   x:0, stroke: 'none',
         @gry.attr width:WIDTH, height:HEIGHT,   x:0, stroke: 'none', y:HEIGHT, fill:@gradientGRY
         @col.attr width:WIDTH, height:HEIGHT/3, x:0, stroke: 'none', y:HEIGHT, fill:@gradientCOL
+        @alp.attr width:WIDTH, height:HEIGHT/3, x:0, stroke: 'none', y:HEIGHT*2-HEIGHT/3, fill:checkersPattern(@svg, @kali.toolSize/6, '#fff'), 'fill-opacity': 1-@alpha
 
         @lum.attr width:HEIGHT/3, height:HEIGHT/3, x:WIDTH/2-HEIGHT/3, y:HEIGHT
+        
         @lph.attr width:HEIGHT/3, height:HEIGHT/3, x:WIDTH-HEIGHT/3,   y:HEIGHT*2-HEIGHT/3
         @lph.attr stroke:'black', fill:'white'
 
-        @col.on 'mousedown', @selectLUM
-        @lph.on 'mousedown', @selectLPH
         @rgb.on 'mousedown', @selectRGB
         @gry.on 'mousedown', @selectGRY
+        @col.on 'mousedown', @selectLUM
+        @alp.on 'mousedown', @selectLPH
 
         @dot = @grd.line()
         @dot.plot [[HEIGHT*2,0], [HEIGHT*2,HEIGHT]]
 
         @lum.addClass 'trans'
+        @lph.addClass 'trans'
         @dot.addClass 'trans'
 
         post.on 'palette', @onPalette
@@ -103,6 +108,7 @@ class Palette extends Tool
         
         @gradientRGB = colorGradient @svg, @luminance
         @rgb.attr fill: @gradientRGB
+        @alp.attr fill:checkersPattern(@svg, @kali.toolSize/6, '#fff'), 'fill-opacity': 1-@alpha
         @lph.attr x:@alpha*(WIDTH-HEIGHT/3)
         @lum.attr x:@luminance*(WIDTH-HEIGHT/3)
         
@@ -130,6 +136,7 @@ class Palette extends Tool
         @gradientRGB = colorGradient @svg, @luminance
         
         @lph.attr x:@alpha*(WIDTH-HEIGHT/3)
+        @alp.attr fill:checkersPattern(@svg, @kali.toolSize/6, '#fff'), 'fill-opacity': 1-@alpha
         @rgb.attr fill: @gradientRGB
         @lum.attr x: @luminance*(WIDTH-HEIGHT/3)
         
@@ -167,6 +174,7 @@ class Palette extends Tool
         @alpha = f
 
         @lph.attr x:@alpha*(WIDTH-HEIGHT/3)
+        @alp.attr 'fill-opacity': 1-@alpha
 
         post.emit 'color', @proxy, 'alpha', @alpha
         

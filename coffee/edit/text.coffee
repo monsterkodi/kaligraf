@@ -19,7 +19,6 @@ class Text
         
         font = @item.font()
         bbox = @item.bbox()
-        matrix = itemMatrix @item
         
         @element = elem 'div',      class:'textEdit'
         @input   = elem 'textarea', class:'textEditInput', rows: 10
@@ -28,8 +27,14 @@ class Text
         @input.style.fontSize   = "#{font['font-size']}px"
         @input.style.width      = "#{bbox.width+2}px"
         @input.style.height     = "#{bbox.height+2}px"
-        @input.style.transform = matrix.toString()
         @input.value = @item.text()
+
+        @input.style.textAlign = switch @item.font()['text-anchor']
+            when 'start'    then 'left'
+            when 'middle'   then 'center'
+            when 'end'      then 'right'
+            
+        @updateTransform()
         
         @element.appendChild @input
         
@@ -80,7 +85,9 @@ class Text
         bbox = @item.bbox()
         @input.style.width  = "#{bbox.width+2}px"
         @input.style.height = "#{bbox.height+2}px"
-
+        
+        @updateTransform()
+                
     insertText: (text) ->
         
         start = @input.selectionStart
@@ -88,6 +95,21 @@ class Text
         @input.selectionStart = start + text.length
         @input.selectionEnd   = start + text.length
         @setText @input.value
+
+    # 000000000  00000000    0000000   000   000   0000000  00000000   0000000   00000000   00     00  
+    #    000     000   000  000   000  0000  000  000       000       000   000  000   000  000   000  
+    #    000     0000000    000000000  000 0 000  0000000   000000    000   000  0000000    000000000  
+    #    000     000   000  000   000  000  0000       000  000       000   000  000   000  000 0 000  
+    #    000     000   000  000   000  000   000  0000000   000        0000000   000   000  000   000  
+    
+    updateTransform: ->
+        
+        bbox = @item.bbox()
+        matrix = itemMatrix @item
+        switch @item.font()['text-anchor']
+            when 'middle' then matrix = matrix.multiply new SVG.Matrix().translate -bbox.width/2
+            when 'end'    then matrix = matrix.multiply new SVG.Matrix().translate -bbox.width
+        @input.style.transform = matrix.toString()
         
     #  0000000  00000000  000      00000000   0000000  000000000  
     # 000       000       000      000       000          000     

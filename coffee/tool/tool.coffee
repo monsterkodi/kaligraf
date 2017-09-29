@@ -5,7 +5,7 @@
 #    000     000   000  000   000  000    
 #    000      0000000    0000000   0000000
 
-{ fileExists, stopEvent, elem, drag, post, first, last, log, fs, _ } = require 'kxk'
+{ fileExists, stopEvent, elem, drag, post, first, last, fs, log, $, _ } = require 'kxk'
 
 { elemProp } = require '../utils'
 
@@ -69,6 +69,12 @@ class Tool
                 
             if button.toggle?
                 btn.toggle = button.toggle
+                btn.classList.add 'toolToggle'
+                btn.classList.toggle 'active', btn.toggle
+
+            if button.choice?
+                btn.choice = button.choice
+                btn.toggle = btn.choice == btn.name
                 btn.classList.add 'toolToggle'
                 btn.classList.toggle 'active', btn.toggle
                 
@@ -257,9 +263,6 @@ class Tool
         
         btn = @button button
 
-        if not btn?
-            log 'wtf?', button
-        
         if btn.icon?
             if event?.metaKey
                 @kali.stage.addSVG Exporter.loadSVG btn.icon
@@ -272,6 +275,15 @@ class Tool
                 return
                 
         if btn.toggle?
+            
+            if btn.choice
+                if !btn.toggle
+                    if active = $ btn.parentNode, '.active'
+                        active.classList.remove 'active'
+                        active.toggle = false
+                else
+                    return
+            
             btn.toggle = !btn.toggle
             btn.classList.toggle 'active'
         

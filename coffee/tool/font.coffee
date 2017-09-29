@@ -116,13 +116,10 @@ class Font extends Tool
     onClick: (event) =>
         
         super event
-        
+               
         @hideChildren()
-        
-        if @list? 
-            @list.toggleDisplay()
-        else
-            @showList()
+
+        @toggleList()
 
     onIncr:  => @setSize clamp 0, 999, @size + 1
     onDecr:  => @setSize clamp 0, 999, @size - 1
@@ -140,6 +137,13 @@ class Font extends Tool
     # 000      000       000     000     
     # 0000000  000  0000000      000     
     
+    toggleList: -> 
+        
+        if @list? 
+            @list.toggleDisplay()
+        else
+            @showList()
+    
     showList: ->
         
         @list = new FontList @kali
@@ -153,7 +157,10 @@ class Font extends Tool
         
     setFontProp: (prop, value) ->
         
-        textItems = @selectedItems type:'text' 
+        textItems = @selectedTextItems()
+        
+        log 'selectedTextItems', textItems.length
+        
         if not empty textItems
             @do()
             for item in textItems

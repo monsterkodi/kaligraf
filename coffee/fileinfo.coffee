@@ -27,7 +27,7 @@ class FileInfo
         
     onStage: (action, file) =>
         
-        if action == 'load'
+        if action in ['load', 'save']
             @file.innerHTML = fileName file
         
     onUndo: (info) =>

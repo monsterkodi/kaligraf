@@ -101,13 +101,17 @@ class Shapes
                 
             when 'text'
                 
-                e = root.text 'text'
-                e.leading 1.15
+                e = root.text 'X'
+                e.leading 1.2
                 e.font 'size',   @kali.tools.font.size
                 e.font 'weight', @kali.tools.font.weight
                 e.font 'style',  @kali.tools.font.style
                 e.font 'family', @kali.tools.font.family
                 e.font 'anchor', @kali.tools.anchor.anchor
+                height = @trans.height e
+                e.clear()
+                e.data 'height', height
+                log e.data('height'), height
                 
             when 'image'
                 
@@ -142,12 +146,12 @@ class Shapes
     #    000     00000000  000   000     000     
     
     editTextItem: (item) -> 
-    
+
         @selection.clear()
         @text = new Text @kali, item
         
     clearText: ->
-        
+
         @text?.del()
         delete @text
         
@@ -391,8 +395,8 @@ class Shapes
             
             @stopEdit()
             
-            if @trans.width(@drawing) == 0 and @trans.height(@drawing) == 0
-
+            if @trans.width(@drawing) == 0 and @trans.height(@drawing) == 0 and @drawing.type != 'text'
+                log 'remove drawing'
                 @drawing.remove()
                 
             else 

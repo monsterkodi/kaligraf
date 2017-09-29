@@ -5,7 +5,7 @@
 # 000       000   000  000   000       000  000   000  000   000
 #  0000000   0000000   000   000  0000000    0000000   000   000
 
-{ elem, fileExists, fileName, path, fs, log } = require 'kxk' 
+{ elem, clamp, fileExists, fileName, path, fs, log } = require 'kxk' 
 
 { svgItems } = require './utils'
 
@@ -13,7 +13,11 @@ Exporter = require './exporter'
 
 class Cursor
 
+    @kali = null
+    
     @forTool: (name, opt) ->
+        
+        name = 'text-cursor' if name == 'text'
         
         svgFile = "#{__dirname}/../svg/#{name}.svg"
         if not fileExists svgFile 
@@ -30,7 +34,8 @@ class Cursor
         tmpDiv.innerHTML = svgStr
         
         svg = SVG.adopt tmpDiv.firstChild 
-        svg.attr width: 32, height:32
+        svg.attr  width: 32, height:32
+        # svg.style overflow: 'visible'
         
         if opt?.fill
             for item in svgItems(svg, style:'fill')
@@ -67,13 +72,19 @@ class Cursor
             when 'rot left'                     then x = 32-o; y = 16
             when 'rot right'                    then           y = 16
             when 'rot bot'                      then x = 16
+            when 'text-cursor'                  
+                s = @kali.tools.getTool('font').size
+                s *= @kali.stage.zoom
+                s = Math.round clamp 10, 100, s
+                name = "#{name}-#{s}"
+                x = s/2;  y = 0
             else "unhandled tip for  cursor#{name}"
             
         cursorDir = path.join path.dirname(svgFile), 'cursor'
         fs.ensureDirSync cursorDir 
                 
-        svgFileX1 = path.join cursorDir, fileName(svgFile) + " x1.svg"
-        svgFileX2 = path.join cursorDir, fileName(svgFile) + " x2.svg"
+        svgFileX1 = path.join cursorDir, name + " x1.svg"
+        svgFileX2 = path.join cursorDir, name + " x2.svg"
         
         if opt?.fill or opt?.stroke
             "url(data:image/svg+xml;base64,#{btoa svg.svg()}) #{x} #{y}, auto"

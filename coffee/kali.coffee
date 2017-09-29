@@ -8,6 +8,7 @@
 { setStyle, keyinfo, stopEvent, empty, first, post, prefs, elem, sw, sh, pos, log, $, _ } = require 'kxk'
 
 Tools    = require './tool/tools'
+Cursor   = require './cursor'
 Stage    = require './stage'
 Trans    = require './trans'
 Browser  = require './browser'
@@ -19,6 +20,8 @@ class Kali
         
         prefs.init()
         @setStyle 'style'
+        
+        Cursor.kali = @
         
         @element =$ element 
         @toolDiv = elem id: 'tools'

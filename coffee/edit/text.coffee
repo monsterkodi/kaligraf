@@ -14,11 +14,15 @@
 class Text
 
     constructor: (@kali, @item) ->
-        # no super here?
+        
+        # this is not a tool!
+        
         @stage = @kali.stage
         
         font = @item.font()
         bbox = @item.bbox()
+        height = bbox.height 
+        height = @item.data('height') if not height
         
         @element = elem 'div',      class:'textEdit'
         @input   = elem 'textarea', class:'textEditInput', rows: 10
@@ -26,7 +30,7 @@ class Text
         @input.style.fontWeight = font['font-weight'] if font['font-weight']?
         @input.style.fontSize   = "#{font['font-size']}px"
         @input.style.width      = "#{bbox.width+2}px"
-        @input.style.height     = "#{bbox.height+2}px"
+        @input.style.height     = "#{height+2}px"
         @input.value = @item.text()
 
         @input.style.textAlign = switch @item.font()['text-anchor']
@@ -56,6 +60,8 @@ class Text
         
         if action == 'viewbox'
             @element.style.transform = "translate(#{-vbox.x*vbox.zoom}px, #{-vbox.y*vbox.zoom}px) scale(#{vbox.zoom})"
+            if @kali.shapeTool() == 'text'
+                @stage.setToolCursor 'text'
         
     del: ->
 
@@ -109,6 +115,7 @@ class Text
         switch @item.font()['text-anchor']
             when 'middle' then matrix = matrix.multiply new SVG.Matrix().translate -bbox.width/2
             when 'end'    then matrix = matrix.multiply new SVG.Matrix().translate -bbox.width
+            when 'start'  then matrix = matrix.multiply new SVG.Matrix().translate -6, -6
         @input.style.transform = matrix.toString()
         
     #  0000000  00000000  000      00000000   0000000  000000000  

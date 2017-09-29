@@ -218,8 +218,6 @@ class Tools extends Tool
         store = prefs.get 'tool:store'
         return if not store?
         
-        # log 'Tools.restore', store
-        
         for names in store
             parent = @getTool first names
             continue if parent.name == 'stroke'
@@ -233,13 +231,14 @@ class Tools extends Tool
                 childIndex = parent.children.indexOf(child)
                 parent.children.splice childIndex, 1
                 parent.children.splice index, 0, child
+                
+        @store()
         
     store: ->
         
         store = @children.map (tool) -> 
             [tool.name].concat tool.children.map (child) -> child.name
                     
-        # log 'Tools.store', store
         prefs.set 'tool:store', store
             
     collapseTemp: =>

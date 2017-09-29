@@ -5,7 +5,7 @@
 #    000     000   000  000   000  000    
 #    000      0000000    0000000   0000000
 
-{ fileExists, stopEvent, elem, drag, post, first, last, fs, log, $, _ } = require 'kxk'
+{ fileExists, stopEvent, elem, drag, post, first, last, fs, pos, log, $, _ } = require 'kxk'
 
 { elemProp } = require '../utils'
 
@@ -190,7 +190,7 @@ class Tool
             @showChildren()
             @element.removeEventListener 'mousemove', @onMouseMove
 
-    onMouseLeave: => log "onLeave #{@name}"
+    onMouseLeave: => #log "onLeave #{@name}"
         
     #  0000000  000   000  000  000      0000000    00000000   00000000  000   000  
     # 000       000   000  000  000      000   000  000   000  000       0000  000  
@@ -270,12 +270,14 @@ class Tool
         top = prt.parent
         @children = prt.children
         _.pull @children, @
-        @children.push prt
+        @children.unshift prt
         for c in @children
             c.parent = @
-        p = @pos()
+            
         @setPos prt.pos()
-        prt.setPos p
+        for c in @children
+            c.setPos @pos().plus pos 66*(1+@children.indexOf c), 0
+        
         delete prt.children
         @parent = top
         _.pull top.children, prt
@@ -284,6 +286,8 @@ class Tool
         @hideChildren()
         if @parent.visible() and @parent.childrenVisible()
             @show()
+            
+        @kali.tools.store()
                 
     # 0000000    00000000    0000000    0000000   
     # 000   000  000   000  000   000  000        
@@ -344,7 +348,7 @@ class Tool
                 @saveSVG @name, svg
                 return
             
-        log "click #{@name} keepChildren #{@keepChildren} parent #{@hasParent()} popup #{@cfg.popup}"
+        # log "click #{@name} keepChildren #{@keepChildren} parent #{@hasParent()} popup #{@cfg.popup}"
                 
         if @hasChildren() and event
             if not @childrenVisible()
@@ -376,7 +380,7 @@ class Tool
         @active = a
         @element.classList.toggle 'active', @active 
         
-    pos:        -> x:parseInt(@element.style.left), y:parseInt(@element.style.top)
+    pos:        -> pos parseInt(@element.style.left), parseInt(@element.style.top)
     setPos: (p) -> @element.style.left = "#{p.x}px"; @element.style.top = "#{p.y}px"
         
     # 000000000   0000000    0000000    0000000   000      00000000  

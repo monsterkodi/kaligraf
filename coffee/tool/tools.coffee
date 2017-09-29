@@ -5,7 +5,7 @@
 #    000     000   000  000   000  000           000
 #    000      0000000    0000000   0000000  0000000 
 
-{ elem, stopEvent, post, prefs, first, last, empty, fs, path, log, _ } = require 'kxk'
+{ elem, stopEvent, post, prefs, first, last, empty, fs, path, pos, log, _ } = require 'kxk'
 
 Exporter = require '../exporter'
 Tool     = require './tool'
@@ -198,7 +198,8 @@ class Tools extends Tool
     
     loadPrefs: ->
         
-        @clickTool prefs.get 'activeTool', 'pick' 
+        @restore()
+        @clickTool prefs.get 'tool:active', 'pick' 
         @clickTool 'font'  if prefs.get 'fontlist:visible', false
         @clickTool 'layer' if prefs.get 'layerlist:visible', false
         
@@ -211,7 +212,36 @@ class Tools extends Tool
             
         if prefs.get 'browser:open', false
             setImmediate => @kali.openBrowser()
+       
+    restore: ->
+        
+        store = prefs.get 'tool:store'
+        return if not store?
+        
+        # log 'Tools.restore', store
+        
+        for names in store
+            parent = @getTool first names
+            continue if parent.name == 'stroke'
+            if not parent.hasChildren()
+                parent.swapParent()
+
+            for name in names.slice 1
+                child = parent.getTool name 
+                index = names.indexOf name
+                child.setPos parent.pos().plus pos 66*index, 0
+                childIndex = parent.children.indexOf(child)
+                parent.children.splice childIndex, 1
+                parent.children.splice index, 0, child
+        
+    store: ->
+        
+        store = @children.map (tool) -> 
+            [tool.name].concat tool.children.map (child) -> child.name
                     
+        # log 'Tools.store', store
+        prefs.set 'tool:store', store
+            
     collapseTemp: =>
 
         if @temp 
@@ -264,7 +294,7 @@ class Tools extends Tool
             
         tool.activate()
         
-        prefs.set 'activeTool', name
+        prefs.set 'tool:active', name
         
         if name == 'text'
             @selection.clear()

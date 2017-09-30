@@ -270,7 +270,12 @@ class Tools extends Tool
             for tool in @tools
                 if tool.cfg.combo == combo
                     return tool.onClick()
-            
+
+            log 'tools.handleKey', combo
+            switch combo
+                when 'e' then return @stage.centerSelection()
+                when '.' then return @kali.openBrowser()
+                    
         else
             @ctrlDown = false
             

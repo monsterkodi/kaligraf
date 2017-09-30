@@ -44,7 +44,7 @@ class Menu
                 { label: 'Clear',           accelerator: 'command+k',       click: -> action 'clear'}
                 { label: 'Reload',          accelerator: 'command+r',       click: -> action 'load'}
                 { type:  'separator'}
-                { label: 'Open Recent...',  accelerator: '.',               click: -> action 'browse'}
+                { label: 'Open Recent...',  accelerator: 'command+.',       click: -> action 'browse'}
                 { label: 'Open...',         accelerator: 'command+o',       click: -> action 'open'}
                 { type:  'separator'}
                 { label: 'Save',            accelerator: 'command+s',       click: -> action 'save'}

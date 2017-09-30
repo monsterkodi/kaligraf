@@ -3,3 +3,4 @@
 ![objects](svg/test/objects.svg)
 ![notes](svg/test/notes.svg)
 ![tools](svg/test/tools.svg)
+![keys](svg/test/keys.svg)

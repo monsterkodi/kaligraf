@@ -445,6 +445,7 @@ class Stage
         post.emit 'stage', 'load', info
         
         @postLayer()
+        @kali.focus()
                 
     open: ->
 
@@ -717,6 +718,7 @@ class Stage
                         return 
 
                 when 'left', 'right', 'up', 'down'
+                    
                     if @selectedItems().length
                         p = pos 0,0
                         switch key
@@ -728,7 +730,7 @@ class Stage
                             @shapes.edit.moveBy p
                         else
                             @resizer.moveBy p
-                    
+                                                
         return if 'unhandled' != @selection.handleKey mod, key, combo, char, event, down
         return if 'unhandled' != @shapes   .handleKey mod, key, combo, char, event, down
 

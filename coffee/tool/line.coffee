@@ -19,19 +19,14 @@ class Line extends Tool
                 
         @initTitle()
         
-        @initButtons [
-            text:   '-'
-            name:   'decr'
-            action: @onDecr
-        ,
-            text:   '1'
+        @initSpin
             name:   'width'
-            action: @onReset
-        ,
-            text:   '+'
-            name:   'incr'
-            action: @onIncr
-        ]
+            min:    0
+            max:    1000
+            reset:  [0,1]
+            step:   [1,2,5,10]
+            action: @setWidth
+            
         @initButtons [
             tiny:  'polygon'
             name:   'shapes'
@@ -43,14 +38,9 @@ class Line extends Tool
         ]
         
         @setWidth prefs.get 'line:width', 1
-        
-    onIncr:  => @setWidth clamp 0, 100, @width + 1
-    onDecr:  => @setWidth clamp 0, 100, @width - 1
-    onReset: => @setWidth 0
-    
+            
     setWidth: (@width) =>
         
-        @button('width').innerHTML = "#{parseInt @width}"
         prefs.set 'width', @width
         
         items = @stage.selectedLeafItems()

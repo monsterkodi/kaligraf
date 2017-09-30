@@ -46,7 +46,70 @@ class Tool
         mthds = [mthds] if not _.isArray mthds
         for mthd in mthds
             @stage[mthd] = @constructor.prototype[mthd].bind @stage
-                        
+             
+    #  0000000  00000000   000  000   000  
+    # 000       000   000  000  0000  000  
+    # 0000000   00000000   000  000 0 000  
+    #      000  000        000  000  0000  
+    # 0000000   000        000  000   000  
+    
+    initSpin: (spin) ->
+        
+        spin.step ?= [1,5,10,50]
+        
+        @initButtons [
+            text:   '<'
+            name:   spin.name + ' minus'
+            action: @onSpin
+            spin:   spin
+        ,
+            text:   '0'
+            name:   spin.name + ' reset'
+            action: @onSpin
+            spin:   spin
+        , 
+            text:   '>'
+            name:   spin.name + ' plus'
+            action: @onSpin
+            spin:   spin
+        ]
+        
+        @button(spin.name + ' reset').innerHTML = spin.value if spin.value?
+        
+    onSpin: (event) => 
+        
+        spin = event.target.spin
+        name = event.target.name
+        
+        part = last name.split ' '
+        
+        log 'onSpin', name, part, spin
+        
+        step = spin.step[0]
+        step = spin.step[1] if event.metaKey
+        step = spin.step[2] if event.altKey
+        step = spin.step[3] if event.ctrlKey
+            
+        switch part
+            when 'minus'
+                spin.value = Math.round((spin.value - step)/step)*step
+            when 'plus'
+                spin.value = Math.round((spin.value + step)/step)*step
+            when 'reset'
+                if _.isArray spin.reset
+                    if spin.value == first spin.reset
+                        spin.reset.push spin.reset.shift()
+                    spin.value = first spin.reset
+                else
+                    spin.value = spin.reset
+           
+        if spin.min? then spin.value = Math.max spin.value, spin.min
+        if spin.max? then spin.value = Math.min spin.value, spin.max
+            
+        log 'onSpin', name, part, spin
+        @button(spin.name + ' reset').innerHTML = spin.value
+        spin.action spin.value
+            
     # 0000000    000   000  000000000  000000000   0000000   000   000   0000000  
     # 000   000  000   000     000        000     000   000  0000  000  000       
     # 0000000    000   000     000        000     000   000  000 0 000  0000000   
@@ -66,6 +129,8 @@ class Tool
                 btn.action = button.action
             else
                 btn.classList.add 'toolLabel'
+                
+            if button.spin? then btn.spin = button.spin
                 
             if button.toggle?
                 btn.toggle = button.toggle
@@ -99,7 +164,7 @@ class Tool
                     button = elemProp event.target, 'name'
                 
                 if button?
-                    @clickButton button 
+                    @clickButton button, event 
                     
                 if not @hasParent()
                     @kali.tools.collapseTemp()
@@ -305,7 +370,7 @@ class Tool
     # 000       000      000  000       000  000   
     #  0000000  0000000  000   0000000  000   000  
 
-    clickButton: (button) ->
+    clickButton: (button, event) ->
         
         btn = @button button
 
@@ -333,7 +398,7 @@ class Tool
             btn.toggle = !btn.toggle
             btn.classList.toggle 'active'
         
-        btn.action?()    
+        btn.action?(event)    
     
     onClick: (event) => 
         
@@ -371,8 +436,8 @@ class Tool
             post.emit 'tool', 'activate', @name
         else if @action?
             post.emit 'tool', @action, @name
-        else if @name not in ['tools', 'font', 'layer']
-            log "no action and no group #{@name}"
+        # else if @name not in ['tools', 'font', 'layer']
+            # log "no action and no group #{@name}"
     
     activate:      -> @setActive true
     deactivate:    -> @setActive false

@@ -18,6 +18,7 @@ class Undo extends Tool
         @undo = @stage.undo
                         
         @initTitle()
+        
         @initButtons [
             text:   '0'
             name:   'undos'

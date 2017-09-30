@@ -19,19 +19,14 @@ class Alpha extends Tool
         
         @initTitle()
         
-        @initButtons [
-            text:   '<'
-            name:   'minus'
-            action: @onMinus
-        ,
-            text:   '0'
-            name:   'reset'
-            action: @onReset
-        , 
-            text:   '>'
-            name:   'plus'
-            action: @onPlus
-        ]
+        @initSpin
+            name:   'alpha'
+            min:    0
+            max:    100
+            reset:  [0,100]
+            step:   [1,5,10,25]
+            action: @setAlpha
+            
         @initButtons [
             small:  'alpha-fill'
             name:   'fill'
@@ -58,25 +53,24 @@ class Alpha extends Tool
         items = @stage.selectedLeafItems()
         if empty(items) or not (@button('stroke').toggle or @button('fill').toggle)
             
-            @hideButton 'minus'
-            @hideButton 'reset'
-            @hideButton 'plus'
+            @hideButton 'alpha minus'
+            @hideButton 'alpha reset'
+            @hideButton 'alpha plus'
         else 
             alpha = @alpha()
-            @showButton 'minus', alpha > 0
-            @showButton 'reset'
-            @showButton 'plus', alpha < 1
+            @showButton 'alpha minus', alpha > 0
+            @showButton 'alpha reset'
+            @showButton 'alpha plus', alpha < 1
             
-            @button('reset').innerHTML = parseInt alpha*100
+            @button('alpha reset').innerHTML = parseInt alpha*100
+            @button('alpha reset').spin.value = alpha*100
                         
-    onReset: => @setAlpha @alpha() != 1 and 1 or 0
-    onMinus: => @setAlpha @alpha() - 0.05
-    onPlus:  => @setAlpha @alpha() + 0.05
-    
     onStroke: => @update()
     onFill:   => @update()
     
-    setAlpha: (alpha) -> 
+    setAlpha: (alpha) => 
+        
+        alpha = alpha/100
         
         items = @stage.selectedLeafItems()
         return if empty items
@@ -97,7 +91,6 @@ class Alpha extends Tool
         
         items = @stage.selectedLeafItems()
         return 1 if empty items
-        # log itemIDs items, ' '
         
         alphas = []
         if @button('stroke').toggle
@@ -107,7 +100,7 @@ class Alpha extends Tool
             
         alphas = alphas.filter (a) -> a.length
         alpha = _.sumBy(alphas, (a) -> parseFloat a) / alphas.length
-        # log 'alpha', alpha, alphas
+        alpha = Math.round(alpha*100)/100
         alpha
     
 module.exports = Alpha

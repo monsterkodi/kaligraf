@@ -257,7 +257,7 @@ class Edit
         if object = @objectForItem item 
             return object
             
-        log "editable? #{@stage.isEditable item}"
+        # log "editable? #{@stage.isEditable item}"
         if @stage.isEditable item
 
             object = new Object @, item

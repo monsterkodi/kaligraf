@@ -17,20 +17,14 @@ class Angle extends Tool
         
         @initTitle()
         
-        @initButtons [
-            text:   '0'
-            name:   'reset'
-            action: @onReset
-        ]
-        @initButtons [
-            text:   '<'
-            name:   'ccw'
-            action: @onCCW
-        ,
-            text:   '>'
-            name:   'cw'
-            action: @onCW
-        ]
+        @initSpin 
+            name:   'angle'
+            min:    -180
+            max:    +180
+            reset:  0
+            step:   [1,5,15,45]
+            wrap:   true
+            action: (a) => @stage.resizer.setAngle a
         
         post.on 'resizer',   @update
         post.on 'selection', @update
@@ -45,20 +39,17 @@ class Angle extends Tool
         
         if @stage.selection.empty()
             
-            @hideButton 'reset'
-            @hideButton 'ccw'
-            @hideButton 'cw'
+            @hideButton 'angle reset'
+            @hideButton 'angle minus'
+            @hideButton 'angle plus'
         else
-            @showButton 'reset'
-            @showButton 'ccw'
-            @showButton 'cw'
+            @showButton 'angle reset'
+            @showButton 'angle minus'
+            @showButton 'angle plus'
                         
             @angle = Math.round @stage.resizer.angle()
 
-            @button('reset').innerHTML = @angle
+            @button('angle reset').innerHTML = @angle
+            @button('angle reset').spin.value = @angle
         
-    onReset: => @stage.resizer.setAngle 0
-    onCCW:   => @stage.resizer.addAngle -1
-    onCW:    => @stage.resizer.addAngle +1
-    
 module.exports = Angle

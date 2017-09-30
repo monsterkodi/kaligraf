@@ -26,19 +26,16 @@ class Font extends Tool
         @size   = prefs.get 'font:size',   100
         
         @initTitle()
-        @initButtons [
-            text:   '-'
-            name:   'decr'
-            action: @onDecr
-        ,
-            text:   @size
+        
+        @initSpin
             name:   'size'
-            action: @onReset
-        ,
-            text:   '+'
-            name:   'incr'
-            action: @onIncr
-        ]
+            min:    1
+            max:    1000
+            reset:  100
+            step:   [1,5,10,50]
+            action: @setSize
+            value:  @size
+            
         @initButtons [
             text:  'b'
             name:  'bold'
@@ -121,13 +118,8 @@ class Font extends Tool
 
         @toggleList()
 
-    onIncr:  => @setSize clamp 0, 999, @size + 1
-    onDecr:  => @setSize clamp 0, 999, @size - 1
-    onReset: => @setSize 100
-
     setSize: (@size) =>
-        
-        @button('size').innerHTML = "#{parseInt @size}"
+        log @size
         post.emit 'font', 'size', @size
         prefs.set 'font:size', @size
     

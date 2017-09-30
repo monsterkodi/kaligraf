@@ -583,12 +583,13 @@ class Stage
     clear: (file=@currentFile) ->
 
         @layers = []
-        @postLayer()
         
         @currentFile = file
         @shapes.edit?.clear()
         @selection.clear()
         @svg.clear()
+        
+        @postLayer()
         
         post.emit 'stage', 'load', file:@currentFile
                 

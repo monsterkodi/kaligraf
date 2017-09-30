@@ -26,19 +26,20 @@ class Line extends Tool
             reset:  [0,1]
             step:   [1,2,5,10]
             action: @setWidth
+            value:  prefs.get 'line:width', 1
             
         @initButtons [
-            tiny:  'polygon'
+            tiny:   'polygon'
             name:   'shapes'
             toggle: prefs.get 'line:shapes', 1
+            action: => prefs.set 'line:shapes', @button('shapes').toggle
         ,
-            tiny:  'text'
+            tiny:   'text'
             name:   'text'
             toggle: prefs.get 'line:text', 1
+            action: => prefs.set 'line:text', @button('text').toggle
         ]
         
-        @setWidth prefs.get 'line:width', 1
-            
     setWidth: (@width) =>
         
         prefs.set 'width', @width

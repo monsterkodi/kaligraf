@@ -7,6 +7,8 @@
 
 { post, first, pos, log, $, _ } = require 'kxk'
 
+{ itemIDs } = require '../utils'
+
 Tool = require './tool'
 
 class Align extends Tool
@@ -66,6 +68,8 @@ class Align extends Tool
         
         return if items.length < 2
         
+        @stage.do "align" + itemIDs items
+        
         for item in items
             bbox = @trans.getRect item
             switch side
@@ -94,6 +98,8 @@ class Align extends Tool
             
         @stage.selection.update()
         @stage.resizer.update()
+        
+        @stage.done()
         
         post.emit 'align', side
         

@@ -63,23 +63,23 @@ class Menu
             
             label: 'Edit', submenu: [
                 { label: 'Align', submenu: [
-                    { label: 'Left',    accelerator: 'alt+1',               click: -> button 'align', 'left'}
-                    { label: 'Center',  accelerator: 'alt+2',               click: -> button 'align', 'center'}
-                    { label: 'Right',   accelerator: 'alt+3',               click: -> button 'align', 'right'}
+                    { label: 'Left',    accelerator: 'command+1',           click: -> button 'align', 'left'}
+                    { label: 'Center',  accelerator: 'command+2',           click: -> button 'align', 'center'}
+                    { label: 'Right',   accelerator: 'command+shift+1',     click: -> button 'align', 'right'}
                     { type:  'separator'}                                             
-                    { label: 'Top',     accelerator: 'alt+4',               click: -> button 'align', 'top'}
-                    { label: 'Middle',  accelerator: 'alt+5',               click: -> button 'align', 'mid'}
-                    { label: 'Bottom',  accelerator: 'alt+6',               click: -> button 'align', 'bot'}
+                    { label: 'Top',     accelerator: 'command+4',           click: -> button 'align', 'top'}
+                    { label: 'Middle',  accelerator: 'command+3',           click: -> button 'align', 'mid'}
+                    { label: 'Bottom',  accelerator: 'command+shift+4',     click: -> button 'align', 'bot'}
                     { type:  'separator'}
-                    { label: 'Space Horizontal', accelerator: 'alt+7',      click: -> button 'space', 'horizontal'}
-                    { label: 'Space Vertical',   accelerator: 'alt+8',      click: -> button 'space', 'vertical'}
+                    { label: 'Space Horizontal', accelerator: 'command+5',       click: -> button 'space', 'horizontal'}
+                    { label: 'Space Vertical',   accelerator: 'command+shift+5', click: -> button 'space', 'vertical'}
                 ]}
                 { label: 'Convert',     submenu: [
-                    { label: 'Quad',    accelerator: 'command+1',           click: -> post.toWins 'convert', 'Q'}
-                    { label: 'Cubic',   accelerator: 'command+2',           click: -> post.toWins 'convert', 'C'}
-                    { label: 'Smooth',  accelerator: 'command+3',           click: -> post.toWins 'convert', 'S'}
-                    { label: 'Divide',  accelerator: 'command+4',           click: -> post.toWins 'convert', 'D'}
-                    { label: 'Polygon', accelerator: 'command+5',           click: -> post.toWins 'convert', 'P'}
+                    { label: 'Quad',    accelerator: 'ctrl+1',           click: -> post.toWins 'convert', 'Q'}
+                    { label: 'Cubic',   accelerator: 'ctrl+2',           click: -> post.toWins 'convert', 'C'}
+                    { label: 'Smooth',  accelerator: 'ctrl+3',           click: -> post.toWins 'convert', 'S'}
+                    { label: 'Divide',  accelerator: 'ctrl+4',           click: -> post.toWins 'convert', 'D'}
+                    { label: 'Polygon', accelerator: 'ctrl+5',           click: -> post.toWins 'convert', 'P'}
                 ]}
                 { label: 'Order', submenu: [
                     { label: 'Front',       accelerator: 'command+alt+up',  click: -> button 'send',  'front'}

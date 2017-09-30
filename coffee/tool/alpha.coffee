@@ -5,7 +5,7 @@
 # 000   000  000      000        000   000  000   000  
 # 000   000  0000000  000        000   000  000   000  
 
-{ clamp, empty, first, post, pos, log, _ } = require 'kxk'
+{ prefs, clamp, empty, first, post, pos, log, _ } = require 'kxk'
 
 { itemIDs } = require '../utils'
 
@@ -30,13 +30,13 @@ class Alpha extends Tool
         @initButtons [
             small:  'alpha-fill'
             name:   'fill'
-            toggle: true
-            action: @onFill
+            toggle: prefs.get 'alpha:fill', true
+            action: => prefs.set 'alpha:fill', @button('fill').toggle; @update()
         ,
             small:  'alpha-stroke'
             name:   'stroke'
-            toggle: true
-            action: @onStroke
+            toggle: prefs.get 'alpha:stroke', true
+            action: => prefs.set 'alpha:stroke', @button('stroke').toggle; @update()
         ]
         
         post.on 'selection', @update
@@ -65,9 +65,6 @@ class Alpha extends Tool
             @button('alpha reset').innerHTML = parseInt alpha*100
             @button('alpha reset').spin.value = alpha*100
                         
-    onStroke: => @update()
-    onFill:   => @update()
-    
     setAlpha: (alpha) => 
         
         alpha = alpha/100

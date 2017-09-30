@@ -28,6 +28,7 @@ class Text
         @input   = elem 'textarea', class:'textEditInput', rows: 10
         @input.style.fontFamily = font['font-family']
         @input.style.fontWeight = font['font-weight'] if font['font-weight']?
+        @input.style.fontStyle  = font['font-style']  if font['font-style']?
         @input.style.fontSize   = "#{font['font-size']}px"
         @input.style.width      = "#{bbox.width+2}px"
         @input.style.height     = "#{height+2}px"
@@ -57,11 +58,9 @@ class Text
         post.on 'stage', @onStage
             
     onStage: (action, vbox) =>
-        
+
         if action == 'viewbox'
             @element.style.transform = "translate(#{-vbox.x*vbox.zoom}px, #{-vbox.y*vbox.zoom}px) scale(#{vbox.zoom})"
-            if @kali.shapeTool() == 'text'
-                @stage.setToolCursor 'text'
         
     del: ->
 

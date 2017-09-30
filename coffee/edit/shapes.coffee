@@ -32,6 +32,14 @@ class Shapes
             onStart: @onStart
             onMove:  @onDrag
             onStop:  @onStop
+            
+        post.on 'stage', @onStage
+        
+    onStage: (action) =>
+
+        if action == 'viewbox'
+            if @kali.shapeTool() == 'text'
+                @stage.setToolCursor 'text'
 
     do: (action) -> @stage.undo.do @, action
     done: -> @stage.undo.done @

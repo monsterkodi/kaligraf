@@ -35,8 +35,11 @@ class Tools extends Tool
     
     onAction: (action, tool, button) =>
         
-        # log "tools.onAction #{action} #{tool} #{button}"
-        
+        if @stage.shapes?.text?
+            if tool not in ['zoom'] and action not in ['center']
+                log "tools.onAction -- swallow menu action while text is active #{action} #{tool} #{button}"
+                return
+            
         switch action
             
             when 'click'      then @clickTool        tool

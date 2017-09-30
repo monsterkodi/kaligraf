@@ -372,7 +372,7 @@ class Browser
             when 'up',   'command+=' then return @zoom +1
             when 'down', 'command+-' then @zoom -1
             when 'esc'           then @close()
-            when 'enter'         then @openFile @selectedFile()
+            when 'enter', '.'    then @openFile @selectedFile()
             when 'command+0'     then @zoomSelected()
             when 'backspace', 'delete' then @delItem @selectedItem()
                 

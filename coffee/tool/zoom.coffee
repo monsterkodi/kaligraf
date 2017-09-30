@@ -117,6 +117,9 @@ class Zoom extends Tool
 
         items = @selectedOrAllItems()
         
+        if @shapes.text?
+            items = [@shapes.text.item]
+        
         if empty items
             @centerAtStagePos @toolCenter @zoom
             return

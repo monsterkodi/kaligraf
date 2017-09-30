@@ -76,7 +76,8 @@ class Text
         @kali.focus()
         @stage.shapes.clearText()
         
-    onInput: (event) => @setText event.target.value
+    onInput: (event) => 
+        @setText event.target.value
         
     # 000000000  00000000  000   000  000000000  
     #    000     000        000 000      000     
@@ -193,7 +194,9 @@ class Text
             when 'esc', 'tab'
 
                 @endEditing()
-                
-        event.stopPropagation()
         
+        if combo.startsWith 'command' then return
+
+        event.stopPropagation()
+            
 module.exports = Text

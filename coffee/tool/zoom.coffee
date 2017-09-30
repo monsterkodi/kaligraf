@@ -17,14 +17,14 @@ class Zoom extends Tool
         
         super @kali, cfg
         
-        @bindStage ['centerSelection', 'resetView', 'zoomAtPos', 'setZoom', 'toolCenter']
+        @bindStage ['centerSelection', 'resetZoom', 'zoomAtPos', 'setZoom', 'toolCenter']
         
         @initTitle()
         
         @initButtons [
             text:   'x1'
             name:   'reset'
-            action: @stage.resetView
+            action: @stage.resetZoom
         ]
         @initButtons [
             text:   '-'
@@ -151,9 +151,7 @@ class Zoom extends Tool
     # 000   000  000            000  000          000     
     # 000   000  00000000  0000000   00000000     000     
     
-    resetView: (zoom=1) => 
-
-        @setZoom zoom, @toolCenter zoom
+    resetZoom: => @setZoom 1, @toolCenter 1
 
     #  0000000  00000000  000000000  0000000   0000000    0000000   00     00  
     # 000       000          000        000   000   000  000   000  000   000  

@@ -25,10 +25,10 @@ class FileInfo
         post.on 'stage', @onStage
         post.on 'undo',  @onUndo
         
-    onStage: (action, file) =>
+    onStage: (action, info) =>
         
         if action in ['load', 'save']
-            @file.innerHTML = fileName file
+            @file.innerHTML = fileName info.file
         
     onUndo: (info) =>
         

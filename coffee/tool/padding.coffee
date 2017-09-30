@@ -44,31 +44,39 @@ class Padding extends Tool
             action: @onShow
         ]
         
-        @show() if @visible
+        @showPadding() if @visible
        
-    onStage: (action) => 
-        if action in ['viewbox', 'load'] then @update()
+    onStage: (action, info) =>
+        switch action
+            when 'viewbox' then @update()
+            when 'load' 
+                if info.viewbox?
+                    bb = bboxForItems @stage.items()
+                    percentX = (info.viewbox.width  / bb.width  - 1) * 50
+                    percentY = (info.viewbox.height / bb.height - 1) * 50
+                    @setPercent parseInt Math.min percentX, percentY
+                    @setSpinValue 'percent', @percent
+                else
+                    @update()
         
     onUndo: (info) =>
         if info.action == 'done' then @update()
         
     setPercent: (@percent) =>
-        
+
         prefs.set 'padding:percent', @percent
         @update()
         
     onShow: =>
         
-        @setVisible @button('show').toggle
+        @visible = @button('show').toggle
         
-    setVisible: (@visible) ->
-          
         prefs.set 'padding:visible', @visible
             
-        if @visible then @show()
-        else             @hide()
+        if @visible then @showPadding()
+        else             @hidePadding()
         
-    show: ->
+    showPadding: ->
         
         if not @rect?
             @rect = @selection.addRect()
@@ -85,7 +93,7 @@ class Padding extends Tool
         scaleBox bb, @stage.zoom
         @selection.setRect @rect, bb
      
-    hide: -> 
+    hidePadding: -> 
         
         @rect?.remove()
         delete @rect

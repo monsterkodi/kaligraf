@@ -372,7 +372,7 @@ class Tool
     hasParent:   -> @parent? and @parent.name != 'tools'
     hasChildren: -> @children?.length > 0
     
-    childrenVisible: -> @hasChildren() and first(@children).visible()
+    childrenVisible: -> @hasChildren() and first(@children).isVisible()
     toggleChildren:  -> if @childrenVisible() then @hideChildren() else @showChildren()
     
     showChildren: -> 
@@ -440,7 +440,7 @@ class Tool
         top.children.push @
         delete @kali.tools.temp
         @hideChildren()
-        if @parent.visible() and @parent.childrenVisible()
+        if @parent.isVisible() and @parent.childrenVisible()
             @show()
             
         @kali.tools.store()
@@ -547,8 +547,8 @@ class Tool
     
     show:    => @element.style.display = 'block'
     hide:    => @element.style.display = 'none'
-    visible: => @element.style.display != 'none'
-    toggleVisible: => if @visible() then @hide() else @show()
+    isVisible: => @element.style.display != 'none'
+    toggleVisible: => if @isVisible() then @hide() else @show()
 
     #  0000000    0000000  000000000  000  000   000  00000000  
     # 000   000  000          000     000  000   000  000       

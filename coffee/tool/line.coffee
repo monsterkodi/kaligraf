@@ -42,7 +42,7 @@ class Line extends Tool
         
     setWidth: (@width) =>
         
-        prefs.set 'width', @width
+        prefs.set 'line:width', @width
         
         items = @stage.selectedLeafItems()
         return if empty items

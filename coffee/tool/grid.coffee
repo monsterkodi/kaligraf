@@ -22,11 +22,13 @@ class Grid extends Tool
         @svg.clear()
         @svg.hide()
         
+        visible = prefs.get 'grid:visible', false
+        
         @initTitle()
         @initButtons [
             text:   '100'
             name:   'grid'
-            toggle: prefs.get 'grid', false
+            toggle: visible
             action: @toggleGrid
         ]
         @initButtons [
@@ -39,7 +41,7 @@ class Grid extends Tool
 
         @grid = @svg.group()
         
-        @setVisible prefs.get 'grid', false
+        @setVisible visible
 
     onSnap: (event) => log 'onSnap'
         
@@ -130,7 +132,7 @@ class Grid extends Tool
     setVisible: (v) -> if v then @showGrid() else @hideGrid()
     toggleGrid:  => @setVisible not @gridVisible()
     gridVisible: -> @svg.visible()
-    showGrid:    -> @drawGrid(); prefs.set 'grid', true
-    hideGrid:    -> @svg.hide(); prefs.set 'grid', false; @button('grid').innerHTML = 'Show'
+    showGrid:    -> @drawGrid(); prefs.set 'grid:visible', true
+    hideGrid:    -> @svg.hide(); prefs.set 'grid:visible', false; @button('grid').innerHTML = 'Show'
 
 module.exports = Grid

@@ -131,7 +131,10 @@ class Zoom extends Tool
         v.x -= 60 + lw
         w = (b.w / @zoom) /  v.x
         h = (b.h / @zoom) /  v.y
-        z = 0.9 / Math.max(w, h)
+        percent = @kali.tools.getTool('padding').percent
+        w *= 1+2*percent/100
+        h *= 1+2*percent/100
+        z = 1 / Math.max(w, h)
         
         @setZoom z
         

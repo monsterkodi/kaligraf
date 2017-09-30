@@ -114,7 +114,6 @@ class Stage
         layers = empty(@layers) and [@svg] or @layers
         if opt?.pickable
             layers = layers.filter (layer) -> not layer.data 'disabled'
-        # @log 'Stage.getLayers', layers.length 
         layers
         
     pickableLayers: -> @getLayers pickable:true 
@@ -343,11 +342,11 @@ class Stage
         @clear @currentFile
         @addSVG svg, select:false, nodo:true
     
-    addSVG: (svg, opt) ->
+    addSVG: (svgStr, opt) ->
 
         e = elem 'div'
-        e.innerHTML = svg
-        
+        e.innerHTML = svgStr
+                
         parent = opt?.parent ? @activeLayer()
 
         for elemChild in e.children
@@ -361,6 +360,8 @@ class Stage
                         @setColor "#333", 0
     
                 svg = SVG.adopt elemChild
+                
+                # log svg.viewbox()
                 
                 if svg? and svg.children().length
     
@@ -410,7 +411,7 @@ class Stage
                             @selection.addItem item
                       
                     @done() if not opt?.nodo
-                    return
+                    return viewbox:svg.viewbox()
 
     # 000       0000000    0000000   0000000    
     # 000      000   000  000   000  000   000  
@@ -430,7 +431,7 @@ class Stage
             log "error:", e
             return
 
-        @setSVG svg, parent:@svg
+        info = @setSVG svg, parent:@svg
         
         @pushRecent file
         
@@ -440,7 +441,8 @@ class Stage
         
         @loadLayers()
         
-        post.emit 'stage', 'load', @currentFile
+        info.file = @currentFile
+        post.emit 'stage', 'load', info
         
         @postLayer()
                 
@@ -489,7 +491,7 @@ class Stage
         padding = @kali.tools.getTool('padding').percent
         Exporter.save @svg, file:@currentFile, color:@color, alpha:@alpha, padding:padding
                 
-        post.emit 'stage', 'save', @currentFile
+        post.emit 'stage', 'save', file:@currentFile
                         
     saveAs: ->
 
@@ -588,7 +590,7 @@ class Stage
         @selection.clear()
         @svg.clear()
         
-        post.emit 'stage', 'load', @currentFile
+        post.emit 'stage', 'load', file:@currentFile
                 
     # 000   000  000  00000000  000   000
     # 000   000  000  000       000 0 000

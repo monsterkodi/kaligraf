@@ -11,6 +11,7 @@
 
 Object = require './object'
 DotSel = require './dotsel'
+DotRes = require './dotres'
 Cursor = require '../cursor'
 
 class Edit
@@ -39,8 +40,9 @@ class Edit
         @dotSize = @passive and 5 or 10
         @objects = []
         
-        @dotsel  = new DotSel @
-
+        @dotsel = new DotSel @
+        @dotres = new DotRes @dotsel
+        
         @initDefs()
         
         post.on 'stage',   @onStage

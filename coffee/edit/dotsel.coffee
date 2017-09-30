@@ -7,7 +7,7 @@
 
 { empty, drag, post, log, _ } = require 'kxk'
 
-{ rectsIntersect, normRect } = require '../utils'
+{ rectsIntersect, normRect, bboxForItems } = require '../utils'
 
 class DotSel
 
@@ -65,8 +65,12 @@ class DotSel
     moveBy: (delta, event) ->
         
         for objectDot in @objectDots()
-        
             objectDot.object.moveDotsBy objectDot.dots, delta, event
+
+    update: ->
+
+        for objectDot in @objectDots()
+            objectDot.object.updateDots objectDot.dots
             
     #  0000000   0000000          000  0000000     0000000   000000000   0000000  
     # 000   000  000   000        000  000   000  000   000     000     000       
@@ -100,10 +104,14 @@ class DotSel
             dot.ctrl?.setSelected dot.dot, false
             
         @dots = []
+        
+        post.emit 'dotsel', 'clear' if dotSelected
+        
         dotSelected
 
+    empty:   -> empty @dots
     numDots: -> @dots.length
-    empty: -> empty @dots
+    bbox:    -> bboxForItems @dots
 
     invert: ->
         
@@ -126,7 +134,10 @@ class DotSel
         
         dot.ctrl.setSelected dot.dot, true
         
-        if dot not in @dots then @dots.push dot
+        if dot not in @dots 
+            @dots.push dot
+            
+            post.emit 'dotsel', 'add', @dots, dot
 
     addInRect: (r, o) ->
 
@@ -158,6 +169,8 @@ class DotSel
         if dot in @dots
             dot.ctrl.setSelected dot.dot, false
             _.pull @dots, dot
+            
+            post.emit 'dotsel', 'del', @dots, dot
         
     # 00000000   00000000   0000000  000000000
     # 000   000  000       000          000
@@ -227,7 +240,6 @@ class DotSel
                 when 'center' then dot.cx avg
                 when 'mid'    then dot.cy avg
         
-        for objectDot in @objectDots()
-            objectDot.object.updateDots objectDot.dots
+        @update()
                               
 module.exports = DotSel

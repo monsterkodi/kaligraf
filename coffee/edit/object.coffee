@@ -305,7 +305,6 @@ class Object
     updateDots: (dots) ->
 
         @do()
-
         for dot in dots
 
             index   = dot.ctrl.index()

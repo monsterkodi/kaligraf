@@ -26,6 +26,8 @@ class Alpha extends Tool
             reset:  [0,100]
             step:   [1,5,10,25]
             action: @setAlpha
+            value:  100
+            str: (value) -> parseInt value
             
         @initButtons [
             small:  'alpha-fill'
@@ -53,17 +55,10 @@ class Alpha extends Tool
         items = @stage.selectedLeafItems()
         if empty(items) or not (@button('stroke').toggle or @button('fill').toggle)
             
-            @hideButton 'alpha minus'
-            @hideButton 'alpha reset'
-            @hideButton 'alpha plus'
+            @disableSpin 'alpha'
         else 
-            alpha = @alpha()
-            @showButton 'alpha minus', alpha > 0
-            @showButton 'alpha reset'
-            @showButton 'alpha plus', alpha < 1
-            
-            @button('alpha reset').innerHTML = parseInt alpha*100
-            @button('alpha reset').spin.value = alpha*100
+            @enableSpin 'alpha'
+            @setSpinValue 'alpha', @alpha()*100
                         
     setAlpha: (alpha) => 
         

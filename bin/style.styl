@@ -593,10 +593,11 @@ button
     margin-right            -1px
     
 .toolToggle
+.toolSpinButton
     color                   #444
     & .toolIconSVG
         opacity             0.2
-
+        
 .toolToggle.active
     color                   #bbb
     z-index                 1
@@ -688,6 +689,13 @@ button
     
 .tool.fill
     border                  1px solid
+
+.toolSpinButton .toolIconSVG
+    opacity                 0
+.toolSpinButton:hover .toolIconSVG
+    opacity                 0.25
+.toolSpinButton:active .toolIconSVG
+    opacity                 0.25
     
 // 000       0000000   000   000  00000000   00000000
 // 000      000   000  000   000  000   000  000

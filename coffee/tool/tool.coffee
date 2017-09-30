@@ -5,7 +5,7 @@
 #    000     000   000  000   000  000    
 #    000      0000000    0000000   0000000
 
-{ fileExists, upElem, stopEvent, elem, drag, post, first, last, fs, pos, log, $, _ } = require 'kxk'
+{ fileExists, upElem, downElem, stopEvent, elem, drag, post, first, last, fs, pos, log, $, _ } = require 'kxk'
 
 { elemProp } = require '../utils'
 
@@ -27,6 +27,7 @@ class Tool
         @element.classList.add 'down' if @cfg.orient == 'down'
         @element.addEventListener 'mouseenter', @onMouseEnter
         @element.addEventListener 'mouseleave', @onMouseLeave
+        @element.addEventListener 'wheel', (event) => stopEvent event
         
         @kali.toolDiv.appendChild @element
         
@@ -57,14 +58,13 @@ class Tool
         
         spin.step ?= [1,5,10,50]
         
-        @initButtons [
+        span = @initButtons [
             tiny:   'spin-minus'
             button: true
             name:   spin.name + ' minus'
             action: @onSpin
             spin:   spin
         ,
-            text:   '0'
             name:   spin.name + ' reset'
             action: @onSpin
             spin:   spin
@@ -78,8 +78,34 @@ class Tool
         
         @button(spin.name + ' reset').innerHTML = spin.str? and spin.str(spin.value) or spin.value
         
+        span.addEventListener 'wheel', @onSpinWheel
+        
+    onSpinWheel: (event) => 
+        
+        if Math.abs(event.deltaX) >= Math.abs(event.deltaY)
+            delta = event.deltaX
+        else
+            delta = -event.deltaY
+        
+        button = upElem event.target, prop:'spin'
+        spin = button.spin
+        step = spin.step[0]
+        
+        spin.wheel ?= 0
+        spin.wheel = spin.wheel + delta * 0.01
+
+        if Math.abs(spin.wheel) >= step
+            if delta > 0
+                delta = Math.floor(spin.wheel/step)*step
+            else
+                delta = Math.ceil(spin.wheel/step)*step
+            spin.value = Math.round((spin.value + delta)/step)*step
+            spin.wheel -= delta
+            @doSpin spin
+                
     onSpin: (event) => 
         
+        stopEvent event
         button = upElem event.target, prop:'spin'
         
         spin = button.spin
@@ -104,14 +130,64 @@ class Tool
                     spin.value = first spin.reset
                 else
                     spin.value = spin.reset
+                    
+        @doSpin spin
            
-        if spin.min? then spin.value = Math.max spin.value, spin.min
-        if spin.max? then spin.value = Math.min spin.value, spin.max
-            
-        @button(spin.name + ' reset').innerHTML = spin.str? and spin.str(spin.value) or spin.value
+    doSpin: (spin) ->
+        
+        @setSpinValue spin, spin.value
+        
         spin.action spin.value
-        stopEvent event
+    
+    getSpin: (name) -> downElem(@element, prop:'name', value:name+' reset')?.spin
+        
+    setSpinValue: (spin, value) ->
+    
+        if _.isString spin then spin = @getSpin spin
+        
+        spin.value = value
+        
+        if spin.min? 
             
+            spin.value = Math.max spin.value, spin.min
+            
+            if spin.value <= spin.min
+                @hideButton spin.name + ' minus'
+            else
+                @showButton spin.name + ' minus'
+                
+        if spin.max? 
+            
+            spin.value = Math.min spin.value, spin.max
+            
+            if spin.value >= spin.max
+                @hideButton spin.name + ' plus'
+            else
+                @showButton spin.name + ' plus'
+                
+        if spin.str?
+            valueStr = spin.str spin.value  
+        else
+            valueStr = spin.value
+            
+        @button(spin.name + ' reset').innerHTML = valueStr
+       
+    disableSpin: (spin) ->
+        
+        if _.isString spin then spin = @getSpin spin
+        
+        @hideButton spin.name + ' minus'
+        @hideButton spin.name + ' reset'
+        @hideButton spin.name + ' plus'
+        
+    enableSpin: (spin) ->
+        
+        if _.isString spin then spin = @getSpin spin
+        
+        @showButton spin.name + ' minus'
+        @showButton spin.name + ' reset'
+        @showButton spin.name + ' plus'
+        
     # 0000000    000   000  000000000  000000000   0000000   000   000   0000000  
     # 000   000  000   000     000        000     000   000  0000  000  000       
     # 0000000    000   000     000        000     000   000  000 0 000  0000000   
@@ -156,7 +232,10 @@ class Tool
                 btn.firstChild.classList.add 'toolIconSVG'
                 btn.icon = button.icon ? button.tiny
 
-            if button.spin? then btn.spin = button.spin
+            if button.spin? 
+                btn.spin = button.spin
+                if not btn.name.endsWith 'reset'
+                    btn.classList.add 'toolSpinButton' 
                             
             btn.addEventListener 'mousedown', (event) => 
                 
@@ -176,6 +255,7 @@ class Tool
             span.appendChild btn
             
         @element.appendChild span
+        span
      
     button: (name) ->
         
@@ -184,10 +264,19 @@ class Tool
                 return btn
         
     setButtonIcon: (name, svg) -> @button(name).innerHTML = Exporter.loadSVG svg
-    hideButton: (name) -> @button(name).style.color = 'transparent'
+    hideButton: (name) -> 
+        if @button(name).firstChild.tagName == 'svg'
+            @button(name).firstChild.style.display = 'none'
+        else
+            @button(name).style.color = 'transparent'
+        
     showButton: (name, show) -> 
         if show? and not show then @hideButton name
-        else @button(name).removeAttribute 'style' 
+        else 
+            if @button(name).firstChild.tagName == 'svg'
+                @button(name).firstChild.style.display = 'block'
+            else
+                @button(name).removeAttribute 'style' 
                 
     # 000000000  000  000000000  000      00000000  
     #    000     000     000     000      000       

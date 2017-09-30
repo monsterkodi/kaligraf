@@ -24,7 +24,7 @@ class Line extends Tool
             min:    0
             max:    1000
             reset:  [0,1]
-            step:   [1,2,5,10]
+            step:   [1,5,10,25]
             action: @setWidth
             value:  prefs.get 'line:width', 1
             

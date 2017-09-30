@@ -24,6 +24,8 @@ class Angle extends Tool
             reset:  0
             step:   [1,5,15,45]
             wrap:   true
+            value:  0
+            str:    (value) -> "#{value}°"
             action: (a) => @stage.resizer.setAngle a
         
         post.on 'resizer',   @update
@@ -39,17 +41,11 @@ class Angle extends Tool
         
         if @stage.selection.empty()
             
-            @hideButton 'angle reset'
-            @hideButton 'angle minus'
-            @hideButton 'angle plus'
+            @disableSpin 'angle'
         else
-            @showButton 'angle reset'
-            @showButton 'angle minus'
-            @showButton 'angle plus'
+            @enableSpin 'angle'
                         
             @angle = Math.round @stage.resizer.angle()
-
-            @button('angle reset').innerHTML = @angle
-            @button('angle reset').spin.value = @angle
+            @setSpinValue 'angle', @angle
         
 module.exports = Angle

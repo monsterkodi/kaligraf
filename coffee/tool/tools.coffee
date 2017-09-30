@@ -128,11 +128,12 @@ class Tools extends Tool
                 { class: 'align' }                
             ]            
             [
-                { class: 'wire'  }
-                { class: 'zoom'  }
-                { class: 'layer' }
-                { class: 'grid'  }
-                { class: 'show'  }
+                { class: 'padding' }
+                { class: 'wire'    }
+                { class: 'zoom'    }
+                { class: 'layer'   }
+                { class: 'grid'    }
+                { class: 'show'    }
             ]            
         ]
         
@@ -199,9 +200,14 @@ class Tools extends Tool
     loadPrefs: ->
         
         @restore()
+        
         @clickTool prefs.get 'tool:active', 'pick' 
-        @clickTool 'font'  if prefs.get 'fontlist:visible', false
-        @clickTool 'layer' if prefs.get 'layerlist:visible', false
+        
+        if prefs.get 'fontlist:visible', false
+            @getTool('font').toggleList()
+            
+        if prefs.get 'layerlist:visible', false
+            @getTool('layer').toggleList()
         
         if recent = first prefs.get 'recent', []
             @stage.load recent

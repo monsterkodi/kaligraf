@@ -486,7 +486,8 @@ class Stage
         if @currentFile == 'untitled.svg'
             return @saveAs()
         
-        Exporter.save @svg, file:@currentFile, color:@color, alpha:@alpha
+        padding = @kali.tools.getTool('padding').percent
+        Exporter.save @svg, file:@currentFile, color:@color, alpha:@alpha, padding:padding
                 
         post.emit 'stage', 'save', @currentFile
                         

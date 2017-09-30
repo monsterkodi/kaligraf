@@ -19,8 +19,8 @@ class Exporter
     
     @svg: (root, opt) ->
         
-        padding = opt.padding ? 10
-        
+        padding = not opt.padding? and 10 or opt.padding
+        log padding
         bb = growBox new SVG.BBox(opt?.viewbox ? root.bbox()), padding
 
         svgStr = """

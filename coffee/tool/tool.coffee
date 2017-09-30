@@ -5,7 +5,7 @@
 #    000     000   000  000   000  000    
 #    000      0000000    0000000   0000000
 
-{ fileExists, stopEvent, elem, drag, post, first, last, fs, pos, log, $, _ } = require 'kxk'
+{ fileExists, upElem, stopEvent, elem, drag, post, first, last, fs, pos, log, $, _ } = require 'kxk'
 
 { elemProp } = require '../utils'
 
@@ -58,7 +58,8 @@ class Tool
         spin.step ?= [1,5,10,50]
         
         @initButtons [
-            text:   '<'
+            tiny:   'spin-minus'
+            button: true
             name:   spin.name + ' minus'
             action: @onSpin
             spin:   spin
@@ -68,22 +69,23 @@ class Tool
             action: @onSpin
             spin:   spin
         , 
-            text:   '>'
+            tiny:   'spin-plus'
             name:   spin.name + ' plus'
+            button: true
             action: @onSpin
             spin:   spin
         ]
         
-        @button(spin.name + ' reset').innerHTML = spin.value if spin.value?
+        @button(spin.name + ' reset').innerHTML = spin.str? and spin.str(spin.value) or spin.value
         
     onSpin: (event) => 
         
-        spin = event.target.spin
-        name = event.target.name
+        button = upElem event.target, prop:'spin'
+        
+        spin = button.spin
+        name = button.name
         
         part = last name.split ' '
-        
-        log 'onSpin', name, part, spin
         
         step = spin.step[0]
         step = spin.step[1] if event.metaKey
@@ -106,9 +108,9 @@ class Tool
         if spin.min? then spin.value = Math.max spin.value, spin.min
         if spin.max? then spin.value = Math.min spin.value, spin.max
             
-        log 'onSpin', name, part, spin
-        @button(spin.name + ' reset').innerHTML = spin.value
+        @button(spin.name + ' reset').innerHTML = spin.str? and spin.str(spin.value) or spin.value
         spin.action spin.value
+        stopEvent event
             
     # 0000000    000   000  000000000  000000000   0000000   000   000   0000000  
     # 000   000  000   000     000        000     000   000  0000  000  000       
@@ -129,9 +131,7 @@ class Tool
                 btn.action = button.action
             else
                 btn.classList.add 'toolLabel'
-                
-            if button.spin? then btn.spin = button.spin
-                
+                                
             if button.toggle?
                 btn.toggle = button.toggle
                 btn.classList.add 'toolToggle'
@@ -152,10 +152,12 @@ class Tool
                 btn.classList.add 'toolIcon'
                 btn.classList.add 'toolTiny' if button.tiny?
                 btn.classList.add 'toolSmall' if button.small?
-                btn.classList.remove 'toolButton'
+                btn.classList.remove 'toolButton' if not button.button
                 btn.firstChild.classList.add 'toolIconSVG'
                 btn.icon = button.icon ? button.tiny
-                
+
+            if button.spin? then btn.spin = button.spin
+                            
             btn.addEventListener 'mousedown', (event) => 
                 
                 button = event.target.name
@@ -374,7 +376,7 @@ class Tool
         
         btn = @button button
 
-        if btn.icon?
+        if btn.icon? and event?.shiftKey
             if event?.metaKey
                 @kali.stage.addSVG Exporter.loadSVG btn.icon
                 return
@@ -402,7 +404,7 @@ class Tool
     
     onClick: (event) => 
         
-        if @svg?
+        if @svg? and event?.shiftKey
             if event?.metaKey
                 @kali.stage.addSVG @svg.svg()
                 return

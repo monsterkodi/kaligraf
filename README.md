@@ -2,3 +2,4 @@
 ![objects](svg/test/objects.svg)
 ![notes](svg/test/notes.svg)
 ![tools](svg/test/tools.svg)
+![kali](bin/kali.png)

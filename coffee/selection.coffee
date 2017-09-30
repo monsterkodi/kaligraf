@@ -5,7 +5,7 @@
 #      000  000       000      000       000          000     000  000   000  000  0000
 # 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000
 
-{ prefs, last, elem, post, pos, log, _ } = require 'kxk'
+{ prefs, setStyle, last, elem, post, pos, log, _ } = require 'kxk'
 
 {   contrastColor, moveBox, scaleBox, boxOffset, boxForItems,
     normRect, rectsIntersect, rectOffset} = require './utils'
@@ -282,6 +282,12 @@ class Selection
             
             @updateRect()
             
+        if action == 'color'
+            ctra = contrastColor @stage.color
+            setStyle '.selectionRect', 'background',  "rgba(#{ctra.r}, #{ctra.g}, #{ctra.b}, 0.1)"
+            setStyle '.selectionRect', 'borderColor', "rgba(#{ctra.r}, #{ctra.g}, #{ctra.b}, 0.3)"            
+            setStyle '.paddingRect',   'borderColor', "rgba(#{ctra.r}, #{ctra.g}, #{ctra.b}, 0.3)"            
+            
     #  0000000  000000000   0000000   00000000   000000000  
     # 000          000     000   000  000   000     000     
     # 0000000      000     000000000  0000000       000     
@@ -339,9 +345,6 @@ class Selection
     addRect: ->
         
         rect = elem 'div', class: 'selectionRect'
-        ctra = contrastColor @stage.color
-        rect.style.background = "rgba(#{ctra.r}, #{ctra.g}, #{ctra.b}, 0.1)"
-        rect.style.borderColor = "rgba(#{ctra.r}, #{ctra.g}, #{ctra.b}, 0.3)"
         @kali.element.appendChild rect
         rect
             

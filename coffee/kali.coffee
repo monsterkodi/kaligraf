@@ -17,9 +17,12 @@ FileInfo = require './fileinfo'
 class Kali
 
     constructor: (element) ->
+
+        post.setMaxListeners 20
+        
+        @setStyle 'style'
         
         prefs.init()
-        @setStyle 'style'
         
         Cursor.kali = @
         
@@ -40,9 +43,7 @@ class Kali
         @focus()
         @element.addEventListener 'keydown', @onKeyDown
         @element.addEventListener 'keyup',   @onKeyUp
-        
-        post.setMaxListeners 100
-        
+                
         window.onresize = @onResize
         
         @tools.loadPrefs()
@@ -110,7 +111,7 @@ class Kali
     setStyle: (name) ->
         
         if not $('kali-style')
-
+            log 'setStyle'
             link = document.createElement 'link'
             link.rel  ='stylesheet'
             link.id   = 'kali-style'

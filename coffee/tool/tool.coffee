@@ -168,7 +168,12 @@ class Tool
         if spin.str?
             valueStr = spin.str spin.value  
         else
-            valueStr = spin.value
+            if (spin.value * 100) % 10
+                valueStr = spin.value.toFixed 2
+            else if (spin.value * 10) % 10
+                valueStr = spin.value.toFixed 1
+            else
+                valueStr = spin.value.toFixed 0
             
         @button(spin.name + ' reset').innerHTML = valueStr
        
@@ -237,21 +242,8 @@ class Tool
                 if not btn.name.endsWith 'reset'
                     btn.classList.add 'toolSpinButton' 
                             
-            btn.addEventListener 'mousedown', (event) => 
-                
-                button = event.target.name
-                
-                if not button?
-                    button = elemProp event.target, 'name'
-                
-                if button?
-                    @clickButton button, event 
-                    
-                if not @hasParent()
-                    @kali.tools.collapseTemp()
-                    
-                stopEvent event
-                
+            btn.addEventListener 'mousedown', @onButtonClick
+
             span.appendChild btn
             
         @element.appendChild span
@@ -264,20 +256,78 @@ class Tool
                 return btn
         
     setButtonIcon: (name, svg) -> @button(name).innerHTML = Exporter.loadSVG svg
+    
     hideButton: (name) -> 
+        
         if @button(name).firstChild.tagName == 'svg'
             @button(name).firstChild.style.display = 'none'
         else
             @button(name).style.color = 'transparent'
         
     showButton: (name, show) -> 
+        
         if show? and not show then @hideButton name
         else 
             if @button(name).firstChild.tagName == 'svg'
                 @button(name).firstChild.style.display = 'block'
             else
                 @button(name).removeAttribute 'style' 
+
+    toggleButton: (name) ->
+        
+        btn = @button name
+        if btn.choice
+            if !btn.toggle
+                if active = $ btn.parentNode, '.active'
+                    active.classList.remove 'active'
+                    active.toggle = false
+            else
+                return
+        
+        btn.toggle = !btn.toggle
+        btn.classList.toggle 'active'
                 
+    # 0000000    000000000  000   000        0000000  000      000   0000000  000   000  
+    # 000   000     000     0000  000       000       000      000  000       000  000   
+    # 0000000       000     000 0 000       000       000      000  000       0000000    
+    # 000   000     000     000  0000       000       000      000  000       000  000   
+    # 0000000       000     000   000        0000000  0000000  000   0000000  000   000  
+    
+    onButtonClick: (event) => 
+                
+        button = event.target.name
+        
+        if not button?
+            button = elemProp event.target, 'name'
+        
+        if button?
+            @clickButton button, event 
+            
+        if not @hasParent()
+            @kali.tools.collapseTemp()
+            
+        stopEvent event
+
+    clickButton: (button, event) ->
+        
+        btn = @button button
+
+        if btn.icon? and event?.shiftKey
+            if event?.metaKey
+                @kali.stage.addSVG Exporter.loadSVG btn.icon
+                return
+
+            if event?.ctrlKey
+                svg = @kali.stage.copy()
+                btn.innerHTML = svg
+                @saveSVG btn.icon, svg
+                return
+                
+        if btn.toggle?
+            @toggleButton button
+        
+        btn.action?(event)    
+        
     # 000000000  000  000000000  000      00000000  
     #    000     000     000     000      000       
     #    000     000     000     000      0000000   
@@ -460,36 +510,6 @@ class Tool
     # 000       000      000  000       0000000    
     # 000       000      000  000       000  000   
     #  0000000  0000000  000   0000000  000   000  
-
-    clickButton: (button, event) ->
-        
-        btn = @button button
-
-        if btn.icon? and event?.shiftKey
-            if event?.metaKey
-                @kali.stage.addSVG Exporter.loadSVG btn.icon
-                return
-
-            if event?.ctrlKey
-                svg = @kali.stage.copy()
-                btn.innerHTML = svg
-                @saveSVG btn.icon, svg
-                return
-                
-        if btn.toggle?
-            
-            if btn.choice
-                if !btn.toggle
-                    if active = $ btn.parentNode, '.active'
-                        active.classList.remove 'active'
-                        active.toggle = false
-                else
-                    return
-            
-            btn.toggle = !btn.toggle
-            btn.classList.toggle 'active'
-        
-        btn.action?(event)    
     
     onClick: (event) => 
         

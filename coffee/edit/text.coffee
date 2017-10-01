@@ -32,6 +32,7 @@ class Text
         @input.style.fontSize   = "#{font['font-size']}px"
         @input.style.width      = "#{bbox.width+2}px"
         @input.style.height     = "#{height+2}px"
+        @input.style.lineHeight = @item.leading()
         @input.value = @item.text()
 
         @input.style.textAlign = switch @item.font()['text-anchor']
@@ -112,10 +113,12 @@ class Text
         
         bbox = @item.bbox()
         matrix = itemMatrix @item
-        switch @item.font()['text-anchor']
-            when 'middle' then matrix = matrix.multiply new SVG.Matrix().translate -bbox.width/2
-            when 'end'    then matrix = matrix.multiply new SVG.Matrix().translate -bbox.width
-            when 'start'  then matrix = matrix.multiply new SVG.Matrix().translate -6, -6
+        fontSize = @item.font()['font-size']
+        leading = @item.leading()
+        switch (@item.font()['text-anchor'] ? 'start')
+            when 'start'  then matrix = matrix.multiply new SVG.Matrix().translate 0, leading.value*fontSize*0.2
+            when 'middle' then matrix = matrix.multiply new SVG.Matrix().translate -bbox.width/2, leading.value*fontSize*0.2
+            when 'end'    then matrix = matrix.multiply new SVG.Matrix().translate -bbox.width, leading.value*fontSize*0.2
         @input.style.transform = matrix.toString()
         
     #  0000000  00000000  000      00000000   0000000  000000000  

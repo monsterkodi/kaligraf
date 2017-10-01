@@ -110,7 +110,7 @@ class Shapes
             when 'text'
                 
                 e = root.text 'X'
-                e.leading 1.2
+                e.leading 1.185
                 e.font 'size',   @kali.tools.font.size
                 e.font 'weight', @kali.tools.font.weight
                 e.font 'style',  @kali.tools.font.style

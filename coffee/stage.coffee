@@ -245,7 +245,7 @@ class Stage
         items
 
     selectedNoTextItems: -> @selectedLeafItems noType:'text'
-    selectedTextItems:   -> @selectedLeafItems types:['text', 'g']
+    selectedTextItems:   -> @filterItems @selectedLeafItems(types:['text', 'g']), noType: 'g'
         
     sortedSelectedItems: (opt) ->
         
@@ -288,7 +288,6 @@ class Stage
     onDblClick: (event) =>
         
         item = @leafItemAtPos pos event
-        log 'onDblClick', item?
         if not item?
             # post.toMain 'maximizeWindow'
         else

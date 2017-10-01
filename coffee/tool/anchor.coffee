@@ -7,6 +7,8 @@
 
 { prefs, post, first, last, empty, log, _ } = require 'kxk'
 
+{ itemIDs } = require '../utils'
+
 Tool = require './tool'
 
 class Anchor extends Tool
@@ -15,7 +17,8 @@ class Anchor extends Tool
         
         super @kali, cfg
                 
-        @anchor = prefs.get 'text:anchor', 'middle'
+        @anchor  = prefs.get 'text:anchor', 'middle'
+        @leading = prefs.get 'text:leading', 1.2
         
         @initTitle()
         
@@ -35,7 +38,40 @@ class Anchor extends Tool
             tiny:   'anchor-end'
             choice: @anchor
         ]
-                
+        
+        @initSpin 
+            name:   'leading'
+            value:  @leading
+            min:    0.2
+            max:    2.0
+            step:   [0.01, 0.05, 0.1, 0.5]
+            reset:  1.2
+            action: @onLeading
+            
+        post.on 'selection', @update
+           
+    update: =>    
+        
+        textItems = @stage.selectedTextItems()
+        return if empty textItems
+        
+        anchor = null
+        for item in textItems
+            if anchor == null
+                anchor = item.font 'anchor'
+            else if anchor != item.font 'anchor'
+                anchor = null
+                break
+        if anchor
+            @toggleButton anchor if not @button(anchor).toggle
+    
+        leading = 0
+        for item in textItems
+            leading += item.leading().value
+        leading /= textItems.length
+
+        @setSpinValue 'leading', leading
+            
     setAnchor: (@anchor) => 
     
         prefs.set 'text:anchor', @anchor
@@ -43,11 +79,32 @@ class Anchor extends Tool
         textItems = @stage.selectedTextItems()
         return if empty textItems
         
-        @stage.do()
+        @stage.do 'anchor' + itemIDs textItems
         
         for item in textItems
             item.font 'anchor', @anchor
-            
+          
+        @stage.selection.update()
+        @stage.resizer.update()
         @stage.done()
     
+    onLeading: =>
+        
+        spin = @getSpin 'leading'
+        @leading = spin.value
+        
+        prefs.set 'text:leading', @leading
+        
+        textItems = @stage.selectedTextItems()
+        return if empty textItems
+        
+        @stage.do 'leading' + itemIDs textItems
+        
+        for item in textItems
+            item.font 'leading', @leading
+
+        @stage.selection.update()
+        @stage.resizer.update()            
+        @stage.done()
+        
 module.exports = Anchor

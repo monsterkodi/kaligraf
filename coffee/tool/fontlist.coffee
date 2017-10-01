@@ -217,7 +217,11 @@ class FontList
     isVisible:      -> @element.style.display != 'none'
     toggleDisplay:  -> @setVisible not @isVisible()
     setVisible: (v) -> if v then @show() else @hide()
-    hide: -> @element.style.display = 'none';  @element.blur();  prefs.set 'fontlist:visible', false
+    hide: -> 
+        @element.style.display = 'none'
+        @kali.focus()
+        prefs.set 'fontlist:visible', false
+        
     show: -> 
         @element.style.display = 'block'
         @element.focus()

@@ -101,11 +101,6 @@ class Color extends Tool
             @initFill()
             @showChildren()
             @createPalette()
-
-    hideChildren: -> 
-        
-        @delHalo()
-        post.emit 'palette', 'hide'
     
     #  0000000  000   000   0000000   00000000   
     # 000       000 0 000  000   000  000   000  
@@ -184,11 +179,26 @@ class Color extends Tool
         if @name == 'stroke'
             @kali.tools.temp = @
 
-        post.emit 'palette', 'show', pos(@kali.toolSize,0).plus p
+        @showPalette()
         
         if not @kali.palette.proxy
             post.emit 'palette', 'proxy', @
 
+    showPalette: -> post.emit 'palette', 'show', pos(@kali.toolSize,0).plus @kali.tools.stroke.pos()
+    hidePalette: -> post.emit 'palette', 'hide'
+            
+    toggleChildren: -> 
+
+        if @kali.palette.isVisible()
+            @hideChildren()
+        else
+            @showPalette()
+
+    hideChildren: -> 
+        
+        @delHalo()
+        @hidePalette()
+                
     # 000   000  00000000   0000000     0000000   000000000  00000000
     # 000   000  000   000  000   000  000   000     000     000
     # 000   000  00000000   000   000  000000000     000     0000000

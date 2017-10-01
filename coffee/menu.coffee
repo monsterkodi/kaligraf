@@ -127,6 +127,7 @@ class Menu
                     { label: 'Groups',      accelerator: 'command+shift+g', click: -> button 'show', 'groups'}
                     { label: 'Padding',     accelerator: 'p',               click: -> button 'padding', 'show'}
                     { label: 'IDs',         accelerator: 'i',               click: -> button 'show', 'ids'}
+                    { label: 'Tools',       accelerator: 'command+t',       click: -> action 'toggleTools'}
                 ]
                 }
                 { type:  'separator'}

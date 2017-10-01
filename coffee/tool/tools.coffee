@@ -68,6 +68,7 @@ class Tools extends Tool
             when 'invert'     then @stage.shapes.select 'invert'
             when 'center'     then @stage.centerSelection()
             when 'swapColor'  then @stroke.swapColor()
+            when 'toggleTools' then @toggleTools()
             else log "unhandled tool action #{action} #{tool}"
         
     # 000  000   000  000  000000000  
@@ -257,9 +258,16 @@ class Tools extends Tool
             delete @temp
         
     clickTool: (tool) => @getTool(tool)?.onClick()
+    
     clickToolButton: (tool, button) =>  
+        
         @getTool(tool)?.clickButton button
         
+    toggleTools: ->
+        
+        for child in @children
+            child.toggleChildren()
+            
     #  0000000    0000000  000000000  000  000   000   0000000   000000000  00000000  
     # 000   000  000          000     000  000   000  000   000     000     000       
     # 000000000  000          000     000   000 000   000000000     000     0000000   

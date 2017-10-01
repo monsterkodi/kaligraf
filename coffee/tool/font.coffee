@@ -104,22 +104,8 @@ class Font extends Tool
             
         @stage.setFontProp prop, value        
         
-    #  0000000  000      000   0000000  000   000  
-    # 000       000      000  000       000  000   
-    # 000       000      000  000       0000000    
-    # 000       000      000  000       000  000   
-    #  0000000  0000000  000   0000000  000   000  
-    
-    onClick: (event) =>
-        
-        super event
-               
-        @hideChildren()
-
-        @toggleList()
-
     setSize: (@size) =>
-        log @size
+
         post.emit 'font', 'size', @size
         prefs.set 'font:size', @size
     

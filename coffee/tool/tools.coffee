@@ -333,11 +333,17 @@ class Tools extends Tool
         if down
             if mod == 'ctrl' then @ctrlDown = true
             
-            for tool in @tools
-                if tool.cfg.combo == combo
-                    return tool.onClick()
+            if combo == 'space'
+                shape = @kali.shapeTool()
+                if shape != 'pan'
+                    @spaceTool = shape 
+                    @kali.tool('pan').onClick()
+                return 
+            
+            # for tool in @tools
+                # if tool.cfg.combo == combo
+                    # return tool.onClick()
 
-            # log 'tools.handleKey', combo
             switch combo
                 when 'e' then return @onAction 'center'
                 when '.' then return @onAction 'browse'
@@ -354,6 +360,12 @@ class Tools extends Tool
                 when 'f' then return @onAction 'font'
                 when 'y' then return @onAction 'redo'
         else
+            if combo == 'space'
+                if @spaceTool?
+                    @getTool(@spaceTool).onClick()
+                    delete @spaceTool
+                return 
+            
             @ctrlDown = false
             
         if @kali.shapeTool() == 'loupe'

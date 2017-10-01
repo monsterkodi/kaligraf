@@ -96,12 +96,14 @@ class Kali
 
         return stopEvent(event) if 'unhandled' != @tools.handleKey mod, key, combo, char, event, true
         return stopEvent(event) if 'unhandled' != @stage.handleKey mod, key, combo, char, event, true
+        # event.stopPropagation()
 
     onKeyUp: (event) =>
         
         {mod, key, combo, char} = keyinfo.forEvent event
         return stopEvent(event) if 'unhandled' != @tools.handleKey mod, key, combo, char, event, false
         return stopEvent(event) if 'unhandled' != @stage.handleKey mod, key, combo, char, event, false
+        # event.stopPropagation()
                 
     #  0000000  000000000  000   000  000      00000000  
     # 000          000      000 000   000      000       

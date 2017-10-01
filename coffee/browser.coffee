@@ -5,8 +5,9 @@
 # 000   000  000   000  000   000  000   000       000  000       000   000
 # 0000000    000   000   0000000   00     00  0000000   00000000  000   000
 
-{   childIndex, stopEvent, setStyle, keyinfo, drag, elem, fileName, dirExists, 
-    post, first, prefs, resolve, childp, fs, os, path, empty, clamp, pos, log, $, _ } = require 'kxk'
+{   childIndex, upAttr, upElem, stopEvent, setStyle, keyinfo, drag, elem, 
+    fileName, dirExists, post, first, prefs, resolve, childp, 
+    fs, os, path, empty, clamp, pos, log, $, _ } = require 'kxk'
 
 { winTitle, boundingBox } = require './utils'
 
@@ -54,9 +55,10 @@ class Browser
         prefs.set 'browser:open', true
             
         @drag = new drag
-            target: @element
-            onMove: @onDrag
-            onStop: @onStop
+            target:  @element
+            onStart: @onStart
+            onMove:  @onDrag
+            onStop:  @onStop
         
         @element.focus()
         post.on 'resize', @onResize
@@ -246,7 +248,7 @@ class Browser
         viewBox  = boundingBox @scroll
         aspect   = viewBox.w/viewBox.h
         num      = @items.children.length
-        pow      = Math.pow num, 1/(3/aspect)
+        pow      = Math.pow num, 1/(2 * (3/2)/aspect )
         @columns = Math.max 1, Math.ceil pow
         setStyle '.browserItems', 'grid-template-columns', "repeat(#{@columns},1fr)"        
         
@@ -275,6 +277,8 @@ class Browser
         setStyle '.browserItem', 'border', "#{borderWidth}px solid transparent"
         setStyle '.browserItem.selected', 'border', "#{borderWidth}px solid white"
 
+        setStyle '.browserItemTitleButton,.browserItemTitleClose', 'font-size', "#{clamp 12, 128, 12/@scale}px"
+        
         prefs.set 'browser:scale', @scale
         
         @items.style.transform = "scale(#{@scale}, #{@scale}) translate(#{-@offset.x}px, #{-@offset.y}px) "
@@ -391,6 +395,17 @@ class Browser
         @items.children[index]?.classList.add 'selected'
         @centerSelected()
     
+    #  0000000  000000000   0000000   00000000   000000000  
+    # 000          000     000   000  000   000     000     
+    # 0000000      000     000000000  0000000       000     
+    #      000     000     000   000  000   000     000     
+    # 0000000      000     000   000  000   000     000     
+    
+    onStart: (drag, event) =>
+        
+        if upAttr event.target, 'file'
+            @selectIndex childIndex upElem event.target, attr: 'file'
+        
     #  0000000  000000000   0000000   00000000   
     # 000          000     000   000  000   000  
     # 0000000      000     000   000  00000000   
@@ -400,8 +415,7 @@ class Browser
     onStop: (drag, event) =>
         
         if drag.startPos == drag.lastPos
-            file = event.target.getAttribute 'file'
-            if file
+            if file = upAttr event.target, 'file'
                 @openFile file
                 
     openFile: (file) ->
@@ -434,7 +448,7 @@ class Browser
             when 'command+='      then return @zoom +1
             when 'command+-'      then @zoom -1
             when 'esc'            then @close()
-            when 'enter', '.'     then @openFile @selectedFile()
+            when 'return', 'enter', '.'     then @openFile @selectedFile()
             when 'command+e', 'e' then @zoomSelected()
             when 'command+0'      then @zoomAll()
             when 'backspace', 'delete' then @delItem @selectedItem()

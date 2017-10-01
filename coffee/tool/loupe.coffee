@@ -30,7 +30,7 @@ class Loupe extends Tool
     
     onStageDown: (event) =>
         
-        @rect = @selection.addRect()
+        @rect ?= @selection.addRect()
 
     onStageDrag: (drag, event) =>
         
@@ -39,8 +39,9 @@ class Loupe extends Tool
                 
     onStageStop: (drag, event) =>
         
-        @rect.remove()
-        delete @rect
+        if @rect?
+            @rect.remove()
+            delete @rect
         @stage.loupe drag.startPos, drag.pos
         @stage.setToolCursor @tools.ctrlDown and 'zoom-out' or 'zoom-in'
 

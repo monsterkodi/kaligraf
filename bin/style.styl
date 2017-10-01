@@ -86,6 +86,9 @@ button
     &.active
         color               #fff
 
+button
+    cursor                  pointer
+        
 .fontElem
     color                   #bbb
     &.active
@@ -114,6 +117,7 @@ button
     
 .winTitleText
 .winTitleButton
+.browserTitleButton
 .winTitleClose
     font()
     box-sizing              border-box
@@ -185,13 +189,23 @@ button
 .browserTitle
     color                   #888
     -webkit-app-region      drag
-    padding-left            toolSize
-
+    padding-left            toolSize    
+    
+.browserTitleButton
+    color                   #888
+    &:active
+        color               #bbb
+        
 .browserTitleClose
+.browserItemTitleClose    
     position                absolute
     right                   0
-    background              #333
-    color                   #222
+    color                   #282828
+    background              transparent
+    &:hover
+        color               #fff
+    &:active
+        color               #888
     
 .browserTitleText
     margin-left             76px
@@ -202,7 +216,6 @@ button
 
 .browserItems
     display                 inline-grid
-    // grid-template-columns   repeat(10,1fr)
     transform-origin        top left
     white-space             nowrap
     
@@ -222,14 +235,21 @@ button
 .browserItemTitle
     position                relative
     border-top-left-radius  8px
-    border-top-right-radius 8px        
+    border-top-right-radius 8px  
     
 .browserItemTitleText
 .browserItemTitleButton
-    font-size               12px
     padding 6px
-    color                   #282828
+    color                   transparent
     &:hover
+        color               #888
+
+.browserItemTitleClose        
+    color                   transparent
+
+.browserItem:hover 
+    & .browserItemTitleClose
+    & .browserItemTitleButton       
         color               #888
     
 .browserItem.selected .browserItemTitleText
@@ -242,17 +262,7 @@ button
     background              transparent
     &:hover
         color               yellow
-    
-.browserItemTitleClose
-    font-size               13px
-    color                   #282828
-    background              transparent
-    &:hover
-        background          transparent
-    position                absolute
-    right                   0
-    top                     0
-    
+        
 .browserItemView
     & svg 
         border-radius       8px

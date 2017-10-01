@@ -82,10 +82,6 @@ class KaliApp
         
         prefs.init()
         
-        # if app.makeSingleInstance @otherInstanceStarted
-            # app.exit 0
-            # return
-
         app.setName pkg.productName
                                 
         @createWindow()
@@ -177,11 +173,6 @@ class KaliApp
     
     saveBounds: (event) -> prefs.set 'bounds', event.sender.getBounds()
         
-    # otherInstanceStarted: (args, dir) => 
-#         
-        # @showWindows()
-        # @raiseWindows()
-            
     quit: => 
         prefs.save()
         w.close() for w in wins()

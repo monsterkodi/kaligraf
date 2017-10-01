@@ -152,6 +152,20 @@ module.exports =
         
         box        
 
+    boundingBox: (element) ->
+        
+        cr = element.getBoundingClientRect()
+        x:      cr.left
+        y:      cr.top
+        width:  cr.width
+        height: cr.height
+        w:      cr.width
+        h:      cr.height
+        cx:     cr.left+cr.width/2
+        cy:     cr.top+cr.height/2
+        x2:     cr.left+cr.width
+        y2:     cr.top+cr.height
+        
     #  0000000   00000000    0000000   000   000  
     # 000        000   000  000   000  000 0 000  
     # 000  0000  0000000    000   000  000000000  

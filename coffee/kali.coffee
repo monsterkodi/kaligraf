@@ -32,9 +32,9 @@ class Kali
         
         @toolSize = 66
         
-        @trans   = new Trans @
-        @tools   = new Tools @, name: 'tools', text: 'tools', orient: 'down'
-        @stage   = new Stage @
+        @trans = new Trans @
+        @tools = new Tools @, name: 'tools', text: 'tools', orient: 'down'
+        @stage = new Stage @
         
         @tools.init()
         

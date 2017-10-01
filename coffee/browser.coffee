@@ -5,10 +5,10 @@
 # 000   000  000   000  000   000  000   000       000  000       000   000
 # 0000000    000   000   0000000   00     00  0000000   00000000  000   000
 
-{   childIndex, stopEvent, keyinfo, drag, elem, fileName, dirExists, 
+{   childIndex, stopEvent, setStyle, keyinfo, drag, elem, fileName, dirExists, 
     post, first, prefs, resolve, childp, fs, os, path, empty, clamp, pos, log, $, _ } = require 'kxk'
 
-{ winTitle } = require './utils'
+{ winTitle, boundingBox } = require './utils'
 
 electron = require 'electron'
 dialog   = electron.remote.dialog
@@ -24,7 +24,7 @@ class Browser
         @element.addEventListener 'wheel',   @onWheel
         @element.addEventListener 'keydown', @onKeyDown
         
-        @scale  = 1
+        @scale  = prefs.get 'browser:scale'
         @offset = pos 0,0
         
         buttons = [
@@ -59,7 +59,6 @@ class Browser
             onStop: @onStop
         
         @element.focus()
-        
         post.on 'resize', @onResize
                 
     #  0000000   00000000   00000000  000   000  
@@ -94,13 +93,14 @@ class Browser
             for file in files
                 @addFile path.join dir, file
 
-            @offset.x = files.length > 1 and 1600 or 0
-                
+            @calcColumns()
             @selectIndex 0
             
             dirs = prefs.get 'browser:dirs', []
             dirs.push(dir) if dir not in dirs
             prefs.set 'browser:dirs', dirs
+
+            @zoomAll()
             
     # 00000000   00000000   0000000  00000000  000   000  000000000  
     # 000   000  000       000       000       0000  000     000     
@@ -114,10 +114,11 @@ class Browser
             if not @addFile file
                 @delRecent file
 
-        @offset.x = files.length > 1 and 1600 or 0
-                
+        @calcColumns()
+        @setScale @scale
+        @fadeCenter 1
         @selectIndex Math.min 1, files.length-1
-        @onResize()
+        @centerSelected()
 
     delRecent: (file) ->
         
@@ -198,41 +199,6 @@ class Browser
         
         item
                      
-    # 00000000   00000000   0000000  000  0000000  00000000    
-    # 000   000  000       000       000     000   000         
-    # 0000000    0000000   0000000   000    000    0000000     
-    # 000   000  000            000  000   000     000         
-    # 000   000  00000000  0000000   000  0000000  00000000    
-    
-    onResize: =>
-        
-        br = @element.getBoundingClientRect()
-        @setScale br.height/1400, pos(br.width/2, br.height/2)
-
-    #  0000000   0000000   0000000   000      00000000  
-    # 000       000       000   000  000      000       
-    # 0000000   000       000000000  000      0000000   
-    #      000  000       000   000  000      000       
-    # 0000000    0000000  000   000  0000000  00000000  
-    
-    setScale: (scale, eventPos, fade=1) ->
-        
-        br = @element.getBoundingClientRect()
-        
-        oldscl = @scale
-        oldoff = @offset.times @scale
-        relpos = pos eventPos.x / br.width, eventPos.y / br.height
-        
-        @scale = clamp 0.05, 50, scale
-        
-        @offset.y = (oldoff.y + relpos.y * br.height) / oldscl - relpos.y * br.height / @scale
-            
-        if br.height/@scale >= 1400
-            @offset.y = ((1-fade) * @offset.y + fade * (-br.height/2/@scale + 700))
-        
-        @offset.x = (oldoff.x + relpos.x * br.width) / oldscl - relpos.x * br.width / @scale
-        @items.style.transform = "scale(#{@scale}, #{@scale}) translate(#{-@offset.x}px, #{-@offset.y}px)"
-
     # 0000000   0000000    0000000   00     00  
     #    000   000   000  000   000  000   000  
     #   000    000   000  000   000  000000000  
@@ -242,66 +208,77 @@ class Browser
     zoom: (dir) ->
         
         br = @element.getBoundingClientRect()
-        
         @setScale @scale * (1 + dir * 0.5), pos br.width/2, br.height/2
+       
+    zoomAll: ->
+        
+        viewBox = boundingBox @scroll
+        scaleX = viewBox.w/(@columns*1800)
+        scaleY = (viewBox.h-30)/(1200*Math.ceil(@items.children.length/@columns))
+        scale = Math.min scaleX, scaleY 
+        @setScale scale
+        itemBox = boundingBox @items
+        @offset.y = (-(viewBox.h-30-itemBox.h)/2)/@scale
+        @offset.x = (-(viewBox.w-itemBox.w)/2)/@scale
+        @setScale @scale
+        @centerSelected()
         
     zoomSelected: ->
         
-        br = @element.getBoundingClientRect()
-        
-        @onResize()   
-        @centerSelected()
-        
-    centerSelected: ->
-        
-        br = @element.getBoundingClientRect()
-        
-        @setOffsetX 1700 * childIndex(@selectedItem()) - (br.width/2/@scale - 750)
-        
-    #  0000000   00000000  00000000   0000000  00000000  000000000  000   000  
-    # 000   000  000       000       000       000          000      000 000   
-    # 000   000  000000    000000    0000000   0000000      000       00000    
-    # 000   000  000       000            000  000          000      000 000   
-    #  0000000   000       000       0000000   00000000     000     000   000  
-    
-    setOffsetX: (offsetX) ->
-        
-        @offset.x = offsetX
-        
-        br = @element.getBoundingClientRect()
-         
-        if br.height/@scale >= 1400
-            fade = 0.01
-            @offset.y = ((1-fade) * @offset.y + fade * (-br.height/2/@scale + 700))
-         
-        @items.style.transform = "scale(#{@scale}, #{@scale}) translate(#{-@offset.x}px, #{-@offset.y}px)"
-        
-    # 000   000   0000000   000   000  000   0000000    0000000   000000000  00000000  
-    # 0000  000  000   000  000   000  000  000        000   000     000     000       
-    # 000 0 000  000000000   000 000   000  000  0000  000000000     000     0000000   
-    # 000  0000  000   000     000     000  000   000  000   000     000     000       
-    # 000   000  000   000      0      000   0000000   000   000     000     00000000  
-    
-    navigate: (dir) ->
-        
-        current = @selectedItem()
-        if dir > 0 and not current.nextSibling then return
-        if dir < 0 and not current.previousSibling then return
-        
-        current.classList.remove 'selected'
-        if dir > 0 and current.nextSibling
-            current.nextSibling.classList.add 'selected'
-        else if current.previousSibling
-            current.previousSibling.classList.add 'selected'
-            
+        viewBox = boundingBox @scroll
+        @setScale Math.min(viewBox.w/1650, (viewBox.h-30)/1100)
         @centerSelected()
 
-    selectIndex: (index) ->
-        
-        @selectedItem()?.classList.remove 'selected'
-        @items.children[index]?.classList.add 'selected'
-        @centerSelected()
+    # 00000000   00000000   0000000  000  0000000  00000000    
+    # 000   000  000       000       000     000   000         
+    # 0000000    0000000   0000000   000    000    0000000     
+    # 000   000  000            000  000   000     000         
+    # 000   000  00000000  0000000   000  0000000  00000000    
     
+    onResize: =>
+        
+        @calcColumns()
+        @fadeCenter 1
+        @centerSelected()
+
+    calcColumns: ->
+        
+        viewBox  = boundingBox @scroll
+        aspect   = viewBox.w/viewBox.h
+        num      = @items.children.length
+        pow      = Math.pow num, 1/(3/aspect)
+        @columns = Math.max 1, Math.ceil pow
+        setStyle '.browserItems', 'grid-template-columns', "repeat(#{@columns},1fr)"        
+        
+    #  0000000   0000000   0000000   000      00000000  
+    # 000       000       000   000  000      000       
+    # 0000000   000       000000000  000      0000000   
+    #      000  000       000   000  000      000       
+    # 0000000    0000000  000   000  0000000  00000000  
+    
+    setScale: (scale, eventPos) ->
+        
+        if eventPos
+            br     = boundingBox @scroll
+            oldscl = @scale
+            oldoff = @offset.times @scale
+            relpos = pos eventPos.x / br.width, eventPos.y / br.height
+        
+            @scale = clamp 0.05, 50, scale
+            
+            @offset.y = (oldoff.y + relpos.y * br.height) / oldscl - relpos.y * br.height / @scale
+            @offset.x = (oldoff.x + relpos.x * br.width) / oldscl - relpos.x * br.width  / @scale
+        else
+            @scale = clamp 0.05, 50, scale
+
+        borderWidth = 1.0/@scale
+        setStyle '.browserItem', 'border', "#{borderWidth}px solid transparent"
+        setStyle '.browserItem.selected', 'border', "#{borderWidth}px solid white"
+
+        prefs.set 'browser:scale', @scale
+        
+        @items.style.transform = "scale(#{@scale}, #{@scale}) translate(#{-@offset.x}px, #{-@offset.y}px) "
+        
     # 000   000  000   000  00000000  00000000  000      
     # 000 0 000  000   000  000       000       000      
     # 000000000  000000000  0000000   0000000   000      
@@ -310,17 +287,40 @@ class Browser
     
     onWheel: (event) => 
         
-        if Math.abs(event.deltaY) > Math.abs(event.deltaX)
-            
+        if Math.abs(event.deltaY) >= Math.abs(event.deltaX)
+        
             scale = @scale * (1 - event.deltaY * 0.0003)
             scale = clamp 0.05, 100, scale
-            @setScale scale, pos(event), 0.1
             
+            if event.deltaY > 0
+                @fadeCenter()
+                
+            @setScale scale, pos event 
         else
-            @setOffsetX @offset.x + 0.4 * event.deltaX / @scale
             
+            @wheelSum ?= 0
+            @wheelSum += event.deltaX * 0.002
+            if Math.abs(@wheelSum) > 1
+                @navigate parseInt @wheelSum
+                @wheelSum = @wheelSum % 1
+        
         event.stopPropagation()
 
+    fadeCenter: (ff = 0.01) ->
+        
+        ib = boundingBox @items
+        vb = boundingBox @scroll
+        
+        f1 = clamp 0, 1, 1.1-2*@scale
+        f1 = f1 * f1 * f1 * f1
+        
+        f2 = clamp 0, 1, 1/(ib.h/vb.h)
+        
+        fade = clamp 0, 1, ff * f1 + 0.01 * ff * f2
+        
+        @offset.y = (1-fade) * @offset.y + fade * ((-(vb.h-ib.h)/2)/@scale)
+        @offset.x = (1-fade) * @offset.x + fade * ((-(vb.w-ib.w)/2)/@scale)
+    
     # 0000000    00000000    0000000    0000000   
     # 000   000  000   000  000   000  000        
     # 000   000  0000000    000000000  000  0000  
@@ -330,8 +330,67 @@ class Browser
     onDrag: (drag, event) =>
 
         @offset.sub drag.delta.times 1/@scale
-        @items.style.transform = "scale(#{@scale}, #{@scale}) translate(#{-@offset.x}px, #{-@offset.y}px)"
+        @setScale @scale
+        
+    #  0000000  00000000  000   000  000000000  00000000  00000000   
+    # 000       000       0000  000     000     000       000   000  
+    # 000       0000000   000 0 000     000     0000000   0000000    
+    # 000       000       000  0000     000     000       000   000  
+    #  0000000  00000000  000   000     000     00000000  000   000  
+    
+    centerSelected: ->
+        
+        itemBox = boundingBox @selectedItem()
+        brwsBox = boundingBox @items
+        viewBox = boundingBox @scroll
+        
+        if itemBox.w / viewBox.w > 0.5
+            @offset.x = -(brwsBox.x - itemBox.x + (viewBox.w - itemBox.w)/2) / @scale
+        else
+            border = ((viewBox.w / itemBox.w) % 1) * itemBox.w * 0.5
+            if itemBox.x < viewBox.x + border
+                @offset.x -= (viewBox.x - itemBox.x + border)/@scale
+            if itemBox.x2 > viewBox.x2 - border
+                @offset.x += (itemBox.x2 - viewBox.x2 + border)/@scale
+            @fadeCenter()
+            
+        if itemBox.h / viewBox.h > 0.5
+            @offset.y = -(brwsBox.y - itemBox.y + (viewBox.h-30 - itemBox.h)/2) / @scale
+        else
+            border = ((viewBox.h / itemBox.h) % 1) * itemBox.h * 0.5
+            if itemBox.y < viewBox.y + border
+                @offset.y -= (viewBox.y - itemBox.y + border)/@scale
+            if itemBox.y2 > viewBox.y2 - border - 30
+                @offset.y += (itemBox.y2 - viewBox.y2 + 30 + border)/@scale
+            @fadeCenter()
 
+        @setScale @scale
+                                
+    # 000   000   0000000   000   000  000   0000000    0000000   000000000  00000000  
+    # 0000  000  000   000  000   000  000  000        000   000     000     000       
+    # 000 0 000  000000000   000 000   000  000  0000  000000000     000     0000000   
+    # 000  0000  000   000     000     000  000   000  000   000     000     000       
+    # 000   000  000   000      0      000   0000000   000   000     000     00000000  
+    
+    navigate: (dir) ->
+        
+        current = @selectedItem()
+        oldIndex = childIndex current
+        newIndex = clamp 0, current.parentNode.children.length-1, oldIndex+dir
+        if oldIndex == newIndex then return
+        
+        current.classList.remove 'selected'
+        newCurrent = current.parentNode.children[newIndex]
+        newCurrent.classList.add 'selected'
+            
+        @centerSelected()
+
+    selectIndex: (index) ->
+        
+        @selectedItem()?.classList.remove 'selected'
+        @items.children[index]?.classList.add 'selected'
+        @centerSelected()
+    
     #  0000000  000000000   0000000   00000000   
     # 000          000     000   000  000   000  
     # 0000000      000     000   000  00000000   
@@ -368,13 +427,16 @@ class Browser
         
         switch combo
             
-            when 'left'          then @navigate -1
-            when 'right'         then @navigate +1
-            when 'up',   'command+=' then return @zoom +1
-            when 'down', 'command+-' then @zoom -1
-            when 'esc'           then @close()
-            when 'enter', '.'    then @openFile @selectedFile()
-            when 'command+0'     then @zoomSelected()
+            when 'left'           then @navigate -1
+            when 'right'          then @navigate +1
+            when 'up'             then @navigate -@columns
+            when 'down'           then @navigate +@columns
+            when 'command+='      then return @zoom +1
+            when 'command+-'      then @zoom -1
+            when 'esc'            then @close()
+            when 'enter', '.'     then @openFile @selectedFile()
+            when 'command+e', 'e' then @zoomSelected()
+            when 'command+0'      then @zoomAll()
             when 'backspace', 'delete' then @delItem @selectedItem()
                 
         if combo.startsWith 'command' then return

@@ -10,6 +10,9 @@
 Exporter = require '../exporter'
 Tool     = require './tool'
 
+electron = require 'electron'
+Window   = electron.remote.BrowserWindow
+
 class Tools extends Tool
 
     constructor: (@kali, cfg) ->
@@ -37,8 +40,10 @@ class Tools extends Tool
         
         if @stage.shapes?.text?
             if tool not in ['zoom'] and action not in ['center']
-                log "tools.onAction -- swallow menu action while text is active #{action} #{tool} #{button}"
                 return
+                
+        if Window.getFocusedWindow()?.getTitle() != 'kaligraf'
+            return
             
         switch action
             

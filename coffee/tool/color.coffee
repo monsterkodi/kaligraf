@@ -83,7 +83,7 @@ class Color extends Tool
     # 000       000  000      000                 000     000     000   000  000   000  000  000   000
     # 000       000  0000000  0000000        0000000      000     000   000   0000000   000   000  00000000
 
-    fill: ->  @kali.tools.getTool 'fill'
+    fill: ->  @kali.tool 'fill'
     initFill: ->
         fill = @fill()
         @element.appendChild fill.element
@@ -134,7 +134,7 @@ class Color extends Tool
             return
 
         if @kali.palette.proxy == @name
-            other = @kali.tools.getTool @name == 'fill' and 'stroke' or 'fill'
+            other = @kali.tool @name == 'fill' and 'stroke' or 'fill'
             other.onClick event
             return
 
@@ -187,6 +187,8 @@ class Color extends Tool
     showPalette: -> post.emit 'palette', 'show', pos(@kali.toolSize,0).plus @kali.tools.stroke.pos()
     hidePalette: -> post.emit 'palette', 'hide'
             
+    childrenVisible: -> @kali.palette.isVisible()
+    
     toggleChildren: -> 
 
         if @kali.palette.isVisible()
@@ -194,6 +196,7 @@ class Color extends Tool
         else
             @showPalette()
 
+    showChildren: -> @showPalette()
     hideChildren: -> 
         
         @delHalo()

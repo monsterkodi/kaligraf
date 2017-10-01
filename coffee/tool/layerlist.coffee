@@ -130,14 +130,7 @@ class LayerList
         
         @scroll.innerHTML = ''
         
-        for index in [0...Math.max(1, @stage.numLayers())]
-            @stage.layerAt(index).show()
-            
-        @viewbox = bboxForItems @stage.items()
-
-        for index in [0...Math.max(1, @stage.numLayers())]
-            layer = @stage.layerAt index 
-            layer.hide() if layer.data 'hidden'
+        @viewbox = @stage.paddingBox()
         
         for index in [0...Math.max(1, @stage.numLayers())]
             @scroll.insertBefore @layerDiv(index), @scroll.firstChild

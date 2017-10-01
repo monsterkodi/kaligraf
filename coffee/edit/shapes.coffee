@@ -231,7 +231,7 @@ class Shapes
         stagePos = @stage.stageForEvent eventPos
           
         if shape in ['loupe', 'pipette']
-            @kali.tools.getTool(shape).onStageDown event
+            @kali.tool(shape).onStageDown event
             return
         
         switch shape
@@ -267,8 +267,8 @@ class Shapes
                         @endDrawing()
                     return
 
-                if shape in ['line', 'polyline'] and @kali.tools.getTool('width').width == 0
-                    @kali.tools.getTool('width').setWidth 1
+                if shape in ['line', 'polyline'] and @kali.tool('width').width == 0
+                    @kali.tool('width').setWidth 1
                     
                 @drawing = @addShape shape, stagePos
                 
@@ -297,7 +297,7 @@ class Shapes
         constrain drag, event
         
         if shape in ['loupe', 'pipette']
-            @kali.tools.getTool(shape).onStageDrag drag, event
+            @kali.tool(shape).onStageDrag drag, event
             return
         
         switch shape
@@ -349,7 +349,7 @@ class Shapes
         shape    = @kali.shapeTool() 
         
         if shape in ['loupe', 'pipette']
-            @kali.tools.getTool(shape).onStageStop drag, event 
+            @kali.tool(shape).onStageStop drag, event
             return
             
         if @selection.rect?

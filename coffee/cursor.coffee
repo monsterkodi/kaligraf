@@ -72,7 +72,7 @@ class Cursor
             when 'rot right'                    then           y = 16
             when 'rot bot'                      then x = 16
             when 'text-cursor'                  
-                s = @kali.tools.getTool('font').size
+                s = @kali.tool('font').size
                 s *= @kali.stage.zoom
                 s = Math.round clamp 20, 128, s
                 name = "#{name}-#{s}"

@@ -262,7 +262,7 @@ class Stage
     onMove: (event) =>
 
         if @kali.shapeTool() == 'loupe'
-            @kali.tools.getTool('loupe').onMove event
+            @kali.tool('loupe').onMove event
 
         @shapes.onMove event
             
@@ -489,7 +489,7 @@ class Stage
         if @currentFile == 'untitled.svg'
             return @saveAs()
         
-        padding = @kali.tools.getTool('padding').percent
+        padding = @kali.tool('padding').percent
         Exporter.save @svg, file:@currentFile, color:@color, alpha:@alpha, padding:padding
                 
         post.emit 'stage', 'save', file:@currentFile

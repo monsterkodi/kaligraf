@@ -265,8 +265,15 @@ class Tools extends Tool
         
     toggleTools: ->
         
-        for child in @children
-            child.toggleChildren()
+        hide = false
+        for tool in @children
+            if tool.childrenVisible()
+                hide = true
+                break
+        
+        for tool in @children
+            if hide then tool.hideChildren()
+            else         tool.showChildren()
             
     #  0000000    0000000  000000000  000  000   000   0000000   000000000  00000000  
     # 000   000  000          000     000  000   000  000   000     000     000       

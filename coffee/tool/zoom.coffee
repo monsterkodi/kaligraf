@@ -124,7 +124,7 @@ class Zoom extends Tool
             @centerAtStagePos @toolCenter @zoom
             return
 
-        list = @kali.tools.getTool('layer').list
+        list = @kali.tool('layer').list
         
         lv = list?.isVisible()
         lw = lv and list.element.getBoundingClientRect().width or 0
@@ -134,7 +134,7 @@ class Zoom extends Tool
         v.x -= 60 + lw
         w = (b.w / @zoom) /  v.x
         h = (b.h / @zoom) /  v.y
-        percent = @kali.tools.getTool('padding').percent
+        percent = @kali.tool('padding').percent
         w *= 1+2*percent/100
         h *= 1+2*percent/100
         z = 1 / Math.max(w, h)

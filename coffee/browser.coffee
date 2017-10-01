@@ -117,6 +117,7 @@ class Browser
         @offset.x = files.length > 1 and 1600 or 0
                 
         @selectIndex Math.min 1, files.length-1
+        @onResize()
 
     delRecent: (file) ->
         
@@ -248,7 +249,7 @@ class Browser
         
         br = @element.getBoundingClientRect()
         
-        @resize()   
+        @onResize()   
         @centerSelected()
         
     centerSelected: ->

@@ -256,34 +256,6 @@ class Tools extends Tool
             @temp.hideChildren()
             delete @temp
         
-    # 000   000  00000000  000   000  
-    # 000  000   000        000 000   
-    # 0000000    0000000     00000    
-    # 000  000   000          000     
-    # 000   000  00000000     000     
-    
-    handleKey: (mod, key, combo, char, event, down) ->
-
-        if down
-            if mod == 'ctrl' then @ctrlDown = true
-            
-            for tool in @tools
-                if tool.cfg.combo == combo
-                    return tool.onClick()
-
-            log 'tools.handleKey', combo
-            switch combo
-                when 'e' then return @stage.centerSelection()
-                when '.' then return @kali.openBrowser()
-                    
-        else
-            @ctrlDown = false
-            
-        if @kali.shapeTool() == 'loupe'
-            @stage.setToolCursor @ctrlDown and 'zoom-out' or 'zoom-in'
-            
-        'unhandled'
-
     clickTool: (tool) => @getTool(tool)?.onClick()
     clickToolButton: (tool, button) =>  
         @getTool(tool)?.clickButton button
@@ -329,5 +301,44 @@ class Tools extends Tool
         @stage.resizer.activate name == 'pick'
             
         @stage.setToolCursor name
-                
+
+    # 000   000  00000000  000   000  
+    # 000  000   000        000 000   
+    # 0000000    0000000     00000    
+    # 000  000   000          000     
+    # 000   000  00000000     000     
+    
+    handleKey: (mod, key, combo, char, event, down) ->
+
+        if down
+            if mod == 'ctrl' then @ctrlDown = true
+            
+            for tool in @tools
+                if tool.cfg.combo == combo
+                    return tool.onClick()
+
+            # log 'tools.handleKey', combo
+            switch combo
+                when 'e' then return @onAction 'center'
+                when '.' then return @onAction 'browse'
+                when 'g' then return @onAction 'group'
+                when 'u' then return @onAction 'ungroup'
+                when 's' then return @onAction 'save'
+                when 'a' then return @onAction 'selectAll'
+                when 'd' then return @onAction 'deselect'
+                when 'r' then return @onAction 'load'
+                when 'x' then return @onAction 'cut'
+                when 'c' then return @onAction 'copy'
+                when 'v' then return @onAction 'paste'
+                when 'z' then return @onAction 'undo'
+                when 'f' then return @onAction 'font'
+                when 'y' then return @onAction 'redo'
+        else
+            @ctrlDown = false
+            
+        if @kali.shapeTool() == 'loupe'
+            @stage.setToolCursor @ctrlDown and 'zoom-out' or 'zoom-in'
+            
+        'unhandled'
+        
 module.exports = Tools

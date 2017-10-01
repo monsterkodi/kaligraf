@@ -93,8 +93,8 @@ class Menu
                     { label: 'Invert',      accelerator: 'command+i',       click: -> action 'invert'}        
                 ]}
                 { type:  'separator'}
-                { label: 'Group',       accelerator: 'g',                   click: -> action 'group'}
-                { label: 'Ungroup',     accelerator: 'u',                   click: -> action 'ungroup'}
+                { label: 'Group',       accelerator: 'command+g',           click: -> action 'group'}
+                { label: 'Ungroup',     accelerator: 'command+u',           click: -> action 'ungroup'}
                 { type:  'separator'}
                 { label: 'Cut',         accelerator: 'command+x',           click: -> action 'cut'}
                 { label: 'Copy',        accelerator: 'command+c',           click: -> action 'copy'}
@@ -123,10 +123,10 @@ class Menu
                     { label:'In',       accelerator: 'command+=',   click: -> button 'zoom', 'in'  }
                 ] }
                 { label: 'Toggle',      submenu: [
-                    { label: 'Fill/Stroke', accelerator: 'command+6', click: -> action 'swapColor'}
-                    { label: 'Groups',      accelerator: 'command+g', click: -> button 'show', 'groups'}
-                    { label: 'Padding',     accelerator: 'p',         click: -> button 'padding', 'show'}
-                    { label: 'IDs',         accelerator: 'i',         click: -> button 'show', 'ids'}
+                    { label: 'Fill/Stroke', accelerator: 'command+6',       click: -> action 'swapColor'}
+                    { label: 'Groups',      accelerator: 'command+shift+g', click: -> button 'show', 'groups'}
+                    { label: 'Padding',     accelerator: 'p',               click: -> button 'padding', 'show'}
+                    { label: 'IDs',         accelerator: 'i',               click: -> button 'show', 'ids'}
                 ]
                 }
                 { type:  'separator'}

@@ -345,11 +345,13 @@ class Selection
     addRect: ->
         
         rect = elem 'div', class: 'selectionRect'
-        @kali.element.appendChild rect
+        @kali.insertBelowTools rect
         rect
             
     setRect: (elem, rect) ->
-        
+        if not elem?
+            log 'dafuk?', elem, rect
+            return 
         r = @offsetRect normRect rect
         elem.style.left   = "#{r.x}px"
         elem.style.top    = "#{r.y}px"

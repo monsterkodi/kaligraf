@@ -51,7 +51,7 @@ class LayerList
             onMove:  @onDragMove
             onStop:  @onDragStop
         
-        @kali.insertBelowTools @element
+        @kali.insertAboveTools @element
         
         post.on 'resize', @onResize
 

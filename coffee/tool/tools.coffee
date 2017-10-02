@@ -104,9 +104,10 @@ class Tools extends Tool
                 { class: 'anchor' }
             ]            
             [
-                { name: 'pick',     group: 'shape', popup: 'temp' }
-                { name: 'edit',     group: 'shape', popup: 'temp' }
-                { name: 'pan',      group: 'shape', popup: 'temp' }
+                { name:  'pick',    group: 'shape', popup: 'temp' }
+                { name:  'edit',    group: 'shape', popup: 'temp' }
+                { name:  'pan',     group: 'shape', popup: 'temp' }
+                { name:  'text',    group: 'shape', popup: 'temp' }
                 { class: 'loupe',   group: 'shape', popup: 'temp' }
                 { class: 'pipette', group: 'shape', popup: 'temp' }
             ]
@@ -124,13 +125,13 @@ class Tools extends Tool
                 { name: 'triangle_square',  group: 'shape', popup: 'temp' }
                 { name: 'circle',           group: 'shape', popup: 'temp' }
                 { name: 'ellipse',          group: 'shape', popup: 'temp' }
-                { name: 'text',             group: 'shape', popup: 'temp' }
                 { name: 'image',            group: 'shape', popup: 'temp' }
                 # { name: 'pie', draw: true,  group: 'shape', popup: 'temp' }
                 # { name: 'arc', draw: true,  group: 'shape', popup: 'temp' }                
             ]
             [
                 { class: 'undo'  }
+                { class: 'layer'   }
             ]
             [
                 { class: 'group' }
@@ -143,7 +144,6 @@ class Tools extends Tool
                 { class: 'padding' }
                 { class: 'wire'    }
                 { class: 'zoom'    }
-                { class: 'layer'   }
                 { class: 'grid'    }
                 { class: 'show'    }
             ]            
@@ -313,7 +313,8 @@ class Tools extends Tool
             
         tool.activate()
         
-        prefs.set 'tool:active', name
+        if tool.cfg.group == 'shape'
+            prefs.set 'tool:active', name
         
         if name == 'text'
             @selection.clear()

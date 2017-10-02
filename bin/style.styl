@@ -330,6 +330,7 @@ button
 .gradientList
     position                absolute
     border-radius           6px
+    background              #222
     overflow                hidden
         
 .gradientListScroll
@@ -608,10 +609,16 @@ button
     width                   toolSize
     height                  toolSize
     cursor                  pointer
-    filter                  drop-shadow(11px 11px 5px rgba(0,0,0,0.195))
     &.down
         height              toolSize / 2
 
+.tool
+    filter                  drop-shadow(8px 8px 4px rgba(0,0,0,0.195))
+    
+#fileInfo
+.fontList
+    filter                  drop-shadow(2px 2px 11px rgba(0,0,0,0.4))
+        
 .tool .title
     text-align              center
     padding-top             4px

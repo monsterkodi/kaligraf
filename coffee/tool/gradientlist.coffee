@@ -5,9 +5,9 @@
 # 000   000  000   000  000   000  000   000  000  000       000  0000     000     000      000       000     000   
 #  0000000   000   000  000   000  0000000    000  00000000  000   000     000     0000000  000  0000000      000   
 
-{ stopEvent, childIndex, upElem, drag, childIndex, prefs, keyinfo, elem, empty, clamp, post, log, $, _ } = require 'kxk'
+{ stopEvent, childIndex, upElem, drag, childIndex, prefs, keyinfo, elem, empty, clamp, post, pos, log, $, _ } = require 'kxk'
 
-{ ensureInSize, winTitle, boundingBox } = require '../utils'
+{ ensureInSize, winTitle, boundingBox, boxPos } = require '../utils'
 
 GradientItem = require './gradientitem'
 Exporter     = require '../exporter'
@@ -22,8 +22,7 @@ class GradientList
         @stage = @kali.stage
         
         @element = elem 'div', class: 'gradientList'
-        @element.style.left = "#{prefs.get 'gradientlist:pos:x', 64}px"
-        @element.style.top  = "#{prefs.get 'gradientlist:pos:y', 34}px"        
+        @setPos pos prefs.get('gradientlist:pos:x', 64), prefs.get('gradientlist:pos:y', 34)
         @element.tabIndex = 100
         
         @title = winTitle 
@@ -58,12 +57,10 @@ class GradientList
         @titleDrag = new drag
             target: @title
             onMove: (drag) => 
-                x = parseInt(@element.style.left) + drag.delta.x
-                y = parseInt(@element.style.top)  + drag.delta.y
-                prefs.set 'gradientlist:pos:x', x
-                prefs.set 'gradientlist:pos:y', y
-                @element.style.left = "#{x}px"
-                @element.style.top  = "#{y}px"  
+                newPos = boxPos(boundingBox @element).plus drag.delta
+                prefs.set 'gradientlist:pos:x', newPos.x
+                prefs.set 'gradientlist:pos:y', newPos.y
+                @setPos newPos
                 @shadow.update()
 
         @kali.insertBelowTools @element
@@ -205,7 +202,29 @@ class GradientList
             @scroll.insertBefore gradientA, gradientB
             @scroll.insertBefore gradientB, @scroll.children[childIndex(gradientA)]
                   
-    onResize: (size) => ensureInSize @element, size
+    # 00000000   00000000   0000000  000  0000000  00000000  
+    # 000   000  000       000       000     000   000       
+    # 0000000    0000000   0000000   000    000    0000000   
+    # 000   000  000            000  000   000     000       
+    # 000   000  00000000  0000000   000  0000000  00000000  
+    
+    onResize: => 
+        
+        size = @stage.viewSize()
+
+        br = boundingBox @element
+        newPos = boxPos br
+        
+        if br.x < 0 then newPos.x = 0
+        else if br.x + br.w > size.x then newPos.x = Math.max 0, size.x - br.w
+        
+        if br.y < 0 then newPos.y = 0
+        else if br.y + br.h > size.y then newPos.y = Math.max 0, size.y - br.h
+            
+        @setPos newPos
+        @shadow.update()
+
+    setPos: (p) -> @element.style.transform = "translate(#{p.x}px, #{p.y}px)"
         
     #  0000000  000   000   0000000   000   000
     # 000       000   000  000   000  000 0 000
@@ -229,7 +248,8 @@ class GradientList
         prefs.set 'gradientlist:visible', true
         
         @element.style.display = 'block'
-        @shadow.update()
+        @onResize()
+        # @shadow.update()
         @element.focus()
         
     onClose: => @hide()

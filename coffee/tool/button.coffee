@@ -68,14 +68,13 @@ class Button
                 return btn
         
     setButtonIcon: (name, svg) -> @button(name).innerHTML = Exporter.loadSVG svg
+
+    #  0000000  000   000   0000000   000   000  
+    # 000       000   000  000   000  000 0 000  
+    # 0000000   000000000  000   000  000000000  
+    #      000  000   000  000   000  000   000  
+    # 0000000   000   000   0000000   00     00  
     
-    hideButton: (name) -> 
-        
-        if @button(name).firstChild.tagName == 'svg'
-            @button(name).firstChild.style.display = 'none'
-        else
-            @button(name).style.color = 'transparent'
-        
     showButton: (name, show) -> 
         
         if show? and not show then @hideButton name
@@ -85,6 +84,19 @@ class Button
             else
                 @button(name).removeAttribute 'style' 
 
+    hideButton: (name) -> 
+        
+        if @button(name).firstChild.tagName == 'svg'
+            @button(name).firstChild.style.display = 'none'
+        else
+            @button(name).style.color = 'transparent'
+        
+    # 000000000   0000000    0000000    0000000   000      00000000  
+    #    000     000   000  000        000        000      000       
+    #    000     000   000  000  0000  000  0000  000      0000000   
+    #    000     000   000  000   000  000   000  000      000       
+    #    000      0000000    0000000    0000000   0000000  00000000  
+    
     toggleButton: (name) ->
         
         btn = @button name

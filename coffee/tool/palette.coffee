@@ -23,7 +23,8 @@ class Palette extends Tool
         HEIGHT = @kali.toolSize/2
         
         @element.style.zIndex = 1000
-                
+        @element.addEventListener 'mouseleave', @onMouseLeave
+        
         @mode      = 'rgb'
         @alpha     = 1
         @value     = 2.0/3

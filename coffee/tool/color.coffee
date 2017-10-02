@@ -155,8 +155,6 @@ class Color extends Tool
             fill.element.style.width  = "#{@kali.toolSize/3}px"
             fill.element.style.height = "#{@kali.toolSize/3}px"
 
-    onMouseLeave: => 
-
     onMouseEnter: (event) =>
 
         return if event.buttons

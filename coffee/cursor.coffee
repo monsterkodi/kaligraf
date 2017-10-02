@@ -7,7 +7,7 @@
 
 { elem, clamp, fileExists, fileName, path, fs, log } = require 'kxk' 
 
-{ svgItems } = require './utils'
+{ svgItems, growBox } = require './utils'
 
 Exporter = require './exporter'
 
@@ -34,7 +34,6 @@ class Cursor
         tmpDiv.innerHTML = svgStr
         
         svg = SVG.adopt tmpDiv.firstChild 
-        svg.attr  width: 32, height:32
         
         if opt?.fill
             for item in svgItems(svg, style:'fill')
@@ -44,6 +43,16 @@ class Cursor
             for item in svgItems(svg, style:'stroke')
                 item.style stroke: opt.stroke
         
+        if svg.children().length > 1
+            items = svg.children()
+            grp = svg.group()
+            for item in items
+                grp.add item
+
+        svg.children()[0].filter (add) ->
+            blur = add.offset(2, 2).in(add.sourceAlpha).gaussianBlur 4
+            add.blend add.source, blur
+                
         Exporter.clean svg
         
         o = 6
@@ -86,6 +95,7 @@ class Cursor
         svgFileX2 = path.join cursorDir, name + " x2.svg"
         
         if opt?.fill or opt?.stroke
+            svg.attr width: 32, height:32
             "url(data:image/svg+xml;base64,#{btoa svg.svg()}) #{x} #{y}, auto"
         else
             svg.attr width: s, height:s

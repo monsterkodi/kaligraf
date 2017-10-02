@@ -29,7 +29,6 @@ class Tool extends multi Spin, Button
         @element.classList.add 'tool'
         @element.classList.add 'down' if @cfg.orient == 'down'
         @element.addEventListener 'mouseenter', @onMouseEnter
-        @element.addEventListener 'mouseleave', @onMouseLeave
         @element.addEventListener 'wheel', (event) => stopEvent event
         
         @kali.toolDiv.appendChild @element
@@ -118,8 +117,6 @@ class Tool extends multi Spin, Button
             @kali.tools.temp = @
             @showChildren()
             @element.removeEventListener 'mousemove', @onMouseMove
-
-    onMouseLeave: => #log "onLeave #{@name}"
         
     #  0000000  000   000  000  000      0000000    00000000   00000000  000   000  
     # 000       000   000  000  000      000   000  000   000  000       0000  000  
@@ -150,29 +147,21 @@ class Tool extends multi Spin, Button
     
     showChildren: -> 
         
-        @toFront()
+        @updateDepth()
         if @hasChildren()
             @addHalo()
             for c in @children
                 c.show()
+        @updateDepth()
                 
     hideChildren: -> 
         
         @delHalo()
-        @toBack()
+        @element.style.zIndex = 1
         if @hasChildren()
             for c in @children
                 c.hide()
 
-    toFront: (zIndex=100) ->
-        
-        @element.style.zIndex = zIndex
-        @updateDepth()
-
-    toBack: ->
-        
-        @element.style.zIndex = 1
-        
     delHalo: -> $('.toolHalo')?.remove()
     addHalo: (opt) -> 
         halo = elem class: 'toolHalo'
@@ -219,10 +208,11 @@ class Tool extends multi Spin, Button
         @kali.tools.store()
         
     updateDepth: ->
-        
+        return if @name == 'tools'
+        log "updateDepth #{@name}"
         zIndex = parseInt @element.style.zIndex
         for child in @children
-            child.element.style.zIndex = parseInt zIndex + 10 + child.pos().x / 66
+            child.element.style.zIndex = parseInt zIndex + 1 + @children.indexOf child
                 
     # 0000000    00000000    0000000    0000000   
     # 000   000  000   000  000   000  000        

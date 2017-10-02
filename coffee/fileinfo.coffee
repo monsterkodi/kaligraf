@@ -21,6 +21,7 @@ class FileInfo
         
         @dirty = elem 'span', class: 'fileInfoDirty', click: -> post.emit 'tool', 'save'
         @element.appendChild @dirty
+        @element.style.zIndex = 1000
         
         post.on 'stage', @onStage
         post.on 'undo',  @onUndo

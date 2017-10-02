@@ -48,12 +48,11 @@ class GradientItem
         stops
         
     restore: (state) ->
-        log "GradientItem.restore", state
+        # log "GradientItem.restore", state
         return if not state.type? or not state.stops?
         @gradient = @svg.gradient state.type
         for stop in state.stops
             continue if not stop.offset? or not stop.color? or not stop.opacity?
-            log stop
             @gradient.at stop.offset, stop.color, stop.opacity
             
         @update()

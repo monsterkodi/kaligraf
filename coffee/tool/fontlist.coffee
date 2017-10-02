@@ -141,7 +141,6 @@ class FontList
                 prefs.set 'fontlist:pos:y', y
                 @element.style.left = "#{x}px"
                 @element.style.top  = "#{y}px"
-                @shadow.update()
         
         @element.addEventListener 'wheel', (event) -> event.stopPropagation()
         @element.addEventListener 'keydown', @onKeyDown
@@ -156,7 +155,6 @@ class FontList
         #  0000000   000   000   0000000    0000000   000        0000000   
                 
         @kali.insertBelowTools @element
-        @shadow = new Shadow @element
 
         @scrolls = {}
                 
@@ -216,7 +214,6 @@ class FontList
         @active().scrollIntoViewIfNeeded false
         @element.focus()
         post.emit 'font', 'family', @active().innerHTML
-        @shadow.update()
           
     isVisible:      -> @element.style.display != 'none'
     toggleDisplay:  -> @setVisible not @isVisible()
@@ -225,19 +222,16 @@ class FontList
         @element.style.display = 'none'
         @kali.focus()
         prefs.set 'fontlist:visible', false
-        @shadow.update()
         
     show: -> 
         @element.style.display = 'block'
         @element.focus()
         prefs.set 'fontlist:visible', true
         @active().scrollIntoViewIfNeeded false
-        @shadow.update()
     
     onClose: => @hide()
   
     onResize: (size) => 
-        log 'fontlist on resize'
         ensureInSize @element, size
     
     #  0000000    0000000  000000000  000  000   000  00000000  
@@ -278,7 +272,6 @@ class FontList
         if opt?.emit != false
             post.emit 'font', 'family', @active(group).innerHTML
         prefs.set "fontlist:selected:#{group}", index
-        @shadow.update()
 
     onClick: (event) => @select childIndex event.target
     

@@ -99,6 +99,7 @@ module.exports =
             
     boxCenter: (box) -> pos box.x + box.width/2.0, box.y + box.height/2.0
     boxOffset: (box) -> pos box.x, box.y
+    boxPos:    (box) -> pos box.x, box.y
     boxSize:   (box) -> pos box.width, box.height
     
     boxPos: (box, name='top left') ->
@@ -312,18 +313,6 @@ module.exports =
             
         div
    
-    # 00000000  000      00000000  00     00  00000000   00000000    0000000   00000000   
-    # 000       000      000       000   000  000   000  000   000  000   000  000   000  
-    # 0000000   000      0000000   000000000  00000000   0000000    000   000  00000000   
-    # 000       000      000       000 0 000  000        000   000  000   000  000        
-    # 00000000  0000000  00000000  000   000  000        000   000   0000000   000        
-    
-    # elemProp: (element, prop) ->
-#         
-        # return null if not element?
-        # return element[prop] if element[prop]?
-        # module.exports.elemProp element.parentNode, prop
-
     # 00000000  000   000   0000000  000   000  00000000   00000000  000  000   000   0000000  000  0000000  00000000  
     # 000       0000  000  000       000   000  000   000  000       000  0000  000  000       000     000   000       
     # 0000000   000 0 000  0000000   000   000  0000000    0000000   000  000 0 000  0000000   000    000    0000000   

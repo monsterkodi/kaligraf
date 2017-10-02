@@ -17,9 +17,7 @@ class Group extends Tool
         
         super @kali, cfg
         
-        @stage.group   = Group.group
-        @stage.ungroup = Group.ungroup
-        @stage.ids     = Group.ids
+        @bindStage ['group', 'ungroup']
         
         @initTitle()
         
@@ -50,7 +48,7 @@ class Group extends Tool
     # 000   000  000   000  000   000  000   000  000        
     #  0000000   000   000   0000000    0000000   000        
     
-    @group: ->
+    group: ->
 
         sortedItems = @sortedSelectedItems()
         
@@ -74,7 +72,7 @@ class Group extends Tool
     # 000   000  000  0000  000   000  000   000  000   000  000   000  000        
     #  0000000   000   000   0000000   000   000   0000000    0000000   000        
     
-    @ungroup: ->
+    ungroup: ->
 
         groups = @selectedItems type:'g'
         if not empty groups

@@ -4,3 +4,4 @@
 ![notes](svg/docs/notes.svg)
 ![tools](svg/test/tools.svg)
 ![keys](svg/docs/keys.svg)
+![browser](bin/browser.png)

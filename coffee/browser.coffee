@@ -140,7 +140,10 @@ class Browser
         prefs.set 'browser:open', false
         @element.remove()
 
-    onDelFile: (event) => @delItem event.target.parentNode.parentNode
+    onDelFile: (event) => 
+        
+        @delItem event.target.parentNode.parentNode
+        
     onFinderFile: (event) => 
         
         item = event.target.parentNode.parentNode

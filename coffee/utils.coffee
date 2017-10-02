@@ -4,7 +4,7 @@
 # 000   000     000     000  000           000    
 #  0000000      000     000  0000000  0000000     
 
-{ empty, clamp, elem, pos, log, _ } = require 'kxk'
+{ stopEvent, empty, clamp, elem, pos, log, _ } = require 'kxk'
 
 uuid = require 'uuid/v4'
     
@@ -308,7 +308,7 @@ module.exports =
         if _.isFunction opt.close
             
             close = elem 'button', class:"#{clss}Close", text: 'X'
-            close.addEventListener 'click', opt.close
+            close.addEventListener 'mousedown', -> stopEvent event and opt.close event
             div.appendChild close
             
         div

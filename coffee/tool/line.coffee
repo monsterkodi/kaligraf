@@ -40,6 +40,19 @@ class Line extends Tool
             action: => prefs.set 'line:text', @button('text').toggle
         ]
         
+        post.on 'selection', @onSelection
+        
+    onSelection: =>
+        
+        items = @stage.selectedLeafItems()
+        return if empty items
+        
+        width = 0
+        for item in items
+            width += parseFloat item.style 'stroke-width'
+                    
+        @setSpinValue 'width', width/items.length
+        
     setWidth: (@width) =>
         
         prefs.set 'line:width', @width

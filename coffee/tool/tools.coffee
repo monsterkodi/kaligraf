@@ -74,6 +74,7 @@ class Tools extends Tool
             when 'center'     then @stage.centerSelection()
             when 'swapColor'  then @stroke.swapColor()
             when 'toggleTools' then @toggleTools()
+            when 'toggleProperties' then @toggleProperties()
             else log "unhandled tool action #{action} #{tool}"
         
     # 000  000   000  000  000000000  
@@ -94,6 +95,13 @@ class Tools extends Tool
                 { name: 'fill',   class: 'color' }
             ]
             [
+                { class: 'line', name: 'width' }
+                { class: 'alpha' }
+                { class: 'angle' }
+                { class: 'font'   }
+                { class: 'anchor' }
+            ]            
+            [
                 { name: 'pick',     group: 'shape', popup: 'temp' }
                 { name: 'edit',     group: 'shape', popup: 'temp' }
                 { name: 'pan',      group: 'shape', popup: 'temp' }
@@ -112,22 +120,15 @@ class Tools extends Tool
                 { name: 'rect',             group: 'shape', popup: 'temp' }
                 { name: 'triangle',         group: 'shape', popup: 'temp' }
                 { name: 'triangle_square',  group: 'shape', popup: 'temp' }
-                { name: 'image',            group: 'shape', popup: 'temp' }
                 { name: 'circle',           group: 'shape', popup: 'temp' }
                 { name: 'ellipse',          group: 'shape', popup: 'temp' }
-                { name: 'pie', draw: true,  group: 'shape', popup: 'temp' }
-                { name: 'arc', draw: true,  group: 'shape', popup: 'temp' }                
+                { name: 'text',             group: 'shape', popup: 'temp' }
+                { name: 'image',            group: 'shape', popup: 'temp' }
+                # { name: 'pie', draw: true,  group: 'shape', popup: 'temp' }
+                # { name: 'arc', draw: true,  group: 'shape', popup: 'temp' }                
             ]
             [
-                { name:  'text',    group: 'shape', popup: 'temp' }
-                { class: 'font'   }
-                { class: 'anchor' }
-            ]
-            [
-                { class: 'alpha' }
-                { class: 'angle' }
                 { class: 'undo'  }
-                { class: 'line', name: 'width' }
             ]
             [
                 { class: 'group' }
@@ -236,11 +237,12 @@ class Tools extends Tool
         for names in store
             parent = @getTool first names
             continue if parent.name == 'stroke'
-            if not parent.hasChildren()
+            if not parent.hasChildren() and parent.parent != @
                 parent.swapParent()
 
             for name in names.slice 1
                 child = parent.getTool name 
+                continue if not child
                 index = names.indexOf name
                 child.setPos parent.pos().plus pos 66*index, 0
                 childIndex = parent.children.indexOf(child)
@@ -279,6 +281,13 @@ class Tools extends Tool
         for tool in @children
             if hide then tool.hideChildren()
             else         tool.showChildren()
+
+    toggleProperties: ->
+        
+        tool = @getTool 'font'
+        if not tool.hasChildren()
+            tool = tool.parent
+        tool.toggleChildren()
             
     #  0000000    0000000  000000000  000  000   000   0000000   000000000  00000000  
     # 000   000  000          000     000  000   000  000   000     000     000       

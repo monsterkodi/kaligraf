@@ -49,7 +49,31 @@ class Font extends Tool
         ]
                 
         post.on 'font', @onFont
+        post.on 'selection', @onSelection
                 
+    onSelection: =>    
+        
+        textItems = @stage.selectedTextItems()
+        return if empty textItems
+        
+        weight = undefined
+        style  = undefined
+        size   = 0
+        for item in textItems
+            if weight == undefined
+                weight = item.font 'font-weight'
+            else if weight != item.font 'font-weight'
+                weight = null
+            if style == undefined
+                style = item.font 'font-style'
+            else if style != item.font 'font-style'
+                style = null
+            size += item.font 'font-size'
+                            
+        @setToggle 'bold', weight == 'bold'
+        @setToggle 'italic', style == 'italic'
+        @setSpinValue 'size', size/textItems.length
+        
     # 0000000     0000000   000      0000000    
     # 000   000  000   000  000      000   000  
     # 0000000    000   000  000      000   000  
@@ -58,7 +82,7 @@ class Font extends Tool
     
     onBold: (event) => 
         
-        @bold   = !@bold
+        @bold   = @getToggle 'bold'
         @weight = @bold and 'bold' or 'normal'
         
         @title.style.fontWeight = @weight
@@ -77,7 +101,7 @@ class Font extends Tool
     
     onItalic: (event) => 
         
-        @italic = !@italic
+        @italic = @getToggle 'italic'
         @style  = @italic and 'italic' or 'normal'
         
         @title.style.fontStyle = @style

@@ -48,9 +48,9 @@ class Anchor extends Tool
             reset:  1.2
             action: @onLeading
             
-        post.on 'selection', @update
+        post.on 'selection', @onSelection
            
-    update: =>    
+    onSelection: =>    
         
         textItems = @stage.selectedTextItems()
         return if empty textItems
@@ -63,7 +63,7 @@ class Anchor extends Tool
                 anchor = null
                 break
         if anchor
-            @toggleButton anchor if not @button(anchor).toggle
+            @setToggle anchor
     
         leading = 0
         for item in textItems

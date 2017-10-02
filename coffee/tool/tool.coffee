@@ -286,7 +286,10 @@ class Tool
         
         btn.toggle = !btn.toggle
         btn.classList.toggle 'active'
-                
+    
+    setToggle: (name, toggle=true) -> if @button(name).toggle != toggle then @toggleButton name
+    getToggle: (name) -> @button(name).toggle
+        
     # 0000000    000000000  000   000        0000000  000      000   0000000  000   000  
     # 000   000     000     0000  000       000       000      000  000       000  000   
     # 0000000       000     000 0 000       000       000      000  000       0000000    

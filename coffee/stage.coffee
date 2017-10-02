@@ -237,15 +237,15 @@ class Stage
     selectedLeafItems: (opt) ->
                 
         items = []
-        for item in @selectedItems opt
+        for item in @selectedItems()
             if @isLeaf item 
-                items.push item
+                items = items.concat @filterItems [item], opt
             else 
                 items = items.concat @treeItems item, opt
-        items
+        @filterItems items, noType: 'g'
 
     selectedNoTextItems: -> @selectedLeafItems noType:'text'
-    selectedTextItems:   -> @filterItems @selectedLeafItems(types:['text', 'g']), noType: 'g'
+    selectedTextItems:   -> @selectedLeafItems type:'text'
         
     sortedSelectedItems: (opt) ->
         

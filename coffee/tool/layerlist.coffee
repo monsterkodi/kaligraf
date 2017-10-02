@@ -319,6 +319,7 @@ class LayerList
         
         @element.style.display = 'none'
         @kali.focus()
+        @shadow.update()
         
     show: -> 
         

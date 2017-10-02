@@ -447,9 +447,7 @@ class Tool
     toFront: (zIndex=100) ->
         
         @element.style.zIndex = zIndex
-        if @children?.length
-            for c in @children
-                c.toFront zIndex+1
+        @updateDepth()
 
     toBack: ->
         
@@ -495,8 +493,18 @@ class Tool
         @hideChildren()
         if @parent.isVisible() and @parent.childrenVisible()
             @show()
+          
+        @updateDepth()
             
         @kali.tools.store()
+        
+    updateDepth: ->
+        
+        zIndex = parseInt @element.style.zIndex
+        log zIndex
+        for child in @children
+            child.element.style.zIndex = parseInt zIndex + 10 + child.pos().x / 66
+            log child.element.style.zIndex
                 
     # 0000000    00000000    0000000    0000000   
     # 000   000  000   000  000   000  000        

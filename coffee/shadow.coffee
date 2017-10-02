@@ -5,8 +5,6 @@
 #      000  000   000  000   000  000   000  000   000  000   000
 # 0000000   000   000  000   000  0000000     0000000   00     00
 
-{ log } = require 'kxk'
-
 { boundingBox } = require './utils'
 
 class Shadow
@@ -16,6 +14,7 @@ class Shadow
         @svg = SVG(@element).size '100%', '100%'
         @svg.style 
             position: 'absolute'
+            'pointer-events': 'none'
         
         @grp  = @svg.group()
         @brct = @grp.rect()
@@ -30,6 +29,8 @@ class Shadow
             fill:   '#000'
             'fill-opacity': 0.5
             
+        @grp.filter (add) -> add.gaussianBlur 10
+        
         @element.parentNode.insertBefore @svg.node, @element
         @update()
         
@@ -55,6 +56,4 @@ class Shadow
             width:  br.w
             height: br.h
             
-        @grp.filter (add) -> add.gaussianBlur 10
-           
 module.exports = Shadow

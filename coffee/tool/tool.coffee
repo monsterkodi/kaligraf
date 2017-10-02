@@ -7,14 +7,12 @@
 
 { fileExists, upElem, downElem, stopEvent, elem, drag, post, first, last, fs, pos, log, $, _ } = require 'kxk'
 
-{ elemProp } = require '../utils'
-{ multi }    = require 'heterarchy'
+{ multi } = require 'heterarchy'
 
-Spin = require './spin'
+Spin   = require './spin'
+Button = require './button'
 
-Exporter = require '../exporter'
-
-class Tool extends Spin
+class Tool extends multi Spin, Button
 
     constructor: (@kali, @cfg) ->
 
@@ -223,10 +221,8 @@ class Tool extends Spin
     updateDepth: ->
         
         zIndex = parseInt @element.style.zIndex
-        log zIndex
         for child in @children
             child.element.style.zIndex = parseInt zIndex + 10 + child.pos().x / 66
-            log child.element.style.zIndex
                 
     # 0000000    00000000    0000000    0000000   
     # 000   000  000   000  000   000  000        

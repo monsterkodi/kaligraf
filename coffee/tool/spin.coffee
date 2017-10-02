@@ -5,11 +5,9 @@
 #      000  000        000  000  0000
 # 0000000   000        000  000   000
 
-{ downElem, upElem, log, _ } = require 'kxk'
+{ stopEvent, downElem, upElem, last, log, _ } = require 'kxk'
 
-Button = require './button'
-
-class Spin extends Button
+class Spin
         
     initSpin: (spin) ->
         

@@ -318,11 +318,11 @@ module.exports =
     # 000       000      000       000 0 000  000        000   000  000   000  000        
     # 00000000  0000000  00000000  000   000  000        000   000   0000000   000        
     
-    elemProp: (element, prop) ->
-        
-        return null if not element?
-        return element[prop] if element[prop]?
-        module.exports.elemProp element.parentNode, prop
+    # elemProp: (element, prop) ->
+#         
+        # return null if not element?
+        # return element[prop] if element[prop]?
+        # module.exports.elemProp element.parentNode, prop
 
     # 00000000  000   000   0000000  000   000  00000000   00000000  000  000   000   0000000  000  0000000  00000000  
     # 000       0000  000  000       000   000  000   000  000       000  0000  000  000       000     000   000       

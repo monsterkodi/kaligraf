@@ -5,11 +5,13 @@
 # 000   000  000   000  000   000  000   000  000  000       000  0000     000     000      000       000     000   
 #  0000000   000   000  000   000  0000000    000  00000000  000   000     000     0000000  000  0000000      000   
 
-{ stopEvent, drag, empty, setStyle, childIndex, prefs, keyinfo, elem, clamp, last, post, log, $, _ } = require 'kxk'
+{ stopEvent, drag, childIndex, prefs, keyinfo, elem, empty, clamp, post, log, $, _ } = require 'kxk'
 
-{ ensureInSize, bboxForItems, winTitle, contrastColor } = require '../utils'
+{ ensureInSize, winTitle } = require '../utils'
 
 Exporter = require '../exporter'
+
+GradientItem = require './gradientitem'
 
 class GradientList
     
@@ -66,6 +68,8 @@ class GradientList
         @kali.insertAboveTools @element
         
         post.on 'resize', @onResize
+        
+        @restore()
         
     # 0000000    00000000    0000000    0000000   
     # 000   000  000   000  000   000  000        
@@ -125,41 +129,50 @@ class GradientList
     # 000   000  000   000  000   000  000   000  000  000       000  0000     000     
     #  0000000   000   000  000   000  0000000    000  00000000  000   000     000     
 
-    onNewGradient:  =>
+    onNewGradient: =>
         index = @activeIndex()
-        @scroll.insertBefore @gradientDiv(), @activeGradient()
-        @activate index
+        gradient = new GradientItem @
+        @scroll.insertBefore gradient.element, @activeGradient()
+        @activate Math.max 0, index
+        @store()
         
     onCopyGradient: => 
         index = @activeIndex()
         return if index < 0
-        @scroll.insertBefore @gradientDiv(), @activeGradient()
+        gradient = new GradientItem @
+        gradient.setGradient @activeGradient().gradient.gradient
+        @scroll.insertBefore gradient.element, @activeGradient()
         @activate index
+        @store()
         
     onDelGradient:  =>
+        
         index = @activeIndex()
         return if index < 0
         @activeGradient().remove()
         @activate index
-    
-    gradientDiv: ->
+        log "GradientList.onDelGradient index:#{index}"
+        @store()
+         
+    gradientItems: -> 
         
-        div = elem class:'gradientListGradient'
+        items = []
+        if not empty @scroll.children
+            for child in @scroll.children
+                items.push child.gradient
+        items
         
-        svg = SVG(div).size '100%', '100%'
-        svg.addClass 'gradientListSVG'
-        svg.viewbox x:0,y:0,width:100,height:25
+    store: ->
+        prefs.set 'gradient:active', @activeIndex()
+        prefs.set 'gradient:list', @gradientItems().map (gradient) -> gradient.state()
+        log 'store:', prefs.get 'gradient:list'
         
-        @gradient = svg.gradient 'linear', (stop) =>
-            stop.at 0.0, new SVG.Color r:0, g:0, b:0
-            stop.at 1.0, @kali.tool('fill').color
-        
-        @grd = svg.rect()
-        @grd.fill @gradient
-        @grd.width  100
-        @grd.height 25
-        
-        div
+    restore: ->
+        for state in prefs.get 'gradient:list', []
+            gradient = new GradientItem @
+            gradient.restore state
+            @scroll.appendChild gradient.element
+        @activate prefs.get 'gradient:active', 0
         
     #  0000000    0000000  000000000  000  000   000  00000000  
     # 000   000  000          000     000  000   000  000       
@@ -167,7 +180,7 @@ class GradientList
     # 000   000  000          000     000     000     000       
     # 000   000   0000000     000     000      0      00000000  
     
-    activeGradient: -> $ @scroll, '.gradientListGradient.active'
+    activeGradient: -> $ @scroll, '.gradientItem.active'
     activeIndex: -> not @activeGradient() and -1 or childIndex @activeGradient()
     
     gradientAt: (index) -> @scroll.children[index]
@@ -229,11 +242,14 @@ class GradientList
     # 0000000   00000000  0000000  00000000   0000000     000     
     
     navigate: (dir) -> @activate @activeIndex() + dir
+    
     activate: (index, opt) ->
+        
         index = clamp 0, @scroll.children.length-1, index
-        @log "GradientList.activate", index, opt
         @activeGradient()?.classList.remove 'active'
         @gradientAt(index)?.classList.add 'active'
+        
+        prefs.set 'gradient:active', @activeIndex()
             
     onClick: (event) => 
         

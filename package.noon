@@ -10,6 +10,7 @@ scripts
 dependencies
                 colors          ^1.1.2
                 font-manager    ^0.2.2
+                heterarchy      ^1.0.7
                 kxk             ^0.17.4
                 svg.colorat.js  ^1.0.0
                 svg.filter.js   ^2.0.2

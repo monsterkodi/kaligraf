@@ -9,7 +9,8 @@
 
 { winTitle, ensureInSize } = require '../utils'
 
-fontManager = require 'font-manager' 
+FontManager = require 'font-manager' 
+Shadow      = require '../shadow'
 
 fontGroups = 
     Sans: [
@@ -140,11 +141,12 @@ class FontList
                 prefs.set 'fontlist:pos:y', y
                 @element.style.left = "#{x}px"
                 @element.style.top  = "#{y}px"
+                @shadow.update()
         
         @element.addEventListener 'wheel', (event) -> event.stopPropagation()
         @element.addEventListener 'keydown', @onKeyDown
                 
-        fonts = fontManager.getAvailableFontsSync().map (font) -> font.family
+        fonts = FontManager.getAvailableFontsSync().map (font) -> font.family
         fonts = _.uniq fonts
 
         #  0000000   00000000    0000000   000   000  00000000    0000000  
@@ -152,9 +154,12 @@ class FontList
         # 000  0000  0000000    000   000  000   000  00000000   0000000   
         # 000   000  000   000  000   000  000   000  000             000  
         #  0000000   000   000   0000000    0000000   000        0000000   
-        
+                
+        @kali.insertBelowTools @element
+        @shadow = new Shadow @element
+
         @scrolls = {}
-        
+                
         for group,groupFonts of fontGroups
             
             scroll = elem 'div', class: 'fontListScroll'
@@ -179,9 +184,7 @@ class FontList
                     addFont font if font?
                     
             @select prefs.get("fontlist:selected:#{group}", 0), group, emit:false
-                    
-        @kali.insertBelowTools @element
-        
+                            
         @activeGroup = @groupForFamily @kali.tool('font').family
         @activeGroup ?= 'Sans'
         @showGroup @activeGroup
@@ -213,6 +216,7 @@ class FontList
         @active().scrollIntoViewIfNeeded false
         @element.focus()
         post.emit 'font', 'family', @active().innerHTML
+        @shadow.update()
           
     isVisible:      -> @element.style.display != 'none'
     toggleDisplay:  -> @setVisible not @isVisible()
@@ -221,12 +225,14 @@ class FontList
         @element.style.display = 'none'
         @kali.focus()
         prefs.set 'fontlist:visible', false
+        @shadow.update()
         
     show: -> 
         @element.style.display = 'block'
         @element.focus()
         prefs.set 'fontlist:visible', true
         @active().scrollIntoViewIfNeeded false
+        @shadow.update()
     
     onClose: => @hide()
   
@@ -272,6 +278,7 @@ class FontList
         if opt?.emit != false
             post.emit 'font', 'family', @active(group).innerHTML
         prefs.set "fontlist:selected:#{group}", index
+        @shadow.update()
 
     onClick: (event) => @select childIndex event.target
     

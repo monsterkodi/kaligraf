@@ -10,6 +10,7 @@
 { bboxForItems, boundingBox, winTitle, contrastColor } = require '../utils'
 
 Exporter = require '../exporter'
+Shadow   = require '../shadow'
 
 class LayerList
     
@@ -52,6 +53,7 @@ class LayerList
             onStop:  @onDragStop
         
         @kali.insertAboveTools @element
+        @shadow = new Shadow @element
         
         post.on 'resize', @onResize
 
@@ -134,6 +136,8 @@ class LayerList
         
         for index in [0...Math.max(1, @stage.numLayers())]
             @scroll.insertBefore @layerDiv(index), @scroll.firstChild
+            
+        @shadow.update()
 
     updateActive: (info) ->
         

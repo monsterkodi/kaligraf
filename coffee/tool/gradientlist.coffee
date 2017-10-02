@@ -5,13 +5,13 @@
 # 000   000  000   000  000   000  000   000  000  000       000  0000     000     000      000       000     000   
 #  0000000   000   000  000   000  0000000    000  00000000  000   000     000     0000000  000  0000000      000   
 
-{ stopEvent, drag, childIndex, prefs, keyinfo, elem, empty, clamp, post, log, $, _ } = require 'kxk'
+{ stopEvent, childIndex, upElem, drag, childIndex, prefs, keyinfo, elem, empty, clamp, post, log, $, _ } = require 'kxk'
 
-{ ensureInSize, winTitle } = require '../utils'
-
-Exporter = require '../exporter'
+{ ensureInSize, winTitle, boundingBox } = require '../utils'
 
 GradientItem = require './gradientitem'
+Exporter     = require '../exporter'
+Shadow       = require '../shadow'
 
 class GradientList
     
@@ -63,9 +63,11 @@ class GradientList
                 prefs.set 'gradientlist:pos:x', x
                 prefs.set 'gradientlist:pos:y', y
                 @element.style.left = "#{x}px"
-                @element.style.top  = "#{y}px"            
-        
-        @kali.insertAboveTools @element
+                @element.style.top  = "#{y}px"  
+                @shadow.update()
+
+        @kali.insertBelowTools @element
+        @shadow = new Shadow @element
         
         post.on 'resize', @onResize
         
@@ -77,13 +79,14 @@ class GradientList
     # 000   000  000   000  000   000  000   000  
     # 0000000    000   000  000   000   0000000   
     
-    onDragStart: (d, e) => 
+    onDragStart: (drag, event) => 
 
-        index = e.target.index
+        @dragGradient = upElem event.target, prop: 'gradient'
 
-        return 'skip' if not index?
+        return 'skip' if not @dragGradient?
         
-        @dragGradient = @gradientAt index
+        index = childIndex @dragGradient
+        
         br = @dragGradient.getBoundingClientRect()
         
         @dragDiv = @dragGradient.cloneNode true
@@ -95,22 +98,18 @@ class GradientList
         @dragDiv.style.width    = "#{br.width}px"
         @dragDiv.style.height   = "#{br.height}px"
         @dragDiv.style.pointerEvents = 'none'
-        svg = SVG.adopt @dragDiv.firstChild
-        {r,g,b} = new SVG.Color @stage.color
-        svg.style 
-            'background': "rgba(#{r},#{g},#{b},1)"
+        @dragDiv.style.zIndex   = 9999
         document.body.appendChild @dragDiv
         @dragGradient.style.opacity = '0'
 
-    onDragMove: (d,e) =>
-        
-        @dragDiv.style.transform = "translateY(#{d.deltaSum.y}px)"
-        if gradient = @gradientAtY d.pos.y
-            if gradient.index != @dragGradient.index
-                @dragDiv.stopIndex = gradient.index
+    onDragMove: (drag,event) =>
+        @dragDiv.style.transform = "translateY(#{drag.deltaSum.y}px)"
+        if gradient = @gradientAtY drag.pos.y
+            if childIndex(gradient) != childIndex(@dragGradient)
+                @dragDiv.stopIndex = childIndex gradient
                 @swapGradients gradient, @dragGradient
                         
-    onDragStop: (d,e) =>
+    onDragStop: (drag,event) =>
         
         { startIndex, stopIndex } = @dragDiv
         
@@ -151,7 +150,6 @@ class GradientList
         return if index < 0
         @activeGradient().remove()
         @activate index
-        log "GradientList.onDelGradient index:#{index}"
         @store()
          
     gradientItems: -> 
@@ -165,7 +163,7 @@ class GradientList
     store: ->
         prefs.set 'gradient:active', @activeIndex()
         prefs.set 'gradient:list', @gradientItems().map (gradient) -> gradient.state()
-        log 'store:', prefs.get 'gradient:list'
+        @shadow.update()
         
     restore: ->
         for state in prefs.get 'gradient:list', []
@@ -200,13 +198,12 @@ class GradientList
         
         return if not gradientA? or not gradientB?
         return if gradientA == gradientB
-        if gradientA.index > gradientB.index
+        if childIndex(gradientA) > childIndex(gradientB)
             @scroll.insertBefore gradientB, gradientA
-            @scroll.insertBefore gradientA, @scroll.children[gradientB.index]
+            @scroll.insertBefore gradientA, @scroll.children[childIndex(gradientB)]
         else
             @scroll.insertBefore gradientA, gradientB
-            @scroll.insertBefore gradientB, @scroll.children[gradientA.index]
-        [gradientA.index, gradientB.index] = [gradientB.index, gradientA.index]
+            @scroll.insertBefore gradientB, @scroll.children[childIndex(gradientA)]
                   
     onResize: (size) => ensureInSize @element, size
         
@@ -224,6 +221,7 @@ class GradientList
         prefs.set 'gradientlist:visible', false
         
         @element.style.display = 'none'
+        @shadow.update()
         @kali.focus()
         
     show: -> 
@@ -231,6 +229,7 @@ class GradientList
         prefs.set 'gradientlist:visible', true
         
         @element.style.display = 'block'
+        @shadow.update()
         @element.focus()
         
     onClose: => @hide()

@@ -64,11 +64,12 @@ class Menu
             label: 'Edit', submenu: [
                 { label: 'Align', submenu: [
                     { label: 'Left',    accelerator: '1',           click: -> button 'align', 'left'}
-                    { label: 'Center',  accelerator: '2',           click: -> button 'align', 'center'}
                     { label: 'Right',   accelerator: 'command+1',   click: -> button 'align', 'right'}
                     { type:  'separator'}                                             
-                    { label: 'Top',     accelerator: '4',           click: -> button 'align', 'top'}
+                    { label: 'Center',  accelerator: '2',           click: -> button 'align', 'center'}
                     { label: 'Middle',  accelerator: '3',           click: -> button 'align', 'mid'}
+                    { type:  'separator'}                                             
+                    { label: 'Top',     accelerator: '4',           click: -> button 'align', 'top'}
                     { label: 'Bottom',  accelerator: 'command+4',   click: -> button 'align', 'bot'}
                     { type:  'separator'}
                     { label: 'Space Horizontal', accelerator: '5',         click: -> button 'space', 'horizontal'}
@@ -112,10 +113,6 @@ class Menu
             
             label: 'Tool', submenu: [
                 
-                { label: 'Layers',      accelerator: 'command+l',   click: -> action 'layer'}
-                { type:  'separator'}
-                { label: 'Text',        accelerator: 't',           click: -> action 'click', 'text'}
-                { label: 'Font',        accelerator: 'command+f',   click: -> action 'font'}
                 { type:  'separator'}
                 { label: 'Zoom',        submenu: [
                     { label:'Reset',    accelerator: 'command+0',   click: -> button 'zoom', 'reset' }
@@ -123,21 +120,34 @@ class Menu
                     { label:'In',       accelerator: 'command+=',   click: -> button 'zoom', 'in'  }
                 ] }
                 { label: 'Toggle',      submenu: [
-                    { label: 'Fill/Stroke', accelerator: 'command+6',       click: -> action 'swapColor'}
-                    { label: 'Groups',      accelerator: 'command+shift+g', click: -> button 'show', 'groups'}
                     { label: 'Padding',     accelerator: 'p',               click: -> button 'padding', 'show'}
-                    { label: 'IDs',         accelerator: 'i',               click: -> button 'show', 'ids'}
-                    { label: 'Tools',       accelerator: 'command+shift+t', click: -> action 'toggleTools'}
+                    { label: 'Fill/Stroke', accelerator: 'command+6',       click: -> action 'swapColor'}
                     { label: 'Properties',  accelerator: 'command+t',       click: -> action 'toggleProperties'}
+                    { label: 'Tools',       accelerator: 'command+shift+t', click: -> action 'toggleTools'}
+                    { label: 'Groups',      accelerator: 'command+shift+g', click: -> button 'show', 'groups'}
+                    { label: 'IDs',         accelerator: 'command+shift+i', click: -> button 'show', 'ids'}
                 ]
                 }
                 { type:  'separator'}
                 { label: 'Bezier',      accelerator: 'command+b',   click: -> action 'click', 'bezier_smooth'}
                 { label: 'Polygon',     accelerator: 'command+p',   click: -> action 'click', 'polygon'}
                 { label: 'Line',        accelerator: 'l',           click: -> action 'click', 'line'}
+                { label: 'Text',        accelerator: 't',           click: -> action 'click', 'text'}                
                 { type:  'separator'}
                 { label: 'Grid',        accelerator: 'command+9',   click: -> button 'grid', 'grid'}
                 { label: 'Center',      accelerator: 'command+e',   click: -> action 'center'}
+            ]
+        ,
+            # 000   000  000  00000000  000   000  
+            # 000   000  000  000       000 0 000  
+            #  000 000   000  0000000   000000000  
+            #    000     000  000       000   000  
+            #     0      000  00000000  00     00  
+            
+            label: 'View', submenu: [
+                { label: 'Layers',      accelerator: 'command+l',   click: -> action 'layer'}
+                { label: 'Fonts',       accelerator: 'command+f',   click: -> action 'font'}
+                { label: 'Gradients',   accelerator: 'command+j',   click: -> action 'gradient'}
             ]
         ,
             # 000   000  000  000   000  0000000     0000000   000   000

@@ -53,6 +53,7 @@ class Tools extends Tool
             when 'browse'     then @kali.openBrowser()
             when 'font'       then @getTool('font').toggleList()
             when 'layer'      then @getTool('layer').toggleList()
+            when 'gradient'   then @getTool('gradient').toggleList()
             when 'group'      then @stage.group()
             when 'ungroup'    then @stage.ungroup()
             when 'cut'        then @stage.cut()
@@ -95,6 +96,7 @@ class Tools extends Tool
                 { name: 'fill',   class: 'color' }
             ]
             [
+                { class: 'gradient' }
                 { class: 'line', name: 'width' }
                 { class: 'alpha' }
                 { class: 'angle' }
@@ -218,6 +220,9 @@ class Tools extends Tool
             
         if prefs.get 'layerlist:visible', false
             @getTool('layer').toggleList()
+            
+        if prefs.get 'gradientlist:visible', false
+            @getTool('gradient').toggleList()
         
         if recent = first prefs.get 'recent', []
             @stage.load recent

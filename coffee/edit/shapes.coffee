@@ -126,8 +126,12 @@ class Shapes
                 e.loaded (loader) ->
                     @size loader.width, loader.height
                 
-            else
-                e = root[shape]()
+            else 
+                if root[shape]?
+                    e = root[shape]()
+                else
+                    log "Shapes.addShape -- no such shape? #{shape}"
+                    return
               
         uuid e
                 

@@ -306,8 +306,8 @@ button
 
 .fontList
     position                absolute
-    padding-bottom 6px
-    border-radius 6px
+    padding-bottom          6px
+    border-radius           6px
 
 .fontListScroll
     overflow-y              scroll
@@ -321,6 +321,38 @@ button
     padding-top             4px
     cursor                  pointer
 
+//  0000000   00000000    0000000   0000000    000  00000000  000   000  000000000  000      000   0000000  000000000  
+// 000        000   000  000   000  000   000  000  000       0000  000     000     000      000  000          000     
+// 000  0000  0000000    000000000  000   000  000  0000000   000 0 000     000     000      000  0000000      000     
+// 000   000  000   000  000   000  000   000  000  000       000  0000     000     000      000       000     000     
+//  0000000   000   000  000   000  0000000    000  00000000  000   000     000     0000000  000  0000000      000     
+
+.gradientList
+    position                absolute
+    border-radius           6px
+    overflow                hidden
+    
+.gradientListScroll
+    background              #222
+    max-height              600px
+    overflow-y              auto
+    box-sizing              border-box
+    margin                  0
+    padding                 0
+    cursor                  pointer
+    
+.gradientListGradient
+    position                relative
+    margin                  0
+    width                   240px
+    height                  60px
+    overflow                hidden
+    cursor                  pointer
+    box-sizing              border-box
+    border                  1px solid transparent
+    &.active
+        border              1px solid #fff
+    
 // 000       0000000   000   000  00000000  00000000   000      000   0000000  000000000  
 // 000      000   000   000 000   000       000   000  000      000  000          000     
 // 000      000000000    00000    0000000   0000000    000      000  0000000      000     
@@ -354,6 +386,7 @@ button
         background          #222
     
 .layerListFooter
+.gradientListFooter
     display                 block
     height                  12px
     background              #222
@@ -371,6 +404,7 @@ button
         border              1px solid #fff
     
 .layerListSVG
+.gradientListSVG
     pointer-events          none
     display                 block
     margin                  0

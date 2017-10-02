@@ -7,7 +7,7 @@
 
 { stopEvent, drag, empty, setStyle, childIndex, prefs, keyinfo, elem, clamp, last, post, log, $, _ } = require 'kxk'
 
-{ ensureInSize, bboxForItems, winTitle, contrastColor } = require '../utils'
+{ bboxForItems, boundingBox, winTitle, contrastColor } = require '../utils'
 
 Exporter = require '../exporter'
 
@@ -68,17 +68,17 @@ class LayerList
         return 'skip' if not index?
         
         @dragLayer = @layerAt index
-        br = @dragLayer.getBoundingClientRect()
-        
+        br = boundingBox @dragLayer
         @dragDiv = @dragLayer.cloneNode true
         @dragDiv.startIndex = index
         @dragDiv.stopIndex  = index
         @dragDiv.style.position = 'absolute'
-        @dragDiv.style.top      = "#{br.top}px"
-        @dragDiv.style.left     = "#{br.left}px"
-        @dragDiv.style.width    = "#{br.width}px"
-        @dragDiv.style.height   = "#{br.height}px"
+        @dragDiv.style.left     = "#{br.x}px"
+        @dragDiv.style.top      = "#{br.y}px"
+        @dragDiv.style.width    = "#{br.w}px"
+        @dragDiv.style.height   = "#{br.h}px"
         @dragDiv.style.pointerEvents = 'none'
+        @dragDiv.style.zIndex   = 9999
         svg = SVG.adopt @dragDiv.firstChild
         {r,g,b} = new SVG.Color @stage.color
         svg.style 
@@ -314,7 +314,7 @@ class LayerList
         post.removeListener 'undo',  @onUndo
         
         @element.style.display = 'none'
-        @element.blur()
+        @kali.focus()
         
     show: -> 
         

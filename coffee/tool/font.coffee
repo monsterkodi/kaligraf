@@ -30,7 +30,7 @@ class Font extends Tool
         @initSpin
             name:   'size'
             min:    1
-            max:    1000
+            max:    9999
             reset:  100
             step:   [1,5,10,50]
             action: @setSize

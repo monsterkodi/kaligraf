@@ -197,7 +197,8 @@ class Draw
         object.addPoint object.numPoints(), stagePos, code
         object.plot()
         
-        @stage.setToolCursor "draw_drag"
+        if code != 'P'
+            @stage.setToolCursor "draw_drag"
 
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
@@ -238,7 +239,8 @@ class Draw
         
         object.plot()
         
-        @stage.setToolCursor "draw_#{action}"
+        if @shape in ['bezier_smooth', 'bezier_quad', 'bezier_cube']
+            @stage.setToolCursor "draw_#{action}"
        
     # 0000000     0000000   000000000  00000000    0000000    0000000  
     # 000   000  000   000     000     000   000  000   000  000       

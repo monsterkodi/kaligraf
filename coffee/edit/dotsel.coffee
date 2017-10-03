@@ -43,7 +43,7 @@ class DotSel
                 @del dot
             else
                 keep = event.shiftKey or dot.ctrl.isSelected dot.dot
-                @add dot, keep
+                @add dot, keep:keep
                         
     # 0000000    00000000    0000000    0000000   
     # 000   000  000   000  000   000  000        
@@ -120,7 +120,7 @@ class DotSel
                 if dot.hasClass 'selected'
                     @del dot
                 else
-                    @add dot, true
+                    @add dot, keep:true
     
     #  0000000   0000000    0000000    
     # 000   000  000   000  000   000  
@@ -128,35 +128,39 @@ class DotSel
     # 000   000  000   000  000   000  
     # 000   000  0000000    0000000    
     
-    add: (dot, keep=true) ->
+    add: (dot, opt = { keep:true, emit:true }) ->
         
-        @clear() if not keep
+        @clear() if not opt?.keep
         
         dot.ctrl.setSelected dot.dot, true
         
         if dot not in @dots 
+            
             @dots.push dot
             
-            post.emit 'dotsel', 'add', @dots, dot
+            if opt?.emit
+                post.emit 'dotsel', 'add', @dots, dot
 
     addInRect: (r, o) ->
 
         for object in @edit.objects
             for dot in object.dots()
                 if rectsIntersect r, dot.rbox()
-                    @add dot, true
+                    @add dot, keep:true
                 else if not o?.join
                     @del dot
     addAll: ->
         
         for object in @edit.objects
             for dot in object.dots()
-                @add dot, true
+                @add dot, keep:true, emit:false
+                
+        post.emit 'dotsel', 'set', @dots
 
     addDots: (dots) ->
         
         for dot in dots
-            @add dot, true
+            @add dot, keep:true
                 
     # 0000000    00000000  000      
     # 000   000  000       000      
@@ -180,6 +184,7 @@ class DotSel
 
     startRect: (p,o) ->
         
+        post.emit 'dotsel', 'startRect'
         @rect = x:p.x, y:p.y, x2:p.x, y2:p.y
         @updateRect o
 
@@ -195,6 +200,7 @@ class DotSel
 
         @rect?.element.remove()
         delete @rect
+        post.emit 'dotsel', 'endRect', @dots
 
     updateRect: (o) ->
 

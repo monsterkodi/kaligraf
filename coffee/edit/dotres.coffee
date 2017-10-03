@@ -353,11 +353,15 @@ class DotResizer
 
     onDotSel: (action, dots, dot) =>
 
+        return if @dotsel.rect?
+        
         switch action
-            when 'set'   then @setDots  dots
-            when 'add'   then @addDot   dots, dot
-            when 'del'   then @delDot   dots, dot
-            when 'clear' then @clear()
+            when 'set'          then @setDots  dots
+            when 'add'          then @addDot   dots, dot
+            when 'del'          then @delDot   dots, dot
+            when 'clear'        then @clear()
+            when 'startRect'    then @clear()
+            when 'endRect'      then @setDots dots
 
     empty: -> not @box
     clear: ->

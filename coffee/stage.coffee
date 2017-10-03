@@ -237,6 +237,11 @@ class Stage
         
     selectedLeafItems: (opt) ->
                 
+        if not opt?
+            opt = {}
+            opt.noType = 'text' if not @kali.tool('select').shapeText.includes 'text' 
+            opt.type   = 'text' if not @kali.tool('select').shapeText.includes 'shape'
+        
         items = []
         for item in @selectedItems()
             if @isLeaf item 

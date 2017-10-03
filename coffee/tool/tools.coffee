@@ -98,10 +98,12 @@ class Tools extends Tool
             [
                 { class: 'gradient' }
                 { class: 'line', name: 'width' }
-                { class: 'alpha' }
-                { class: 'angle' }
+                { class: 'alpha'  }
+                { class: 'angle'  }
                 { class: 'font'   }
+                { class: 'wire'   }                
                 { class: 'anchor' }
+                { class: 'select' }
             ]            
             [
                 { name:  'pick',    group: 'shape', popup: 'temp' }
@@ -142,7 +144,6 @@ class Tools extends Tool
             ]            
             [
                 { class: 'padding' }
-                { class: 'wire'    }
                 { class: 'zoom'    }
                 { class: 'grid'    }
                 { class: 'show'    }

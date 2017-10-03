@@ -163,13 +163,14 @@ class Tool extends multi Spin, Button
                 c.hide()
 
     delHalo: -> $('.toolHalo')?.remove()
-    addHalo: (opt) -> 
+    addHalo: -> 
+        
         halo = elem class: 'toolHalo'
-        halo.style.width      = "#{opt?.width ? ((@children.length+1)*66)}px"
-        halo.style.left       = "#{not opt?.x? and 66 or opt.x}px"
-        halo.style.top        = '-66px'
-        halo.style.height     = "#{3*66}px"
-        halo.style.background = 'rgba(0,0,0,0)'
+        halo.style.width      = "#{@cfg.halo?.width  ? ((@children.length+1)*66)}px"
+        halo.style.height     = "#{@cfg.halo?.height ? 3*66}px"
+        halo.style.left       = "#{not @cfg.halo?.x? and  66 or @cfg.halo.x}px"
+        halo.style.top        = "#{not @cfg.halo?.y? and -66 or @cfg.halo.y}px"
+        halo.style.background = 'rgba(0,0,0,0.0)'
         halo.style.position   = 'absolute'
         halo.style.zIndex     = 0
         @element.insertBefore halo, @element.firstChild
@@ -221,9 +222,9 @@ class Tool extends multi Spin, Button
     # 000   000  000   000  000   000  000   000  
     # 0000000    000   000  000   000   0000000   
     
-    dragStart: (d,e) => @element.addEventListener    'mouseup', @onClick
-    dragStop:  (d,e) => @element.removeEventListener 'mouseup', @onClick
-    dragMove:  (d,e) => @element.removeEventListener 'mouseup', @onClick
+    dragStart: (d,e) => @element.addEventListener     'mouseup', @onClick
+    dragStop:  (d,e) => @element?.removeEventListener 'mouseup', @onClick
+    dragMove:  (d,e) => @element?.removeEventListener 'mouseup', @onClick
             
     #  0000000  000      000   0000000  000   000  
     # 000       000      000  000       000  000   
@@ -244,8 +245,6 @@ class Tool extends multi Spin, Button
                 @saveSVG @name, svg
                 return
             
-        # log "click #{@name} keepChildren #{@keepChildren} parent #{@hasParent()} popup #{@cfg.popup}"
-                
         if @hasChildren() and event
             if not @childrenVisible()
                 if not @cfg.popup?

@@ -5,7 +5,7 @@
 # 000   000  000   000  000   000  000   000  000  000       000  0000     000     000     000     000       000 0 000
 #  0000000   000   000  000   000  0000000    000  00000000  000   000     000     000     000     00000000  000   000
 
-{ elem, drag, clamp, pos, log, $, _ } = require 'kxk'
+{ elem, drag, clamp, post, pos, log, $, _ } = require 'kxk'
 
 { boundingBox, boxPos, checkersPattern, colorBrightness, id } = require '../utils'
 
@@ -84,11 +84,12 @@ class GradientItem
         stops[index]
         
     delStop: ->
+        return if @numStops() < 2
         index = @activeIndex()
         stops = @stops()
         stops.splice index, 1
         @updateGradient stops
-        @stopAt(@clampIndex index)?.node.classList.add 'active'
+        @activateStop index
         
     updateGradient: (stops) ->
         
@@ -104,7 +105,7 @@ class GradientItem
         minStop = null
         minDist = 666
         offset  = itemPos.x / 100
-        for stop in @stops()
+        for stop in @stops().reverse()
             dist = Math.abs offset - stop.offset
             if dist < minDist
                 minStop = stop
@@ -149,8 +150,16 @@ class GradientItem
         else
             drag.stop = @addStop itemPos.x / 100
         
+        @activateStop drag.stop.index
+        
+    activateStop: (index) ->
+        
         @activeStop()?.node.classList.remove 'active'
-        @stopAt(drag.stop.index)?.node.classList.add 'active'
+        index = @clampIndex index
+        @stopAt(index)?.node.classList.add 'active'
+        stop = @stops()[index]
+        log "activateStop #{index}", stop
+        @kali.stopPalette?.setClosestColor stop.color, stop.opacity        
         
     activeStop: -> @stp.children().find (stop) -> stop.node.classList.contains 'active'
     activeIndex: -> @indexForStop @activeStop()
@@ -201,18 +210,39 @@ class GradientItem
         
         @closePalette()
         
-        stopPos = boxPos boundingBox @element
-        stopPos.add pos stop.offset*100, 25
+        br = boundingBox @element
+        stopPos = boxPos br
+        stopPos.add pos 0, br.h
         
-        @kali.stopPalette = new Palette @kali, onLeave:@closePalette
-        @kali.stopPalette.setPos stopPos
-        @kali.stopPalette.show()
-        @kali.stopPalette.setClosestColor stop.color, stop.opacity
+        palette = new Palette @kali, 
+            onLeave:@closePalette 
+            onClose:@closePalette 
+            halo: 
+                x:      -66
+                y:      0
+                width:  255+2*66
+                height: 2*66
+        palette.proxy = 'stop'
+        palette.setPos stopPos
+        palette.show()
+        palette.setClosestColor stop.color, stop.opacity
+        
+        post.on 'color', @onColor
+        @kali.stopPalette = palette
         
     closePalette: =>
         
-        @kali.stopPalette?.del()
-        delete @kali.stopPalette
+        post.removeListener 'color', @onColor
+        @kali.closeStopPalette()
+        
+    onColor: (color, info) =>
+        
+        return if color != 'stop'
+        
+        index = @activeIndex()
+        stop = @stops()[index]
+        @gradient.get(index)?.update stop.offset, info.color, info.alpha
+        @updateStops()
             
     #  0000000  000   000   0000000   000   000  
     # 000       000   000  000   000  000 0 000  
@@ -233,7 +263,7 @@ class GradientItem
             onStop:  @onStopStop
              
         @createStops()
-                        
+        
     hideStops: ->
         
         @stpDrag.deactivate()
@@ -256,6 +286,7 @@ class GradientItem
                 rct.style 'stroke', '#666'
             
         @update()
+        post.emit 'gradient', @state()
 
     update: -> @grd.fill @gradient
 

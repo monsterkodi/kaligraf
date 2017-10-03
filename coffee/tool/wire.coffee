@@ -20,35 +20,20 @@ class Wire extends Tool
         @initTitle()
         
         @initButtons [
-            tiny:   'wire-solid'
+            icon:   'wire-solid'
             name:   'solid'
             action: @onSolid
         ,
-            tiny:   'wire-wire'
+            small:  'wire-wire'
             name:   'wire'
             action: @onWire
-        ]
-        @initButtons [
-            tiny:   'polygon'
-            name:   'shapes'
-            toggle: prefs.get 'wire:shapes', 1
-            action: => prefs.set 'wire:shapes', @button('shapes').toggle
-        ,
-            tiny:   'text'
-            name:   'text'
-            toggle: prefs.get 'wire:text', 1
-            action: => prefs.set 'wire:text', @button('text').toggle
         ]
         
     onWire: => 
         
         items = @stage.selectedLeafItems()
-        items = @stage.treeItems() if empty items
         
-        text   = @button('text').toggle
-        shapes = @button('shapes').toggle
-        
-        return if not (text or shapes)
+        return if empty items
         
         @stage.do()
         
@@ -56,56 +41,37 @@ class Wire extends Tool
 
         for item in items
             
-            if (item.type != 'text' or text) and (item.type == 'text' or shapes)
-                
-                for style in ['stroke-width', 'stroke', 'fill-opacity', 'stroke-opacity']
-                    if not item.data(style)?
-                        item.data style, item.style(style) 
-                    
+            for style in ['stroke-width', 'stroke', 'fill', 'fill-opacity', 'stroke-opacity']
+                if not item.data(style)?
+                    item.data style, item.style(style) 
+            
+            if @kali.tool('select').fillStroke.includes 'stroke'
                 item.style 
                     'stroke':           color
-                    'stroke-width':     1  
+                    'stroke-width':     1
                     'stroke-opacity':   1
+                    
+            if @kali.tool('select').fillStroke.includes 'fill'                
+                item.style
+                    'fill':             color
                     'fill-opacity':     0
-                    
-            if item.type == 'text' and not text
-                
-                for style in ['stroke', 'fill']
-                    item.data style, item.style(style) if not item.data(style)?
-                    
-                item.style 
-                    'stroke': color
-                    'fill':   color
-                    
+                                        
         @stage.done()
                 
     onSolid: => 
         
         items = @stage.selectedLeafItems()
-        items = @stage.treeItems() if empty items
         
-        text   = @button('text').toggle
-        shapes = @button('shapes').toggle
-        
-        return if not (text or shapes)
+        return if empty items
         
         @stage.do()
         
         for item in items
             
-            if (item.type != 'text' or text) and (item.type == 'text' or shapes)
-                
-                for style in ['stroke-width', 'stroke', 'fill-opacity', 'stroke-opacity']
-                    if item.data(style)?
-                        item.style style, item.data style
-                        item.data  style, null
-
-            if item.type == 'text' and not text
-                
-                for style in ['stroke', 'fill']
-                    if item.data(style)?
-                        item.style style, item.data style
-                        item.data  style, null
+            for style in ['stroke-width', 'stroke', 'fill', 'fill-opacity', 'stroke-opacity']
+                if item.data(style)?
+                    item.style style, item.data style
+                    item.data  style, null
                         
         @stage.done()
                     

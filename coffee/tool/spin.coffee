@@ -5,7 +5,7 @@
 #      000  000        000  000  0000
 # 0000000   000        000  000   000
 
-{ stopEvent, downElem, upElem, last, log, _ } = require 'kxk'
+{ stopEvent, downElem, upElem, first, last, log, _ } = require 'kxk'
 
 class Spin
         

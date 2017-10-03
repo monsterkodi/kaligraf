@@ -258,7 +258,9 @@ class GradientList
         # @shadow.update()
         @element.focus()
         
-    onClose: => @hide()
+    onClose: => 
+        @kali.closeStopPalette()
+        @hide()
             
     #  0000000  00000000  000      00000000   0000000  000000000  
     # 000       000       000      000       000          000     
@@ -277,8 +279,7 @@ class GradientList
         
         prefs.set 'gradient:active', @activeIndex()
         
-        @kali.stopPalette?.del()
-        delete @kali.stopPalette
+        @kali.closeStopPalette()
             
     onClick: (event) => 
         

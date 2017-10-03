@@ -22,6 +22,10 @@ class Palette extends Tool
         cfg.name  ?= 'palette'
         cfg.class ?= 'palette'
         
+        cfg.halo        ?= {}
+        cfg.halo.x      ?= 0
+        cfg.halo.width  ?= 255+66
+        
         super @kali, cfg
 
         HEIGHT = @kali.toolSize/2
@@ -84,6 +88,8 @@ class Palette extends Tool
     # 0000000    00000000  0000000  
     
     del: ->
+        
+        @cfg.onClose?()
         
         post.removeListener 'palette', @onPalette
         
@@ -200,10 +206,17 @@ class Palette extends Tool
         @lph.attr x:@alpha*(WIDTH-HEIGHT/3)
         @alp.attr 'fill-opacity': 1-@alpha
 
-        post.emit 'color', @proxy, 'alpha', @alpha
+        @postColor 'alpha'
         
         @setColor @value        
 
+    postColor: (prop='color') ->
+        
+        post.emit 'color', @proxy, 
+            prop:  prop
+            color: @color
+            alpha: @alpha
+        
     # 000      000   000  00     00  000  000   000   0000000   000   000   0000000  00000000
     # 000      000   000  000   000  000  0000  000  000   000  0000  000  000       000
     # 000      000   000  000000000  000  000 0 000  000000000  000 0 000  000       0000000
@@ -239,7 +252,7 @@ class Palette extends Tool
         @updateColor new SVG.Color gradient.colorAt @value
          
         post.emit 'palette', 'change', @
-        post.emit 'color', @proxy, 'color', @color
+        @postColor()
 
     updateColor: (color) ->
 
@@ -356,10 +369,9 @@ class Palette extends Tool
     # 000          000     000       000  0000     000          000
     # 00000000      0      00000000  000   000     000     0000000
 
-    onMouseEnter: => @addHalo x:0, width:255+66
+    onMouseEnter: => @addHalo()
     
     onMouseLeave: => 
-        log 'Palette.onMouseLeave', @cfg
         @delHalo()
         @cfg.onLeave?()
     

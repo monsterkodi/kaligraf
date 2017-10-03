@@ -222,7 +222,6 @@ class Color extends Tool
 
         @top.style fill: @color
         @bot.style fill: @color, 'fill-opacity': @alpha
-
         
     #  0000000  000000000   0000000    0000000   00000000  
     # 000          000     000   000  000        000       
@@ -230,15 +229,17 @@ class Color extends Tool
     #      000     000     000   000  000   000  000       
     # 0000000      000     000   000   0000000   00000000  
     
-    onColor: (color, prop, value) ->
+    onColor: (color, info) ->
+        
+        return if color not in ['fill', 'stroke']
         
         attr = {}
-        
-        switch prop
+
+        switch info.prop
             when 'alpha'
-                attr[color + '-opacity'] = value
+                attr[color + '-opacity'] = info.alpha
             when 'color'
-                attr[color] = new SVG.Color value
+                attr[color] = new SVG.Color info.color
                 
         items = @selectedNoTextItems()
         
@@ -249,7 +250,7 @@ class Color extends Tool
             @do 'color' + itemIDs items
             for item in items
                 item.style attr
-                if prop == 'alpha'
+                if info.prop == 'alpha'
                     item.node.removeAttribute 'opacity'
             @done()
         

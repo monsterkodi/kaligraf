@@ -22,7 +22,7 @@ class DotResizer
         @stage = @kali.stage
         
         @element = elem 'div', id: 'dotres'
-        @kali.insertBelowTools @element
+        @kali.insertAboveSelection @element
 
         @svg = SVG(@element).size '100%', '100%'
         @svg.addClass 'resizerSVG'

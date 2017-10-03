@@ -46,8 +46,6 @@ class Padding extends Tool
             action: @onShow
         ]
         
-        # @showPadding() if @visible
-
     onUndo: (info) =>
         if info.action == 'done' then @update()
         

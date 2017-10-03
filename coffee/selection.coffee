@@ -345,7 +345,7 @@ class Selection
     addRect: ->
         
         rect = elem 'div', class: 'selectionRect'
-        @kali.insertBelowTools rect
+        @kali.insertAboveSelection rect         
         rect
             
     setRect: (elem, rect) ->

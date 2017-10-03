@@ -7,7 +7,7 @@
 
 { stopEvent, drag, empty, setStyle, childIndex, prefs, keyinfo, elem, clamp, last, post, log, $, _ } = require 'kxk'
 
-{ bboxForItems, boundingBox, winTitle, contrastColor } = require '../utils'
+{ bboxForItems, boundingBox, winTitle, highlightColor } = require '../utils'
 
 Exporter = require '../exporter'
 Shadow   = require '../shadow'
@@ -69,26 +69,48 @@ class LayerList
 
         return 'skip' if not index?
         
-        @dragLayer = @layerAt index
-        br = boundingBox @dragLayer
-        @dragDiv = @dragLayer.cloneNode true
-        @dragDiv.startIndex = index
-        @dragDiv.stopIndex  = index
-        @dragDiv.style.position = 'absolute'
-        @dragDiv.style.left     = "#{br.x}px"
-        @dragDiv.style.top      = "#{br.y}px"
-        @dragDiv.style.width    = "#{br.w}px"
-        @dragDiv.style.height   = "#{br.h}px"
-        @dragDiv.style.pointerEvents = 'none'
-        @dragDiv.style.zIndex   = 9999
-        svg = SVG.adopt @dragDiv.firstChild
-        {r,g,b} = new SVG.Color @stage.color
-        svg.style 
-            'background': "rgba(#{r},#{g},#{b},1)"
-        document.body.appendChild @dragDiv
-        @dragLayer.style.opacity = '0'
+        # @dragLayer = @layerAt index
+        # br = boundingBox @dragLayer
+        # @dragDiv = @dragLayer.cloneNode true
+        # @dragDiv.startIndex = index
+        # @dragDiv.stopIndex  = index
+        # @dragDiv.style.position = 'absolute'
+        # @dragDiv.style.left     = "#{br.x}px"
+        # @dragDiv.style.top      = "#{br.y}px"
+        # @dragDiv.style.width    = "#{br.w}px"
+        # @dragDiv.style.height   = "#{br.h}px"
+        # @dragDiv.style.pointerEvents = 'none'
+        # @dragDiv.style.zIndex   = 9999
+        # svg = SVG.adopt @dragDiv.firstChild
+        # {r,g,b} = new SVG.Color @stage.color
+        # svg.style 
+            # 'background': "rgba(#{r},#{g},#{b},1)"
+        # document.body.appendChild @dragDiv
+        # @dragLayer.style.opacity = '0'
 
     onDragMove: (d,e) =>
+        
+        if not @dragDiv?
+            
+            index = e.target.index
+            @dragLayer = @layerAt index
+            br = boundingBox @dragLayer
+            @dragDiv = @dragLayer.cloneNode true
+            @dragDiv.startIndex = index
+            @dragDiv.stopIndex  = index
+            @dragDiv.style.position = 'absolute'
+            @dragDiv.style.left     = "#{br.x}px"
+            @dragDiv.style.top      = "#{br.y}px"
+            @dragDiv.style.width    = "#{br.w}px"
+            @dragDiv.style.height   = "#{br.h}px"
+            @dragDiv.style.pointerEvents = 'none'
+            @dragDiv.style.zIndex   = 9999
+            svg = SVG.adopt @dragDiv.firstChild
+            {r,g,b} = new SVG.Color @stage.color
+            svg.style 
+                'background': "rgba(#{r},#{g},#{b},1)"
+            document.body.appendChild @dragDiv
+            @dragLayer.style.opacity = '0'
         
         @dragDiv.style.transform = "translateY(#{d.deltaSum.y}px)"
         if layer = @layerAtY d.pos.y
@@ -98,16 +120,17 @@ class LayerList
                         
     onDragStop: (d,e) =>
         
-        { startIndex, stopIndex } = @dragDiv
-        
-        @dragLayer.style.opacity = ''
-        @dragDiv.remove()
-        delete @dragDiv
-        delete @dragLayer
-        
-        if startIndex != stopIndex
-
-            @stage.moveLayer startIndex, stopIndex
+        if @dragDiv?
+            { startIndex, stopIndex } = @dragDiv
+            
+            @dragLayer.style.opacity = ''
+            @dragDiv.remove()
+            delete @dragDiv
+            delete @dragLayer
+            
+            if startIndex != stopIndex
+    
+                @stage.moveLayer startIndex, stopIndex
         
     onStage: (action, info) =>
         
@@ -116,9 +139,10 @@ class LayerList
             when 'load'  then @scroll.style.background = @stage.color.toHex()
             when 'layer' then @updateActive info
             when 'color' 
-                @scroll.style.background = info.hex
+                @scroll.style.background = info.hex                
                 if not empty document.styleSheets
-                    setStyle '.layerListLayer.active', 'border-color', contrastColor info.hex
+                    setStyle '.layerListLayer', 'background-color', info.hex
+                    setStyle '.layerListLayer.active', 'border-color', highlightColor info.hex
         
     # 000   000  00000000   0000000     0000000   000000000  00000000  
     # 000   000  000   000  000   000  000   000     000     000       
@@ -367,15 +391,15 @@ class LayerList
         
         switch combo
             
-            when 'up'            then @navigate +1
-            when 'down'          then @navigate -1
-            when 'command+up',   'page up'   then stopEvent(event); @activate @scroll.children.length-1
-            when 'command+down', 'page down' then stopEvent(event); @activate 0
+            when 'up'                        then stopEvent event and @navigate +1
+            when 'down'                      then stopEvent event and @navigate -1
+            when 'command+up',   'page up'   then stopEvent event and @activate @scroll.children.length-1
+            when 'command+down', 'page down' then stopEvent event and @activate 0
             # else
                 # log combo
                 
-        if combo.startsWith 'command' then return
-                
-        stopEvent event
+        # if combo.startsWith 'command' then return
+        # if combo.in ['.', 'r', 's'] then return
+        # stopEvent event
        
 module.exports = LayerList

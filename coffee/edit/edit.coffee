@@ -23,7 +23,7 @@ class Edit
         
         @element = elem 'div', id: 'edit'
         @element.classList.add 'passive' if @passive
-        @kali.insertBelowTools @element
+        @kali.insertAboveSelection @element
 
         @linesWhite = SVG(@element).size '100%', '100%'
         @linesWhite.addClass 'editLinesWhite'

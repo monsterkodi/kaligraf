@@ -32,7 +32,8 @@ class Layer extends Tool
 
         @initTitle()
         @initButtons [
-            text:   '<'
+            button: true
+            tiny:   'spin-minus'
             name:   'decr'
             action: @onDecr
         ,
@@ -40,7 +41,8 @@ class Layer extends Tool
             name:   'layer'
             action: @onLayer
         ,
-            text:   '>'
+            button: true
+            tiny:   'spin-plus'
             name:   'incr'
             action: @onIncr
         ]

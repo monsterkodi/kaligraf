@@ -74,10 +74,12 @@ class Kali
         @browser?.del()
         delete @browser
         
+    insertAboveSelection: (child) -> @element.insertBefore child, @stage.selection.element
     insertBelowTools: (child) -> @element.insertBefore child, @toolDiv
     insertAboveTools: (child) -> 
         @element.appendChild child
         child.style.zIndex = 1000
+        
 
     shapeTool: -> @tools.getActive('shape')?.name
     tool: (name) -> @tools.getTool name 

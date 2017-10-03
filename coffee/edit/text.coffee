@@ -49,7 +49,7 @@ class Text
         vbox = @stage.svg.viewbox()
         @element.style.transform = "translate(#{-vbox.x*vbox.zoom}px, #{-vbox.y*vbox.zoom}px) scale(#{vbox.zoom})"
         
-        @kali.insertBelowTools @element
+        @kali.insertAboveSelection @element
         
         @input.addEventListener 'input',   @onInput
         @input.addEventListener 'keydown', @onKeyDown

@@ -265,6 +265,13 @@ module.exports =
         else
             new SVG.Color '#000'
             
+    highlightColor: (c) ->
+
+        if module.exports.colorBrightness(c) < 0.5
+            new SVG.Color '#666'
+        else
+            new SVG.Color '#333'
+            
     colorBrightness: (c) -> c = new SVG.Color(c); (c.r + c.g + c.b)/(3*255)
     colorDist: (a,b) -> Math.abs(a.r-b.r) + Math.abs(a.g-b.g) + Math.abs(a.b-b.b)
             

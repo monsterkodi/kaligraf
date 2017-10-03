@@ -393,6 +393,7 @@ button
     background              #222
    
 .layerListLayer
+    z-index                 0
     position                relative
     margin                  0
     width                   240px
@@ -400,6 +401,7 @@ button
     overflow                hidden
     cursor                  pointer
     box-sizing              border-box
+    // background              white
     border                  1px solid #222
     &.active
         border              1px solid #fff
@@ -457,6 +459,10 @@ button
     opacity                 0.5
     &:hover
         opacity             1
+        
+.layerListLayer.active
+    filter                  drop-shadow(0 0 12px rgba(0,0,0,0.5))
+    z-index                 1 
     
 //  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000
 // 000       000       000      000       000          000     000  000   000  0000  000
@@ -690,7 +696,7 @@ button
     position               relative
     
 .toolIconSVG
-    opacity                 0.6
+    opacity                 0.5
     position                absolute
     left                    0
     top                     4px

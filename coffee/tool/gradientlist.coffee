@@ -5,9 +5,9 @@
 # 000   000  000   000  000   000  000   000  000  000       000  0000     000     000      000       000     000   
 #  0000000   000   000  000   000  0000000    000  00000000  000   000     000     0000000  000  0000000      000   
 
-{ stopEvent, childIndex, upElem, drag, childIndex, prefs, keyinfo, elem, empty, clamp, post, pos, log, $, _ } = require 'kxk'
+{ stopEvent, setStyle, childIndex, upElem, drag, childIndex, prefs, keyinfo, elem, empty, clamp, post, pos, log, $, _ } = require 'kxk'
 
-{ ensureInSize, winTitle, boundingBox, boxPos } = require '../utils'
+{ ensureInSize, winTitle, boundingBox, boxPos, highlightColor } = require '../utils'
 
 GradientItem = require './gradientitem'
 Exporter     = require '../exporter'
@@ -67,7 +67,9 @@ class GradientList
         @shadow = new Shadow @element
         
         post.on 'resize', @onResize
+        post.on 'stage',  @onStage
         
+        @updateColor()
         @restore()
         
     # 0000000    00000000    0000000    0000000   
@@ -177,6 +179,9 @@ class GradientList
     
     activeGradient: -> $ @scroll, '.gradientItem.active'
     activeIndex: -> not @activeGradient() and -1 or childIndex @activeGradient()
+
+    activeItem: -> @itemAt @activeIndex()
+    itemAt: (index) -> @gradientAt(index)?.gradient
     
     gradientAt: (index) -> @scroll.children[index]
     gradientAtY: (y) => 
@@ -225,7 +230,24 @@ class GradientList
         @shadow.update()
 
     setPos: (p) -> @element.style.transform = "translate(#{p.x}px, #{p.y}px)"
+
+    #  0000000   0000000   000       0000000   00000000   
+    # 000       000   000  000      000   000  000   000  
+    # 000       000   000  000      000   000  0000000    
+    # 000       000   000  000      000   000  000   000  
+    #  0000000   0000000   0000000   0000000   000   000  
+    
+    onStage: (action) =>
         
+        switch action
+            when 'color' then @updateColor()
+    
+    updateColor: ->
+        
+        hex = @stage.color.toHex()
+        if not empty document.styleSheets
+            setStyle '.gradientItem.active', 'border-color', highlightColor hex
+    
     #  0000000  000   000   0000000   000   000
     # 000       000   000  000   000  000 0 000
     # 0000000   000000000  000   000  000000000
@@ -265,8 +287,9 @@ class GradientList
     activate: (index, opt) ->
         
         index = clamp 0, @scroll.children.length-1, index
-        @activeGradient()?.classList.remove 'active'
-        @gradientAt(index)?.classList.add 'active'
+        
+        @activeItem()?.setActive false
+        @itemAt(index).setActive true
         
         prefs.set 'gradient:active', @activeIndex()
             

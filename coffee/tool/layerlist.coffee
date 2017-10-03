@@ -54,6 +54,7 @@ class LayerList
         
         @kali.insertAboveTools @element
         @shadow = new Shadow @element
+        @updateColor()
         
         post.on 'resize', @onResize
 
@@ -69,25 +70,6 @@ class LayerList
 
         return 'skip' if not index?
         
-        # @dragLayer = @layerAt index
-        # br = boundingBox @dragLayer
-        # @dragDiv = @dragLayer.cloneNode true
-        # @dragDiv.startIndex = index
-        # @dragDiv.stopIndex  = index
-        # @dragDiv.style.position = 'absolute'
-        # @dragDiv.style.left     = "#{br.x}px"
-        # @dragDiv.style.top      = "#{br.y}px"
-        # @dragDiv.style.width    = "#{br.w}px"
-        # @dragDiv.style.height   = "#{br.h}px"
-        # @dragDiv.style.pointerEvents = 'none'
-        # @dragDiv.style.zIndex   = 9999
-        # svg = SVG.adopt @dragDiv.firstChild
-        # {r,g,b} = new SVG.Color @stage.color
-        # svg.style 
-            # 'background': "rgba(#{r},#{g},#{b},1)"
-        # document.body.appendChild @dragDiv
-        # @dragLayer.style.opacity = '0'
-
     onDragMove: (d,e) =>
         
         if not @dragDiv?
@@ -138,11 +120,7 @@ class LayerList
             
             when 'load'  then @scroll.style.background = @stage.color.toHex()
             when 'layer' then @updateActive info
-            when 'color' 
-                @scroll.style.background = info.hex                
-                if not empty document.styleSheets
-                    setStyle '.layerListLayer', 'background-color', info.hex
-                    setStyle '.layerListLayer.active', 'border-color', highlightColor info.hex
+            when 'color' then @updateColor()
         
     # 000   000  00000000   0000000     0000000   000000000  00000000  
     # 000   000  000   000  000   000  000   000     000     000       
@@ -174,6 +152,14 @@ class LayerList
                 @log 'LayerList.updateActive highlight', @activeLayer().index, @activeLayer().className, info
                 @activeLayer()?.classList.remove 'active'
             @layerAt(info.active)?.classList.add 'active'
+
+    updateColor: ->
+        
+        hex = @stage.color.toHex()
+        @scroll.style.background = hex                
+        if not empty document.styleSheets
+            setStyle '.layerListLayer', 'background-color', hex
+            setStyle '.layerListLayer.active', 'border-color', highlightColor hex
             
     # 000       0000000   000   000  00000000  00000000   
     # 000      000   000   000 000   000       000   000  

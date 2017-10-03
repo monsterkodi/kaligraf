@@ -42,11 +42,9 @@ module.exports =
     
     itemIDs: (items, j='') -> (items.map (item) -> item.id()).join j  
     
-    uuid: (item) ->
-        
-        id = item.type[0].toUpperCase() + "-" + uuid().slice(0,8).splice 2,0,'-'
-        item.id id
-
+    id: (prefix) -> prefix + "-" + uuid().slice(0,8).splice 2,0,'-'
+    uuid: (item) -> item.id module.exports.id item.type[0].toUpperCase()
+                
     # 00     00   0000000   000000000  00000000   000  000   000  
     # 000   000  000   000     000     000   000  000   000 000   
     # 000000000  000000000     000     0000000    000    00000    

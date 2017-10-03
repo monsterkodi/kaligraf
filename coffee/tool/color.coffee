@@ -5,7 +5,7 @@
 # 000       000   000  000      000   000  000   000
 #  0000000   0000000   0000000   0000000   000   000
 
-{ empty, elem, drag, stopEvent, post, prefs, clamp, first, pos, log, $, _ } = require 'kxk'
+{ empty, elem, stopEvent, post, prefs, clamp, first, pos, log, $, _ } = require 'kxk'
 
 { itemIDs, colorGradient, grayGradient, checkersPattern } = require '../utils'
 
@@ -155,6 +155,12 @@ class Color extends Tool
             fill.element.style.width  = "#{@kali.toolSize/3}px"
             fill.element.style.height = "#{@kali.toolSize/3}px"
 
+    # 00000000  000   000  000000000  00000000  00000000   
+    # 000       0000  000     000     000       000   000  
+    # 0000000   000 0 000     000     0000000   0000000    
+    # 000       000  0000     000     000       000   000  
+    # 00000000  000   000     000     00000000  000   000  
+    
     onMouseEnter: (event) =>
 
         return if event.buttons
@@ -182,6 +188,12 @@ class Color extends Tool
         if not @kali.palette.proxy
             post.emit 'palette', 'proxy', @
 
+    #  0000000  000   000   0000000   000   000  
+    # 000       000   000  000   000  000 0 000  
+    # 0000000   000000000  000   000  000000000  
+    #      000  000   000  000   000  000   000  
+    # 0000000   000   000   0000000   00     00  
+    
     showPalette: -> post.emit 'palette', 'show', pos(@kali.toolSize,0).plus @kali.tools.stroke.pos()
     hidePalette: -> post.emit 'palette', 'hide'
             
@@ -230,11 +242,8 @@ class Color extends Tool
                 
         items = @selectedNoTextItems()
         
-        # log 'selectedNoTextItems', items.length
-        
         if empty items
              items = @selectedItems type:'text'
-             # log 'selectedTextItems', items.length
         
         if not empty(attr) and not empty(items)
             @do 'color' + itemIDs items

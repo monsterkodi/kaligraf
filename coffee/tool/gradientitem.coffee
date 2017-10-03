@@ -7,7 +7,9 @@
 
 { elem, drag, clamp, pos, log, $, _ } = require 'kxk'
 
-{ boundingBox, boxPos, checkersPattern, id } = require '../utils'
+{ boundingBox, boxPos, checkersPattern, colorBrightness, id } = require '../utils'
+
+Palette = require './palette'
 
 class GradientItem
 
@@ -186,8 +188,31 @@ class GradientItem
             
     onStopStop:  (drag, event) => 
         
-        if drag.startPos == drag.lastPos
-            log 'onStopStop', event.target.tagName
+        if drag.startPos == drag.lastPos and drag.stop?
+            @openPalette drag.stop
+            
+    # 00000000    0000000   000      00000000  000000000  000000000  00000000  
+    # 000   000  000   000  000      000          000        000     000       
+    # 00000000   000000000  000      0000000      000        000     0000000   
+    # 000        000   000  000      000          000        000     000       
+    # 000        000   000  0000000  00000000     000        000     00000000  
+    
+    openPalette: (stop) ->
+        
+        @closePalette()
+        
+        stopPos = boxPos boundingBox @element
+        stopPos.add pos stop.offset*100, 25
+        
+        @kali.stopPalette = new Palette @kali, onLeave:@closePalette
+        @kali.stopPalette.setPos stopPos
+        @kali.stopPalette.show()
+        @kali.stopPalette.setClosestColor stop.color, stop.opacity
+        
+    closePalette: =>
+        
+        @kali.stopPalette?.del()
+        delete @kali.stopPalette
             
     #  0000000  000   000   0000000   000   000  
     # 000       000   000  000   000  000 0 000  
@@ -227,6 +252,8 @@ class GradientItem
         for stop in @stops()
             rct = @stp.children()[stop.index]
             rct.cx stop.offset * 100
+            if colorBrightness(stop.color) < 0.2
+                rct.style 'stroke', '#666'
             
         @update()
 
@@ -246,7 +273,7 @@ class GradientItem
             rct = @stp.polygon '-5,5 0,0 5,5'
             rct.id id 'stop'
             rct.addClass 'gradientStop'
-            rct.y 20
+            rct.y 21
             
         @updateStops()
     

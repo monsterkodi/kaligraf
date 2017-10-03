@@ -67,9 +67,7 @@ class GradientList
         @shadow = new Shadow @element
         
         post.on 'resize', @onResize
-        post.on 'stage',  @onStage
         
-        @updateColor()
         @restore()
         
     # 0000000    00000000    0000000    0000000   
@@ -233,23 +231,6 @@ class GradientList
         @shadow.update()
 
     setPos: (p) -> @element.style.transform = "translate(#{p.x}px, #{p.y}px)"
-
-    #  0000000   0000000   000       0000000   00000000   
-    # 000       000   000  000      000   000  000   000  
-    # 000       000   000  000      000   000  0000000    
-    # 000       000   000  000      000   000  000   000  
-    #  0000000   0000000   0000000   0000000   000   000  
-    
-    onStage: (action) =>
-        
-        switch action
-            when 'color' then @updateColor()
-    
-    updateColor: ->
-        
-        # hex = @stage.color.toHex()
-        # if not empty document.styleSheets
-            # setStyle '.gradientItem.active', 'border-color', highlightColor hex
     
     #  0000000  000   000   0000000   000   000
     # 000       000   000  000   000  000 0 000
@@ -292,9 +273,12 @@ class GradientList
         index = clamp 0, @scroll.children.length-1, index
         
         @activeItem()?.setActive false
-        @itemAt(index).setActive true
+        @itemAt(index)?.setActive true
         
         prefs.set 'gradient:active', @activeIndex()
+        
+        @kali.stopPalette?.del()
+        delete @kali.stopPalette
             
     onClick: (event) => 
         

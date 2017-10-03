@@ -16,9 +16,13 @@ HEIGHT = 0
 
 class Palette extends Tool
 
-    constructor: (@kali) ->
+    constructor: (@kali, cfg) ->
 
-        super @kali, name: 'palette', class: 'palette'
+        cfg       ?= {}
+        cfg.name  ?= 'palette'
+        cfg.class ?= 'palette'
+        
+        super @kali, cfg
 
         HEIGHT = @kali.toolSize/2
         
@@ -73,6 +77,22 @@ class Palette extends Tool
 
         @hide()
 
+    # 0000000    00000000  000      
+    # 000   000  000       000      
+    # 000   000  0000000   000      
+    # 000   000  000       000      
+    # 0000000    00000000  0000000  
+    
+    del: ->
+        
+        post.removeListener 'palette', @onPalette
+        
+        @svg?.remove()
+        @element?.remove()
+        
+        delete @svg
+        delete @element
+        
     #  0000000    0000000  000000000  000   0000000   000   000  
     # 000   000  000          000     000  000   000  0000  000  
     # 000000000  000          000     000  000   000  000 0 000  
@@ -337,7 +357,11 @@ class Palette extends Tool
     # 00000000      0      00000000  000   000     000     0000000
 
     onMouseEnter: => @addHalo x:0, width:255+66
-    onMouseLeave: => @delHalo()
+    
+    onMouseLeave: => 
+        log 'Palette.onMouseLeave', @cfg
+        @delHalo()
+        @cfg.onLeave?()
     
     xPosEvent: (event) ->
         r = $("#stage").getBoundingClientRect()

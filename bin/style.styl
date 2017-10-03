@@ -357,11 +357,15 @@ button
         z-index             1 
 
 .gradientStop
-    pointer-events all
-    stroke                  #222
+    pointer-events          all
+    stroke                  none
     stroke-width            0.42
-    fill                    #888
+    fill                    #222
     &:hover
+        stroke              #222
+        fill                #888
+    &.active
+        stroke              black
         fill                white
 
 // 000       0000000   000   000  00000000  00000000   000      000   0000000  000000000  

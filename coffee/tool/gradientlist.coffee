@@ -102,6 +102,7 @@ class GradientList
         @dragGradient.style.opacity = '0'
 
     onDragMove: (drag,event) =>
+        
         @dragDiv.style.transform = "translateY(#{drag.deltaSum.y}px)"
         if gradient = @gradientAtY drag.pos.y
             if childIndex(gradient) != childIndex(@dragGradient)
@@ -117,10 +118,6 @@ class GradientList
         delete @dragDiv
         delete @dragGradient
         
-        if startIndex != stopIndex
-
-            @stage.moveLayer startIndex, stopIndex
-                            
     #  0000000   00000000    0000000   0000000    000  00000000  000   000  000000000  
     # 000        000   000  000   000  000   000  000  000       0000  000     000     
     # 000  0000  0000000    000000000  000   000  000  0000000   000 0 000     000     
@@ -135,10 +132,12 @@ class GradientList
         @store()
         
     onCopyGradient: => 
+        
         index = @activeIndex()
         return if index < 0
+        
         gradient = new GradientItem @
-        gradient.setGradient @activeGradient().gradient.gradient
+        gradient.setGradient @activeGradient().gradient.state()
         @scroll.insertBefore gradient.element, @activeGradient()
         @activate index
         @store()
@@ -147,9 +146,13 @@ class GradientList
         
         index = @activeIndex()
         return if index < 0
-        @activeGradient().remove()
-        @activate index
-        @store()
+        
+        if @activeGradient().gradient.activeStop()?
+            @activeGradient().gradient.delStop()
+        else
+            @activeGradient().remove()
+            @activate index
+            @store()
          
     gradientItems: -> 
         
@@ -244,9 +247,9 @@ class GradientList
     
     updateColor: ->
         
-        hex = @stage.color.toHex()
-        if not empty document.styleSheets
-            setStyle '.gradientItem.active', 'border-color', highlightColor hex
+        # hex = @stage.color.toHex()
+        # if not empty document.styleSheets
+            # setStyle '.gradientItem.active', 'border-color', highlightColor hex
     
     #  0000000  000   000   0000000   000   000
     # 000       000   000  000   000  000 0 000

@@ -208,8 +208,9 @@ class Tool extends multi Spin, Button
         @kali.tools.store()
         
     updateDepth: ->
+        
         return if @name == 'tools'
-        log "updateDepth #{@name}"
+        
         zIndex = parseInt @element.style.zIndex
         for child in @children
             child.element.style.zIndex = parseInt zIndex + 1 + @children.indexOf child

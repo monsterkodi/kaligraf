@@ -373,7 +373,7 @@ class LayerList
         
         {mod, key, combo, char} = keyinfo.forEvent event
         
-        @log "LayerList.onKeyDown #{combo}"
+        # @log "LayerList.onKeyDown #{combo}"
         
         switch combo
             
@@ -381,11 +381,5 @@ class LayerList
             when 'down'                      then stopEvent event and @navigate -1
             when 'command+up',   'page up'   then stopEvent event and @activate @scroll.children.length-1
             when 'command+down', 'page down' then stopEvent event and @activate 0
-            # else
-                # log combo
-                
-        # if combo.startsWith 'command' then return
-        # if combo.in ['.', 'r', 's'] then return
-        # stopEvent event
        
 module.exports = LayerList

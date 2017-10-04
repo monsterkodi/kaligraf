@@ -113,8 +113,6 @@ class Gradient extends Tool
             
         @stage.do 'gradient'+itemIDs items
         
-        log 'doGradient'
-        
         if @state.type != 'none'
                                 
             stageGradient = @stage.svg.gradient @state.type, (stop) =>
@@ -125,25 +123,29 @@ class Gradient extends Tool
             
             if @state.type == 'none'
                 
-                if item.data('fill')?
-                    item.style 'fill', item.data 'fill'
-                else
-                    @kali.tool('fill').color
+                if @kali.tool('select').fillStroke.includes 'fill'
+                
+                    if item.data('fill')?
+                        item.style 'fill', item.data 'fill'
+                    else
+                        @kali.tool('fill').color
+                        
+                    if item.data('fill-opacity')?
+                        item.style 'fill-opacity', item.data 'fill-opacity'
+                    else
+                        @kali.tool('fill').alpha
                     
-                if item.data('fill-opacity')?
-                    item.style 'fill-opacity', item.data 'fill-opacity'
-                else
-                    @kali.tool('fill').alpha
+                if @kali.tool('select').fillStroke.includes 'stroke'
                     
-                if item.data('stroke')?
-                    item.style 'stroke', item.data 'stroke'
-                else
-                    @kali.tool('stroke').color
-                    
-                if item.data('stroke-opacity')?
-                    item.style 'stroke-opacity', item.data 'stroke-opacity'
-                else
-                    @kali.tool('stroke').alpha
+                    if item.data('stroke')?
+                        item.style 'stroke', item.data 'stroke'
+                    else
+                        @kali.tool('stroke').color
+                        
+                    if item.data('stroke-opacity')?
+                        item.style 'stroke-opacity', item.data 'stroke-opacity'
+                    else
+                        @kali.tool('stroke').alpha
                     
             else
                 

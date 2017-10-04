@@ -70,10 +70,12 @@ class Exporter
         
     @save: (svg, opt) ->
         
+        @cleanGradients svg
         fs.writeFileSync resolve(opt.file), @svg svg, opt
 
     @saveSVG: (name, svg) ->
         
+        @cleanGradients svg
         fs.writeFileSync @svgFile(name), svg, encoding: 'utf8'
 
     @hasSVG: (name) -> fileExists @svgFile name
@@ -98,7 +100,7 @@ class Exporter
 
         if item.node.getAttribute 'sodipodi:nodetypes'
             log "clean sodipodi: #{item.node.getAttribute 'sodipodi:nodetypes'}" 
-            item.node.removeAttribute   'sodipodi:nodetypes'
+            item.node.removeAttribute 'sodipodi:nodetypes'
             
         if item.style('opacity') == 'unset'
             log 'clear unset opacity'
@@ -134,6 +136,37 @@ class Exporter
             
             for i in [0...item.lines().length()]
                 @clean item.lines().get i 
+
+    #  0000000   00000000    0000000   0000000    000  00000000  000   000  000000000   0000000  
+    # 000        000   000  000   000  000   000  000  000       0000  000     000     000       
+    # 000  0000  0000000    000000000  000   000  000  0000000   000 0 000     000     0000000   
+    # 000   000  000   000  000   000  000   000  000  000       000  0000     000          000  
+    #  0000000   000   000  000   000  0000000    000  00000000  000   000     000     0000000   
+    
+    @cleanGradients: (item) ->
+        
+        keepGradients = new Set()
+        childItems = @childItems item
+        
+        for item in childItems
+            for style in ['fill', 'stroke']
+                if item.style(style).startsWith 'url'
+                    keepGradients.add item.style(style).split('"')[1].slice 1
+                    
+        for def in item.doc().defs().children()
+            if def.type.includes 'Gradient'
+                if not keepGradients.has def.id()
+                    log 'Exporter.cleanGradients -- remove unused gradient', def.id()
+                    def.remove()
+        
+    @childItems: (item) ->
+        
+        return [] if item.type == 'defs'
+        items = [item] 
+        if _.isFunction item.children
+            for child in item.children()
+                items = items.concat @childItems child
+        items
         
     # 000  0000000     0000000  
     # 000  000   000  000       

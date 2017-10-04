@@ -185,7 +185,7 @@ class Stage
             
     groups: -> @treeItems @svg, pickable:false, type:'g' 
     
-    treeItems: (item=@svg, opt) -> 
+    treeItems: (item=@svg, opt) ->
         
         items = [] 
         
@@ -201,7 +201,9 @@ class Stage
     isEditable: (item) -> _.isFunction(item.array) and item.type != 'text'
     
     filterItems: (items, opt) ->
+        
         return items if not opt?
+        
         items.filter (item) => 
             if opt.pickable then return false if @layerForItem(item) not in @pickableLayers()
             if opt.noType   then return false if item.type == opt.noType
@@ -234,20 +236,31 @@ class Stage
                 []
 
         @filterItems items, opt
+
+    selectedLeafOrAllItems: ->
+        
+        selectedItems = @selectedLeafItems()
+        
+        if empty selectedItems
+            selectedItems = @treeItems @svg, @kali.tool('select').shapeTextOpt()
+
+        selectedItems
         
     selectedLeafItems: (opt) ->
-                
+             
+        selectedItems = @selectedItems()
+        return [] if empty selectedItems
+        
         if not opt?
-            opt = {}
-            opt.noType = 'text' if not @kali.tool('select').shapeText.includes 'text' 
-            opt.type   = 'text' if not @kali.tool('select').shapeText.includes 'shape'
+            opt = @kali.tool('select').shapeTextOpt()
         
         items = []
-        for item in @selectedItems()
+        for item in selectedItems
             if @isLeaf item 
                 items = items.concat @filterItems [item], opt
             else 
                 items = items.concat @treeItems item, opt
+                
         @filterItems items, noType: 'g'
 
     selectedNoTextItems: -> @selectedLeafItems noType:'text'
@@ -494,6 +507,8 @@ class Stage
         if @currentFile == 'untitled.svg'
             return @saveAs()
         
+        post.emit 'stage', 'willSave', file:@currentFile
+            
         padding = @kali.tool('padding').percent
         Exporter.save @svg, file:@currentFile, color:@color, alpha:@alpha, padding:padding
                 

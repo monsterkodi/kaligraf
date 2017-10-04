@@ -28,19 +28,7 @@ class Alpha extends Tool
             action: @setAlpha
             value:  100
             str: (value) -> parseInt value
-            
-        @initButtons [
-            small:  'alpha-fill'
-            name:   'fill'
-            toggle: prefs.get 'alpha:fill', true
-            action: => prefs.set 'alpha:fill', @button('fill').toggle; @update()
-        ,
-            small:  'alpha-stroke'
-            name:   'stroke'
-            toggle: prefs.get 'alpha:stroke', true
-            action: => prefs.set 'alpha:stroke', @button('stroke').toggle; @update()
-        ]
-        
+                    
         post.on 'selection', @update
         @update()
     
@@ -53,8 +41,7 @@ class Alpha extends Tool
     update: =>
         
         items = @stage.selectedLeafItems()
-        if empty(items) or not (@button('stroke').toggle or @button('fill').toggle)
-            
+        if empty items
             @disableSpin 'alpha'
         else 
             @enableSpin 'alpha'
@@ -72,9 +59,9 @@ class Alpha extends Tool
         
         @stage.do 'alpha'+itemIDs items
         for item in items
-            if @button('stroke').toggle
+            if @kali.tool('select').fillStroke.includes 'stroke'
                 item.style 'stroke-opacity': alpha
-            if @button('fill').toggle
+            if @kali.tool('select').fillStroke.includes 'fill'
                 item.style 'fill-opacity': alpha
         @update()
         @stage.done()
@@ -85,9 +72,9 @@ class Alpha extends Tool
         return 1 if empty items
         
         alphas = []
-        if @button('stroke').toggle
+        if @kali.tool('select').fillStroke.includes 'stroke'
             alphas = alphas.concat items.map (item) -> item.style 'stroke-opacity'
-        if @button('fill').toggle
+        if @kali.tool('select').fillStroke.includes 'fill'
             alphas = alphas.concat items.map (item) -> item.style 'fill-opacity'
             
         alphas = alphas.filter (a) -> a.length

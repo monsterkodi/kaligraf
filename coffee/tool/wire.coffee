@@ -21,58 +21,69 @@ class Wire extends Tool
         
         @initButtons [
             icon:   'wire-solid'
-            name:   'solid'
-            action: @onSolid
+            name:   'unwire'
+            action: @onUnwire
         ,
-            small:  'wire-wire'
+            icon:   'wire-wire'
             name:   'wire'
             action: @onWire
         ]
         
-    onWire: => 
+        post.on 'stage', @onStage
         
-        items = @stage.selectedLeafItems()
+    onStage: (action) =>
         
+        if action == 'willSave'
+            log 'unwire willSave'
+            @unwire @stage.treeItems()
+        
+    onWire: =>
+        
+        items = @stage.selectedLeafOrAllItems()
         return if empty items
         
-        @stage.do()
+        @stage.do 'wire'+itemIDs items
         
         color = contrastColor(@stage.color).toHex()
 
         for item in items
             
-            for style in ['stroke-width', 'stroke', 'fill', 'fill-opacity', 'stroke-opacity']
-                if not item.data(style)?
-                    item.data style, item.style(style) 
-            
-            if @kali.tool('select').fillStroke.includes 'stroke'
+            for style in ['fill', 'stroke', 'fill-opacity', 'stroke-opacity', 'stroke-width']
+                if not item.data('wire'+style)? and item.style(style)?
+                    item.data 'wire'+style, item.style(style)
+                else
+                    log "don't store #{style}", item.data(style), item.style style
+                    
+            if item.type == 'text'
+                item.style 
+                    'fill':             color
+                    'stroke-opacity':   0
+                    'fill-opacity':     1
+            else
                 item.style 
                     'stroke':           color
                     'stroke-width':     1
                     'stroke-opacity':   1
-                    
-            if @kali.tool('select').fillStroke.includes 'fill'                
-                item.style
-                    'fill':             color
                     'fill-opacity':     0
                                         
         @stage.done()
                 
-    onSolid: => 
+    onUnwire: => 
         
-        items = @stage.selectedLeafItems()
-        
+        items = @stage.selectedLeafOrAllItems()
         return if empty items
         
-        @stage.do()
+        @stage.do 'wire'+itemIDs items
+        @unwire items                        
+        @stage.done()
+        
+    unwire: (items) ->
         
         for item in items
             
-            for style in ['stroke-width', 'stroke', 'fill', 'fill-opacity', 'stroke-opacity']
-                if item.data(style)?
-                    item.style style, item.data style
-                    item.data  style, null
-                        
-        @stage.done()
+            for style in ['fill', 'stroke', 'fill-opacity', 'stroke-opacity', 'stroke-width']
+                if item.data('wire'+style)?
+                    item.style style, item.data 'wire'+style
+                    item.data  'wire'+style, null
                     
 module.exports = Wire

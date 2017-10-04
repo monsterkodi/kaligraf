@@ -27,19 +27,7 @@ class Line extends Tool
             step:   [1,5,10,25]
             action: @setWidth
             value:  prefs.get 'line:width', 1
-            
-        @initButtons [
-            tiny:   'polygon'
-            name:   'shapes'
-            toggle: prefs.get 'line:shapes', 1
-            action: => prefs.set 'line:shapes', @button('shapes').toggle
-        ,
-            tiny:   'text'
-            name:   'text'
-            toggle: prefs.get 'line:text', 1
-            action: => prefs.set 'line:text', @button('text').toggle
-        ]
-        
+                    
         post.on 'selection', @onSelection
         
     onSelection: =>
@@ -59,16 +47,10 @@ class Line extends Tool
         
         items = @stage.selectedLeafItems()
         return if empty items
-        
-        text   = @button('text').toggle
-        shapes = @button('shapes').toggle
-        
-        return if not (text or shapes)
-        
+                
         @stage.do 'line'+ itemIDs items
         for item in items
-            if (item.type != 'text' or text) and (item.type == 'text' or shapes)
-                item.style 'stroke-width': @width
+            item.style 'stroke-width': @width
         @stage.done()
 
         post.emit 'line', 'width', @width

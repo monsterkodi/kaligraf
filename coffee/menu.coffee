@@ -126,6 +126,8 @@ class Menu
                     { label: 'Tools',       accelerator: 'command+shift+t', click: -> action 'toggleTools'}
                     { label: 'Groups',      accelerator: 'command+shift+g', click: -> button 'show', 'groups'}
                     { label: 'IDs',         accelerator: 'command+shift+i', click: -> button 'show', 'ids'}
+                    { label: 'Wire',        accelerator: 'w',               click: -> button 'wire', 'wire'}
+                    { label: 'Unwire',      accelerator: 'command+w',       click: -> button 'wire', 'unwire'}
                 ]
                 }
                 { type:  'separator'}

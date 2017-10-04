@@ -178,6 +178,7 @@ class LayerList
         
         svg = SVG(div).size '100%', '100%'
         svg.addClass 'layerListSVG'
+        
         if not empty layer.children()
             svg.svg Exporter.svg layer, viewbox:@viewbox
         

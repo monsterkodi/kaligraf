@@ -7,8 +7,8 @@
 
 { elem, post, drag, first, last, pos, log, _ } = require 'kxk'
 
-{   opposide,  rectSize, rectOffset, 
-    moveBox,   zoomBox,  scaleBox,
+{   opposide,  rectSize, rectOffset, itemIDs
+    moveBox,   zoomBox,  scaleBox
     boxOffset, boxPos,   boxSize } = require './utils'
 
 Cursor = require './cursor'
@@ -71,7 +71,7 @@ class Resizer
            
         return if angle == 0
         
-        @do 'rotate'
+        @do 'rotate'+itemIDs @selection.items
         
         transmat = new SVG.Matrix().around @rotationCenter.x, @rotationCenter.y, new SVG.Matrix().rotate angle
 

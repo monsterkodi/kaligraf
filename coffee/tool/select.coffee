@@ -62,4 +62,11 @@ class Select extends Tool
         
         prefs.set 'select:shapeText', @shapeText
         
+    shapeTextOpt: ->
+        
+        opt = {}
+        opt.noType = 'text' if not @shapeText.includes 'text' 
+        opt.type   = 'text' if not @shapeText.includes 'shape'
+        opt
+        
 module.exports = Select

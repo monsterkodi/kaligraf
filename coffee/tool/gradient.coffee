@@ -68,6 +68,12 @@ class Gradient extends Tool
         state.type = @state.type
         @setState state
                 
+    #  0000000  000000000   0000000   000000000  00000000  
+    # 000          000     000   000     000     000       
+    # 0000000      000     000000000     000     0000000   
+    #      000     000     000   000     000     000       
+    # 0000000      000     000   000     000     00000000  
+    
     setState: (@state) ->
         
         @svg.clear()
@@ -94,49 +100,82 @@ class Gradient extends Tool
         
         @doGradient()
         
+    # 0000000     0000000   
+    # 000   000  000   000  
+    # 000   000  000   000  
+    # 000   000  000   000  
+    # 0000000     0000000   
+    
     doGradient: ->
         
         items = @stage.selectedLeafItems()
+        return if empty items
+            
+        @stage.do 'gradient'+itemIDs items
         
-        if not empty items
+        log 'doGradient'
+        
+        if @state.type != 'none'
+                                
+            stageGradient = @stage.svg.gradient @state.type, (stop) =>
+                for stp in @state.stops
+                    stop.at stp.offset, stp.color, stp.opacity
             
-            @stage.do 'gradient'+itemIDs items
+        for item in items
             
-            if @state.type != 'none'
-                                    
-                stageGradient = @stage.svg.gradient @state.type, (stop) =>
-                    for stp in @state.stops
-                        stop.at stp.offset, stp.color, stp.opacity
+            if @state.type == 'none'
                 
-            for item in items
-                
-                if @state.type == 'none'
-                    
-                    if item.data('fill')?
-                        item.style 'fill', item.data 'fill'
-                    else
-                        @kali.tool('fill').color
-                    if item.data('fill-opacity')?
-                        item.style 'fill-opacity', item.data 'fill-opacity'
-                    else
-                        @kali.tool('fill').alpha
+                if item.data('fill')?
+                    item.style 'fill', item.data 'fill'
                 else
+                    @kali.tool('fill').color
+                    
+                if item.data('fill-opacity')?
+                    item.style 'fill-opacity', item.data 'fill-opacity'
+                else
+                    @kali.tool('fill').alpha
+                    
+                if item.data('stroke')?
+                    item.style 'stroke', item.data 'stroke'
+                else
+                    @kali.tool('stroke').color
+                    
+                if item.data('stroke-opacity')?
+                    item.style 'stroke-opacity', item.data 'stroke-opacity'
+                else
+                    @kali.tool('stroke').alpha
+                    
+            else
+                
+                if @kali.tool('select').fillStroke.includes 'fill'
+                    
                     if not item.data('fill')?
                         item.data 'fill', item.style 'fill'
+                        
                     if not item.data('fill-opacity')?
                         item.data 'fill-opacity', item.style 'fill-opacity'
-                    
+
                     item.style 
                         fill: stageGradient
-                        stroke: stageGradient
                         'fill-opacity': 1
+                        
+                if @kali.tool('select').fillStroke.includes 'stroke'      
                     
-            @stage.done()
-        
-    toggleShow: => 
+                    if not item.data('stroke')?
+                        item.data 'stroke', item.style 'stroke'
+                        
+                    if not item.data('stroke-opacity')?
+                        item.data 'stroke-opacity', item.style 'stroke-opacity'
+                        
+                    item.style
+                        stroke: stageGradient
+                        'stroke-opacity': 1
+                
+        @stage.done()
         
     setType: (type) =>
         
+        prefs.set 'gradient:type', type
         @state.type = type
         @setState @state
         

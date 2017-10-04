@@ -96,14 +96,16 @@ class Tools extends Tool
                 { name: 'fill',   class: 'color' }
             ]
             [
+                { class: 'select' }
+                { class: 'wire'   }                
+            ]
+            [
                 { class: 'gradient' }
                 { class: 'line', name: 'width' }
                 { class: 'alpha'  }
                 { class: 'angle'  }
                 { class: 'font'   }
-                { class: 'wire'   }                
                 { class: 'anchor' }
-                { class: 'select' }
             ]            
             [
                 { name:  'pick',    group: 'shape', popup: 'temp' }

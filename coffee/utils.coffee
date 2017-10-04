@@ -97,10 +97,11 @@ module.exports =
             
     boxCenter: (box) -> pos box.x + box.width/2.0, box.y + box.height/2.0
     boxOffset: (box) -> pos box.x, box.y
-    boxPos:    (box) -> pos box.x, box.y
     boxSize:   (box) -> pos box.width, box.height
     
     boxPos: (box, name='top left') ->
+        
+        return pos box.x, box.y if name == 'top left'
         
         p = module.exports.boxCenter box
         if name.includes 'left'  then p.x = box.x
@@ -125,8 +126,8 @@ module.exports =
     zoomBox:  (box, zoom)  -> module.exports.scaleBox 1.0/zoom
     scaleBox: (box, scale) ->
         
-        box.x      *= scale
-        box.y      *= scale
+        box.x *= scale
+        box.y *= scale
         if box.width?  then box.width  *= scale
         if box.height? then box.height *= scale
         
@@ -256,6 +257,41 @@ module.exports =
             stop.at 0.0, "#000"
             stop.at 1.0, "#fff"
 
+    itemGradient: (item, style) ->
+        
+        value = item.style style 
+        if value.startsWith 'url'
+            id = value.split('"')[1].slice 1
+            log "itemGradient #{id}", SVG.get(id).type
+            return SVG.get id
+
+    gradientStops: (gradient) ->
+        
+        i = 0
+        stops = []
+        while stop = gradient.get i
+            stops.push
+                offset:  stop.attr 'offset'
+                color:   stop.attr 'stop-color'
+                opacity: stop.attr 'stop-opacity'
+                index:   i
+            i++
+        stops
+        
+    cloneGradient: (gradient) ->
+        
+        stops = module.exports.gradientStops gradient
+        type  = gradient.type.replace 'Gradient', ''
+        gradient.doc().gradient type, (stop) ->
+            for stp in stops
+                stop.at stp.offset, stp.color, stp.opacity
+            
+    #  0000000   0000000   000       0000000   00000000   
+    # 000       000   000  000      000   000  000   000  
+    # 000       000   000  000      000   000  0000000    
+    # 000       000   000  000      000   000  000   000  
+    #  0000000   0000000   0000000   0000000   000   000  
+    
     contrastColor: (c) ->
 
         if module.exports.colorBrightness(c) < 0.5

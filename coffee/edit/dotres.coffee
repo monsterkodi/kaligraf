@@ -17,6 +17,7 @@ class DotResizer
 
     constructor: (@dotsel) ->
 
+        @name  = 'DotRes' 
         @kali  = @dotsel.kali
         @trans = @kali.trans
         @stage = @kali.stage
@@ -40,6 +41,13 @@ class DotResizer
         post.on 'stage',  @onStage
         post.on 'dotsel', @onDotSel
 
+    del: ->
+        
+        @svg.clear()
+        @svg.remove()
+        post.removeListener 'stage',  @onStage
+        post.removeListener 'dotsel', @onDotSel
+        
     do: (action) -> @stage.undo.do @, action
     done:        -> @stage.undo.done @
         
@@ -73,7 +81,9 @@ class DotResizer
         
         angle = Math.round angle if opt?.round
         
-        @do 'rotate'
+        doKey = 'rotate'+(@dotInfo.map (info) -> " #{info.dot.ctrl.index()}-#{info.dot.dot}").join ''
+        log 'DotRes.doRotate', doKey
+        @do doKey
         
         transmat = new SVG.Matrix().around @rotationCenter.x, @rotationCenter.y, new SVG.Matrix().rotate angle
 
@@ -362,6 +372,7 @@ class DotResizer
             when 'clear'        then @clear()
             when 'startRect'    then @clear()
             when 'endRect'      then @setDots dots
+            when 'move'         then @update()
 
     empty: -> not @box
     clear: ->
@@ -389,14 +400,16 @@ class DotResizer
 
     setDots: (dots) ->
 
-        if dots.length >= 2
+        if @validSelection()
             @createRect()
             
         @update()
 
     addDot: (dots, dot) ->
 
-        if dots.length < 2 then return
+        if not @validSelection()
+            return
+            
         if dots.length == 2
             @createRect()
 
@@ -404,6 +417,12 @@ class DotResizer
 
     delDot: (dots, dot) -> @update()
 
+    validSelection: ->
+        
+        bb = @dotsel.bbox()
+        scaleBox bb, @stage.zoom
+        @dotsel.dots.length >= 2 and bb.width + bb.height > 30
+    
     # 0000000     0000000   000   000
     # 000   000  000   000   000 000
     # 0000000    000   000    00000
@@ -412,7 +431,7 @@ class DotResizer
 
     update: -> 
 
-        if @dotsel.empty() or @dotsel.dots.length < 2
+        if not @validSelection()
             @clear()
         else
             @updateBox()

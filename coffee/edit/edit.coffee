@@ -18,6 +18,7 @@ class Edit
 
     constructor: (@kali, @passive) ->
 
+        @name  = 'Edit'
         @stage = @kali.stage
         @trans = @kali.trans
         
@@ -45,8 +46,9 @@ class Edit
         
         @initDefs()
         
-        post.on 'stage',   @onStage
-        post.on 'convert', @onConvert
+        post.on 'stage',    @onStage
+        post.on 'convert',  @onConvert
+        post.on 'gradient', @onGradient
         
     #  0000000  000000000   0000000   000000000  00000000  
     # 000          000     000   000     000     000       
@@ -77,8 +79,11 @@ class Edit
             item   = SVG.get id
             object = @objectForItem item
             ctrl   = object.ctrlAt index
-            dot    = ctrl.dots[dot]
-            @dotsel.add dot
+            if ctrl?
+                dot = ctrl.dots[dot]
+                @dotsel.add dot
+            else
+                log "no ctrl at index #{index}?"
             
     # 0000000    00000000  00000000   0000000  
     # 000   000  000       000       000       
@@ -99,6 +104,10 @@ class Edit
         @defs['C'] = @svg.defs().circle s
         @defs['Q'] = @svg.defs().circle s
         @defs['S'] = @svg.defs().circle s
+
+        @defs['from']   = @svg.defs().rect s,s        
+        @defs['to']     = @svg.defs().rect s,s        
+        @defs['radius'] = @svg.defs().circle s        
         
         for k,def of @defs
             def.transform x: -def.cx(), y:-def.cy()
@@ -131,10 +140,20 @@ class Edit
 
         @clear()
 
-        post.removeListener 'stage', @onStage
+        post.removeListener 'stage',    @onStage
+        post.removeListener 'convert',  @onConvert
+        post.removeListener 'gradient', @onGradient
 
-        @svg.remove()
-        @element.remove()
+        @dotsel?.del()
+        @dotres?.del()
+        
+        @svg?.remove()
+        @element?.remove()
+        
+        delete @svg
+        delete @dotsel
+        delete @dotres
+        delete @element
 
     #  0000000  000      00000000   0000000   00000000
     # 000       000      000       000   000  000   000
@@ -206,6 +225,12 @@ class Edit
             
         @dotsel.clear()
         @dotsel.addDots newDots
+    
+    onGradient: (action, info) =>
+        
+        return if action not in ['fill', 'stroke']
+        if info.item in @items()
+            @objectForItem(info.item).addGradi action, info.gradient
         
     # 000  000000000  00000000  00     00
     # 000     000     000       000   000
@@ -259,9 +284,8 @@ class Edit
         if object = @objectForItem item 
             return object
             
-        # log "editable? #{@stage.isEditable item}"
         if @stage.isEditable item
-
+             
             object = new Object @, item
             @objects.push object 
             
@@ -277,7 +301,6 @@ class Edit
         
         eventPos = pos event
         
-        # item = @stage.itemAtPos eventPos
         item = @stage.leafItemAtPos eventPos, noType: 'text'
         log 'pick start', item?.id(), @empty()
         if @empty()

@@ -89,6 +89,8 @@ class Palette extends Tool
     
     del: ->
         
+        @drag?.deactivate()
+        
         @cfg.onClose?()
         
         post.removeListener 'palette', @onPalette
@@ -97,6 +99,7 @@ class Palette extends Tool
         @element?.remove()
         
         delete @svg
+        delete @drag
         delete @element
         
     #  0000000    0000000  000000000  000   0000000   000   000  

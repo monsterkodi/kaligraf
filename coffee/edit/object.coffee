@@ -7,12 +7,16 @@
 
 { pos, empty, log, _ } = require 'kxk'
 
-Ctrl = require './ctrl'
+{ itemGradient } = require '../utils'
+
+Ctrl  = require './ctrl'
+Gradi = require './gradi'
 
 class Object
 
     constructor: (@edit, item) ->
 
+        @name  = "Object-#{item.id()}" 
         @svg   = @edit.svg
         @kali  = @edit.kali
         @trans = @kali.trans
@@ -35,6 +39,9 @@ class Object
 
         for ctrl in @ctrls
             ctrl.del()
+            
+        for k,gradi of @gradi
+            gradi.del()
 
         @ctrls = []
 
@@ -50,11 +57,26 @@ class Object
 
         @item = item
 
-        points = @points()
+        if points = @points()
 
-        for i in [0...points.length]
-            @initCtrlDots   i, points[i]
-            @updateCtrlDots i, points[i]
+            for i in [0...points.length]
+                
+                @initCtrlDots   i, points[i]
+                @updateCtrlDots i, points[i]
+            
+        for style in ['stroke', 'fill']
+            if gradient = itemGradient item, style
+                @addGradi style, gradient
+                
+    addGradi: (style, gradient) ->
+                
+        @gradi ?= {}
+        if not @gradi[style]?
+            log "Object.addGradi -- new #{style}"
+            @gradi[style] = new Gradi @, style, gradient
+        else
+            log "Object.addGradi -- update #{style}"
+            @gradi[style].update gradient
 
     # 000  000   000  000  000000000  0000000     0000000   000000000   0000000
     # 000  0000  000  000     000     000   000  000   000     000     000
@@ -137,6 +159,7 @@ class Object
                         when 'Q' then add 'ctrlq', nextIndex
 
         for idots in indexDots
+            
             if 'ctrlr' in idots.dots
                 prevIndex = idots.index-1
                 prevIndex = @numPoints()-1 if prevIndex == 0
@@ -304,7 +327,7 @@ class Object
 
     updateDots: (dots) ->
 
-        @do()
+        # log "#{@name}.updateDots"
         for dot in dots
 
             index   = dot.ctrl.index()
@@ -313,7 +336,6 @@ class Object
             @setPoint index, dot.dot, itemPos
 
         @plot()
-        @done()
 
     # 0000000    000  000   000  000  0000000    00000000
     # 000   000  000  000   000  000  000   000  000
@@ -630,10 +652,14 @@ class Object
         else
             log "no dot #{dot} at index #{index}?"
 
-    points: -> @item.array().valueOf()
-    numPoints: -> @points().length
+    numPoints: -> @points()?.length ? 0
     pointAt: (index) -> @points()[@index index]
-    ctrlAt: (index) -> @ctrls[@index index]
+    ctrlAt: (index) -> 
+        if index in ['fill', 'stroke']
+            return gradi?[index]
+        @ctrls[@index index]
+        
+    points: -> @item.array?().valueOf()
 
     index: (index) -> (@numPoints() + index) % @numPoints()
 

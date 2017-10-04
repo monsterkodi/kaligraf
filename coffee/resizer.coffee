@@ -17,6 +17,7 @@ class Resizer
 
     constructor: (@kali) ->
 
+        @name  = 'Resizer'
         @trans = @kali.trans
         @stage = @kali.stage
         

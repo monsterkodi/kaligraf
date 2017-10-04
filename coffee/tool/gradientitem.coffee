@@ -7,7 +7,7 @@
 
 { elem, drag, clamp, post, pos, log, $, _ } = require 'kxk'
 
-{ boundingBox, boxPos, checkersPattern, colorBrightness, id } = require '../utils'
+{ boundingBox, boxPos, checkersPattern, colorBrightness, id, gradientStops } = require '../utils'
 
 Palette = require './palette'
 
@@ -57,18 +57,8 @@ class GradientItem
     #      000     000     000   000  000             000  
     # 0000000      000      0000000   000        0000000   
     
-    stops: ->
-        i = 0
-        stops = []
-        while stop = @gradient.get i
-            stops.push
-                offset:  stop.attr 'offset'
-                color:   stop.attr 'stop-color'
-                opacity: stop.attr 'stop-opacity'
-                index:   i
-            i++
-        stops
-
+    stops: -> gradientStops @gradient
+    
     addStop: (offset) ->
         
         index = @indexForOffset offset
@@ -286,7 +276,7 @@ class GradientItem
                 rct.style 'stroke', '#666'
             
         @update()
-        post.emit 'gradient', @state()
+        post.emit 'gradient', 'changed', @state()
 
     update: -> @grd.fill @gradient
 

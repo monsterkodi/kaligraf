@@ -7,7 +7,7 @@
 
 { empty, resolve, fs, fileExists, log, _ } = require 'kxk'
 
-{ bboxForItems, growBox, uuid } = require './utils'
+{ bboxForItems, growBox, uuid, itemGradient } = require './utils'
 
 class Exporter
 
@@ -150,8 +150,8 @@ class Exporter
         
         for item in childItems
             for style in ['fill', 'stroke']
-                if item.style(style).startsWith 'url'
-                    keepGradients.add item.style(style).split('"')[1].slice 1
+                if gradient = itemGradient item, style #item.style(style).startsWith 'url'
+                    keepGradients.add gradient.id() # item.style(style).split('"')[1].slice 1
                     
         for def in item.doc().defs().children()
             if def.type.includes 'Gradient'

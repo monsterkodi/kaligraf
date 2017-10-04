@@ -40,9 +40,11 @@ class Tools extends Tool
         
         if @stage.shapes?.text?
             if tool not in ['zoom'] and action not in ['center']
+                log 'Tools.onAction -- text tool active?'
                 return
                 
         if Window.getFocusedWindow()?.getTitle() != 'kaligraf'
+            # log "Tools.onAction -- skip #{action}? activeWindow:", Window.getFocusedWindow()?.getTitle()
             return
             
         switch action
@@ -216,7 +218,8 @@ class Tools extends Tool
         
         @restore()
         
-        @clickTool prefs.get 'tool:active', 'pick' 
+        @clickTool    prefs.get 'tool:active', 'pick' 
+        @activateTool prefs.get 'tool:active', 'pick' 
         
         if prefs.get 'fontlist:visible', false
             @getTool('font').toggleList()
@@ -272,7 +275,9 @@ class Tools extends Tool
             @temp.hideChildren()
             delete @temp
         
-    clickTool: (tool) => @getTool(tool)?.onClick()
+    clickTool: (tool) => 
+        # log "Tools.clickTool #{tool}", @getTool(tool)?.name
+        @getTool(tool)?.onClick()
     
     clickToolButton: (tool, button) =>  
         
@@ -312,8 +317,9 @@ class Tools extends Tool
                 
         if tool.group?
             active = @getActive tool.group
-            active?.deactivate()
-            
+            active?.deactivate?()
+           
+        # log "Tools.activate #{name}", tool.name
         tool.activate()
         
         if tool.cfg.group == 'shape'

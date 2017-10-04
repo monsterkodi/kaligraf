@@ -62,11 +62,12 @@ class Gradient extends Tool
         
         @setType @type
 
-    onGradient: (state) =>
+    onGradient: (action, state) =>
         
-        state = _.clone state
-        state.type = @state.type
-        @setState state
+        if action == 'changed'
+            state = _.clone state
+            state.type = @state.type
+            @setState state
                 
     #  0000000  000000000   0000000   000000000  00000000  
     # 000          000     000   000     000     000       
@@ -83,18 +84,21 @@ class Gradient extends Tool
             delete @gradient
             
         else            
+            # log 'Gradient.setState', @state
+            
             @gradient = @svg.gradient @state.type, (stop) =>
                 for stp in @state.stops
                     stop.at stp.offset, stp.color, stp.opacity
     
-            switch @state.type
-                when 'radial'
-                    @gradient.from 0.5,0.5
-                    @gradient.to   0.5,0.5
-                    @gradient.radius 0.5
-                else
-                    @gradient.from 0,0
-                    @gradient.to   1,0
+            # switch @state.type
+                # when 'radial'
+                    # @gradient.from 0.5,0.5
+                    # @gradient.to   0.5,0.5
+                    # @gradient.radius 0.5
+                    # log @gradient.node.outerHTML
+                # else
+                    # @gradient.from 0,0
+                    # @gradient.to   1,0
     
             @svg.rect(52,18).fill @gradient
         
@@ -134,6 +138,8 @@ class Gradient extends Tool
                         item.style 'fill-opacity', item.data 'fill-opacity'
                     else
                         @kali.tool('fill').alpha
+                        
+                    post.emit 'gradient', 'fill', item:item
                     
                 if @kali.tool('select').fillStroke.includes 'stroke'
                     
@@ -146,6 +152,8 @@ class Gradient extends Tool
                         item.style 'stroke-opacity', item.data 'stroke-opacity'
                     else
                         @kali.tool('stroke').alpha
+                        
+                    post.emit 'gradient', 'stroke', item:item
                     
             else
                 
@@ -161,6 +169,8 @@ class Gradient extends Tool
                         fill: stageGradient
                         'fill-opacity': 1
                         
+                    post.emit 'gradient', 'fill', item:item, gradient:stageGradient
+                        
                 if @kali.tool('select').fillStroke.includes 'stroke'      
                     
                     if not item.data('stroke')?
@@ -172,6 +182,8 @@ class Gradient extends Tool
                     item.style
                         stroke: stageGradient
                         'stroke-opacity': 1
+                        
+                    post.emit 'gradient', 'stroke', item:item, gradient:stageGradient
                 
         @stage.done()
         

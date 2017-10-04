@@ -274,13 +274,14 @@ class Shapes
                 if shape in ['line', 'polyline'] and @kali.tool('width').width == 0
                     @kali.tool('width').setWidth 1
                     
-                @drawing = @addShape shape, stagePos
                 
-                if @draw?
-                    @draw.startDrawing @drawing, shape
-                else
-                    if shape == 'text' then stagePos.y -= @drawing.data('height')/2
-                    @trans.pos @drawing, stagePos
+                if @drawing = @addShape shape, stagePos
+                    
+                    if @draw?
+                        @draw.startDrawing @drawing, shape
+                    else
+                        if shape == 'text' then stagePos.y -= @drawing.data('height')/2
+                        @trans.pos @drawing, stagePos
 
     # 0000000    00000000    0000000    0000000   
     # 000   000  000   000  000   000  000        

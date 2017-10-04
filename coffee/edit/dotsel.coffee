@@ -13,6 +13,7 @@ class DotSel
 
     constructor: (@edit) ->
 
+        @name  = 'DotSel' 
         @kali  = @edit.kali
         @stage = @kali.stage
         @dots  = []
@@ -23,6 +24,13 @@ class DotSel
             onMove:  @onDrag
             
         post.on 'stage', @onStage
+        
+    del: ->
+        
+        @drag?.deactivate()
+        delete @drag
+        
+        post.removeListener 'stage', @onStage
         
     onStage: (action) => if action == 'viewbox' then @updateRect()
 
@@ -40,10 +48,10 @@ class DotSel
                 post.emit 'tool', 'click', 'edit'
             
             if event.shiftKey and dot.ctrl.isSelected dot.dot
-                @del dot
+                @delDot dot
             else
                 keep = event.shiftKey or dot.ctrl.isSelected dot.dot
-                @add dot, keep:keep
+                @addDot dot, keep:keep
                         
     # 0000000    00000000    0000000    0000000   
     # 000   000  000   000  000   000  000        
@@ -66,6 +74,11 @@ class DotSel
         
         for objectDot in @objectDots()
             objectDot.object.moveDotsBy objectDot.dots, delta, event
+            
+        for gradiDot in @gradiDots()
+            gradiDot.gradi.moveDotsBy gradiDot.dots, delta, event
+            
+        post.emit 'dotsel', 'move', @dots
 
     update: ->
 
@@ -89,6 +102,20 @@ class DotSel
                     object: object
                     dots:   dots
         objectDots
+
+    gradiDots: ->
+        
+        gradiDots = []
+        for i in [0...@edit.objects.length]
+            object = @edit.objects[i]
+            continue if not object.gradi?
+            for k,gradi of object.gradi
+                dots = _.values(gradi.dots).filter (dot) => dot in @dots
+                if not empty dots
+                    gradiDots.push 
+                        gradi: gradi
+                        dots:  dots
+        gradiDots
         
     #  0000000  000      00000000   0000000   00000000   
     # 000       000      000       000   000  000   000  
@@ -118,9 +145,9 @@ class DotSel
         for object in @edit.objects
             for dot in object.dots()
                 if dot.hasClass 'selected'
-                    @del dot
+                    @delDot dot
                 else
-                    @add dot, keep:true
+                    @addDot dot, keep:true
     
     #  0000000   0000000    0000000    
     # 000   000  000   000  000   000  
@@ -128,7 +155,7 @@ class DotSel
     # 000   000  000   000  000   000  
     # 000   000  0000000    0000000    
     
-    add: (dot, opt = { keep:true, emit:true }) ->
+    addDot: (dot, opt = { keep:true, emit:true }) ->
         
         @clear() if not opt?.keep
         
@@ -146,21 +173,32 @@ class DotSel
         for object in @edit.objects
             for dot in object.dots()
                 if rectsIntersect r, dot.rbox()
-                    @add dot, keep:true
+                    @addDot dot, keep:true
                 else if not o?.join
-                    @del dot
+                    @delDot dot
+                    
+            for k,gradi of object.gradi ? {}
+                for k,dot of gradi.dots 
+                    if rectsIntersect r, dot.rbox()
+                        @addDot dot, keep:true
+                    else if not o?.join
+                        @delDot dot
+                    
     addAll: ->
         
         for object in @edit.objects
             for dot in object.dots()
-                @add dot, keep:true, emit:false
+                @addDot dot, keep:true, emit:false
+            for k,gradi of object.gradi ? {}
+                for k,dot of gradi.dots 
+                    @addDot dot, keep:true, emit:false
                 
         post.emit 'dotsel', 'set', @dots
 
     addDots: (dots) ->
         
         for dot in dots
-            @add dot, keep:true
+            @addDot dot, keep:true
                 
     # 0000000    00000000  000      
     # 000   000  000       000      
@@ -168,7 +206,7 @@ class DotSel
     # 000   000  000       000      
     # 0000000    00000000  0000000  
     
-    del: (dot) ->
+    delDot: (dot) ->
         
         if dot in @dots
             dot.ctrl.setSelected dot.dot, false

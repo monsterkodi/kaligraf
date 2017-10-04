@@ -235,6 +235,7 @@ class Tool extends multi Spin, Button
     onClick: (event) => 
         
         if @svg? and event?.shiftKey
+            
             if event?.metaKey
                 @kali.stage.addSVG @svg.svg()
                 return
@@ -257,7 +258,7 @@ class Tool extends multi Spin, Button
             @swapParent()
             
         delete @keepChildren
-            
+
         @execute()
         
     execute: ->
@@ -266,8 +267,6 @@ class Tool extends multi Spin, Button
             post.emit 'tool', 'activate', @name
         else if @action?
             post.emit 'tool', @action, @name
-        # else if @name not in ['tools', 'font', 'layer']
-            # log "no action and no group #{@name}"
     
     activate:      -> @setActive true
     deactivate:    -> @setActive false
@@ -303,6 +302,7 @@ class Tool extends multi Spin, Button
             for tool in @children
                 if a = tool.getActive group
                     return a
+        null
 
     getTool: (name) ->
         

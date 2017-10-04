@@ -23,8 +23,10 @@ class Trans
     rotation: (item, a, c) -> if a? then @setRotation(item, a, c) else @getRotation item
     scale:    (item, s, c) -> if s? then @setScale(   item, s, c) else @getScale    item
 
-    transform: (item, p) -> pos new SVG.Point(p).transform item.transform().matrix
-    inverse:   (item, p) -> pos new SVG.Point(p).transform item.transform().matrix.inverse()
+    # transform: (item, p) -> pos new SVG.Point(p).transform item.transform().matrix
+    transform: (item, p) -> pos new SVG.Point(p).transform itemMatrix(item)
+    # inverse:   (item, p) -> pos new SVG.Point(p).transform item.transform().matrix.inverse()
+    inverse:   (item, p) -> pos new SVG.Point(p).transform itemMatrix(item).inverse()
     
     itemPosToView: (item, p) -> 
         pos new SVG.Point(p).transform itemMatrix item

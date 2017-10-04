@@ -9,7 +9,7 @@
     first, last, empty, clamp, pos, fs, log, _ } = require 'kxk'
 
 {   contrastColor, normRect, bboxForItems, itemIDs,
-    growBox, boxForItems, boxOffset, boxCenter } = require './utils'
+    growBox, boxForItems, boxOffset, boxCenter, itemGradient } = require './utils'
 
 electron  = require 'electron'
 clipboard = electron.clipboard
@@ -31,6 +31,7 @@ class Stage
     
     constructor: (@kali) ->
 
+        @name = 'Stage'
         @element = elem 'div', id: 'stage'
         @kali.element.insertBefore @element, @kali.element.firstChild
 
@@ -198,7 +199,8 @@ class Stage
         items
 
     isLeaf:     (item) -> not _.isFunction item.children
-    isEditable: (item) -> _.isFunction(item.array) and item.type != 'text'
+    isEditable: (item) -> 
+        _.isFunction(item.array) and item.type != 'text' or itemGradient(item, 'fill') or itemGradient(item, 'stroke')
     
     filterItems: (items, opt) ->
         

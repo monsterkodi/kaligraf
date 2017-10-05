@@ -113,10 +113,10 @@ module.exports =
     opposide: (name) ->
         
         switch name
-            when 'left'  then 'right'
-            when 'right' then 'left'
-            when 'top'   then 'bot'
-            when 'bot'   then 'top'
+            when 'left'      then 'right'
+            when 'right'     then 'left'
+            when 'top'       then 'bot'
+            when 'bot'       then 'top'
             when 'top left'  then 'bot right'
             when 'top right' then 'bot left'
             when 'bot left'  then 'top right'
@@ -285,7 +285,14 @@ module.exports =
         gradient.doc().gradient type, (stop) ->
             for stp in stops
                 stop.at stp.offset, stp.color, stp.opacity
-            
+
+    copyStops: (fromGradient, toGradient) ->
+        
+        stops = module.exports.gradientStops fromGradient
+        toGradient.update (stop) ->
+            for stp in stops
+                stop.at stp.offset, stp.color, stp.opacity
+                
     #  0000000   0000000   000       0000000   00000000   
     # 000       000   000  000      000   000  000   000  
     # 000       000   000  000      000   000  0000000    
@@ -308,6 +315,8 @@ module.exports =
             
     colorBrightness: (c) -> c = new SVG.Color(c); (c.r + c.g + c.b)/(3*255)
     colorDist: (a,b) -> Math.abs(a.r-b.r) + Math.abs(a.g-b.g) + Math.abs(a.b-b.b)
+    
+    invertColor: (c) -> c = new SVG.Color(c); new SVG.Color r:255-c.r, g:255-c.g, b:255-c.b 
             
     #  0000000  000   000  00000000   0000000  000   000  00000000  00000000    0000000  
     # 000       000   000  000       000       000  000   000       000   000  000       

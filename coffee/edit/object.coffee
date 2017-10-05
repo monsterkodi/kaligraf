@@ -72,10 +72,8 @@ class Object
                 
         @gradi ?= {}
         if not @gradi[style]?
-            log "Object.addGradi -- new #{style}"
             @gradi[style] = new Gradi @, style, gradient
         else
-            log "Object.addGradi -- update #{style}"
             @gradi[style].update gradient
 
     # 000  000   000  000  000000000  0000000     0000000   000000000   0000000
@@ -659,7 +657,7 @@ class Object
             return gradi?[index]
         @ctrls[@index index]
         
-    points: -> @item.array?().valueOf()
+    points: -> @item.type != 'text' and @item.array?().valueOf()
 
     index: (index) -> (@numPoints() + index) % @numPoints()
 

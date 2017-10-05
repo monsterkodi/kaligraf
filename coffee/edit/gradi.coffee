@@ -7,11 +7,11 @@
 
 { drag, last, pos, log, _ } = require 'kxk'
 
-{ boxPos, boxCenter, boundingBox, itemMatrix, cloneGradient } = require '../utils'
+{ boxPos, boxCenter, boundingBox, itemMatrix, itemGradient, copyStops, cloneGradient } = require '../utils'
 
 class Gradi
 
-    constructor: (@object, @style, gradient) ->
+    constructor: (@object, @style, @gradient) ->
 
         @name  = 'Gradi'
         @dots  = {}
@@ -21,18 +21,26 @@ class Gradi
         @stage = @edit.stage
         @trans = @edit.trans
         
-        @update gradient
-
-    update: (gradient) -> 
+        @type = @gradient.type.replace 'Gradient', ''
+        @gradient.type = @type
+        # @gradient.attr 'spreadMethod', 'reflect'
+        @gradient.attr 'spreadMethod', 'repeat'
+        @initDots()
+        
+    update: (gradient) ->
         
         if not gradient 
             @del() 
         else
-            @type = gradient.type.replace 'Gradient', ''
-            log "clone #{@type}"
-            @gradient = cloneGradient gradient
-            log "update #{@style} -- #{@type} #{@gradient.type}"
-            @object.item.style @style, @gradient
+            if @gradient = itemGradient @object.item, @style
+                log "Gradi.update update #{@style} -- #{@type} #{@gradient.type}"
+                copyStops gradient, @gradient
+            else
+                @type = gradient.type.replace 'Gradient', ''
+                @gradient = cloneGradient gradient
+                log "Gradi.update clone #{@style} -- #{@type} #{@gradient.type}"
+                @object.item.style @style, @gradient
+                
             @initDots()
         
     # 0000000     0000000   000000000
@@ -112,17 +120,49 @@ class Gradi
             log 'Gradi.updateDot no svg?', dot
             return
                
-        bb = @object.item.bbox().transform itemMatrix @object.item
-        
-        dotPos = switch dot
-            when 'radius' then boxCenter(bb).plus pos bb.width/2, 0
+        relPos = switch dot
+            
+            when 'radius'
+                if @gradient.attr('r')
+                    log 'gradient.r', @gradient.attr('r')
+                    log 'gradient.node', @gradient.node.outerHTML
+                    pos @gradient.attr('r'), 0
+                else
+                    pos 0.5, 0
+                    
             when 'from'   
-                if @type == 'radial' then boxCenter bb
-                else boxCenter(bb).minus pos bb.width/2, 0
-            when 'to'   
-                if @type == 'radial' then boxCenter bb
-                else boxCenter(bb).plus pos bb.width/2, 0
                 
+                if @type == 'radial' 
+                    if @gradient.attr('fx') and @gradient.attr('fy')
+                        pos @gradient.attr('fx'), @gradient.attr('fy')
+                    else
+                        pos 0.5, 0.5
+                else
+                    if @gradient.attr('x1') and @gradient.attr('y1')
+                        pos @gradient.attr('x1'), @gradient.attr('y1')
+                    else
+                        pos -0.5, 0
+                        
+            when 'to'   
+                
+                if @type == 'radial' 
+                    if @gradient.attr('cx') and @gradient.attr('cy')
+                        pos @gradient.attr('cx'), @gradient.attr('cy')
+                    else
+                        pos 0.5, 0.5
+                else
+                    if @gradient.attr('x2') and @gradient.attr('y2')
+                        pos @gradient.attr('x2'), @gradient.attr('y2')
+                    else
+                        pos 0.5, 0
+              
+        log "relPos #{@style} #{@type} #{dot}", relPos
+                        
+        bb = @object.item.bbox()
+        relPos.mul pos bb.width, bb.height
+        relPos.add boxPos bb
+        dotPos = @trans.transform @object.item, relPos
+                        
         svg.cx dotPos.x
         svg.cy dotPos.y
 
@@ -190,7 +230,7 @@ class Gradi
             if dot.dot in ['from', 'to']
                 @plotLine 'from-to'
                 
-            if dot == 'radius' or dot == 'from' and @type == 'radial'
+            if dot.dot == 'radius' or dot.dot == 'from' and @type == 'radial'
                 @plotLine 'radius'
                 
         @calcGradient()

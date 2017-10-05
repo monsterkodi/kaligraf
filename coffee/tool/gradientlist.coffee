@@ -7,7 +7,7 @@
 
 { stopEvent, setStyle, childIndex, upElem, drag, childIndex, prefs, keyinfo, elem, empty, clamp, post, pos, log, $, _ } = require 'kxk'
 
-{ ensureInSize, winTitle, boundingBox, boxPos, highlightColor } = require '../utils'
+{ ensureInSize, winTitle, gradientStops, boundingBox, boxPos, highlightColor, invertColor } = require '../utils'
 
 GradientItem = require './gradientitem'
 Exporter     = require '../exporter'
@@ -32,6 +32,10 @@ class GradientList
             ,
                 text: 'copy', action: @onCopyGradient
             ,
+                text: 'rev',  action: @onReverseGradient
+            ,
+                text: 'inv',  action: @onInvertGradient
+            ,                
                 text: 'del',  action: @onDelGradient
             ]
             
@@ -139,7 +143,27 @@ class GradientList
         @scroll.insertBefore gradient.element, @activeGradient()
         @activate index
         @store()
+
+    onReverseGradient: => 
         
+        if gradient = @activeGradient().gradient.gradient
+            stops = gradientStops gradient
+            gradient.update (stop) ->
+                for stp in stops.reverse()
+                    stop.at (1-stp.offset), stp.color, stp.opacity
+            @activeGradient().gradient.createStops()
+            @store()
+
+    onInvertGradient: => 
+        
+        if gradient = @activeGradient().gradient.gradient
+            stops = gradientStops gradient
+            gradient.update (stop) ->
+                for stp in stops
+                    stop.at stp.offset, invertColor(stp.color), stp.opacity
+            @activeGradient().gradient.update()
+            @store()
+            
     onDelGradient:  =>
         
         index = @activeIndex()

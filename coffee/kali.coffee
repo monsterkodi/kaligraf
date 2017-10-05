@@ -76,9 +76,9 @@ class Kali
 
     closeStopPalette: ->
         
-        if p = @stopPalette
+        if palette = @stopPalette
             delete @stopPalette
-            p.del()
+            palette.del()
         
     insertAboveSelection: (child) -> @element.insertBefore child, @stage.selection.element
     insertBelowTools: (child) -> @element.insertBefore child, @toolDiv

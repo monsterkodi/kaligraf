@@ -34,7 +34,6 @@ class Wire extends Tool
     onStage: (action) =>
         
         if action == 'willSave'
-            log 'unwire willSave'
             @unwire @stage.treeItems()
         
     onWire: =>

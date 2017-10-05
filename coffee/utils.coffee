@@ -262,8 +262,10 @@ module.exports =
         value = item.style style 
         if value.startsWith 'url'
             id = value.split('"')[1].slice 1
-            log "itemGradient #{id}", SVG.get(id).type
-            return SVG.get id
+            if gradient = SVG.get id
+                gradient.type = module.exports.gradientType gradient
+                # log "itemGradient #{id}", gradient.type
+                return gradient
 
     gradientStops: (gradient) ->
         
@@ -278,21 +280,74 @@ module.exports =
             i++
         stops
         
+    gradientType: (gradient) -> 
+        
+        gradient.type.replace 'Gradient', ''
+        
     cloneGradient: (gradient) ->
         
         stops = module.exports.gradientStops gradient
-        type  = gradient.type.replace 'Gradient', ''
-        gradient.doc().gradient type, (stop) ->
+        gradient.doc().gradient gradient.type, (stop) ->
             for stp in stops
                 stop.at stp.offset, stp.color, stp.opacity
 
     copyStops: (fromGradient, toGradient) ->
         
-        stops = module.exports.gradientStops fromGradient
-        toGradient.update (stop) ->
+        module.exports.setGradientStops toGradient, module.exports.gradientStops fromGradient
+        
+    setGradientStops: (gradient, stops) ->
+        
+        gradient.update (stop) ->
             for stp in stops
                 stop.at stp.offset, stp.color, stp.opacity
+
+    gradientState: (gradient) ->
+        
+        state = 
+            type:    gradient.type
+            stops:   module.exports.gradientStops gradient
+            spread:  gradient.attr('spreadMethod') ? 'pad'
+            
+        switch gradient.type
+            when 'radial'
+                state.from   = pos gradient.attr('fx'), gradient.attr('fy')
+                state.to     = pos gradient.attr('cx'), gradient.attr('cy')
+                state.radius = gradient.attr('r')
+            when 'linear'
+                state.from   = pos gradient.attr('x1'), gradient.attr('y1')
+                state.to     = pos gradient.attr('x2'), gradient.attr('y2')
+            
+        state
                 
+    setGradientState: (gradient, state) ->
+
+        gradient.attr 'spreadMethod', state.spread if state.spread?
+        
+        switch state.type
+            
+            when 'radial'
+                for attr in ['cx', 'cy', 'fx', 'fy', 'r']
+                    gradient.attr attr, state[attr] if state[attr]?
+                    
+                if state.from?
+                    gradient.attr fx:state.from.x, fy:state.from.y
+                if state.from?
+                    gradient.attr cx:state.to.x, cy:state.to.y
+                if state.radius?
+                    gradient.attr r:state.radius
+                    
+            when 'linear'
+                for attr in ['x1', 'y1', 'x2', 'y2']
+                    gradient.attr attr, state[attr] if state[attr]?
+                    
+                if state.from?
+                    gradient.attr x1:state.from.x, y1:state.from.y
+                if state.from?
+                    gradient.attr x2:state.to.x, y2:state.to.y
+                    
+        if not empty state.stops
+            module.exports.setGradientStops gradient, state.stops
+    
     #  0000000   0000000   000       0000000   00000000   
     # 000       000   000  000      000   000  000   000  
     # 000       000   000  000      000   000  0000000    

@@ -5,13 +5,13 @@
 # 000   000  000   000  000   000  000   000  000
 #  0000000   000   000  000   000  0000000    000
 
-{ drag, last, pos, log, _ } = require 'kxk'
+{ pos, log, _ } = require 'kxk'
 
-{ boxPos, boxCenter, boundingBox, itemMatrix, itemGradient, copyStops, cloneGradient } = require '../utils'
+{ boxPos, itemGradient } = require '../utils'
 
 class Gradi
 
-    constructor: (@object, @style, @gradient) ->
+    constructor: (@object, @style) ->
 
         @name  = 'Gradi'
         @dots  = {}
@@ -21,27 +21,43 @@ class Gradi
         @stage = @edit.stage
         @trans = @edit.trans
         
-        @type = @gradient.type.replace 'Gradient', ''
-        @gradient.type = @type
-        # @gradient.attr 'spreadMethod', 'reflect'
-        @gradient.attr 'spreadMethod', 'repeat'
-        @initDots()
+    # 0000000    00000000  000
+    # 000   000  000       000
+    # 000   000  0000000   000
+    # 000   000  000       000
+    # 0000000    00000000  0000000
+
+    del: ->
         
-    update: (gradient) ->
+        @clearDots()
+        delete @gradient
         
-        if not gradient 
-            @del() 
-        else
-            if @gradient = itemGradient @object.item, @style
-                log "Gradi.update update #{@style} -- #{@type} #{@gradient.type}"
-                copyStops gradient, @gradient
-            else
-                @type = gradient.type.replace 'Gradient', ''
-                @gradient = cloneGradient gradient
-                log "Gradi.update clone #{@style} -- #{@type} #{@gradient.type}"
-                @object.item.style @style, @gradient
-                
+    clearDots: ->
+        
+        for k,d of @dots
+            delete d.ctrl
+            delete d.dot
+            d.remove()
+            
+        for k,l of @lines
+            l.remove()
+        
+        @dots  = {}
+        @lines = {}
+        
+    # 000   000  00000000   0000000     0000000   000000000  00000000  
+    # 000   000  000   000  000   000  000   000     000     000       
+    # 000   000  00000000   000   000  000000000     000     0000000   
+    # 000   000  000        000   000  000   000     000     000       
+    #  0000000   000        0000000    000   000     000     00000000  
+    
+    update: ->
+        
+        if @gradient = itemGradient @object.item, @style
+            @type = @gradient.type
             @initDots()
+        else
+            @del() 
         
     # 0000000     0000000   000000000
     # 000   000  000   000     000
@@ -51,7 +67,7 @@ class Gradi
 
     initDots: ->
         
-        @del()
+        @clearDots()
         @createDot 'from'
         @createDot 'to'
         @createDot 'radius' if @type == 'radial'
@@ -64,26 +80,7 @@ class Gradi
         @updateDot 'radius' if @type == 'radial'
         
     index: -> @style
-        
-    # 0000000    00000000  000
-    # 000   000  000       000
-    # 000   000  0000000   000
-    # 000   000  000       000
-    # 0000000    00000000  0000000
-
-    del: ->
-
-        for k,d of @dots
-            delete d.ctrl
-            delete d.dot
-            d.remove()
-            
-        for k,l of @lines
-            l.remove()
-
-        @dots  = {}
-        @lines = {}
-                
+                        
     #  0000000  00000000   00000000   0000000   000000000  00000000  
     # 000       000   000  000       000   000     000     000       
     # 000       0000000    0000000   000000000     000     0000000   
@@ -119,13 +116,11 @@ class Gradi
         if not svg?
             log 'Gradi.updateDot no svg?', dot
             return
-               
+             
         relPos = switch dot
             
             when 'radius'
                 if @gradient.attr('r')
-                    log 'gradient.r', @gradient.attr('r')
-                    log 'gradient.node', @gradient.node.outerHTML
                     pos @gradient.attr('r'), 0
                 else
                     pos 0.5, 0
@@ -141,7 +136,7 @@ class Gradi
                     if @gradient.attr('x1') and @gradient.attr('y1')
                         pos @gradient.attr('x1'), @gradient.attr('y1')
                     else
-                        pos -0.5, 0
+                        pos 0, 0
                         
             when 'to'   
                 
@@ -156,8 +151,6 @@ class Gradi
                     else
                         pos 0.5, 0
               
-        log "relPos #{@style} #{@type} #{dot}", relPos
-                        
         bb = @object.item.bbox()
         relPos.mul pos bb.width, bb.height
         relPos.add boxPos bb

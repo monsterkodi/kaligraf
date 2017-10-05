@@ -17,7 +17,7 @@ class DotSel
         @kali  = @edit.kali
         @stage = @kali.stage
         @dots  = []
-        
+
         @drag = new drag
             target:  @edit.element
             onStart: @onStart
@@ -26,7 +26,7 @@ class DotSel
         post.on 'stage', @onStage
         
     del: ->
-        
+
         @drag?.deactivate()
         delete @drag
         
@@ -41,6 +41,8 @@ class DotSel
     # 0000000      000     000   000  000   000     000     
     
     onStart: (drag, event) =>
+        
+        # log 'DotSel.onStart', event.target.instance?.tagName
         
         if dot = event.target.instance
 

@@ -66,15 +66,16 @@ class Object
             
         for style in ['stroke', 'fill']
             if gradient = itemGradient item, style
-                @addGradi style, gradient
+                @addGradi style
                 
-    addGradi: (style, gradient) ->
+    addGradi: (style) ->
                 
         @gradi ?= {}
         if not @gradi[style]?
-            @gradi[style] = new Gradi @, style, gradient
-        else
-            @gradi[style].update gradient
+            @gradi[style] = new Gradi @, style
+
+        log "addGradi #{style}", @gradi[style]?
+        @gradi[style].update()
 
     # 000  000   000  000  000000000  0000000     0000000   000000000   0000000
     # 000  0000  000  000     000     000   000  000   000     000     000

@@ -154,7 +154,7 @@ class Ctrl
             if @object.pointAt(@index()-1)[0] in ['C', 'S']
                 prevPos = @object.dotPos @index()-1
                 @plotLine 'ctrlr', dotPos, prevPos
-        else if dot != 'point' # dot in ['ctrl2', 'ctrls', 'ctrlq']
+        else if dot != 'point'
             nextIndex = @index()+1
             nextIndex = 1 if nextIndex >= @object.numPoints()
             nextPoint = @object.pointAt nextIndex

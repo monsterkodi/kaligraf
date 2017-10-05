@@ -137,9 +137,9 @@ class GradientItem
         
         if stop = @stopAtPos eventPos
             drag.stop = stop
-        else
-            drag.stop = @addStop itemPos.x / 100
-        
+        # else
+            # drag.stop = @addStop itemPos.x / 100
+         
         @activateStop drag.stop.index
         
     activateStop: (index) ->
@@ -148,7 +148,6 @@ class GradientItem
         index = @clampIndex index
         @stopAt(index)?.node.classList.add 'active'
         stop = @stops()[index]
-        log "activateStop #{index}", stop
         @kali.stopPalette?.setClosestColor stop.color, stop.opacity        
         
     activeStop: -> @stp.children().find (stop) -> stop.node.classList.contains 'active'
@@ -189,6 +188,12 @@ class GradientItem
         
         if drag.startPos == drag.lastPos and drag.stop?
             @openPalette drag.stop
+
+    onStopDblClick: (event) =>
+
+        itemPos = @itemPosFor pos event
+        stop = @addStop itemPos.x / 100
+        @activateStop stop.index
             
     # 00000000    0000000   000      00000000  000000000  000000000  00000000  
     # 000   000  000   000  000      000          000        000     000       
@@ -252,33 +257,18 @@ class GradientItem
             onMove:  @onStopMove
             onStop:  @onStopStop
              
+        @element.addEventListener 'dblclick', @onStopDblClick
+            
         @createStops()
         
     hideStops: ->
+        
+        @element.removeEventListener 'dblclick', @onStopDblClick
         
         @stpDrag.deactivate()
         delete @stpDrag
         @stp.remove()
         delete @stp
-
-    # 000   000  00000000   0000000     0000000   000000000  00000000  
-    # 000   000  000   000  000   000  000   000     000     000       
-    # 000   000  00000000   000   000  000000000     000     0000000   
-    # 000   000  000        000   000  000   000     000     000       
-    #  0000000   000        0000000    000   000     000     00000000  
-            
-    updateStops: ->
-        
-        for stop in @stops()
-            rct = @stp.children()[stop.index]
-            rct.cx stop.offset * 100
-            if colorBrightness(stop.color) < 0.2
-                rct.style 'stroke', '#666'
-            
-        @update()
-        post.emit 'gradient', 'changed', @state()
-
-    update: -> @grd.fill @gradient
 
     #  0000000  00000000   00000000   0000000   000000000  00000000  
     # 000       000   000  000       000   000     000     000       
@@ -297,6 +287,25 @@ class GradientItem
             rct.y 21
             
         @updateStops()
+        
+    # 000   000  00000000   0000000     0000000   000000000  00000000  
+    # 000   000  000   000  000   000  000   000     000     000       
+    # 000   000  00000000   000   000  000000000     000     0000000   
+    # 000   000  000        000   000  000   000     000     000       
+    #  0000000   000        0000000    000   000     000     00000000  
+            
+    updateStops: ->
+        
+        for stop in @stops()
+            rct = @stp.children()[stop.index]
+            rct.cx stop.offset * 100
+            if colorBrightness(stop.color) < 0.2
+                rct.style 'stroke', '#666'
+            
+        @update()
+        post.emit 'gradient', 'changed', @state()
+
+    update: -> @grd.fill @gradient
     
     #  0000000    0000000  000000000  000  000   000  00000000  
     # 000   000  000          000     000  000   000  000       

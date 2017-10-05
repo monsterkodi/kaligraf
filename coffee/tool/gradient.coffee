@@ -5,12 +5,14 @@
 # 000   000  000   000  000   000  000   000  000  000       000  0000     000     
 #  0000000   000   000  000   000  0000000    000  00000000  000   000     000     
 
-{ prefs, post, empty, log, _ } = require 'kxk'
+{ prefs, post, empty, pos, log, _ } = require 'kxk'
 
-{ itemIDs } = require '../utils'
+{ itemIDs, itemGradient, setGradientState, gradientState } = require '../utils'
 
 Tool         = require './tool'
 GradientList = require './gradientlist'
+
+SIZE = 13
 
 class Gradient extends Tool
 
@@ -20,22 +22,25 @@ class Gradient extends Tool
                 
         @initTitle()
 
-        @type = prefs.get 'gradient:type', 'none'
-        
+        @state = prefs.get 'gradient', 
+            type:           'none'
+            spread:         'pad'
+            stops:          []
+            
         @initButtons [
             name: 'none'
             tiny: 'gradient-none'
-            choice: @type
+            choice: @state.type
             action: => @setType 'none'
         ,
             name: 'radial'
             tiny: 'gradient-radial'
-            choice: @type
+            choice: @state.type
             action: => @setType 'radial'
         ,
             name: 'linear'
             tiny: 'gradient-linear'
-            choice: @type
+            choice: @state.type
             action: => @setType 'linear'
         ]
         
@@ -43,9 +48,20 @@ class Gradient extends Tool
             name: 'gradient'
             tiny: 'gradient'
             action: @toggleList
+        ,
+            name: 'repeat'
+            tiny: 'gradient-repeat'
+            toggle: @state.spread
+            action: => @toggleSpread 'repeat'
+        ,
+            name: 'reflect'
+            tiny: 'gradient-reflect'
+            toggle: @state.spread
+            action: => @toggleSpread 'reflect'
         ]
+        
         @button('gradient').innerHTML = ''
-        @svg = SVG(@button('gradient')).size 52, 18
+        @svg = SVG(@button('gradient')).size SIZE,SIZE
         @svg.clear()
         
         @setState prefs.get 'gradient:state', type:'linear', stops:[
@@ -60,14 +76,20 @@ class Gradient extends Tool
         
         post.on 'gradient', @onGradient
         
-        @setType @type
+        @setState @state
 
+    #  0000000  000   000   0000000   000   000   0000000   00000000  0000000    
+    # 000       000   000  000   000  0000  000  000        000       000   000  
+    # 000       000000000  000000000  000 0 000  000  0000  0000000   000   000  
+    # 000       000   000  000   000  000  0000  000   000  000       000   000  
+    #  0000000  000   000  000   000  000   000   0000000   00000000  0000000    
+    
     onGradient: (action, state) =>
         
         if action == 'changed'
-            state = _.clone state
-            state.type = @state.type
-            @setState state
+            @state.stops = _.cloneDeep state.stops 
+            @setState @state
+            @postGradient stops:@state.stops
                 
     #  0000000  000000000   0000000   000000000  00000000  
     # 000          000     000   000     000     000       
@@ -76,33 +98,38 @@ class Gradient extends Tool
     # 0000000      000     000   000     000     00000000  
     
     setState: (@state) ->
-        
+
         @svg.clear()
+        delete @gradient
         
-        if @state.type == 'none' 
-            
-            delete @gradient
-            
-        else            
-            # log 'Gradient.setState', @state
-            
-            @gradient = @svg.gradient @state.type, (stop) =>
-                for stp in @state.stops
-                    stop.at stp.offset, stp.color, stp.opacity
-    
-            # switch @state.type
-                # when 'radial'
-                    # @gradient.from 0.5,0.5
-                    # @gradient.to   0.5,0.5
-                    # @gradient.radius 0.5
-                    # log @gradient.node.outerHTML
-                # else
-                    # @gradient.from 0,0
-                    # @gradient.to   1,0
-    
-            @svg.rect(52,18).fill @gradient
+        prefs.set 'gradient', @state
         
-        @doGradient()
+        return if @state.type == 'none' 
+                        
+        @gradient = @svg.gradient @state.type
+
+        switch @state.type
+            when 'radial'
+                @state.from = pos 0.5, 0.5
+                @state.to   = pos 0.5, 0.5
+                switch @state.spread
+                    when 'pad'
+                        @state.r = 0.5
+                    else
+                        @state.r = 0.3
+            when 'linear'
+                delete @state.r
+                switch @state.spread
+                    when 'pad'
+                        @state.from = pos 0.2, 0
+                        @state.to   = pos 0.8, 0
+                    else
+                        @state.from = pos 0.0, 0
+                        @state.to   = pos 0.5, 0
+        
+        setGradientState @gradient, @state
+        
+        @svg.rect(SIZE,SIZE).fill @gradient
         
     # 0000000     0000000   
     # 000   000  000   000  
@@ -110,88 +137,110 @@ class Gradient extends Tool
     # 000   000  000   000  
     # 0000000     0000000   
     
-    doGradient: ->
+    applyGradient: (style, info) ->
         
         items = @stage.selectedLeafItems()
         return if empty items
             
         @stage.do 'gradient'+itemIDs items
         
-        if @state.type != 'none'
-                                
-            stageGradient = @stage.svg.gradient @state.type, (stop) =>
-                for stp in @state.stops
-                    stop.at stp.offset, stp.color, stp.opacity
-            
         for item in items
-            
-            if @state.type == 'none'
-                
-                if @kali.tool('select').fillStroke.includes 'fill'
-                
-                    if item.data('fill')?
-                        item.style 'fill', item.data 'fill'
-                    else
-                        @kali.tool('fill').color
-                        
-                    if item.data('fill-opacity')?
-                        item.style 'fill-opacity', item.data 'fill-opacity'
-                    else
-                        @kali.tool('fill').alpha
-                        
-                    post.emit 'gradient', 'fill', item:item
-                    
-                if @kali.tool('select').fillStroke.includes 'stroke'
-                    
-                    if item.data('stroke')?
-                        item.style 'stroke', item.data 'stroke'
-                    else
-                        @kali.tool('stroke').color
-                        
-                    if item.data('stroke-opacity')?
-                        item.style 'stroke-opacity', item.data 'stroke-opacity'
-                    else
-                        @kali.tool('stroke').alpha
-                        
-                    post.emit 'gradient', 'stroke', item:item
-                    
-            else
-                
-                if @kali.tool('select').fillStroke.includes 'fill'
-                    
-                    if not item.data('fill')?
-                        item.data 'fill', item.style 'fill'
-                        
-                    if not item.data('fill-opacity')?
-                        item.data 'fill-opacity', item.style 'fill-opacity'
-
-                    item.style 
-                        fill: stageGradient
-                        'fill-opacity': 1
-                        
-                    post.emit 'gradient', 'fill', item:item, gradient:stageGradient
-                        
-                if @kali.tool('select').fillStroke.includes 'stroke'      
-                    
-                    if not item.data('stroke')?
-                        item.data 'stroke', item.style 'stroke'
-                        
-                    if not item.data('stroke-opacity')?
-                        item.data 'stroke-opacity', item.style 'stroke-opacity'
-                        
-                    item.style
-                        stroke: stageGradient
-                        'stroke-opacity': 1
-                        
-                    post.emit 'gradient', 'stroke', item:item, gradient:stageGradient
-                
-        @stage.done()
+            if gradient = itemGradient item, style
+                log "applyGradient #{style} #{item.id()}", info
+                if info.type?
+                    @applyType item, style, info.type
+                else
+                    setGradientState gradient, info
+            else if info.type? and info.type != 'none'
+                @applyType item, style, info.type
         
+        @stage.done()
+
+    # 000000000  000   000  00000000   00000000  
+    #    000      000 000   000   000  000       
+    #    000       00000    00000000   0000000   
+    #    000        000     000        000       
+    #    000        000     000        00000000  
+    
     setType: (type) =>
         
-        prefs.set 'gradient:type', type
         @state.type = type
         @setState @state
+        @postGradient type:type
+
+    applyType: (item, style, type) ->
+        
+        if type == 'none'
+                                
+            if item.data(style)?
+                item.style style, item.data style
+            else
+                @kali.tool(style).color
+                
+            if item.data("#{style}-opacity")?
+                item.style "#{style}-opacity", item.data "#{style}-opacity"
+            else
+                @kali.tool(style).alpha
+                                
+        else
+            
+            if not item.data(style)?
+                item.data style, item.style style
+                
+            if not item.data("#{style}opacity")?
+                item.data "#{style}opacity", item.style "#{style}opacity"
+            
+            if gradient = itemGradient item, style
+            
+                return if gradient.type == type
+            
+                state = gradientState gradient
+                state.type = type
+                
+            else
+                state = @state
+                    
+            # gradient.remove()
+            
+            gradient = @stage.svg.gradient type
+            setGradientState gradient, state
+                
+            item.style style, gradient                
+            item.style "#{style}-opacity", 1
+                
+        post.emit 'gradient', style, item:item, type:type
+        
+    # 000000000   0000000    0000000    0000000   000      00000000  
+    #    000     000   000  000        000        000      000       
+    #    000     000   000  000  0000  000  0000  000      0000000   
+    #    000     000   000  000   000  000   000  000      000       
+    #    000      0000000    0000000    0000000   0000000  00000000  
+    
+    toggleSpread: (spread) =>
+        
+        if spread == @state.spread
+            @state.spread = 'pad'
+        else
+            @state.spread = spread
+            
+        @setToggle 'repeat',  @state.spread == 'repeat'
+        @setToggle 'reflect', @state.spread == 'reflect'
+            
+        @setState @state
+        @postGradient spread:@state.spread
+        
+    # 00000000    0000000    0000000  000000000  
+    # 000   000  000   000  000          000     
+    # 00000000   000   000  0000000      000     
+    # 000        000   000       000     000     
+    # 000         0000000   0000000      000     
+    
+    postGradient: (info) ->
+        
+        for style in ['fill', 'select']
+            if @kali.tool('select').fillStroke.includes style
+                post.emit 'gradient', style, info
+                @applyGradient style, info
         
     # 000      000   0000000  000000000  
     # 000      000  000          000     

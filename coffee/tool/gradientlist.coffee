@@ -15,14 +15,14 @@ Shadow       = require '../shadow'
 
 class GradientList
     
-    log: -> log.apply log, [].slice.call arguments, 0
+    log: -> #log.apply log, [].slice.call arguments, 0
     
     constructor: (@kali) ->
         
         @stage = @kali.stage
         
         @element = elem 'div', class: 'gradientList'
-        @setPos pos prefs.get('gradientlist:pos:x', 64), prefs.get('gradientlist:pos:y', 34)
+        @setPos pos prefs.get 'gradientlist:pos', pos 64, 34
         @element.tabIndex = 100
         
         @title = winTitle 
@@ -62,8 +62,7 @@ class GradientList
             target: @title
             onMove: (drag) => 
                 newPos = boxPos(boundingBox @element).plus drag.delta
-                prefs.set 'gradientlist:pos:x', newPos.x
-                prefs.set 'gradientlist:pos:y', newPos.y
+                prefs.set 'gradientlist:pos', newPos
                 @setPos newPos
                 @shadow.update()
 
@@ -185,16 +184,16 @@ class GradientList
         items
         
     store: ->
-        prefs.set 'gradient:active', @activeIndex()
-        prefs.set 'gradient:list', @gradientItems().map (gradient) -> gradient.state()
+        prefs.set 'gradientlist:active', @activeIndex()
+        prefs.set 'gradientlist:list', @gradientItems().map (gradient) -> gradient.state()
         @shadow.update()
         
     restore: ->
-        for state in prefs.get 'gradient:list', []
+        for state in prefs.get 'gradientlist:list', []
             gradient = new GradientItem @
             gradient.restore state
             @scroll.appendChild gradient.element
-        @activate prefs.get 'gradient:active', 0
+        @activate prefs.get 'gradientlist:active', 0
         
     #  0000000    0000000  000000000  000  000   000  00000000  
     # 000   000  000          000     000  000   000  000       
@@ -279,7 +278,6 @@ class GradientList
         
         @element.style.display = 'block'
         @onResize()
-        # @shadow.update()
         @element.focus()
         
     onClose: => 
@@ -301,7 +299,7 @@ class GradientList
         @activeItem()?.setActive false
         @itemAt(index)?.setActive true
         
-        prefs.set 'gradient:active', @activeIndex()
+        prefs.set 'gradientlist:active', @activeIndex()
         
         @kali.closeStopPalette()
             
@@ -321,7 +319,7 @@ class GradientList
         
         {mod, key, combo, char} = keyinfo.forEvent event
         
-        @log "LayerList.onKeyDown #{combo}"
+        @log "GradientList.onKeyDown #{combo}"
         
         switch combo
             

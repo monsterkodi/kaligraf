@@ -50,6 +50,31 @@ class Edit
         post.on 'convert',  @onConvert
         post.on 'gradient', @onGradient
         
+    # 0000000    00000000  000
+    # 000   000  000       000
+    # 000   000  0000000   000
+    # 000   000  000       000
+    # 0000000    00000000  0000000
+
+    del: ->
+
+        @clear()
+
+        post.removeListener 'stage',    @onStage
+        post.removeListener 'convert',  @onConvert
+        post.removeListener 'gradient', @onGradient
+
+        @dotsel?.del()
+        @dotres?.del()
+        
+        @svg?.remove()
+        @element?.remove()
+        
+        delete @svg
+        delete @dotsel
+        delete @dotres
+        delete @element
+        
     #  0000000  000000000   0000000   000000000  00000000  
     # 000          000     000   000     000     000       
     # 0000000      000     000000000     000     0000000   
@@ -130,31 +155,6 @@ class Edit
         @linesBlack.style 'stroke-width': 1/@stage.zoom
         @linesBlack.style 'stroke-dasharray': dashArray
         
-    # 0000000    00000000  000
-    # 000   000  000       000
-    # 000   000  0000000   000
-    # 000   000  000       000
-    # 0000000    00000000  0000000
-
-    del: ->
-
-        @clear()
-
-        post.removeListener 'stage',    @onStage
-        post.removeListener 'convert',  @onConvert
-        post.removeListener 'gradient', @onGradient
-
-        @dotsel?.del()
-        @dotres?.del()
-        
-        @svg?.remove()
-        @element?.remove()
-        
-        delete @svg
-        delete @dotsel
-        delete @dotres
-        delete @element
-
     #  0000000  000      00000000   0000000   00000000
     # 000       000      000       000   000  000   000
     # 000       000      0000000   000000000  0000000
@@ -226,11 +226,17 @@ class Edit
         @dotsel.clear()
         @dotsel.addDots newDots
     
-    onGradient: (action, info) =>
-        
-        return if action not in ['fill', 'stroke']
-        if info.item in @items()
-            @objectForItem(info.item).addGradi action, info.gradient
+    #  0000000   00000000    0000000   0000000    000  00000000  000   000  000000000  
+    # 000        000   000  000   000  000   000  000  000       0000  000     000     
+    # 000  0000  0000000    000000000  000   000  000  0000000   000 0 000     000     
+    # 000   000  000   000  000   000  000   000  000  000       000  0000     000     
+    #  0000000   000   000  000   000  0000000    000  00000000  000   000     000     
+    
+    onGradient: (style, info) =>
+        if style in ['fill', 'stroke']
+            log 'Edit.onGradient', style, info
+            # if info.item in @items()
+                # @objectForItem(info.item).addGradi style
         
     # 000  000000000  00000000  00     00
     # 000     000     000       000   000
@@ -265,7 +271,7 @@ class Edit
         if object in @objects
             
             for dot in object.dots()
-                @dotsel.del dot
+                @dotsel.delDot dot
                 
             object.del()
             _.pull @objects, object
@@ -302,7 +308,7 @@ class Edit
         eventPos = pos event
         
         item = @stage.leafItemAtPos eventPos, noType: 'text'
-        log 'pick start', item?.id(), @empty()
+        log "Edit.stageStart -- pick start item #{item?.id()} empty #{@empty()}"
         if @empty()
             if item?
                 @addItem item, join:event.shiftKey

@@ -34,13 +34,16 @@ class Gradi
         
     clearDots: ->
         
-        for k,d of @dots
-            delete d.ctrl
-            delete d.dot
-            d.remove()
+        for k,dot of @dots
             
-        for k,l of @lines
-            l.remove()
+            _.pull @edit.dotsel.dots, dot # @edit.dotsel.delDot dot
+            
+            delete dot.ctrl
+            delete dot.dot
+            dot.remove()
+            
+        for k,line of @lines
+            line.remove()
         
         @dots  = {}
         @lines = {}

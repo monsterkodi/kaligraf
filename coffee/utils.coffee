@@ -309,13 +309,17 @@ module.exports =
             spread:  gradient.attr('spreadMethod') ? 'pad'
             
         switch gradient.type
+            
             when 'radial'
-                state.from   = pos gradient.attr('fx'), gradient.attr('fy')
-                state.to     = pos gradient.attr('cx'), gradient.attr('cy')
-                state.radius = gradient.attr('r')
+                
+                state.from   = x:gradient.attr('fx'), y:gradient.attr('fy')
+                state.to     = x:gradient.attr('cx'), y:gradient.attr('cy')
+                state.radius = x:gradient.attr('fx') + gradient.attr('r'), y:gradient.attr('fy')
+                
             when 'linear'
-                state.from   = pos gradient.attr('x1'), gradient.attr('y1')
-                state.to     = pos gradient.attr('x2'), gradient.attr('y2')
+                
+                state.from   = x:gradient.attr('x1'), y:gradient.attr('y1')
+                state.to     = x:gradient.attr('x2'), y:gradient.attr('y2')
             
         state
                 
@@ -334,7 +338,7 @@ module.exports =
                 if state.from?
                     gradient.attr cx:state.to.x, cy:state.to.y
                 if state.radius?
-                    gradient.attr r:state.radius
+                    gradient.attr r:pos(state.from).dist pos(state.radius)
                     
             when 'linear'
                 for attr in ['x1', 'y1', 'x2', 'y2']

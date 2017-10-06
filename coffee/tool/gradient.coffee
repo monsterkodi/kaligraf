@@ -51,12 +51,12 @@ class Gradient extends Tool
         ,
             name: 'repeat'
             tiny: 'gradient-repeat'
-            toggle: @state.spread
+            choice: @state.spread
             action: => @toggleSpread 'repeat'
         ,
             name: 'reflect'
             tiny: 'gradient-reflect'
-            toggle: @state.spread
+            choice: @state.spread
             action: => @toggleSpread 'reflect'
         ]
         
@@ -197,11 +197,18 @@ class Gradient extends Tool
                 state = gradientState gradient
                 state.type = type
                 
+                switch type 
+                    when 'radial'
+                        state.r = pos(state.from).dist pos(state.to)
+                        state.radius = x:state.from.x+state.r, y:state.from.y
+                        state.to = x:state.from.x, y:state.from.y
+                    when 'linear'
+                        state.to = x:state.radius.x, y:state.radius.y
+                        delete state.r
+                        delete state.radius
             else
                 state = @state
                     
-            # gradient.remove()
-            
             gradient = @stage.svg.gradient type
             setGradientState gradient, state
                 
@@ -223,8 +230,8 @@ class Gradient extends Tool
         else
             @state.spread = spread
             
-        @setToggle 'repeat',  @state.spread == 'repeat'
-        @setToggle 'reflect', @state.spread == 'reflect'
+        @button('repeat').classList.toggle 'active',  @state.spread == 'repeat'
+        @button('reflect').classList.toggle 'active', @state.spread == 'reflect'
             
         @setState @state
         @postGradient spread:@state.spread

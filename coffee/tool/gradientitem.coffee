@@ -135,12 +135,10 @@ class GradientItem
         itemPos = @itemPosFor eventPos
         return 'skip' if not (10 < itemPos.y < 25)
         
-        if stop = @stopAtPos eventPos
-            drag.stop = stop
-        # else
-            # drag.stop = @addStop itemPos.x / 100
-         
-        @activateStop drag.stop.index
+        if drag.stop = @stopAtPos eventPos
+            @activateStop drag.stop.index
+        else
+            return 'skip'
         
     activateStop: (index) ->
         

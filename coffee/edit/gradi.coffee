@@ -95,6 +95,7 @@ class Gradi
         svg = @edit.svg.use @edit.defs[dot]
             
         svg.addClass "#{dot}Dot"                               
+        svg.addClass "#{@style}Dot"                               
         svg.ctrl = @                                           
         svg.dot  = dot                                         
                                                                
@@ -124,7 +125,7 @@ class Gradi
             
             when 'radius'
                 if @gradient.attr('r')
-                    pos @gradient.attr('r'), 0
+                    pos @gradient.attr('fx')+@gradient.attr('r'), @gradient.attr('fy')
                 else
                     pos 0.5, 0
                     
@@ -153,12 +154,13 @@ class Gradi
                         pos @gradient.attr('x2'), @gradient.attr('y2')
                     else
                         pos 0.5, 0
-              
+                
         bb = @object.item.bbox()
         relPos.mul pos bb.width, bb.height
         relPos.add boxPos bb
+        relPos.add @stage.viewPos().times -1
         dotPos = @trans.transform @object.item, relPos
-                        
+        
         svg.cx dotPos.x
         svg.cy dotPos.y
 
@@ -248,13 +250,16 @@ class Gradi
         to   = @trans.inverse @object.item, to
         
         from.sub boxPos bb
-        to.sub boxPos bb
+        to.sub   boxPos bb
+        
+        from.sub @stage.viewPos()
+        to.sub   @stage.viewPos()
         
         w = @trans.width  @object.item
         h = @trans.height @object.item
-        size = Math.max w, h
-        from.scale 1/size
-        to.scale   1/size
+
+        from.mul pos 1/w, 1/h
+        to.mul   pos 1/w, 1/h
         
         @gradient.from from.x, from.y
         @gradient.to   to.x,   to.y
@@ -263,7 +268,8 @@ class Gradi
             
             radius = pos @dots['radius'].cx(), @dots['radius'].cy()
             radius = @trans.inverse @object.item, radius
-            radius.scale 1/size
+            radius.sub boxPos bb
+            radius.mul pos 1/w, 1/h
             @gradient.radius from.dist radius
             
 module.exports = Gradi

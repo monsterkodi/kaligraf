@@ -146,7 +146,7 @@ class Gradient extends Tool
         
         for item in items
             if gradient = itemGradient item, style
-                log "applyGradient #{style} #{item.id()}", info
+                # log "applyGradient #{style} #{item.id()}", info
                 if info.type?
                     @applyType item, style, info.type
                 else
@@ -169,6 +169,8 @@ class Gradient extends Tool
         @postGradient type:type
 
     applyType: (item, style, type) ->
+        
+        # log 'Gradient.applyType', style, type
         
         if type == 'none'
                                 
@@ -208,7 +210,9 @@ class Gradient extends Tool
                         delete state.radius
             else
                 state = @state
-                    
+
+            log 'Gradient.applyType', style, type, state
+                
             gradient = @stage.svg.gradient type
             setGradientState gradient, state
                 
@@ -244,7 +248,7 @@ class Gradient extends Tool
     
     postGradient: (info) ->
         
-        for style in ['fill', 'select']
+        for style in ['fill', 'stroke']
             if @kali.tool('select').fillStroke.includes style
                 post.emit 'gradient', style, info
                 @applyGradient style, info

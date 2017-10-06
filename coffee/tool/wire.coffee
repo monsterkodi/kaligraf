@@ -33,8 +33,12 @@ class Wire extends Tool
         
     onStage: (action) =>
         
-        if action == 'willSave'
-            @unwire @stage.treeItems()
+        switch action 
+            when 'willSave' then @unwire @stage.treeItems()
+            when 'viewbox'  
+                set = @stage.svg.select '.wired'
+                width = 1/@stage.zoom
+                set.each (index) -> if @type != 'text' then @style 'stroke-width', width
         
     onWire: =>
         
@@ -50,8 +54,8 @@ class Wire extends Tool
             for style in ['fill', 'stroke', 'fill-opacity', 'stroke-opacity', 'stroke-width']
                 if not item.data('wire'+style)? and item.style(style)?
                     item.data 'wire'+style, item.style(style)
-                else
-                    log "don't store #{style}", item.data(style), item.style style
+                # else
+                    # log "don't store #{style}", item.data(style), item.style style
                     
             if item.type == 'text'
                 item.style 
@@ -61,10 +65,12 @@ class Wire extends Tool
             else
                 item.style 
                     'stroke':           color
-                    'stroke-width':     1
+                    'stroke-width':     1/@stage.zoom
                     'stroke-opacity':   1
                     'fill-opacity':     0
-                                        
+
+            item.node.classList.add 'wired'
+                
         @stage.done()
                 
     onUnwire: => 
@@ -79,6 +85,8 @@ class Wire extends Tool
     unwire: (items) ->
         
         for item in items
+            
+            item.node.classList.remove 'wired'
             
             for style in ['fill', 'stroke', 'fill-opacity', 'stroke-opacity', 'stroke-width']
                 if item.data('wire'+style)?

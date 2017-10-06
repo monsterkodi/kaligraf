@@ -325,7 +325,7 @@ class GradientList
             
             when 'up'            then @navigate -1
             when 'down'          then @navigate +1
-            when 'backspace', 'delete', 'd'  then @onDelGradient()
+            when 'backspace', 'delete'       then @onDelGradient()
             when 'n'                         then @onNewGradient()
             when 'c'                         then @onCopyGradient()
             when 'esc'                       then @hide()

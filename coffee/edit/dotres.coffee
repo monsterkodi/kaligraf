@@ -438,6 +438,10 @@ class DotResizer
     
     updateBox: ->
         
+        if not @gg?
+            log 'DotRes.updateBox -- without box?'
+            return
+            
         @gg.transform rotation:0
         @gg.transform x:0, y:0
         

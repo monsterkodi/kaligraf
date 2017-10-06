@@ -234,7 +234,7 @@ class Edit
     
     onGradient: (style, info) =>
         if style in ['fill', 'stroke']
-            log 'Edit.onGradient', style, info
+            # log 'Edit.onGradient', style, info
             if info.item in @items()
                 @objectForItem(info.item).updateGradi style, info
         
@@ -308,7 +308,7 @@ class Edit
         eventPos = pos event
         
         item = @stage.leafItemAtPos eventPos, noType: 'text'
-        log "Edit.stageStart -- pick start item #{item?.id()} empty #{@empty()}"
+        # log "Edit.stageStart -- pick start item #{item?.id()} empty #{@empty()}"
         if @empty()
             if item?
                 @addItem item, join:event.shiftKey

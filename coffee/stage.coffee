@@ -232,7 +232,7 @@ class Stage
             if not @selection.empty()
                 @selection.items
             else if @shapes.edit? and not @shapes.edit.empty() 
-                log 'selectedItems edit items', itemIDs @shapes.edit.items(), ' '
+                # log 'selectedItems edit items', itemIDs @shapes.edit.items(), ' '
                 @shapes.edit.items()
             else
                 []

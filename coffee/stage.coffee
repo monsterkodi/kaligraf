@@ -739,15 +739,21 @@ class Stage
                         post.emit 'tool', 'click', 'pick'
                         return 
 
+            switch key
+                
                 when 'left', 'right', 'up', 'down'
                     
                     if @selectedItems().length
                         p = pos 0,0
+                        s = 1
+                        if mod.includes 'shift' then s*=5
+                        if mod.includes 'ctrl'  then s*=10
+                        if mod.includes 'alt'   then s*=20
                         switch key
-                            when 'left'  then p.x = -1
-                            when 'right' then p.x =  1
-                            when 'up'    then p.y = -1
-                            when 'down'  then p.y =  1
+                            when 'left'  then p.x = -s
+                            when 'right' then p.x =  s
+                            when 'up'    then p.y = -s
+                            when 'down'  then p.y =  s
                         if @shapes.edit?
                             @shapes.edit.moveBy p
                         else

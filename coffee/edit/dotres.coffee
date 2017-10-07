@@ -23,9 +23,10 @@ class DotResizer
         @stage = @kali.stage
         
         @element = elem 'div', id: 'dotres'
-        @kali.insertAboveSelection @element
+        @kali.insertAboveStage @element
 
         @svg = SVG(@element).size '100%', '100%'
+        @svg.id 'DotRes'
         @svg.addClass 'resizerSVG'
         @svg.clear()
 
@@ -42,9 +43,9 @@ class DotResizer
         post.on 'dotsel', @onDotSel
 
     del: ->
-        
         @svg.clear()
         @svg.remove()
+        @element.remove()
         post.removeListener 'stage',  @onStage
         post.removeListener 'dotsel', @onDotSel
         
@@ -261,6 +262,7 @@ class DotResizer
             onStart: @onDragStart
             onMove:  @onDragMove
             onStop:  @onDragStop
+            constrainKey: 'shiftKey'
 
     #  0000000    0000000  000000000  000  000   000   0000000   000000000  00000000
     # 000   000  000          000     000  000   000  000   000     000     000
@@ -325,7 +327,6 @@ class DotResizer
 
     onDragStart: (drag, event) =>
 
-        log 'Resizer.onDragStart'
         @onStart()
             
         if event?.shiftKey
@@ -333,17 +334,6 @@ class DotResizer
             return 'skip'
 
     onDragMove: (drag, event) => 
-        log 'event.shiftKey', event.shiftKey, drag.shift?
-        if event.shiftKey or drag.shift
-            
-            if not @drag.shift?
-                if Math.abs(delta.x) >= Math.abs(delta.y)
-                    drag.shift = pos 1,0
-                else
-                    drag.shift = pos 0,1
-                    
-            drag.x *= drag.shift.x
-            drag.y *= drag.shift.y
         
         @moveBy drag.delta
 

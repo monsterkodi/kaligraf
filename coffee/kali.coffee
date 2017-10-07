@@ -80,7 +80,8 @@ class Kali
             delete @stopPalette
             palette.del()
         
-    insertAboveSelection: (child) -> @element.insertBefore child, @stage.selection.element
+    insertAboveSelection: (child) -> @element.insertBefore child, @stage.selection.element.nextSibling
+    insertAboveStage: (child) -> @element.insertBefore child, @stage.element.nextSibling
     insertBelowTools: (child) -> @element.insertBefore child, @toolDiv
     insertAboveTools: (child) -> 
         @element.appendChild child

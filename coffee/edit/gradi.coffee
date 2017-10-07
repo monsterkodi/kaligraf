@@ -218,7 +218,7 @@ class Gradi
     # 000 0 000  000   000     000     000       
     # 000   000   0000000       0      00000000  
     
-    moveDotsBy: (dots, delta, event) ->
+    moveDotsBy: (dots, delta) ->
         
         for dot in dots
             

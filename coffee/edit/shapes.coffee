@@ -7,7 +7,7 @@
 
 { post, drag, last, resolve, pos, log, _ } = require 'kxk'
 
-{ constrain, uuid } = require '../utils'
+{ uuid } = require '../utils'
 
 Draw = require './draw'
 Edit = require './edit'
@@ -32,6 +32,7 @@ class Shapes
             onStart: @onStart
             onMove:  @onDrag
             onStop:  @onStop
+            constrainKey: 'shiftKey'
             
         post.on 'stage', @onStage
         
@@ -302,8 +303,6 @@ class Shapes
         if @draw?.handleDrag event
             return
             
-        constrain drag, event
-        
         if shape in ['loupe', 'pipette']
             @kali.tool(shape).onStageDrag drag, event
             return

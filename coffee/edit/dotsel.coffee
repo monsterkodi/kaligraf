@@ -5,7 +5,7 @@
 # 000   000  000   000     000          000  000       000    
 # 0000000     0000000      000     0000000   00000000  0000000
 
-{ empty, drag, post, log, _ } = require 'kxk'
+{ empty, drag, post, pos, log, _ } = require 'kxk'
 
 { rectsIntersect, normRect, bboxForItems } = require '../utils'
 
@@ -22,6 +22,8 @@ class DotSel
             target:  @edit.element
             onStart: @onStart
             onMove:  @onDrag
+            onStop:  @onStop
+            constrainKey: 'shiftKey'
             
         post.on 'stage', @onStage
         
@@ -42,8 +44,6 @@ class DotSel
     
     onStart: (drag, event) =>
         
-        # log 'DotSel.onStart', event.target.instance?.tagName
-        
         if dot = event.target.instance
 
             if @kali.shapeTool() != 'edit'
@@ -54,7 +54,11 @@ class DotSel
             else
                 keep = event.shiftKey or dot.ctrl.isSelected dot.dot
                 @addDot dot, keep:keep
-                        
+
+    onStop: (drag, event) =>
+    
+        delete @shift
+                
     # 0000000    00000000    0000000    0000000   
     # 000   000  000   000  000   000  000        
     # 000   000  0000000    000000000  000  0000  
@@ -62,9 +66,9 @@ class DotSel
     # 0000000    000   000  000   000   0000000   
     
     onDrag: (drag, event) =>
-        
+
         if not @empty()
-            @moveBy drag.delta.times(1/@kali.stage.zoom), event
+            @moveBy drag.delta.times 1/@kali.stage.zoom 
 
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
@@ -72,13 +76,13 @@ class DotSel
     # 000 0 000  000   000     000     000       
     # 000   000   0000000       0      00000000  
     
-    moveBy: (delta, event) ->
-        
+    moveBy: (delta) ->
+            
         for objectDot in @objectDots()
-            objectDot.object.moveDotsBy objectDot.dots, delta, event
+            objectDot.object.moveDotsBy objectDot.dots, delta
             
         for gradiDot in @gradiDots()
-            gradiDot.gradi.moveDotsBy gradiDot.dots, delta, event
+            gradiDot.gradi.moveDotsBy gradiDot.dots, delta
             
         post.emit 'dotsel', 'move', @dots
 

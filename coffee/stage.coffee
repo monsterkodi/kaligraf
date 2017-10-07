@@ -263,7 +263,8 @@ class Stage
             else 
                 items = items.concat @treeItems item, opt
                 
-        @filterItems items, noType: 'g'
+        items = @filterItems(items, noType: 'g') if opt?.type != 'g'
+        items
 
     selectedNoTextItems: -> @selectedLeafItems noType:'text'
     selectedTextItems:   -> @selectedLeafItems type:'text'
@@ -742,6 +743,8 @@ class Stage
             switch key
                 
                 when 'left', 'right', 'up', 'down'
+                    
+                    return 'unhandled' if mod.includes 'command'
                     
                     if @selectedItems().length
                         p = pos 0,0

@@ -56,7 +56,6 @@ class Align extends Tool
     onAlign: (side) =>
         
         if @stage.shapes.edit?.dotsel.numDots()
-            log "align dots #{side}"
             @stage.shapes.edit?.dotsel.align side
             return
         

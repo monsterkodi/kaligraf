@@ -327,7 +327,6 @@ class Object
 
     updateDots: (dots) ->
 
-        # log "#{@name}.updateDots"
         for dot in dots
 
             index   = dot.ctrl.index()
@@ -344,8 +343,6 @@ class Object
     # 0000000    000      0      000  0000000    00000000
 
     divide: (dots) ->
-
-        @do()
 
         newDots = []
 
@@ -426,7 +423,6 @@ class Object
             newDots = newDots.concat _.values @ctrls[index+1].dots
 
         @plot()
-        @done()
         newDots
 
     #  0000000   0000000   000   000  000   000  00000000  00000000   000000000
@@ -436,9 +432,7 @@ class Object
     #  0000000   0000000   000   000      0      00000000  000   000     000
 
     convertDots: (dots, type) ->
-
-        @do()
-
+        
         if type == 'D' then return @divide dots
 
         newDots = []
@@ -524,7 +518,6 @@ class Object
             newDots = newDots.concat _.values @ctrls[index].dots
 
         @plot()
-        @done()
         newDots
 
     #  0000000   0000000    0000000    00000000    0000000   000  000   000  000000000

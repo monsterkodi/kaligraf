@@ -126,7 +126,8 @@ class Trans
         
     getRect: (item) ->
         
-        item.bbox().transform item.transform().matrix
+        # item.bbox().transform item.transform().matrix
+        item.bbox().transform itemMatrix item
     
     #  0000000  00000000  000   000  000000000  00000000  00000000   
     # 000       000       0000  000     000     000       000   000  

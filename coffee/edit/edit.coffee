@@ -154,6 +154,11 @@ class Edit
         
         @linesBlack.style 'stroke-width': 1/@stage.zoom
         @linesBlack.style 'stroke-dasharray': dashArray
+
+    update: ->
+        
+        for object in @objects
+            object.updatePos()
         
     #  0000000  000      00000000   0000000   00000000
     # 000       000      000       000   000  000   000
@@ -180,7 +185,7 @@ class Edit
             @linesBlack.viewbox box
             @updateRect()
             @updateDefs()
-
+            
     # 0000000    00000000  000      00000000  000000000  00000000  
     # 000   000  000       000      000          000     000       
     # 000   000  0000000   000      0000000      000     0000000   
@@ -218,13 +223,16 @@ class Edit
     onConvert: (type) =>
 
         return if @dotsel.empty()
-            
+        
+        @do()
+        objectDots = @dotsel.objectDots()
+        @dotsel.clear()
         newDots = []
-        for objectDot in @dotsel.objectDots()
+        for objectDot in objectDots
             newDots = newDots.concat objectDot.object.convertDots objectDot.dots, type
             
-        @dotsel.clear()
         @dotsel.addDots newDots
+        @done()
     
     #  0000000   00000000    0000000   0000000    000  00000000  000   000  000000000  
     # 000        000   000  000   000  000   000  000  000       0000  000     000     

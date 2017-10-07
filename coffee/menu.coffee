@@ -76,11 +76,11 @@ class Menu
                     { label: 'Space Vertical',   accelerator: 'command+5', click: -> button 'space', 'vertical'}
                 ]}
                 { label: 'Convert',     submenu: [
-                    { label: 'Quad',    accelerator: 'q',           click: -> post.toWins 'convert', 'Q'}
-                    { label: 'Cubic',   accelerator: 'c',           click: -> post.toWins 'convert', 'C'}
-                    { label: 'Smooth',  accelerator: 's',           click: -> post.toWins 'convert', 'S'}
-                    { label: 'Divide',  accelerator: 'd',           click: -> post.toWins 'convert', 'D'}
-                    { label: 'Polygon', accelerator: 'm',           click: -> post.toWins 'convert', 'P'}
+                    { label: 'Quad',    accelerator: 'ctrl+q',              click: -> post.toWins 'convert', 'Q'}
+                    { label: 'Cubic',   accelerator: 'ctrl+c',              click: -> post.toWins 'convert', 'C'}
+                    { label: 'Smooth',  accelerator: 'ctrl+s',              click: -> post.toWins 'convert', 'S'}
+                    { label: 'Polygon', accelerator: 'ctrl+m',              click: -> post.toWins 'convert', 'P'}
+                    { label: 'Divide',  accelerator: 'ctrl+d',              click: -> post.toWins 'convert', 'D'}
                 ]}
                 { label: 'Order', submenu: [
                     { label: 'Front',       accelerator: 'command+alt+up',  click: -> button 'send',  'front'}
@@ -92,6 +92,10 @@ class Menu
                     { label: 'All',         accelerator: 'command+a',       click: -> action 'selectAll'}
                     { label: 'None',        accelerator: 'command+d',       click: -> action 'deselect'}
                     { label: 'Invert',      accelerator: 'command+i',       click: -> action 'invert'}        
+                ]}
+                { label: 'Flip', submenu: [
+                    { label: 'Horizontal',  accelerator: '6',               click: -> button 'flip', 'horizontal'}
+                    { label: 'Vertical',    accelerator: 'command+6',       click: -> button 'flip', 'vertical'}
                 ]}
                 { type:  'separator'}
                 { label: 'Group',       accelerator: 'command+g',           click: -> action 'group'}
@@ -121,7 +125,7 @@ class Menu
                 ] }
                 { label: 'Toggle',      submenu: [
                     { label: 'Padding',     accelerator: 'p',               click: -> button 'padding', 'show'}
-                    { label: 'Fill/Stroke', accelerator: 'command+6',       click: -> action 'swapColor'}
+                    { label: 'Fill/Stroke', accelerator: 'command+7',       click: -> action 'swapColor'}
                     { label: 'Properties',  accelerator: 'command+t',       click: -> action 'toggleProperties'}
                     { label: 'Tools',       accelerator: 'command+shift+t', click: -> action 'toggleTools'}
                     { label: 'Groups',      accelerator: 'command+shift+g', click: -> button 'show', 'groups'}

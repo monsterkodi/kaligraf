@@ -4,6 +4,5 @@
 ![eagle](svg/test/eagle.svg)
 ![florakali](svg/test/florakali.svg)
 ![objects](svg/docs/objects.svg)
-![notes](svg/docs/notes.svg)
 ![tools](svg/test/tools.svg)
 ![keys](svg/docs/keys.svg)

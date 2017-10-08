@@ -106,7 +106,7 @@ class Edit
             ctrl   = object.ctrlAt index
             if ctrl?
                 dot = ctrl.dots[dot]
-                @dotsel.add dot
+                @dotsel.addDot dot
             else
                 log "no ctrl at index #{index}?"
             

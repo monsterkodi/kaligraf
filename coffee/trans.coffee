@@ -126,7 +126,6 @@ class Trans
         
     getRect: (item) ->
         
-        # item.bbox().transform item.transform().matrix
         item.bbox().transform itemMatrix item
     
     #  0000000  00000000  000   000  000000000  00000000  00000000   
@@ -145,9 +144,7 @@ class Trans
                 bb = item.bbox().transform new SVG.Matrix().scale(scale.x, scale.y).rotate(@rotation item)
                 item.transform x:c.x-bb.cx, y:c.y-bb.cy
         
-    getCenter: (item)    -> 
-    
-        @transform item, boxCenter item.bbox()
+    getCenter: (item) -> @transform item, boxCenter item.bbox()
         
     # 00000000    0000000    0000000  
     # 000   000  000   000  000       

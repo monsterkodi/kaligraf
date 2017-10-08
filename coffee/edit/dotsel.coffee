@@ -16,6 +16,7 @@ class DotSel
         @name  = 'DotSel' 
         @kali  = @edit.kali
         @stage = @kali.stage
+        @trans = @kali.trans
         @dots  = []
 
         @drag = new drag
@@ -68,7 +69,7 @@ class DotSel
     onDrag: (drag, event) =>
 
         if not @empty()
-            @moveBy drag.delta.times 1/@kali.stage.zoom 
+            @moveBy drag.delta.times(1/@kali.stage.zoom), event
 
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
@@ -76,10 +77,10 @@ class DotSel
     # 000 0 000  000   000     000     000       
     # 000   000   0000000       0      00000000  
     
-    moveBy: (delta) ->
-            
+    moveBy: (delta, event) ->
+        log 'dotsel.moveBy', delta 
         for objectDot in @objectDots()
-            objectDot.object.moveDotsBy objectDot.dots, delta
+            objectDot.object.moveDotsBy objectDot.dots, delta, event
             
         for gradiDot in @gradiDots()
             gradiDot.gradi.moveDotsBy gradiDot.dots, delta
@@ -264,11 +265,12 @@ class DotSel
     
     align: (side) ->
         
+        return if @numDots() < 2
+        
+        @stage.do 'align'
         sum = 0
         min = Number.MAX_SAFE_INTEGER
         max = Number.MIN_SAFE_INTEGER
-        
-        return if @numDots() < 2
         
         for dot in @dots
             switch side
@@ -291,5 +293,49 @@ class DotSel
                 when 'mid'    then dot.cy avg
         
         @update()
-                              
+        @stage.done()
+         
+    #  0000000  00000000    0000000    0000000  00000000  
+    # 000       000   000  000   000  000       000       
+    # 0000000   00000000   000000000  000       0000000   
+    #      000  000        000   000  000       000       
+    # 0000000   000        000   000   0000000  00000000  
+    
+    space: (direction) ->
+        
+        return if @numDots() < 3
+        
+        @stage.do "space-#{direction}"
+        switch direction
+            when 'horizontal' then @dots.sort (a,b) => @trans.center(a).x - @trans.center(b).x
+            when 'vertical'   then @dots.sort (a,b) => @trans.center(a).y - @trans.center(b).y
+              
+        sum = 0
+        for i in [1...@dots.length]
+            a = @dots[i-1]
+            b = @dots[i]
+            ra = @trans.getRect a
+            rb = @trans.getRect b
+            switch direction
+                when 'horizontal' then sum += rb.x - ra.x2
+                when 'vertical'   then sum += rb.y - ra.y2
+                
+        avg = sum/(@dots.length-1)
+        
+        for i in [1...@dots.length]
+            a = @dots[i-1]
+            b = @dots[i]
+            ra = @trans.getRect a
+            newPos = @trans.pos b
+            switch direction
+                when 'horizontal' then newPos.x = ra.x2 + avg
+                when 'vertical'   then newPos.y = ra.y2 + avg
+
+            b.cx newPos.x
+            b.cy newPos.y
+            
+        @update()
+        @edit.dotres.update()
+        @stage.done()
+        
 module.exports = DotSel

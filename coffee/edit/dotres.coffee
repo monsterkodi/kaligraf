@@ -83,7 +83,7 @@ class DotResizer
         angle = Math.round angle if opt?.round
         
         doKey = 'rotate'+(@dotInfo.map (info) -> " #{info.dot.ctrl.index()}-#{info.dot.dot}").join ''
-        log 'DotRes.doRotate', doKey
+
         @do doKey
         
         transmat = new SVG.Matrix().around @rotationCenter.x, @rotationCenter.y, new SVG.Matrix().rotate angle

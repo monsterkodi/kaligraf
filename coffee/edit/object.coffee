@@ -125,7 +125,7 @@ class Object
 
     moveDotsBy: (dots, delta, event) ->
 
-        @do 'move dots'
+        @do 'move-dots'
 
         indexDots = @indexDots dots
 

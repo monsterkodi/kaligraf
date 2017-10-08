@@ -64,6 +64,8 @@ module.exports =
     # 000   000  000   000   000 000   
     # 0000000     0000000   000   000  
     
+    insideBox: (p, box) -> box.x <= p.x <= box.x2 and box.y <= p.y <= box.y2
+    
     boxForItems: (items, offset={x:0,y:0}) ->
         
         if empty items

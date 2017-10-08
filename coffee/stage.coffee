@@ -8,8 +8,8 @@
 {   resolve, elem, post, drag, prefs, stopEvent, fileName,
     first, last, empty, clamp, pos, fs, log, _ } = require 'kxk'
 
-{   contrastColor, normRect, bboxForItems, itemIDs,
-    growBox, boxForItems, boxOffset, boxCenter, itemGradient } = require './utils'
+{   contrastColor, normRect, bboxForItems, itemIDs, insideBox,
+    growBox, boxForItems, boxOffset, boxCenter, itemGradient, itemMatrix } = require './utils'
 
 electron  = require 'electron'
 clipboard = electron.clipboard
@@ -41,6 +41,7 @@ class Stage
         @svg.clear()
 
         @kali.stage = @
+        @trans = @kali.trans
 
         @selection = new Selection @kali
         @resizer   = new Resizer   @kali
@@ -124,22 +125,26 @@ class Stage
     pickItems: (eventPos, opt) ->
         
         pickableLayers = @pickableLayers()
-        @log 'Stage.pickItems pickableLayers', pickableLayers.length, itemIDs pickableLayers, ' '
+        # @log 'Stage.pickItems pickableLayers', pickableLayers.length, itemIDs pickableLayers, ' '
         items = @svg.node.getIntersectionList @pickRect(eventPos), null
         items = [].slice.call(items, 0).reverse()
-        @log 'Stage.pickItems intersections:', items.length
+        # @log 'Stage.pickItems intersections:', items.length
         for item in items
             if not item.instance?
                 @log 'adopt!?', item.tagName
                 SVG.adopt item
         items = items.filter (item) => item.instance? and item.instance != @svg
-        @log 'Stage.pickItems intersection instances:', items.length
+        # @log 'Stage.pickItems intersection instances:', items.length
         items = items.map (item) -> item.instance
-        @log 'Stage.pickItems pickedItems:', itemIDs items, ' '
+        # @log 'Stage.pickItems pickedItems:', itemIDs items, ' '
         items = items.filter (item) => 
-            @log "Stage.pickItems item #{item.id()} parents:", itemIDs item.parents(), ' '
-            @log "Stage.pickItems item #{item.id()} layer:", @layerForItem(item).id()
+            # @log "Stage.pickItems item #{item.id()} parents:", itemIDs item.parents(), ' '
+            # @log "Stage.pickItems item #{item.id()} layer:", @layerForItem(item).id()
             @layerForItem(item) in pickableLayers
+            
+        stagePos = @stageForEvent eventPos
+        items = items.filter (item) => 
+            insideBox(stagePos, @trans.rect item)
         # @log 'Stage.pickItems pickedItems', itemIDs items, ' '
         items = @filterItems items, opt
         @log 'Stage.pickItems pickedItems', items.length, itemIDs items, ' '
@@ -151,14 +156,13 @@ class Stage
             if @isLeaf item
                 # @log 'Stage.leafItemAtPos', item.id()
                 return item
-        # @log 'Stage.leafItemAtPos null'
+        @log 'Stage.leafItemAtPos null'
         null
     
     itemAtPos: (p, opt) ->
-        @log 'Stage.itemAtPos', p, 'opt', opt
+        # @log 'Stage.itemAtPos', p, 'opt', opt
         for item in @pickItems(p, opt)
-            @log 'Stage.itemAtPos picked item', item.id()
-            # return @rootItem item
+            # @log 'Stage.itemAtPos picked item', item.id()
             if item in @pickableItems()
                 return item
             else if item in @treeItems()

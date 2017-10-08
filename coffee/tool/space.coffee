@@ -7,6 +7,8 @@
 
 { post, pos, log, $, _ } = require 'kxk'
 
+{ itemIDs } = require '../utils'
+
 Tool = require './tool'
 
 class Space extends Tool
@@ -36,10 +38,15 @@ class Space extends Tool
     
     onSpace: (direction) =>
         
+        if @stage.shapes.edit?.dotsel.numDots()
+            @stage.shapes.edit?.dotsel.space direction
+            return
+        
         items = @stage.selectedItems()
         
         return if items.length < 3
         
+        @stage.do 'space-#{direction}' + itemIDs items
         switch direction
             when 'horizontal' then items.sort (a,b) => @trans.center(a).x - @trans.center(b).x
             when 'vertical'   then items.sort (a,b) => @trans.center(a).y - @trans.center(b).y
@@ -68,5 +75,6 @@ class Space extends Tool
 
         @stage.selection.update()
         @stage.resizer.update()
+        @stage.done()
             
 module.exports = Space

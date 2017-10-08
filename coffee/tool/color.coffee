@@ -198,6 +198,7 @@ class Color extends Tool
     showPalette: -> 
         
         @kali.gradientEdit?.del()
+        delete @kali.gradientEdit
         
         childPos = pos(@kali.toolSize,0).plus @kali.tools.stroke.pos()
         
@@ -219,7 +220,12 @@ class Color extends Tool
         else
             post.emit 'palette', 'hide'
             
-    childrenVisible: -> @kali.palette.isVisible()
+    childrenVisible: -> 
+        
+        if @gradient
+            @kali.gradientEdit?.isVisible()
+        else
+            @kali.palette.isVisible()
     
     toggleChildren: -> 
 
@@ -248,6 +254,7 @@ class Color extends Tool
             @top.attr height:'100%'
             @bot.attr height:'0'
             @top.style fill: @color
+            if @childrenVisible() then @showPalette()
         else
             @top.attr height:'50%'
             @bot.attr height:'50%'

@@ -119,7 +119,8 @@ class Exporter
                     log 'clean sodipodi', item.node.getAttribute attr[i].name
                     item.node.removeAttribute attr[i].name
 
-        if item.type in ['defs', 'g']
+        # if item.type in ['defs', 'g']
+        if item.type in ['g']
             if item.children?().length == 0
                 return item.remove()
         else if item.type.startsWith 'inkscape:'
@@ -150,8 +151,8 @@ class Exporter
         
         for item in childItems
             for style in ['fill', 'stroke']
-                if gradient = itemGradient item, style #item.style(style).startsWith 'url'
-                    keepGradients.add gradient.id() # item.style(style).split('"')[1].slice 1
+                if gradient = itemGradient item, style 
+                    keepGradients.add gradient.id()
                     
         for def in item.doc().defs().children()
             if def.type.includes 'Gradient'

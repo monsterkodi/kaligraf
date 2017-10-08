@@ -124,8 +124,11 @@ class Shapes
             when 'image'
                 
                 e = root.image 'file://' + resolve '~/Desktop/kaligraf.png'
+                stage = @kali.stage
                 e.loaded (loader) ->
                     @size loader.width, loader.height
+                    stage.selection.update()
+                    stage.resizer.update()
                 
             else 
                 if root[shape]?

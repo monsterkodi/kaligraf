@@ -236,7 +236,6 @@ class Stage
             if not @selection.empty()
                 @selection.items
             else if @shapes.edit? and not @shapes.edit.empty() 
-                # log 'selectedItems edit items', itemIDs @shapes.edit.items(), ' '
                 @shapes.edit.items()
             else
                 []
@@ -313,19 +312,34 @@ class Stage
     
     onDblClick: (event) =>
         
-        item = @leafItemAtPos pos event
-        if not item?
-            # post.toMain 'maximizeWindow'
-        else
-            if item.type == 'text'
-                @shapes.editTextItem item
-            else if item.type in ['polygon', 'polyline', 'line', 'path']
-                if item not in @selectedItems()
-                    @selection.setItems [item]
-                post.emit 'tool', 'click', 'edit'
-            else
-                log 'dblclick', item?.id()
+        if item = @leafItemAtPos pos event
+            switch item.type 
+                when 'text' then @shapes.editTextItem item
+                when 'polygon', 'polyline', 'line', 'path'
+                    if item not in @selectedItems()
+                        @selection.setItems [item]
+                    post.emit 'tool', 'click', 'edit'
+                when 'image'
+                    @loadImage item
+                else
+                    log 'dblclick', item?.id()
+
+    loadImage: (item) ->
         
+        opts =         
+            title:      'Open Image'
+            filters:    [ {name: 'Image', extensions: ['png', 'jpg', 'jpeg', 'gif']} ]
+            properties: ['openFile']
+        
+        dialog.showOpenDialog opts, (files) => 
+            if file = first files
+                stage = @kali.stage
+                item.load 'file://' + file
+                item.loaded (loader) ->
+                    @size loader.width, loader.height
+                    stage.selection.update()
+                    stage.resizer.update()
+                    
     #  0000000   0000000   000       0000000   00000000   
     # 000       000   000  000      000   000  000   000  
     # 000       000   000  000      000   000  0000000    

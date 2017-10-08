@@ -7,7 +7,8 @@
 
 { stopEvent, setStyle, childIndex, upElem, drag, childIndex, prefs, keyinfo, elem, empty, clamp, post, pos, log, $, _ } = require 'kxk'
 
-{ ensureInSize, winTitle, gradientStops, boundingBox, boxPos, highlightColor, invertColor } = require '../utils'
+{   gradientStops, gradientState, gradientType,
+    ensureInSize, winTitle, boundingBox, boxPos, highlightColor, invertColor } = require '../utils'
 
 GradientItem = require './gradientitem'
 Exporter     = require '../exporter'
@@ -70,6 +71,7 @@ class GradientList
         @shadow = new Shadow @element
         
         post.on 'resize', @onResize
+        post.on 'stage', (action) => if action == 'load' then @restore() 
         
         @restore()
         
@@ -145,7 +147,7 @@ class GradientList
 
     onReverseGradient: => 
         
-        if gradient = @activeGradient().gradient.gradient
+        if gradient = @activeGradient()?.gradient.gradient
             stops = gradientStops gradient
             gradient.update (stop) ->
                 for stp in stops.reverse()
@@ -155,7 +157,7 @@ class GradientList
 
     onInvertGradient: => 
         
-        if gradient = @activeGradient().gradient.gradient
+        if gradient = @activeGradient()?.gradient.gradient
             stops = gradientStops gradient
             gradient.update (stop) ->
                 for stp in stops
@@ -183,17 +185,47 @@ class GradientList
                 items.push child.gradient
         items
         
+    #  0000000  000000000   0000000   00000000   00000000  
+    # 000          000     000   000  000   000  000       
+    # 0000000      000     000   000  0000000    0000000   
+    #      000     000     000   000  000   000  000       
+    # 0000000      000      0000000   000   000  00000000  
+    
     store: ->
-        prefs.set 'gradientlist:active', @activeIndex()
-        prefs.set 'gradientlist:list', @gradientItems().map (gradient) -> gradient.state()
+        # prefs.set 'gradientlist:active', @activeIndex()
+        # prefs.set 'gradientlist:list', @gradientItems().map (gradient) -> gradient.state()
         @shadow.update()
         
     restore: ->
-        for state in prefs.get 'gradientlist:list', []
+        # for state in prefs.get 'gradientlist:list', []
+            # gradient = new GradientItem @
+            # gradient.restore state
+            # @scroll.appendChild gradient.element
+        # @activate prefs.get 'gradientlist:active', 0
+        
+        @loadDocGradients()
+        
+    loadDocGradients: ->
+        
+        stopList = []
+        
+        for item in @stage.svg.defs().children()
+            
+            if item.type in ['linearGradient', 'radialGradient', 'linear', 'radial']
+                stopList.push gradientStops item
+            
+        stopList = _.uniqWith stopList, (a,b) -> log a, b; _.isEqual a, b
+        
+        @scroll.innerHTML = ''
+        
+        for stops in stopList
             gradient = new GradientItem @
-            gradient.restore state
+            gradient.restore 
+                type:   'linear'
+                stops:  stops
             @scroll.appendChild gradient.element
-        @activate prefs.get 'gradientlist:active', 0
+            
+        @shadow.update()
         
     #  0000000    0000000  000000000  000  000   000  00000000  
     # 000   000  000          000     000  000   000  000       

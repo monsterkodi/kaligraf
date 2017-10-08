@@ -232,7 +232,7 @@ class Browser
         
         viewBox = boundingBox @scroll
         @setScale Math.min(viewBox.w/1650, (viewBox.h-30)/1100)
-        @centerSelected()
+        @centerSelected()        
 
     # 00000000   00000000   0000000  000  0000000  00000000    
     # 000   000  000       000       000     000   000         
@@ -253,6 +253,7 @@ class Browser
         num      = @items.children.length
         pow      = Math.pow num, 1/(2 * (3/2)/aspect )
         @columns = Math.max 1, Math.ceil pow
+
         setStyle '.browserItems', 'grid-template-columns', "repeat(#{@columns},1fr)"        
         
     #  0000000   0000000   0000000   000      00000000  
@@ -275,12 +276,6 @@ class Browser
             @offset.x = (oldoff.x + relpos.x * br.width) / oldscl - relpos.x * br.width  / @scale
         else
             @scale = clamp 0.05, 50, scale
-
-        borderWidth = 1.0/@scale
-        setStyle '.browserItem', 'border', "#{borderWidth}px solid transparent"
-        setStyle '.browserItem.selected', 'border', "#{borderWidth}px solid white"
-
-        setStyle '.browserItemTitleButton,.browserItemTitleClose', 'font-size', "#{clamp 12, 128, 12/@scale}px"
         
         prefs.set 'browser:scale', @scale
         
@@ -346,6 +341,9 @@ class Browser
     #  0000000  00000000  000   000     000     00000000  000   000  
     
     centerSelected: ->
+  
+        @setScale @scale
+        @updateBorderSize()
         
         itemBox = boundingBox @selectedItem()
         brwsBox = boundingBox @items
@@ -372,6 +370,7 @@ class Browser
             @fadeCenter()
 
         @setScale @scale
+        @updateBorderSize()
                                 
     # 000   000   0000000   000   000  000   0000000    0000000   000000000  00000000  
     # 0000  000  000   000  000   000  000  000        000   000     000     000       
@@ -384,20 +383,30 @@ class Browser
         current = @selectedItem()
         oldIndex = childIndex current
         newIndex = clamp 0, current.parentNode.children.length-1, oldIndex+dir
-        if oldIndex == newIndex then return
-        
-        current.classList.remove 'selected'
-        newCurrent = current.parentNode.children[newIndex]
-        newCurrent.classList.add 'selected'
-            
-        @centerSelected()
+        if oldIndex != newIndex
+            @selectIndex newIndex
 
     selectIndex: (index) ->
         
+        @updateBorderSize()
+        
         @selectedItem()?.classList.remove 'selected'
+        
         @items.children[index]?.classList.add 'selected'
         @centerSelected()
     
+    selectedFile: -> @selectedItem().getAttribute 'file'
+    selectedItem: -> $ '.selected', @element
+        
+    updateBorderSize: ->
+        
+        borderWidth = 1.0/@scale
+        if borderWidth != @borderWidth
+            @borderWidth = borderWidth
+            setStyle '.browserItem', 'border', "#{borderWidth}px solid transparent"
+            setStyle '.browserItem.selected', 'border', "#{borderWidth}px solid white"
+            setStyle '.browserItemTitleButton,.browserItemTitleClose', 'font-size', "#{clamp 12, 128, 12/@scale}px"
+        
     #  0000000  000000000   0000000   00000000   000000000  
     # 000          000     000   000  000   000     000     
     # 0000000      000     000000000  0000000       000     
@@ -426,10 +435,7 @@ class Browser
         @stage.load file
         @stage.centerSelection()
         @close()
-        
-    selectedFile: -> @selectedItem().getAttribute 'file'
-    selectedItem: -> $ '.selected', @element
-        
+                
     close: => @kali.closeBrowser()
 
     # 000   000  00000000  000   000  

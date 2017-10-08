@@ -222,6 +222,9 @@ class Tools extends Tool
         @clickTool    prefs.get 'tool:active', 'pick' 
         @activateTool prefs.get 'tool:active', 'pick' 
         
+        if recent = first prefs.get 'recent', []
+            @stage.load recent
+            
         if prefs.get 'fontlist:visible', false
             @getTool('font').toggleList()
             
@@ -230,9 +233,6 @@ class Tools extends Tool
             
         if prefs.get 'gradientlist:visible', false
             @getTool('gradient').toggleList()
-        
-        if recent = first prefs.get 'recent', []
-            @stage.load recent
             
         if box = prefs.get 'stage:viewbox'
             @stage.zoom = box.zoom

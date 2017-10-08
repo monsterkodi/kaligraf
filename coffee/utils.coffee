@@ -266,7 +266,6 @@ module.exports =
             id = value.split('"')[1].slice 1
             if gradient = SVG.get id
                 gradient.type = module.exports.gradientType gradient
-                # log "itemGradient #{id}", gradient.type
                 return gradient
 
     gradientStops: (gradient) ->

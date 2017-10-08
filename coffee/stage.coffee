@@ -398,7 +398,8 @@ class Stage
                                             
                     for child in children
                         if child.type == 'defs'
-                            parent.add child
+                            for defsChild in child.children()
+                                parent.doc().defs().add defsChild
                         else if opt?.id and child.type == 'svg'
                             g = svg.group()
                             for layerChild in child.children()
@@ -467,9 +468,11 @@ class Stage
         @loadLayers()
         
         info.file = @currentFile
-        post.emit 'stage', 'load', info
         
         @postLayer()
+        
+        post.emit 'stage', 'load', info
+        
         @kali.focus()
                 
     open: ->

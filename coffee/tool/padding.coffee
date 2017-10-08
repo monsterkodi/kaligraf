@@ -51,6 +51,8 @@ class Padding extends Tool
         
     setPercent: (@percent) =>
 
+        if _.isNaN @percent then @percent = 0
+        log 'Padding.setPercent', @percent
         prefs.set 'padding:percent', @percent
         @update()
         

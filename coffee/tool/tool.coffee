@@ -234,7 +234,7 @@ class Tool extends multi Spin, Button
     
     onClick: (event) => 
         
-        if @svg? and event?.shiftKey
+        if @svg?
             
             if event?.metaKey
                 @kali.stage.addSVG @svg.svg()

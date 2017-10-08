@@ -214,7 +214,6 @@ class GradientList
             if item.type in ['linearGradient', 'radialGradient', 'linear', 'radial']
                 stopList.push gradientStops item
             
-        # stopList = _.uniqWith stopList, (a,b) -> log a, b; _.isEqual a, b
         stopList = _.uniqWith stopList, _.isEqual
         
         @scroll.innerHTML = ''

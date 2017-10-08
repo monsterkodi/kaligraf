@@ -140,10 +140,10 @@ class Tools extends Tool
                 { class: 'layer'   }
             ]
             [
-                { class: 'flip'  }                
                 { class: 'group' }
                 { class: 'order' }
                 { class: 'send'  }
+                { class: 'flip'  }                
                 { class: 'space' }                
                 { class: 'align' }                
             ]            

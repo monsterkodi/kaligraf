@@ -13,10 +13,8 @@ Palette = require './palette'
 
 class GradientItem
 
-    constructor: (@list) ->
+    constructor: (@kali) ->
 
-        @kali = @list.kali
-        
         @element = elem class:'gradientItem'
         @element.gradient = @
         
@@ -45,7 +43,15 @@ class GradientItem
                 opacity: @kali.tool('fill').alpha
             ]
         
+    del: ->
+        
+        @svg.clear()
+        @element.remove()
+        delete @svg
+        delete @element
+            
     setGradient: (gradient) -> 
+
         @gradient = @svg.gradient gradient.type, (stop) ->
             for stp in gradient.stops
                 stop.at stp.offset, stp.color, stp.opacity

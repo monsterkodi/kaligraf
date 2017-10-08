@@ -7,10 +7,11 @@
 
 { empty, elem, stopEvent, post, prefs, clamp, first, pos, log, $, _ } = require 'kxk'
 
-{ itemIDs, colorGradient, grayGradient, checkersPattern } = require '../utils'
+{ itemIDs, itemGradient, colorGradient, grayGradient, gradientState, checkersPattern } = require '../utils'
 
-Tool    = require './tool'
-Palette = require './palette'
+Tool         = require './tool'
+Palette      = require './palette'
+GradientEdit = require './gradientedit'
 
 class Color extends Tool
 
@@ -139,6 +140,9 @@ class Color extends Tool
             return
 
         post.emit 'palette', 'proxy', @
+        
+        if @gradient
+            @showPalette()
 
         if @name == 'fill'
 
@@ -173,20 +177,17 @@ class Color extends Tool
 
         super
 
-        p = @pos()
-
         if @name == 'fill'
-            p = @kali.tools.stroke.pos()
             if tempStroke
                 @kali.tools.temp = @kali.tools.stroke
 
         if @name == 'stroke'
             @kali.tools.temp = @
 
-        @showPalette()
-        
         if not @kali.palette.proxy
             post.emit 'palette', 'proxy', @
+            
+        @showPalette()
 
     #  0000000  000   000   0000000   000   000  
     # 000       000   000  000   000  000 0 000  
@@ -194,8 +195,29 @@ class Color extends Tool
     #      000  000   000  000   000  000   000  
     # 0000000   000   000   0000000   00     00  
     
-    showPalette: -> post.emit 'palette', 'show', pos(@kali.toolSize,0).plus @kali.tools.stroke.pos()
-    hidePalette: -> post.emit 'palette', 'hide'
+    showPalette: -> 
+        
+        @kali.gradientEdit?.del()
+        
+        childPos = pos(@kali.toolSize,0).plus @kali.tools.stroke.pos()
+        
+        if @gradient
+            
+            color = @kali.tool @kali.palette.proxy 
+            
+            @kali.gradientEdit = new GradientEdit @kali
+            @kali.gradientEdit.setPos childPos
+            @kali.gradientEdit.setGradient itemGradient color.top, 'fill'
+        else
+            post.emit 'palette', 'show', childPos
+        
+    hidePalette: ->
+        
+        if @gradient
+            @kali.gradientEdit?.del()
+            delete @kali.gradientEdit
+        else
+            post.emit 'palette', 'hide'
             
     childrenVisible: -> @kali.palette.isVisible()
     
@@ -219,9 +241,18 @@ class Color extends Tool
     #  0000000   000        0000000    000   000     000     00000000
 
     update: () ->
-
-        @top.style fill: @color
-        @bot.style fill: @color, 'fill-opacity': @alpha
+    
+        @gradient = _.isString(@color) and @color.startsWith 'url'
+        
+        if @gradient
+            @top.attr height:'100%'
+            @bot.attr height:'0'
+            @top.style fill: @color
+        else
+            @top.attr height:'50%'
+            @bot.attr height:'50%'
+            @top.style fill: @color
+            @bot.style fill: @color, 'fill-opacity': @alpha
         
     #  0000000  000000000   0000000    0000000   00000000  
     # 000          000     000   000  000        000       

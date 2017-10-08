@@ -129,7 +129,7 @@ class GradientList
 
     onNewGradient: =>
         index = @activeIndex()
-        gradient = new GradientItem @
+        gradient = new GradientItem @kali
         @scroll.insertBefore gradient.element, @activeGradient()
         @activate Math.max 0, index
         @store()
@@ -139,7 +139,7 @@ class GradientList
         index = @activeIndex()
         return if index < 0
         
-        gradient = new GradientItem @
+        gradient = new GradientItem @kali
         gradient.setGradient @activeGradient().gradient.state()
         @scroll.insertBefore gradient.element, @activeGradient()
         @activate index
@@ -173,7 +173,7 @@ class GradientList
         if @activeGradient().gradient.activeStop()?
             @activeGradient().gradient.delStop()
         else
-            @activeGradient().remove()
+            @activeItem().del()
             @activate index
             @store()
          
@@ -198,7 +198,7 @@ class GradientList
         
     restore: ->
         # for state in prefs.get 'gradientlist:list', []
-            # gradient = new GradientItem @
+            # gradient = new GradientItem @kali
             # gradient.restore state
             # @scroll.appendChild gradient.element
         # @activate prefs.get 'gradientlist:active', 0
@@ -219,7 +219,7 @@ class GradientList
         @scroll.innerHTML = ''
         
         for stops in stopList
-            gradient = new GradientItem @
+            gradient = new GradientItem @kali
             gradient.restore 
                 type:   'linear'
                 stops:  stops

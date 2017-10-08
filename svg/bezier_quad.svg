@@ -1,9 +1,8 @@
 <svg width="100%" height="100%"
 version="1.1"
 xmlns="http://www.w3.org/2000/svg" 
-style="stroke-linecap: round; stroke-linejoin: round; "
+xmlns:xlink="http://www.w3.org/1999/xlink"
+xmlns:svgjs="http://svgjs.com/svgjs"
+style="stroke-linecap: round; stroke-linejoin: round;"
 viewBox="137.6 406.0455841064453 124.8 148.85936279296874">
-<path id="SvgjsPath4093" d="M148 541.5Q203 434.5 252 542.5 " style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;"></path>
-<line id="SvgjsLine1743" x1="194.58253892080845" y1="438.69176704537904" x2="148.37620544433594" y2="541.0279541015625" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: none; fill-opacity: 0;"></line>
-<circle id="SvgjsCircle1409" r="11" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,202.46144627549813,429.4505310058594)"></circle>
-<line id="SvgjsLine1752" x1="206.98692314385835" y1="439.0018766509553" x2="249.78204345703125" y2="537.306640625" transform="matrix(1,0,0,1,0.31013728163077303,1.2403411865234375)" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: none; fill-opacity: 0;"></line></svg>
+<g id="G-96-aefee0"><path id="P-2b-562de3" d="M148 541.5Q203 434.5 252 542.5 " style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;"></path><line id="L-40-fb94bf" x1="194.58253892080845" y1="438.69176704537904" x2="148.37620544433594" y2="541.0279541015625" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: none; fill-opacity: 0;"></line><circle id="C-08-89b81d" r="11" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,202.46144627549813,429.4505310058594)"></circle><line id="L-94-485725" x1="206.98692314385835" y1="439.0018766509553" x2="249.78204345703125" y2="537.306640625" transform="matrix(1,0,0,1,0.31013728163077303,1.2403411865234375)" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: none; fill-opacity: 0;"></line></g></svg>

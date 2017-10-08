@@ -9,8 +9,9 @@
 
 { multi } = require 'heterarchy'
 
-Spin   = require './spin'
-Button = require './button'
+Spin     = require './spin'
+Button   = require './button'
+Exporter = require '../exporter'
 
 class Tool extends multi Spin, Button
 
@@ -72,6 +73,7 @@ class Tool extends multi Spin, Button
         @element.innerHTML = svg
         @svg = SVG.adopt(@element.firstChild)
         @svg.addClass 'toolSVG'
+        @svg
         
     # 000   000   0000000   000   000  00000000  00000000     
     # 000   000  000   000  000   000  000       000   000    
@@ -234,7 +236,7 @@ class Tool extends multi Spin, Button
     
     onClick: (event) => 
         
-        if @svg?
+        if @svg? and event?
             
             if event?.metaKey
                 @kali.stage.addSVG @svg.svg()
@@ -243,7 +245,7 @@ class Tool extends multi Spin, Button
             if event?.ctrlKey
                 svg = @kali.stage.copy()
                 @setSVG svg
-                @saveSVG @name, svg
+                Exporter.saveSVG @name, @svg
                 return
             
         if @hasChildren() and event

@@ -52,7 +52,6 @@ class Padding extends Tool
     setPercent: (@percent) =>
 
         if _.isNaN @percent then @percent = 0
-        log 'Padding.setPercent', @percent
         prefs.set 'padding:percent', @percent
         @update()
         
@@ -91,11 +90,15 @@ class Padding extends Tool
     
     update: =>
         
-        return if not @visible
+        return @hidePadding() if not @visible
+        
+        paddingBox = @stage.paddingViewBox()
+        
+        return @hidePadding() if paddingBox.width == 0 or paddingBox.height == 0
         
         @showPadding() if not @rect?
         
-        @selection.setRect @rect, @stage.paddingViewBox()
+        @selection.setRect @rect, paddingBox
         
     #  0000000  000000000   0000000    0000000   00000000  
     # 000          000     000   000  000        000       

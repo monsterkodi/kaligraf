@@ -1,10 +1,8 @@
 <svg width="100%" height="100%"
 version="1.1"
 xmlns="http://www.w3.org/2000/svg" 
-style="stroke-linecap: round; stroke-linejoin: round; "
+xmlns:xlink="http://www.w3.org/1999/xlink"
+xmlns:svgjs="http://svgjs.com/svgjs"
+style="stroke-linecap: round; stroke-linejoin: round;"
 viewBox="280.15370788574216 405.20921325683594 142.15550537109374 153.04449462890625">
-<path id="SvgjsPath1282" d="M303 544.5C301 435.5 404 432.5 403 545.5 " style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;"></path>
-<line id="SvgjsLine1770" x1="399.254878601132" y1="440.2423150732603" x2="403.5964050292969" y2="545.0593872070312" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: none; fill-opacity: 0;"></line>
-<circle id="SvgjsCircle1409" r="11" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,399.46290805191444,428.9629211425781)"></circle>
-<circle id="SvgjsCircle1409" r="11" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,303,430.5)"></circle>
-<line id="SvgjsLine1761" x1="302.5006816613427" y1="441.17264388998905" x2="302.810791015625" y2="543.19873046875" transform="matrix(1,0,0,1,0,0.6201424696190543)" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: none; fill-opacity: 0;"></line></svg>
+<g id="G-59-7f335c"><path id="P-d8-35a4a4" d="M303 544.5C301 435.5 404 432.5 403 545.5 " style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;"></path><line id="L-f3-53141d" x1="399.254878601132" y1="440.2423150732603" x2="403.5964050292969" y2="545.0593872070312" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: none; fill-opacity: 0;"></line><circle id="C-c9-8c8de6" r="11" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,399.46290805191444,428.9629211425781)"></circle><circle id="C-0e-8535c6" r="11" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,303,430.5)"></circle><line id="L-54-5dfccc" x1="302.5006816613427" y1="441.17264388998905" x2="302.810791015625" y2="543.19873046875" transform="matrix(1,0,0,1,0,0.6201424696190543)" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: none; fill-opacity: 0;"></line></g></svg>

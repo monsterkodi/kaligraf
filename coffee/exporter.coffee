@@ -76,7 +76,7 @@ class Exporter
     @saveSVG: (name, svg) ->
         
         @cleanGradients svg
-        fs.writeFileSync @svgFile(name), svg, encoding: 'utf8'
+        fs.writeFileSync @svgFile(name), @svg svg, encoding: 'utf8'
 
     @hasSVG: (name) -> fileExists @svgFile name
                 

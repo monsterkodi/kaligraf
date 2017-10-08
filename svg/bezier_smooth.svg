@@ -1,9 +1,8 @@
 <svg width="100%" height="100%"
 version="1.1"
 xmlns="http://www.w3.org/2000/svg" 
-style="stroke-linecap: round; stroke-linejoin: round; "
-viewBox="-38.793133926391604 414.61473693847654 158.1345657348633 142.78392333984374">
-<path id="SvgjsPath3978" d="M-11 353.5S-11 247.5 41 246.5S94 354.5 94 354.5 " style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,-2,191)"></path>
-<circle id="SvgjsCircle1409" r="11" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,-14.61525296189949,437.5133972167969)"></circle>
-<line id="SvgjsLine1734" x1="-2.026951014532628" y1="437.45132862307406" x2="83.56330108642578" y2="436.52099609375" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: none; fill-opacity: 0;"></line>
-<circle id="SvgjsCircle1409" r="11" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,95.1635513305664,437.82366943359375)"></circle></svg>
+xmlns:xlink="http://www.w3.org/1999/xlink"
+xmlns:svgjs="http://svgjs.com/svgjs"
+style="stroke-linecap: round; stroke-linejoin: round;"
+viewBox="-38.79313430786133 414.61473693847654 158.1345703125 142.78392333984374">
+<g id="G-5c-c5b345"><path id="P-45-29eea6" d="M-11 353.5S-11 247.5 41 246.5S94 354.5 94 354.5 " style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,-2,191)"></path><circle id="C-c5-ff3885" r="11" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,-14.61525296189949,437.5133972167969)"></circle><line id="L-2d-363da6" x1="-2.026951014532628" y1="437.45132862307406" x2="83.56330108642578" y2="436.52099609375" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: none; fill-opacity: 0;"></line><circle id="C-2b-9845c8" r="11" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,95.1635513305664,437.82366943359375)"></circle></g></svg>

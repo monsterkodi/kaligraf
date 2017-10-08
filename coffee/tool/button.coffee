@@ -139,15 +139,15 @@ class Button
         
         btn = @button button
 
-        if btn.icon? and event?.shiftKey
+        if btn.icon? and event?
+            
             if event?.metaKey
                 @kali.stage.addSVG Exporter.loadSVG btn.icon
                 return
 
             if event?.ctrlKey
-                svg = @kali.stage.copy()
-                btn.innerHTML = svg
-                @saveSVG btn.icon, svg
+                btn.innerHTML = @kali.stage.copy()
+                Exporter.saveSVG btn.icon, SVG.adopt btn.firstChild 
                 return
                 
         if btn.toggle?

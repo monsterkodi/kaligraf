@@ -55,7 +55,7 @@ class LayerList
         @kali.insertAboveTools @element
         @shadow = new Shadow @element
         @updateColor()
-        
+                
         post.on 'resize', @onResize
 
     # 0000000    00000000    0000000    0000000   
@@ -130,7 +130,7 @@ class LayerList
     
     update: =>
 
-        @log 'LayerList.update', @stage.numLayers()
+        @log 'LayerList.update numLayers:', @stage.numLayers()
         
         @scroll.innerHTML = ''
         
@@ -142,7 +142,7 @@ class LayerList
         @shadow.update()
 
     updateActive: (info) ->
-        
+        @log 'LayerList.updateActive', info
         if info.num != @scroll.children.length
             @log 'LayerList.updateActive num differs -> update()'
             @update()
@@ -358,9 +358,9 @@ class LayerList
     navigate: (dir) -> @activate @activeIndex() + dir
     activate: (index, opt) -> @stage.activateLayer index
 
-    onClick: (event) => 
+    onClick: (event) =>
         
-        @element.focus()
+        @element.focus()        
         @activate @scroll.children.length - 1 - childIndex event.target
         stopEvent event
     

@@ -58,8 +58,8 @@ class Layer extends Tool
 
         post.on 'stage',     @onStage
         post.on 'selection', @onSelection
-
-        @stage.activateLayer 0
+        
+        @stage.layerIndex = 0
 
     onHide:    => @stage.toggleLayer @stage.layerIndex, 'hidden'
     onDisable: => @stage.toggleLayer @stage.layerIndex, 'disabled'
@@ -71,7 +71,7 @@ class Layer extends Tool
             @stage.selection.clear()
         else
             @stage.selectLayer()
-
+            
     # 000      000   0000000  000000000
     # 000      000  000          000
     # 000      000  0000000      000
@@ -103,7 +103,6 @@ class Layer extends Tool
         return if not @numLayers()
         return if @selection.empty()
         noItems = @selectedItems().filter (item) -> not item?
-        log 'Layer.activateSelectionLayer -- broken selection!' if not empty noItems
         @activateLayer _.max @selectedItems().map (item) => @indexOfLayer @layerForItem item
 
     #  0000000  000000000   0000000    0000000   00000000
@@ -114,24 +113,32 @@ class Layer extends Tool
 
     onStage: (action, info) =>
 
-        if action == 'layer'
-
-            # @log "Layer.onStage layer #{info.active} #{@stage.activeLayer().id()}"
-            @button('layer').innerHTML = "#{info.active}"
-
-            if not info.num
-                @hideButton 'layer'
-                @hideButton 'incr'
-                @hideButton 'decr'
-            else
-                @button('layer').removeAttribute 'style'
-
-                @showButton 'decr', info.active
-                @showButton 'incr', info.active != info.num-1
-
-                @setButtonIcon 'disable', info.disabled and 'layer-disabled' or 'layer-disable'
-                @setButtonIcon 'hide',    info.hidden   and 'layer-hidden'   or 'layer-hide'
-
+        switch action
+            when 'load' 
+                for index in [@stage.numLayers()-1..0]
+                    layer = @stage.layerAt(index)
+                    if not layer.data('hidden') and not layer.data('disabled')
+                        @stage.activateLayer index
+                        return
+            
+            when 'layer'
+    
+                # @log "Layer.onStage layer #{info.active} #{@stage.activeLayer().id()}"
+                @button('layer').innerHTML = "#{info.active}"
+                
+                if not info.num
+                    @hideButton 'layer'
+                    @hideButton 'incr'
+                    @hideButton 'decr'
+                else
+                    @button('layer').removeAttribute 'style'
+    
+                    @showButton 'decr', info.active
+                    @showButton 'incr', info.active != info.num-1
+    
+                    @setButtonIcon 'disable', info.disabled and 'layer-disabled' or 'layer-disable'
+                    @setButtonIcon 'hide',    info.hidden   and 'layer-hidden'   or 'layer-hide'
+    
     # 000       0000000    0000000   0000000          000       0000000   000   000  00000000  00000000    0000000
     # 000      000   000  000   000  000   000        000      000   000   000 000   000       000   000  000
     # 000      000   000  000000000  000   000        000      000000000    00000    0000000   0000000    0000000
@@ -186,7 +193,7 @@ class Layer extends Tool
             @applyLayerState @layers.length-1, 'hidden'
             @applyLayerState @layers.length-1, 'disabled'
 
-        @layerIndex = @numLayers()-1
+        # @layerIndex = @numLayers()-1
 
     numLayers: -> @getLayers().length
     layerAt:    (index) -> @getLayers()[@clampLayer index]
@@ -217,6 +224,7 @@ class Layer extends Tool
     indexOfLayer: (layer) -> @layers.indexOf layer
 
     activeLayer: -> @layerAt @layerIndex
+    
     activateLayer: (index) ->
         @layerIndex = @clampLayer index
         @log 'Layer.activateLayer', index, @layerIndex
@@ -229,7 +237,9 @@ class Layer extends Tool
 
     restoreLayers: (state) ->
 
-        @layerIndex = state.layerIndex
+        # @layerIndex = state.layerIndex
+        log 'restoreLayers', state
+        @activateLayer state.layerIndex
         layerIDs    = state.layers
         if not _.isEqual(layerIDs, @layers.map (layer) -> layer.id())
             @layers = []

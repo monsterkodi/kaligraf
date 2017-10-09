@@ -52,15 +52,19 @@ class Pipette extends Tool
         @kali.stage.setToolCursor 'pipette'
         
         if drag.startPos == drag.lastPos
-            post.emit 'color', 'fill',   prop:'color', color: @tools.fill.color, alpha: @tools.fill.alpha
+            post.emit 'color', 'fill',   prop:'color', color: @tools.fill.color,   alpha:  @tools.fill.alpha
             post.emit 'color', 'stroke', prop:'color', color: @tools.stroke.color, stroke: @tools.fill.alpha
             return
             
         item = @stage.leafItemAtPos pos event
         if item?
             @stage.undo.do @stage, 'color'+item.id()
-            item.style 'fill',   @tools.fill.color
-            item.style 'stroke', @tools.stroke.color
+            item.style 
+                'fill':           @tools.fill.color
+                'fill-opacity':   @tools.fill.alpha
+                'stroke':         @tools.stroke.color
+                'stroke-opacity': @tools.stroke.alpha
+                'stroke-width':   "#{@tools.width.width}px"
             @stage.undo.done @stage
             
 module.exports = Pipette

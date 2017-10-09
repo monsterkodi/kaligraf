@@ -7,6 +7,9 @@ author          monsterkodi
 license         Unlicense
 scripts
                 build  ./bin/build.sh
+repository
+                type  git
+                url   git+https://github.com/monsterkodi/kaligraf.git
 dependencies
                 colors          ^1.1.2
                 font-manager    ^0.2.2

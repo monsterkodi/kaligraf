@@ -1,3 +1,4 @@
+![kaligraf](svg/test/kaligraf.png)
 ![kali](bin/kali.png)
 ![browser](bin/browser.png)
 ![eagle](svg/test/eagle.svg)

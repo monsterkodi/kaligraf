@@ -180,7 +180,7 @@ class KaliApp
         process.exit 0
         
     showAbout: => about 
-        img: "#{__dirname}/../svg/test/kaligraf.svg"
+        img: "#{__dirname}/../bin/about.svg"
         pkg: pkg
         imageWidth:  '230px'
         imageHeight: '230px'

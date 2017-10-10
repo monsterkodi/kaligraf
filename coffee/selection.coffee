@@ -407,31 +407,7 @@ class Selection
     viewPos: -> r = @element.getBoundingClientRect(); pos r.left, r.top
         
     bbox: -> @rectsWhite.bbox()
-    
-    #  0000000   0000000   000       0000000   00000000   
-    # 000       000   000  000      000   000  000   000  
-    # 000       000   000  000      000   000  0000000    
-    # 000       000   000  000      000   000  000   000  
-    #  0000000   0000000   0000000   0000000   000   000  
-    
-    pickColor: ->
         
-        return if @empty()
-        stroke = r:0, g:0, b:0
-        fill   = r:0, g:0, b:0
-        for s in @items
-            sc = new SVG.Color s.style 'stroke'
-            fc = new SVG.Color s.style 'fill'
-            for c in ['r', 'g', 'b']
-                stroke[c] += sc[c]
-                fill[c]   += fc[c]
-        for c in ['r', 'g', 'b']                
-            stroke[c] /= @items.length
-            fill[c]   /= @items.length
-           
-        post.emit 'setColor', 'fill',   fill
-        post.emit 'setColor', 'stroke', stroke
-    
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
     # 0000000    0000000     00000    

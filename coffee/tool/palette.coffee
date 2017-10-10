@@ -139,14 +139,8 @@ class Palette extends Tool
         @luminance = color.luminance
         @color     = color.color
         
-        @gradientRGB = colorGradient @svg, @luminance
-        @rgb.attr fill: @gradientRGB
-        @alp.attr fill:checkersPattern(@svg, @kali.toolSize/6, '#fff'), 'fill-opacity': 1-@alpha
-        @lph.attr x:@alpha*(WIDTH-HEIGHT/3)
-        @lum.attr x:@luminance*(WIDTH-HEIGHT/3)
-        
-        gradient = @mode == 'rgb' and @gradientRGB or @gradientGRY
-        @updateColor new SVG.Color gradient.colorAt @value
+        @updateSliders()
+        @updateValue()
         
     setClosestColor: (color, alpha) ->
         
@@ -168,10 +162,8 @@ class Palette extends Tool
         
         @gradientRGB = colorGradient @svg, @luminance
         
-        @lph.attr x:@alpha*(WIDTH-HEIGHT/3)
-        @alp.attr fill:checkersPattern(@svg, @kali.toolSize/6, '#fff'), 'fill-opacity': 1-@alpha
-        @rgb.attr fill: @gradientRGB
-        @lum.attr x: @luminance*(WIDTH-HEIGHT/3)
+        @updateAlpha()
+        @updateLuminance()
         
     valueForColor: (color) -> 
         
@@ -206,20 +198,15 @@ class Palette extends Tool
 
         @alpha = f
 
-        @lph.attr x:@alpha*(WIDTH-HEIGHT/3)
-        @alp.attr 'fill-opacity': 1-@alpha
-
+        @updateAlpha()
         @postColor 'alpha'
-        
-        @setColor @value        
+        @setValue @value        
 
-    postColor: (prop='color') ->
+    updateAlpha: ->
         
-        post.emit 'color', @proxy, 
-            prop:  prop
-            color: @color
-            alpha: @alpha
-        
+        @lph.attr x:@alpha*(WIDTH-HEIGHT/3)        
+        @alp.attr 'fill-opacity': 1-@alpha
+                
     # 000      000   000  00     00  000  000   000   0000000   000   000   0000000  00000000
     # 000      000   000  000   000  000  0000  000  000   000  0000  000  000       000
     # 000      000   000  000000000  000  000 0 000  000000000  000 0 000  000       0000000
@@ -231,8 +218,7 @@ class Palette extends Tool
         @luminance = f
 
         @updateLuminance()
-        
-        @setColor @value
+        @setValue @value
         
     updateLuminance: ->
         
@@ -240,23 +226,37 @@ class Palette extends Tool
         @rgb.attr fill: @gradientRGB
         @lum.attr x: @luminance*(WIDTH-HEIGHT/3)
 
+    # 000   000   0000000   000      000   000  00000000  
+    # 000   000  000   000  000      000   000  000       
+    #  000 000   000000000  000      000   000  0000000   
+    #    000     000   000  000      000   000  000       
+    #     0      000   000  0000000   0000000   00000000  
+    
+    setValue: (@value) ->
+        
+        @updateValue()
+
+        post.emit 'palette', 'change', @
+        @postColor()
+
+    updateValue: ->
+        
+        gradient = @mode == 'rgb' and @gradientRGB or @gradientGRY
+        @updateColor new SVG.Color gradient.colorAt @value        
+            
     #  0000000   0000000   000       0000000   00000000
     # 000       000   000  000      000   000  000   000
     # 000       000   000  000      000   000  0000000
     # 000       000   000  000      000   000  000   000
     #  0000000   0000000   0000000   0000000   000   000
 
-    setColor: (f) ->
-
-        @value = f
+    postColor: (prop='color') ->
         
-        gradient = @mode == 'rgb' and @gradientRGB or @gradientGRY
-
-        @updateColor new SVG.Color gradient.colorAt @value
-         
-        post.emit 'palette', 'change', @
-        @postColor()
-
+        post.emit 'color', @proxy, 
+            prop:  prop
+            color: @color
+            alpha: @alpha
+        
     updateColor: (color) ->
 
         @color = color
@@ -337,14 +337,24 @@ class Palette extends Tool
         slider = drag.target
         f = clamp 0, 1, @xPosEvent(event) / WIDTH
 
-        if slider == @lum
-            @setLuminance f
-        else
-            @setAlpha f
-            
         if @proxy == 'fill' and event.metaKey
-            post.emit 'stage', 'setColor', @color, @alpha
+            
+            if slider == @lum
+                @luminance = f
+                @updateLuminance()
+            else
+                @alpha = f
+                @updateAlpha()
 
+            @updateValue()
+            post.emit 'palette', 'change', @
+            post.emit 'stage', 'setColor', @color, @alpha
+        else        
+            if slider == @lum
+                @setLuminance f
+            else
+                @setAlpha f
+            
     # 00000000   000   0000000  000   000
     # 000   000  000  000       000  000
     # 00000000   000  000       0000000
@@ -356,16 +366,19 @@ class Palette extends Tool
         grd = drag.target
         @setMode grd == @gry and 'gry' or 'rgb'
         
-        value = clamp 0, 1, @xPosEvent(event) / WIDTH
-        @setColor value
-        
+        @value = clamp 0, 1, @xPosEvent(event) / WIDTH
+                
+        if @proxy == 'fill' and event.metaKey
+            @updateValue()
+            post.emit 'palette', 'change', @
+            post.emit 'stage', 'setColor', @color, @alpha
+        else        
+            @setValue @value
+
         if @mode == 'gry'
-            @luminance = value
+            @luminance = @value
             @updateLuminance()
             
-        if @proxy == 'fill' and event.metaKey
-            post.emit 'stage', 'setColor', @color, @alpha
-
     # 00000000  000   000  00000000  000   000  000000000   0000000
     # 000       000   000  000       0000  000     000     000
     # 0000000    000 000   0000000   000 0 000     000     0000000

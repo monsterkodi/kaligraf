@@ -299,6 +299,8 @@ class Layer extends Tool
 
         layer = @svg.nested()
         layer.id "layer #{@numLayers()}"
+        if index < @numLayers()-1
+            @layerAt(index).before layer
 
         @layers.splice index, 0, layer
 

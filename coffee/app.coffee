@@ -179,13 +179,14 @@ class KaliApp
         app.exit 0
         process.exit 0
         
-    showAbout: => about 
+    showAbout: => about
         img: "#{__dirname}/../bin/about.svg"
         pkg: pkg
-        imageWidth:  '230px'
-        imageHeight: '230px'
-        imageOffset:  '25px'
-        versionOffset: '10px'
+        imageWidth:    '230px'
+        imageHeight:   '230px'
+        imageOffset:   '32px'
+        versionOffset: '15px'
+        highlight:     '#88f'
 
 #  0000000   00000000   00000000         0000000   000   000
 # 000   000  000   000  000   000       000   000  0000  000

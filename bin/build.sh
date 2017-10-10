@@ -8,8 +8,8 @@ NAME=`sds productName`
 
 konrad --run
 
-IGNORE="/(.*\.dmg$|Icon$|coffee$|.*md$|pug$|styl$|.*\.noon$|.*\.lock$|img/dmg.*)"
-node_modules/electron-packager/cli.js . --overwrite --icon=img/$NAME.icns --ignore $IGNORE
+IGNORE="/(.*\.dmg$|Icon$|coffee$|.*md$|pug$|styl$|.*\.noon$|.*\.lock$|bin/dmg.*)"
+node_modules/electron-packager/cli.js . --overwrite --icon=bin/$NAME.icns --ignore $IGNORE
 
 rm $NAME-darwin-x64/LICENSE*
 rm $NAME-darwin-x64/version

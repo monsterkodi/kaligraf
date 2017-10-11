@@ -27,6 +27,10 @@ class Gradient extends Tool
             spread:         'pad'
             stops:          []
             
+        @state.spread ?= 'pad'
+        
+        log 'Gradient.constructor', @state
+            
         @initButtons [
             name: 'none'
             tiny: 'gradient-none'
@@ -51,12 +55,14 @@ class Gradient extends Tool
         ,
             name: 'repeat'
             tiny: 'gradient-repeat'
-            choice: @state.spread
+            choice: 'repeat'
+            toggle: @state.spread == 'repeat'
             action: => @toggleSpread 'repeat'
         ,
             name: 'reflect'
             tiny: 'gradient-reflect'
-            choice: @state.spread
+            choice: 'reflect'
+            toggle: @state.spread == 'reflect'
             action: => @toggleSpread 'reflect'
         ]
         
@@ -233,15 +239,21 @@ class Gradient extends Tool
     #    000      0000000    0000000    0000000   0000000  00000000  
     
     toggleSpread: (spread) =>
-        
         if spread == @state.spread
             @state.spread = 'pad'
         else
             @state.spread = spread
             
-        @button('repeat').classList.toggle 'active',  @state.spread == 'repeat'
-        @button('reflect').classList.toggle 'active', @state.spread == 'reflect'
+        repeat = @button 'repeat' 
+        repeat.toggle = @state.spread == 'repeat'
+        repeat.classList.toggle 'active', repeat.toggle
+        
+        reflect = @button 'reflect' 
+        reflect.toggle = @state.spread == 'reflect'
+        reflect.classList.toggle 'active', reflect.toggle
             
+        log 'toggleSpread', spread, @state
+        
         @setState @state
         @postGradient spread:@state.spread
         

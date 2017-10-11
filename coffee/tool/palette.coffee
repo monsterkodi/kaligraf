@@ -132,15 +132,9 @@ class Palette extends Tool
     
     setProxy: (color) ->
         
-        @setMode     color.mode
-        @proxy     = color.name
-        @alpha     = color.alpha
-        @value     = color.value
-        @luminance = color.luminance
-        @color     = color.color
-        
-        @updateSliders()
-        @updateValue()
+        @proxy = color.name
+                
+        @setClosestColor color.color, color.alpha
         
     setClosestColor: (color, alpha) ->
         

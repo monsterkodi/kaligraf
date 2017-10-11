@@ -32,7 +32,7 @@ class Button
 
             if button.choice?
                 btn.choice = button.choice
-                btn.toggle = btn.choice == btn.name
+                btn.toggle = button.toggle ? btn.choice == btn.name
                 btn.classList.add 'toolToggle'
                 btn.classList.toggle 'active', btn.toggle
                 

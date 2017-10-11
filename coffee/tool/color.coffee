@@ -37,7 +37,8 @@ class Color extends Tool
 
         @copy prefs.get @name, luminance:0.5, color:'#fff', alpha:1, value:2/3, mode:'rgb'
 
-        post.on 'palette', @onPalette
+        post.on 'palette',   @onPalette
+        post.on 'selection', @onSelection
 
     set: (v) ->
 
@@ -45,6 +46,57 @@ class Color extends Tool
 
         post.emit 'palette', 'proxy', @
 
+    #  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000  
+    # 000       000       000      000       000          000     000  000   000  0000  000  
+    # 0000000   0000000   000      0000000   000          000     000  000   000  000 0 000  
+    #      000  000       000      000       000          000     000  000   000  000  0000  
+    # 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000  
+    
+    onSelection: =>
+        
+        items = @stage.selectedLeafItems()
+        return if empty items
+        
+        r = g = b = a = 0
+        numColors = 0
+        gradients = []
+        
+        for item in items
+            color = item.style @name
+            if color.startsWith 'url'
+                gradient = itemGradient item, @name
+                gradients.push gradient
+            else
+                numColors++
+                color = new SVG.Color color
+                a += parseFloat item.style "#{@name}-opacity"
+                r += color.r
+                g += color.g
+                b += color.b
+                    
+        if numColors and empty gradients
+            
+            @alpha = a / numColors
+            @color = new SVG.Color r:parseInt(r/numColors), g:parseInt(g/numColors), b:parseInt(b/numColors)
+            @color = @color.toHex()      
+            @gradient = false
+            if @kali.palette.proxy == @name
+                @kali.palette.setClosestColor @color, @alpha
+                @set @kali.palette
+            else
+                @update()
+            
+        else if numColors == 0 and not empty gradients
+            gradients = gradients.filter (g) -> not empty g
+            states = gradients.map (g) -> s = gradientState g; s.id = g.id(); s
+            states = _.uniqWith states, (a,b) -> _.isEqual a.stops, b.stops
+            if states.length == 1
+                # log states
+                @alpha = 1
+                @color = "url(\"##{first(states).id}\")"
+                @gradient = true
+                @update()
+        
     # 00000000    0000000   000      00000000  000000000  000000000  00000000
     # 000   000  000   000  000      000          000        000     000
     # 00000000   000000000  000      0000000      000        000     0000000
@@ -205,7 +257,8 @@ class Color extends Tool
         if @gradient
             
             color = @kali.tool @kali.palette.proxy 
-            
+            if not color?
+                log 'dafuk?', @kali.palette.proxy
             @kali.gradientEdit = new GradientEdit @kali
             @kali.gradientEdit.setPos childPos
             @kali.gradientEdit.setGradient itemGradient color.top, 'fill'
@@ -246,7 +299,7 @@ class Color extends Tool
     # 000   000  000        000   000  000   000     000     000
     #  0000000   000        0000000    000   000     000     00000000
 
-    update: () ->
+    update: ->
     
         @gradient = _.isString(@color) and @color.startsWith 'url'
         

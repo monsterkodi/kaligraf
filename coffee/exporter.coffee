@@ -9,8 +9,6 @@
 
 { bboxForItems, growBox, uuid, itemGradient } = require './utils'
 
-sharp = require 'sharp'
-
 class Exporter
 
     #  0000000  000   000   0000000   

@@ -68,6 +68,7 @@ class GradientItem
         stops[index]
         
     delStop: ->
+        
         return if @numStops() < 2
         index = @activeIndex()
         stops = @stops()
@@ -319,9 +320,10 @@ class GradientItem
     
     state: -> 
         
-        name: @name
-        type: @gradient.type
-        stops: @stops()
+        name:       @name
+        type:       @gradient.type
+        stops:      @stops()
+        gradient:   @gradient
                 
     restore: (state) ->
         

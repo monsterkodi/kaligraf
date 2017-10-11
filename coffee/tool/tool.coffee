@@ -7,6 +7,8 @@
 
 { fileExists, upElem, downElem, stopEvent, elem, drag, post, first, last, fs, pos, log, $, _ } = require 'kxk'
 
+{ boundingBox } = require '../utils'
+
 { multi } = require 'heterarchy'
 
 Spin     = require './spin'
@@ -166,7 +168,7 @@ class Tool extends multi Spin, Button
 
     delHalo: -> $('.toolHalo')?.remove()
     addHalo: -> 
-        
+
         halo = elem class: 'toolHalo'
         halo.style.width      = "#{@cfg.halo?.width  ? ((@children.length+1)*66)}px"
         halo.style.height     = "#{@cfg.halo?.height ? 3*66}px"

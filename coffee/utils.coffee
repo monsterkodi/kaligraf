@@ -97,7 +97,7 @@ module.exports =
         else
             new SVG.BBox()
             
-    boxCenter: (box) -> pos box.x + box.width/2.0, box.y + box.height/2.0
+    boxCenter: (box) -> pos box.x + box.width/2, box.y + box.height/2
     boxOffset: (box) -> pos box.x, box.y
     boxSize:   (box) -> pos box.width, box.height
     
@@ -107,8 +107,8 @@ module.exports =
         
         p = module.exports.boxCenter box
         if name.includes 'left'  then p.x = box.x
-        if name.includes 'right' then p.x = box.x2
         if name.includes 'top'   then p.y = box.y
+        if name.includes 'right' then p.x = box.x2
         if name.includes 'bot'   then p.y = box.y2
         p
 
@@ -134,8 +134,8 @@ module.exports =
         if box.height? then box.height *= scale
         
         if box.cx? then box.cx *= scale
-        if box.x2? then box.x2 *= scale
         if box.cy? then box.cy *= scale
+        if box.x2? then box.x2 *= scale
         if box.y2? then box.y2 *= scale
         
         if box.w? then box.w = box.width
@@ -148,8 +148,8 @@ module.exports =
         box.x += delta.x
         box.y += delta.y
         if box.cx? then box.cx += delta.x
-        if box.x2? then box.x2 += delta.x
         if box.cy? then box.cy += delta.y
+        if box.x2? then box.x2 += delta.x
         if box.y2? then box.y2 += delta.y
         
         box        
@@ -167,6 +167,20 @@ module.exports =
         cy:     cr.top+cr.height/2
         x2:     cr.left+cr.width
         y2:     cr.top+cr.height
+        
+    setBox: (box, key, value) ->
+        
+        log key, value, box.x, box.y
+        switch key
+            when 'width'
+                box.w  = box.width = value
+                box.x  = box.cx - box.w/2
+                box.x2 = box.cx + box.w/2
+            when 'height'
+                box.h  = box.height = value
+                box.y  = box.cy - box.h/2
+                box.y2 = box.cy + box.h/2
+        log box.x, box.y
         
     #  0000000   00000000    0000000   000   000  
     # 000        000   000  000   000  000 0 000  
@@ -189,7 +203,7 @@ module.exports =
         if box.x2? then box.x2 = box.x + box.width
         if box.y2? then box.y2 = box.y + box.height
         if box.cx? then box.cx = box.x + box.w/2
-        if box.cy? then box.cy = box.y + box.y/2
+        if box.cy? then box.cy = box.y + box.h/2
         
         box
         
@@ -263,10 +277,7 @@ module.exports =
         
         value = item.style style 
         if value.startsWith 'url'
-            id = value.split('"')[1].slice 1
-            if gradient = SVG.get id
-                gradient.type = module.exports.gradientType gradient
-                return gradient
+            module.exports.urlGradient value
 
     gradientStops: (gradient) ->
         
@@ -285,13 +296,23 @@ module.exports =
         
         gradient.type.replace 'Gradient', ''
         
-    cloneGradient: (gradient) ->
+    cloneGradient: (gradient, doc) ->
         
+        doc  ?= gradient.doc()
         stops = module.exports.gradientStops gradient
-        gradient.doc().gradient gradient.type, (stop) ->
+        doc.gradient gradient.type, (stop) ->
             for stp in stops
                 stop.at stp.offset, stp.color, stp.opacity
 
+    urlGradient: (url) ->
+        
+        id = url.split('"')[1].slice 1
+        if gradient = SVG.get id
+            gradient.type = module.exports.gradientType gradient
+            return gradient
+            
+    gradientUrl: (gradient) -> "url(\"##{gradient.id()}\")"
+            
     copyStops: (fromGradient, toGradient) ->
         
         module.exports.setGradientStops toGradient, module.exports.gradientStops fromGradient

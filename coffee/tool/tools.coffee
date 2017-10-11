@@ -149,6 +149,7 @@ class Tools extends Tool
             ]            
             [
                 { class: 'padding' }
+                { class: 'aspect'  }
                 { class: 'zoom'    }
                 { class: 'grid'    }
                 { class: 'show'    }

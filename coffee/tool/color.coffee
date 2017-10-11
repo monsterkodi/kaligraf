@@ -7,7 +7,8 @@
 
 { empty, elem, stopEvent, post, prefs, clamp, first, pos, log, $, _ } = require 'kxk'
 
-{ itemIDs, itemGradient, colorGradient, grayGradient, gradientState, checkersPattern } = require '../utils'
+{   itemIDs, itemGradient, colorGradient, grayGradient, gradientState, checkersPattern,
+    cloneGradient, gradientUrl, urlGradient } = require '../utils'
 
 Tool         = require './tool'
 Palette      = require './palette'
@@ -38,6 +39,7 @@ class Color extends Tool
         @copy prefs.get @name, color:'#fff', alpha:1
 
         post.on 'palette',   @onPalette
+        post.on 'gradient',  @onGradient
         post.on 'selection', @onSelection
 
     set: (v) ->
@@ -46,6 +48,22 @@ class Color extends Tool
 
         post.emit 'palette', 'proxy', @
 
+    #  0000000   00000000    0000000   0000000    000  00000000  000   000  000000000  
+    # 000        000   000  000   000  000   000  000  000       0000  000     000     
+    # 000  0000  0000000    000000000  000   000  000  0000000   000 0 000     000     
+    # 000   000  000   000  000   000  000   000  000  000       000  0000     000     
+    #  0000000   000   000  000   000  0000000    000  00000000  000   000     000     
+    
+    onGradient: (action, state) =>
+        
+        if action == 'changed'
+            
+            if state.name == @name or not state.name? and @name == @kali.activeColor
+                @color = gradientUrl state.gradient
+                @updateGradient()
+                
+            @kali.tool('gradient').postGradient stops:state.stops
+        
     #  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000  
     # 000       000       000      000       000          000     000  000   000  0000  000  
     # 0000000   0000000   000      0000000   000          000     000  000   000  000 0 000  
@@ -95,7 +113,6 @@ class Color extends Tool
                 @alpha = 1
                 @color = "url(\"##{first(states).id}\")"
                 @gradient = true
-                log "#{@name}.onSelection", @color
                 @update()
         
     # 00000000    0000000   000      00000000  000000000  000000000  00000000
@@ -142,6 +159,7 @@ class Color extends Tool
         fill.element.style.top    = "#{@kali.toolSize/6}px"
         fill.element.style.width  = "#{2*@kali.toolSize/3}px"
         fill.element.style.height = "#{2*@kali.toolSize/3}px"
+        @kali.activeColor = 'fill'
     
     initChildren: ->
 
@@ -184,15 +202,17 @@ class Color extends Tool
             post.emit 'stage', 'setColor', @color, @alpha
             return
 
-        if @kali.palette.proxy == @name
+        if @kali.activeColor == @name
             other = @kali.tool @name == 'fill' and 'stroke' or 'fill'
             other.onClick event
             return
 
-        post.emit 'palette', 'proxy', @
+        @kali.activeColor = @name   
+        @kali.tool('select').setToggle 'fill',   @name == 'fill'
+        @kali.tool('select').setToggle 'stroke', @name == 'stroke'
+        @kali.tool('select').clickButton @name
         
-        if @gradient
-            @showChildren()
+        @showChildren()
 
         if @name == 'fill'
 
@@ -234,9 +254,11 @@ class Color extends Tool
         if @name == 'stroke'
             @kali.tools.temp = @
 
-        log "#{@name}.onMouseEnter", @gradient
-            
-        @showChildren()
+        if @kali.activeColor != @name
+            other = @kali.tool @name == 'fill' and 'stroke' or 'fill'
+            other.showChildren()
+        else
+            @showChildren()
 
     #  0000000  000   000   0000000   000   000  
     # 000       000   000  000   000  000 0 000  
@@ -293,16 +315,25 @@ class Color extends Tool
         @gradient = _.isString(@color) and @color.startsWith 'url'
         
         if @gradient
-            @top.attr height:'100%'
-            @bot.attr height:'0'
-            @top.style fill: @color
+            @updateGradient()
         else
-            @top.attr height:'50%'
-            @bot.attr height:'50%'
-            @top.style fill: @color
-            @bot.style fill: @color, 'fill-opacity': @alpha
+            @updateColor()
             
         @showChildren() if visible
+
+    updateGradient: ->
+        
+        gradient = cloneGradient urlGradient(@color), @svg
+        @top.attr height:'100%'
+        @bot.attr height:'0'
+        @top.style fill: gradientUrl gradient
+
+    updateColor: ->
+
+        @top.attr height:'50%'
+        @bot.attr height:'50%'
+        @top.style fill: @color
+        @bot.style fill: @color, 'fill-opacity': @alpha
         
     #  0000000  000000000   0000000    0000000   00000000  
     # 000          000     000   000  000        000       

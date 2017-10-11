@@ -7,7 +7,7 @@
 
 { elem, prefs, empty, clamp, post, log, _ } = require 'kxk'
 
-{ itemIDs, growBox, boxOffset, bboxForItems, scaleBox, moveBox } = require '../utils'
+{ itemIDs, growBox, boxOffset, bboxForItems, scaleBox, moveBox, setBox } = require '../utils'
 
 Tool = require './tool'
 
@@ -24,8 +24,9 @@ class Padding extends Tool
         
         @bindStage ['paddingBox', 'layerBox', 'paddingViewBox']
         
-        post.on 'stage', @onStage
-        post.on 'undo',  @onUndo
+        post.on 'stage',  @onStage
+        post.on 'undo',   @onUndo
+        post.on 'aspect', @update
         
         @initTitle()
         
@@ -93,13 +94,13 @@ class Padding extends Tool
         return @hidePadding() if not @visible
         
         paddingBox = @stage.paddingViewBox()
-        
+            
         return @hidePadding() if paddingBox.width == 0 or paddingBox.height == 0
         
         @showPadding() if not @rect?
         
         @selection.setRect @rect, paddingBox
-        
+
     #  0000000  000000000   0000000    0000000   00000000  
     # 000          000     000   000  000        000       
     # 0000000      000     000000000  000  0000  0000000   
@@ -141,6 +142,17 @@ class Padding extends Tool
 
         box = @layerBox() 
         growBox box, @kali.tool('padding').percent
+        
+        aspect = @kali.tool 'aspect' 
+        if aspect.locked
+            paddingRatio = box.width / box.height
+            if paddingRatio > aspect.ratio
+                log 'height', box.width / aspect.ratio
+                setBox box, 'height', box.width / aspect.ratio
+            else 
+                log 'width', box.height * aspect.ratio
+                setBox box, 'width', box.height * aspect.ratio
+        
         box
         
     paddingViewBox: ->

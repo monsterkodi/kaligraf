@@ -90,11 +90,9 @@ class Gradient extends Tool
     
     onGradient: (action, state) =>
         
-        if action == 'changed' and not state.name
+        if action == 'changed'
             @state.stops = _.cloneDeep state.stops
             @setState @state
-            log 'postStops', @state.stops
-            @postGradient stops:@state.stops
                 
     #  0000000  000000000   0000000   000000000  00000000  
     # 000          000     000   000     000     000       

@@ -5,6 +5,7 @@
 # 000   000  000   000  000   000  000   000  000  000       000  0000     000     000       000   000  000     000   
 #  0000000   000   000  000   000  0000000    000  00000000  000   000     000     00000000  0000000    000     000   
 
+{ log } = require 'kxk'
 { gradientState } = require '../utils'
 
 Tool         = require './tool'
@@ -29,6 +30,7 @@ class GradientEdit extends Tool
         @gradientItem = new GradientItem @kali
         @gradientItem.name = cfg.name
         @element.style.width = "#{WIDTH}px"
+        @element.style.overflow = 'visible'
         
         @element.appendChild @gradientItem.element
 
@@ -50,7 +52,7 @@ class GradientEdit extends Tool
     # 000          000     000       000  0000     000          000
     # 00000000      0      00000000  000   000     000     0000000
 
-    onMouseEnter: => @addHalo()
+    onMouseEnter: => @addHalo() 
     
     onMouseLeave: => 
         @delHalo()

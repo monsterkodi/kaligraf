@@ -53,7 +53,7 @@ class Spin
         step = spin.step[0]
         
         spin.wheel ?= 0
-        spin.wheel = spin.wheel + delta * 0.01
+        spin.wheel = spin.wheel + delta * (spin.speed ? 1) * 0.01
 
         if Math.abs(spin.wheel) >= step
             if delta > 0

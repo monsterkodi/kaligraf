@@ -5,9 +5,11 @@
 # 000        000 000   000        000   000  000   000     000     000       000   000
 # 00000000  000   000  000         0000000   000   000     000     00000000  000   000
 
-{ empty, resolve, fs, fileExists, log, _ } = require 'kxk'
+{ elem, empty, resolve, path, fs, fileExists, log, _ } = require 'kxk'
 
 { bboxForItems, growBox, uuid, itemGradient } = require './utils'
+
+sharp = require 'sharp'
 
 class Exporter
 
@@ -19,7 +21,7 @@ class Exporter
     
     @svg: (root, opt) ->
         
-        padding = not opt.padding? and 10 or opt.padding
+        padding = not opt?.padding? and 10 or opt.padding
         bb = growBox new SVG.BBox(opt?.viewbox ? root.bbox()), padding
 
         svgStr = """
@@ -71,12 +73,12 @@ class Exporter
     @save: (svg, opt) ->
         
         @cleanGradients svg
-        fs.writeFileSync resolve(opt.file), @svg svg, opt
+        fs.writeFileSync resolve(opt.file), @svg(svg, opt), encoding: 'utf8'
 
     @saveSVG: (name, svg) ->
         
         @cleanGradients svg
-        fs.writeFileSync @svgFile(name), @svg svg, encoding: 'utf8'
+        fs.writeFileSync @svgFile(name), @svg(svg), encoding: 'utf8'
 
     @hasSVG: (name) -> fileExists @svgFile name
                 
@@ -89,6 +91,33 @@ class Exporter
         null
 
     @svgFile: (name) -> "#{__dirname}/../svg/#{name}.svg"
+    
+    @export: (root, file, opt) ->
+        
+        svg = @svg root
+
+        if path.extname(file) == '.svg'
+            fs.writeFileSync file, svg, encoding: 'utf8'
+        else
+            padding = not opt?.padding? and 10 or opt.padding
+            bb = new SVG.BBox(opt?.viewbox ? root.bbox())
+            gb = growBox new SVG.BBox(bb), padding
+            canvas = elem 'canvas'
+            canvas.width  = gb.width
+            canvas.height = gb.height
+            document.body.appendChild canvas
+            ctx = canvas.getContext '2d'
+            url = window.URL.createObjectURL new Blob [svg], type: 'image/svg+xml;charset=utf-8'
+            img = new Image()           
+            img.onload = -> 
+                ctx.drawImage img, (gb.width-bb.width)/2, (gb.height-bb.height)/2, bb.width, bb.height
+                imgData = canvas.toDataURL 'image/png' 
+                data = new Buffer imgData.slice(imgData.indexOf(',')+1), 'base64'
+                fs.writeFile file, data, encoding:null, (err) -> 
+                    log err if err?
+                    window.URL.revokeObjectURL url
+                    canvas.remove()
+            img.src = url
     
     #  0000000  000      00000000   0000000   000   000  
     # 000       000      000       000   000  0000  000  

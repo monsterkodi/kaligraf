@@ -562,11 +562,11 @@ class Stage
         opts =         
             title:          'Export'
             defaultPath:    @currentFile
-            filters:        [ {name: 'SVG', extensions: ['svg']} ]
+            filters:        [ {name: 'SVG,Image', extensions: ['svg', 'png', 'webp', 'jpg']} ]
         
         dialog.showSaveDialog opts, (file) => 
             if file?
-                fs.writeFileSync file, @copy(), encoding: 'utf8'
+                Exporter.export @svg, file, padding:@kali.tool('padding').percent
                 
     #  0000000   0000000   00000000   000   000
     # 000       000   000  000   000   000 000

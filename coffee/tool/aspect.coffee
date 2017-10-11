@@ -17,8 +17,8 @@ class Aspect extends Tool
         
         super @kali, cfg
         
-        @ratio  = prefs.get 'aspect:ratio',  1
-        @locked = prefs.get 'aspect:locked', false
+        @ratio  = 1
+        @locked = false
         
         post.on 'stage', @onStage
         post.on 'undo',  @onUndo
@@ -38,15 +38,14 @@ class Aspect extends Tool
             
         @initButtons [
             name:   'lock'
-            tiny:   'aspect-lock'
+            tiny:   ['aspect-lock', 'aspect-locked']
             toggle: @locked
             action: @onLock
         ]
         
-    onLock: =>
+    onLock: => 
         
         @locked = @button('lock').toggle
-        prefs.set 'aspect:locked', @locked
         @update()
         
     # 00000000    0000000   000000000  000   0000000   
@@ -58,7 +57,7 @@ class Aspect extends Tool
     updateRatio: ->
         
         return if @locked
-        paddingBox = @stage.paddingViewBox()
+        paddingBox = @stage.paddingBox()
         @setRatio paddingBox.height and paddingBox.width/paddingBox.height or 0
         
     setRatio: (@ratio) => @setSpinValue 'ratio', @ratio
@@ -67,7 +66,6 @@ class Aspect extends Tool
         
         aspect = @getSpin 'ratio' 
         @ratio = aspect.value
-        prefs.set 'aspect:ratio', @ratio
         aspect.value = @ratio
         post.emit 'aspect', ratio:@ratio, locked:@locked
     
@@ -78,12 +76,22 @@ class Aspect extends Tool
     # 0000000      000     000   000   0000000   00000000  
 
     onUndo: (info) =>
+        
         if info.action == 'done' 
             @updateRatio()
     
     onStage: (action, info) =>
-        switch action
-            when 'viewbox', 'load' 
-                @updateRatio()
+        
+        if action == 'load' and info.viewbox
+            
+            box = @stage.layerBox()
+            growBox box, @kali.tool('padding').percent
+           
+            diffX = Math.abs(info.viewbox.width  - box.width)/box.width
+            diffY = Math.abs(info.viewbox.height - box.height)/box.height
+            @locked = diffX > 0.02 or diffY > 0.02
+            # log 'aspect.load', @locked, diffX, diffY
+            @setToggle 'lock', @locked
+            @setRatio info.viewbox.width / info.viewbox.height
                 
 module.exports = Aspect

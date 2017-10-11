@@ -400,8 +400,6 @@ class Stage
     
                 svg = SVG.adopt elemChild
                 
-                # log svg.viewbox()
-                
                 if svg? and svg.children().length
     
                     @do() if not opt?.nodo
@@ -534,7 +532,7 @@ class Stage
         post.emit 'stage', 'willSave', file:@currentFile
             
         padding = @kali.tool('padding').percent
-        Exporter.save @svg, file:@currentFile, color:@color, alpha:@alpha, padding:padding
+        Exporter.save @svg, file:@currentFile, color:@color, alpha:@alpha, box:@paddingBox()
                 
         post.emit 'stage', 'save', file:@currentFile
                         

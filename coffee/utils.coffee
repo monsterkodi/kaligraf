@@ -170,7 +170,6 @@ module.exports =
         
     setBox: (box, key, value) ->
         
-        log key, value, box.x, box.y
         switch key
             when 'width'
                 box.w  = box.width = value
@@ -180,7 +179,6 @@ module.exports =
                 box.h  = box.height = value
                 box.y  = box.cy - box.h/2
                 box.y2 = box.cy + box.h/2
-        log box.x, box.y
         
     #  0000000   00000000    0000000   000   000  
     # 000        000   000  000   000  000 0 000  

@@ -167,9 +167,6 @@ class Layer extends Tool
                     log "Layer.loadLayers -- moving item of type #{item.type} into new layer"
                     newLayer.add item
 
-        layerIDs = @items().map (item) -> item.id()
-        # log 'Layer.loadLayers', layerIDs
-
         layerIDs = []
 
         for item in @items()
@@ -182,7 +179,7 @@ class Layer extends Tool
 
             transform = item.transform()
             if not _.isEqual transform.matrix, new SVG.Matrix()
-                log 'Layer.loadLayers top level layer with transform?', transform
+                log 'Layer.loadLayers -- top level layer with transform?', transform
 
         layerIDs = @items().map (item) -> item.id()
         @log 'Layer.loadLayers', layerIDs
@@ -192,8 +189,6 @@ class Layer extends Tool
             @layers.push SVG.get id
             @applyLayerState @layers.length-1, 'hidden'
             @applyLayerState @layers.length-1, 'disabled'
-
-        # @layerIndex = @numLayers()-1
 
     numLayers: -> @getLayers().length
     layerAt:    (index) -> @getLayers()[@clampLayer index]

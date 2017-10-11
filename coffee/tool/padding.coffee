@@ -147,12 +147,9 @@ class Padding extends Tool
         if aspect.locked
             paddingRatio = box.width / box.height
             if paddingRatio > aspect.ratio
-                log 'height', box.width / aspect.ratio
                 setBox box, 'height', box.width / aspect.ratio
             else 
-                log 'width', box.height * aspect.ratio
                 setBox box, 'width', box.height * aspect.ratio
-        
         box
         
     paddingViewBox: ->

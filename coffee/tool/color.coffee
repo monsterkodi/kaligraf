@@ -194,7 +194,7 @@ class Color extends Tool
         post.emit 'palette', 'proxy', @
         
         if @gradient
-            @showPalette()
+            @showChildren()
 
         if @name == 'fill'
 
@@ -236,10 +236,9 @@ class Color extends Tool
         if @name == 'stroke'
             @kali.tools.temp = @
 
-        if not @kali.palette.proxy
-            post.emit 'palette', 'proxy', @
+        log "#{@name}.onMouseEnter", @gradient
             
-        @showPalette()
+        @showChildren()
 
     #  0000000  000   000   0000000   000   000  
     # 000       000   000  000   000  000 0 000  
@@ -247,7 +246,15 @@ class Color extends Tool
     #      000  000   000  000   000  000   000  
     # 0000000   000   000   0000000   00     00  
     
-    showPalette: -> 
+    childrenVisible: -> 
+        
+        if @gradient then @kali.gradientEdit?.isVisible() else @kali.palette?.isVisible()
+    
+    toggleChildren: -> 
+
+        if @childrenVisible() then @hideChildren() else @showChildren()
+
+    showChildren: -> 
         
         @kali.gradientEdit?.del()
         delete @kali.gradientEdit
@@ -262,36 +269,21 @@ class Color extends Tool
             @kali.gradientEdit = new GradientEdit @kali
             @kali.gradientEdit.setPos childPos
             @kali.gradientEdit.setGradient itemGradient color.top, 'fill'
+            
         else
+            post.emit 'palette', 'proxy', @
             post.emit 'palette', 'show', childPos
+    
+    hideChildren: -> 
         
-    hidePalette: ->
+        @delHalo()
         
         if @gradient
             @kali.gradientEdit?.del()
             delete @kali.gradientEdit
         else
             post.emit 'palette', 'hide'
-            
-    childrenVisible: -> 
         
-        if @gradient
-            @kali.gradientEdit?.isVisible()
-        else
-            @kali.palette.isVisible()
-    
-    toggleChildren: -> 
-
-        if @kali.palette.isVisible()
-            @hideChildren()
-        else
-            @showPalette()
-
-    showChildren: -> @showPalette()
-    hideChildren: -> 
-        
-        @delHalo()
-        @hidePalette()
                 
     # 000   000  00000000   0000000     0000000   000000000  00000000
     # 000   000  000   000  000   000  000   000     000     000
@@ -301,18 +293,22 @@ class Color extends Tool
 
     update: ->
     
+        visible = @childrenVisible()
+        @hideChildren() if visible
+        
         @gradient = _.isString(@color) and @color.startsWith 'url'
         
         if @gradient
             @top.attr height:'100%'
             @bot.attr height:'0'
             @top.style fill: @color
-            if @childrenVisible() then @showPalette()
         else
             @top.attr height:'50%'
             @bot.attr height:'50%'
             @top.style fill: @color
             @bot.style fill: @color, 'fill-opacity': @alpha
+            
+        @showChildren() if visible
         
     #  0000000  000000000   0000000    0000000   00000000  
     # 000          000     000   000  000        000       

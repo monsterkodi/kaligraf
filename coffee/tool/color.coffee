@@ -35,7 +35,7 @@ class Color extends Tool
         @top.addClass 'trans'
         @sqr.addClass 'trans'
 
-        @copy prefs.get @name, luminance:0.5, color:'#fff', alpha:1, value:2/3, mode:'rgb'
+        @copy prefs.get @name, color:'#fff', alpha:1
 
         post.on 'palette',   @onPalette
         post.on 'selection', @onSelection
@@ -87,14 +87,15 @@ class Color extends Tool
                 @update()
             
         else if numColors == 0 and not empty gradients
+            
             gradients = gradients.filter (g) -> not empty g
             states = gradients.map (g) -> s = gradientState g; s.id = g.id(); s
             states = _.uniqWith states, (a,b) -> _.isEqual a.stops, b.stops
             if states.length == 1
-                # log states
                 @alpha = 1
                 @color = "url(\"##{first(states).id}\")"
                 @gradient = true
+                log "#{@name}.onSelection", @color
                 @update()
         
     # 00000000    0000000   000      00000000  000000000  000000000  00000000
@@ -120,13 +121,10 @@ class Color extends Tool
 
     copy: (v) ->
 
-        @color     = new SVG.Color v.color if v.color?
-        @luminance = v.luminance if v.luminance?
-        @alpha     = v.alpha     if v.alpha?
-        @value     = v.value     if v.value?
-        @mode      = v.mode      if v.mode?
+        @color = new SVG.Color v.color if v.color?
+        @alpha = v.alpha     if v.alpha?
 
-        prefs.set @name, luminance:@luminance, color:@color.toHex(), alpha:@alpha, value:@value, mode:@mode
+        prefs.set @name, color:@color.toHex(), alpha:@alpha
 
         @update()
 
@@ -256,21 +254,19 @@ class Color extends Tool
 
     showChildren: -> 
         
-        @kali.gradientEdit?.del()
-        delete @kali.gradientEdit
+        @hideChildren()
         
         childPos = pos(@kali.toolSize,0).plus @kali.tools.stroke.pos()
         
         if @gradient
             
-            color = @kali.tool @kali.palette.proxy 
-            if not color?
-                log 'dafuk?', @kali.palette.proxy
-            @kali.gradientEdit = new GradientEdit @kali
+            gradient = itemGradient @top, 'fill' #<- must be fill!
+            @kali.gradientEdit = new GradientEdit @kali, name:@name
             @kali.gradientEdit.setPos childPos
-            @kali.gradientEdit.setGradient itemGradient color.top, 'fill'
+            @kali.gradientEdit.setGradient gradient
             
         else
+            
             post.emit 'palette', 'proxy', @
             post.emit 'palette', 'show', childPos
     
@@ -278,12 +274,10 @@ class Color extends Tool
         
         @delHalo()
         
-        if @gradient
-            @kali.gradientEdit?.del()
-            delete @kali.gradientEdit
-        else
-            post.emit 'palette', 'hide'
-        
+        @kali.gradientEdit?.del()
+        delete @kali.gradientEdit
+
+        post.emit 'palette', 'hide'
                 
     # 000   000  00000000   0000000     0000000   000000000  00000000
     # 000   000  000   000  000   000  000   000     000     000

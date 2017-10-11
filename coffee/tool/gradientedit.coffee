@@ -27,7 +27,7 @@ class GradientEdit extends Tool
         super @kali, cfg
 
         @gradientItem = new GradientItem @kali
-        @gradientItem.setActive()
+        @gradientItem.name = cfg.name
         @element.style.width = "#{WIDTH}px"
         
         @element.appendChild @gradientItem.element
@@ -42,6 +42,7 @@ class GradientEdit extends Tool
         state = gradientState gradient
         state.type = 'linear'
         @gradientItem.setGradient state
+        @gradientItem.setActive()
 
     # 00000000  000   000  00000000  000   000  000000000   0000000
     # 000       000   000  000       0000  000     000     000

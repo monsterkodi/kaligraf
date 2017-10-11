@@ -29,8 +29,6 @@ class Gradient extends Tool
             
         @state.spread ?= 'pad'
         
-        log 'Gradient.constructor', @state
-            
         @initButtons [
             name: 'none'
             tiny: 'gradient-none'
@@ -92,9 +90,10 @@ class Gradient extends Tool
     
     onGradient: (action, state) =>
         
-        if action == 'changed'
-            @state.stops = _.cloneDeep state.stops 
+        if action == 'changed' and not state.name
+            @state.stops = _.cloneDeep state.stops
             @setState @state
+            log 'postStops', @state.stops
             @postGradient stops:@state.stops
                 
     #  0000000  000000000   0000000   000000000  00000000  

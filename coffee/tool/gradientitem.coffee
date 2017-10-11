@@ -30,19 +30,7 @@ class GradientItem
         @grd = @svg.rect()
         @grd.width  100
         @grd.height 25
-        
-        @setGradient 
-            type: 'linear'
-            stops: [
-                offset:  0.0
-                color:   @kali.tool('stroke').color
-                opacity: @kali.tool('stroke').alpha
-            ,
-                offset:  1.0
-                color:   @kali.tool('fill').color
-                opacity: @kali.tool('fill').alpha
-            ]
-        
+                
     del: ->
         
         @svg.clear()
@@ -299,7 +287,7 @@ class GradientItem
     #  0000000   000        0000000    000   000     000     00000000  
             
     updateStops: ->
-        
+                
         for stop in @stops()
             rct = @stp.children()[stop.index]
             rct.cx stop.offset * 100
@@ -331,6 +319,7 @@ class GradientItem
     
     state: -> 
         
+        name: @name
         type: @gradient.type
         stops: @stops()
                 

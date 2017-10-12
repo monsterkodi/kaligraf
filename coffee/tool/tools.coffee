@@ -137,10 +137,15 @@ class Tools extends Tool
             ]
             [
                 { class: 'undo'  }
-                { class: 'layer'   }
+                { class: 'layer' }
             ]
             [
-                { class: 'group' }
+                { class: 'group'   }
+                { class: 'mask'    }
+                { class: 'clip'    }
+                { class: 'pattern' }
+            ]
+            [
                 { class: 'order' }
                 { class: 'send'  }
                 { class: 'flip'  }                

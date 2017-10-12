@@ -7,7 +7,7 @@
 
 { pos, log, _ } = require 'kxk'
 
-{ normRect, boxCenter, boxOffset, rectWidth, rectHeight, rectCenter, rectOffset, itemMatrix } = require './utils'
+{ normRect, boxCenter, boxOffset, boxPos, rectWidth, rectHeight, rectCenter, rectOffset, itemMatrix, itemBox } = require './utils'
 
 class Trans
 
@@ -126,7 +126,7 @@ class Trans
         
     getRect: (item) ->
         
-        item.bbox().transform itemMatrix item
+        itemBox(item).transform itemMatrix item
     
     #  0000000  00000000  000   000  000000000  00000000  00000000   
     # 000       000       0000  000     000     000       000   000  
@@ -139,12 +139,18 @@ class Trans
         switch item.type
             when 'circle', 'ellipse'
                 item.transform x:c.x, y:c.y
+            when 'mask'
+                bb = @getRect item
+                delta = boxCenter(bb).to c
+                delta = @inverse item, delta
+                for child in item.children()
+                    child.transform x:delta.x, y:delta.y, relative:true
             else
                 scale = @scale item
                 bb = item.bbox().transform new SVG.Matrix().scale(scale.x, scale.y).rotate(@rotation item)
                 item.transform x:c.x-bb.cx, y:c.y-bb.cy
         
-    getCenter: (item) -> @transform item, boxCenter item.bbox()
+    getCenter: (item) -> @transform item, boxCenter itemBox item
         
     # 00000000    0000000    0000000  
     # 000   000  000   000  000       
@@ -159,12 +165,18 @@ class Trans
         switch item.type
             when 'circle', 'ellipse'
                 item.transform x:c.x+bb.width/2, y:c.y+bb.height/2
+            when 'mask'
+                bb = itemBox item
+                delta = boxPos(bb).to c
+                for child in item.children()
+                    child.transform x:delta.x, y:delta.y, relative:true                
             else
                 item.transform x:c.x-bb.x, y:c.y-bb.y
         
     getPos: (item) -> 
     
-        @transform item, boxOffset item.bbox()
+        # @transform item, boxOffset item.bbox()
+        @transform item, boxOffset itemBox item
        
     #  0000000  000  0000000  00000000    
     # 000       000     000   000         

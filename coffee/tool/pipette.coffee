@@ -30,13 +30,15 @@ class Pipette extends Tool
 
         if item?
             
-            @tools.fill.color = item.style 'fill' 
-            @tools.fill.alpha = item.style 'fill-opacity' 
-            @tools.fill.update()
+            post.emit 'color', 'stroke', color:item.style('stroke'), item.style('stroke-opacity')
+            post.emit 'color', 'fill',   color:item.style('fill'),   item.style('fill-opacity')
+            # @tools.fill.color = item.style 'fill' 
+            # @tools.fill.alpha = item.style 'fill-opacity' 
+            # @tools.fill.update()
             
-            @tools.stroke.color = item.style 'stroke' 
-            @tools.stroke.alpha = item.style 'stroke-opacity' 
-            @tools.stroke.update()
+            # @tools.stroke.color = item.style 'stroke' 
+            # @tools.stroke.alpha = item.style 'stroke-opacity' 
+            # @tools.stroke.update()
             
             @tools.width.setWidth item.style 'stroke-width' 
             

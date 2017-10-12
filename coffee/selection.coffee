@@ -8,7 +8,7 @@
 { prefs, setStyle, last, elem, post, pos, log, _ } = require 'kxk'
 
 {   contrastColor, moveBox, scaleBox, boxOffset, boxForItems,
-    normRect, rectsIntersect, rectOffset} = require './utils'
+    normRect, rectsIntersect, rectOffset, itemBox } = require './utils'
 
 class Selection
 
@@ -174,7 +174,7 @@ class Selection
             
     updateItemRect: (item) ->
         
-        box = item.bbox()
+        box = itemBox item
 
         if r = item.remember 'itemRectWhite' 
             
@@ -234,7 +234,7 @@ class Selection
         
         if @ids
             
-            box = item.bbox()
+            box = itemBox item
             
             if not idRect = item.remember 'itemIDRect'    
                 idRect = @ids.rect 0,0

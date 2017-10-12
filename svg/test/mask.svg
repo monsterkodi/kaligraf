@@ -1,0 +1,11 @@
+<svg width="100%" height="100%"
+version="1.1"
+xmlns="http://www.w3.org/2000/svg" 
+xmlns:xlink="http://www.w3.org/1999/xlink"
+xmlns:svgjs="http://svgjs.com/svgjs"
+style="stroke-linecap: round; stroke-linejoin: round;background: rgba(148, 148, 148, 0.494);"
+viewBox="14.61361312866211 70.50428009033203 337.272403717041 112.46260833740234">
+<defs id="SvgjsDefs1171"><linearGradient id="SvgjsLinearGradient9245" x1="0" y1="0" x2="0.5" y2="0" spreadMethod="reflect"><stop id="SvgjsStop9246" stop-opacity="1" stop-color="#000000" offset="0"></stop><stop id="SvgjsStop9247" stop-opacity="1" stop-color="#ffffff" offset="1"></stop></linearGradient><radialGradient id="SvgjsRadialGradient9427" spreadMethod="reflect" r="0.3" fx="0.5" fy="0.5" cx="0.5" cy="0.5"><stop id="SvgjsStop9428" stop-opacity="1" stop-color="#000000" offset="0"></stop><stop id="SvgjsStop9429" stop-opacity="1" stop-color="#ffffff" offset="1"></stop></radialGradient></defs>
+<rect id="R-a4-4f3307" width="112.46259307861328" height="112.46259307861328" style="stroke: rgb(0, 0, 0); fill: url(&quot;#SvgjsRadialGradient9427&quot;); fill-opacity: 1;" data-fill="#56577f" transform="matrix(1,0,0,1,14.613613128662166,70.50428771972656)"></rect>
+<rect id="R-69-55ffff" width="112.46259307861328" height="112.46259307861328" style="stroke: rgb(0, 0, 0); fill: url(&quot;#SvgjsLinearGradient9245&quot;); fill-opacity: 1;" data-fill="#56577f" transform="matrix(1,0,0,1,239.42343139648432,70.50428771972656)"></rect>
+<rect id="R-5c-f7998c" width="112.46259307861328" height="112.46259307861328" style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" transform="matrix(1,0,0,1,127.28849792480469,70.504280090332)"></rect></svg>

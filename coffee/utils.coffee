@@ -168,6 +168,21 @@ module.exports =
         x2:     cr.left+cr.width
         y2:     cr.top+cr.height
         
+    itemBox: (item) ->
+        
+        if item.type in ['mask', 'clipPath']
+            g = item.doc().group()
+            for child in item.children()
+                clone = child.clone()
+                g.add clone
+            box = g.bbox()
+            g.remove()
+            box
+        else
+            item.bbox()
+      
+    emptyBox: (box) -> box.width == 0 and box.height == 0
+                
     setBox: (box, key, value) ->
         
         switch key

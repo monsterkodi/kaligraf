@@ -36,14 +36,21 @@ class Line extends Tool
         return if empty items
         
         width = 0
+        count = 0
         for item in items
-            width += parseFloat item.style 'stroke-width'
-                    
-        @setSpinValue 'width', width/items.length
+            stroke = parseFloat item.style 'stroke-width'
+            if not _.isNaN stroke
+                width += stroke
+                count++
+                
+        if count
+            log 'onSelection', width, count, width/count
+            @setSpinValue 'width', width/count
         
     setWidth: (@width) =>
         
         @width = 0 if _.isNaN @width
+        log 'setWidth', @width
         prefs.set 'line:width', @width
         
         items = @stage.selectedLeafItems()

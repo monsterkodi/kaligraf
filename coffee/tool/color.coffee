@@ -8,7 +8,7 @@
 { empty, elem, stopEvent, post, prefs, clamp, first, pos, log, $, _ } = require 'kxk'
 
 {   itemIDs, itemGradient, colorGradient, grayGradient, gradientState, checkersPattern,
-    cloneGradient, gradientUrl, urlGradient } = require '../utils'
+    cloneGradient, gradientUrl, urlGradient, setGradientStops } = require '../utils'
 
 Tool         = require './tool'
 Palette      = require './palette'
@@ -110,8 +110,9 @@ class Color extends Tool
             states = gradients.map (g) -> s = gradientState g; s.id = g.id(); s
             states = _.uniqWith states, (a,b) -> _.isEqual a.stops, b.stops
             if states.length == 1
+                state = first states 
                 @alpha = 1
-                @color = "url(\"##{first(states).id}\")"
+                @color = "url(\"##{state.id}\")"
                 @gradient = true
                 @update()
         
@@ -208,8 +209,6 @@ class Color extends Tool
             return
 
         @kali.activeColor = @name   
-        @kali.tool('select').setToggle 'fill',   @name == 'fill'
-        @kali.tool('select').setToggle 'stroke', @name == 'stroke'
         @kali.tool('select').clickButton @name
         
         @showChildren()
@@ -323,7 +322,11 @@ class Color extends Tool
 
     updateGradient: ->
         
-        gradient = cloneGradient urlGradient(@color), @svg
+        state = gradientState urlGradient @color
+        state.type = 'linear'
+        gradient = @svg.gradient state.type
+        setGradientStops gradient, state.stops
+        
         @top.attr height:'100%'
         @bot.attr height:'0'
         @top.style fill: gradientUrl gradient

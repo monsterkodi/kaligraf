@@ -92,7 +92,7 @@ class Clip extends Tool
             
             clipItems    = @filterItems sortedItems, type:'clipPath'
             noClipItems  = @filterItems sortedItems, noType:'clipPath'
-            clippedItems = noClipItems.filter (item) -> item.clipper?
+            clippedItems = noClipItems.filter (item) -> item.clipper? or item.attr 'clipPath' 
             
             if valid clippedItems
                 

@@ -94,8 +94,8 @@ class Mask extends Tool
 
             maskItems   = @filterItems sortedItems, type:'mask'
             noMaskItems = @filterItems sortedItems, noType:'mask'
-            maskedItems = noMaskItems.filter (item) -> item.masker?
-            
+            maskedItems = noMaskItems.filter (item) -> item.masker? or item.attr 'mask'
+
             if valid maskedItems
                 
                 for item in maskedItems

@@ -147,7 +147,7 @@ class Trans
                     child.transform x:delta.x, y:delta.y, relative:true
             else
                 scale = @scale item
-                bb = item.bbox().transform new SVG.Matrix().scale(scale.x, scale.y).rotate(@rotation item)
+                bb = itemBox(item).transform new SVG.Matrix().scale(scale.x, scale.y).rotate(@rotation item)
                 item.transform x:c.x-bb.cx, y:c.y-bb.cy
         
     getCenter: (item) -> @transform item, boxCenter itemBox item

@@ -167,7 +167,6 @@ class Show extends Tool
                 x:      box.x+o
                 y:      box.y+o
                
-            # @log 'Show.updateGroup', group.id(), rect
             @trans.follow rect, group
     
 module.exports = Show

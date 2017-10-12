@@ -38,7 +38,7 @@ class Edit
         @svg.addClass 'editDots'
         @svg.viewbox @stage.svg.viewbox()
 
-        @dotSize = @passive and 5 or 10
+        @dotSize = @passive and 4 or 8
         @objects = []
         
         @dotsel = new DotSel @

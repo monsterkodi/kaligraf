@@ -101,6 +101,9 @@ class Menu
                 { label: 'Group',       accelerator: 'command+g',           click: -> action 'group'}
                 { label: 'Ungroup',     accelerator: 'command+u',           click: -> action 'ungroup'}
                 { type:  'separator'}
+                { label: 'Mask',        accelerator: 'm',                   click: -> button 'mask', 'mask'}
+                { label: 'Unmask',      accelerator: 'command+m',           click: -> button 'mask', 'unmask'}
+                { type:  'separator'}
                 { label: 'Cut',         accelerator: 'command+x',           click: -> action 'cut'}
                 { label: 'Copy',        accelerator: 'command+c',           click: -> action 'copy'}
                 { label: 'Paste',       accelerator: 'command+v',           click: -> action 'paste'}

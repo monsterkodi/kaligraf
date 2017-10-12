@@ -7,7 +7,7 @@
 
 { elem, prefs, empty, clamp, post, log, _ } = require 'kxk'
 
-{ itemIDs, growBox, boxOffset, bboxForItems, scaleBox, moveBox } = require '../utils'
+{ itemIDs, growBox, boxOffset, scaleBox, moveBox } = require '../utils'
 
 Tool = require './tool'
 

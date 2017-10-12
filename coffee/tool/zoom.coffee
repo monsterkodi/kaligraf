@@ -7,7 +7,7 @@
 
 { clamp, elem, empty, post, pos, log, _ } = require 'kxk'
 
-{ boxForItems, bboxForItems, boxCenter, moveBox, zoomBox, scaleBox } = require '../utils'
+{ rboxForItems, bboxForItems, boxCenter, moveBox, zoomBox, scaleBox } = require '../utils'
 
 Tool = require './tool'
 
@@ -129,7 +129,7 @@ class Zoom extends Tool
         lv = list?.isVisible()
         lw = lv and list.element.getBoundingClientRect().width or 0
         
-        b = boxForItems items, @viewPos()
+        b = rboxForItems items, @viewPos()
         v = @viewSize()
         v.x -= 60 + lw
         w = (b.w / @zoom) /  v.x

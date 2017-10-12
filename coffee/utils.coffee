@@ -66,7 +66,7 @@ module.exports =
     
     insideBox: (p, box) -> box.x <= p.x <= box.x2 and box.y <= p.y <= box.y2
     
-    boxForItems: (items, offset={x:0,y:0}) ->
+    rboxForItems: (items, offset={x:0,y:0}) ->
         
         if empty items
             return new SVG.RBox() 
@@ -86,7 +86,8 @@ module.exports =
             
         bb = null
         for item in items
-            b = item.bbox()
+            # b = item.bbox()
+            b = module.exports.itemBox item
             continue if b.width == 0 == b.height 
             b = b.transform module.exports.itemMatrix item
             bb ?= b
@@ -96,6 +97,19 @@ module.exports =
             module.exports.moveBox bb, pos -offset.x, -offset.y
         else
             new SVG.BBox()
+
+    itemBox: (item) ->
+        
+        if item.type in ['mask', 'clipPath']
+            g = item.doc().group()
+            for child in item.children()
+                clone = child.clone()
+                g.add clone
+            box = g.bbox()
+            g.remove()
+            box
+        else
+            item.bbox()            
             
     boxCenter: (box) -> pos box.x + box.width/2, box.y + box.height/2
     boxOffset: (box) -> pos box.x, box.y
@@ -167,20 +181,7 @@ module.exports =
         cy:     cr.top+cr.height/2
         x2:     cr.left+cr.width
         y2:     cr.top+cr.height
-        
-    itemBox: (item) ->
-        
-        if item.type in ['mask', 'clipPath']
-            g = item.doc().group()
-            for child in item.children()
-                clone = child.clone()
-                g.add clone
-            box = g.bbox()
-            g.remove()
-            box
-        else
-            item.bbox()
-      
+              
     emptyBox: (box) -> box.width == 0 and box.height == 0
                 
     setBox: (box, key, value) ->

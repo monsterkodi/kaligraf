@@ -143,7 +143,7 @@ class Tools extends Tool
                 { class: 'group'   }
                 { class: 'mask'    }
                 { class: 'clip'    }
-                { class: 'pattern' }
+                # { class: 'pattern' }
             ]
             [
                 { class: 'order' }

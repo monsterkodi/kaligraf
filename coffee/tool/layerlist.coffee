@@ -7,7 +7,7 @@
 
 { stopEvent, drag, empty, setStyle, childIndex, prefs, keyinfo, elem, clamp, last, post, log, $, _ } = require 'kxk'
 
-{ bboxForItems, boundingBox, winTitle, highlightColor } = require '../utils'
+{ boundingBox, winTitle, highlightColor } = require '../utils'
 
 Exporter = require '../exporter'
 Shadow   = require '../shadow'

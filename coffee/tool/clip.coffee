@@ -90,16 +90,18 @@ class Clip extends Tool
             
             @do()
             
-            clipItems = @filterItems sortedItems, type:'clipPath'
-            noClipItems = @filterItems sortedItems, noType:'clipPath'
+            clipItems    = @filterItems sortedItems, type:'clipPath'
+            noClipItems  = @filterItems sortedItems, noType:'clipPath'
+            clippedItems = noClipItems.filter (item) -> item.clipper?
             
-            if valid noClipItems
+            if valid clippedItems
                 
-                for item in noClipItems
+                for item in clippedItems
                     
                     item.unclip()
                 
             else
+                
                 oldItems = _.clone @items()
                 
                 for clip in clipItems

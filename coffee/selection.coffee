@@ -7,7 +7,7 @@
 
 { prefs, setStyle, last, elem, post, pos, log, _ } = require 'kxk'
 
-{   contrastColor, moveBox, scaleBox, boxOffset, boxForItems,
+{   contrastColor, moveBox, scaleBox, boxOffset, 
     normRect, rectsIntersect, rectOffset, itemBox } = require './utils'
 
 class Selection

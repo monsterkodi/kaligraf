@@ -9,7 +9,7 @@
     first, last, empty, clamp, pos, fs, log, _ } = require 'kxk'
 
 {   contrastColor, normRect, bboxForItems, itemIDs, insideBox,
-    growBox, boxForItems, boxOffset, boxCenter, itemGradient, itemMatrix } = require './utils'
+    growBox, rboxForItems, boxOffset, boxCenter, itemGradient, itemMatrix } = require './utils'
 
 electron  = require 'electron'
 clipboard = electron.clipboard
@@ -659,7 +659,7 @@ class Stage
     viewCenter:  -> pos(0,0).mid @viewSize()
     stageCenter: -> boxCenter @svg.viewbox()
     stageOffset: -> boxOffset @svg.viewbox()
-    itemsCenter: -> @stageForEvent boxCenter boxForItems @items()
+    itemsCenter: -> @stageForEvent boxCenter rboxForItems @items()
 
     centerAtStagePos: (stagePos) -> @moveViewBox stagePos.minus @stageCenter()
     

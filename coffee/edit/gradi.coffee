@@ -159,7 +159,7 @@ class Gradi
         relPos.mul pos bb.width, bb.height
         relPos.add boxPos bb
         relPos.add @stage.viewPos().times -1
-        dotPos = @trans.transform @object.item, relPos
+        dotPos = @trans.fullTransform @object.item, relPos
         
         svg.cx dotPos.x
         svg.cy dotPos.y
@@ -246,8 +246,8 @@ class Gradi
         from = pos @dots['from'].cx(), @dots['from'].cy()
         to   = pos @dots['to'].cx(),   @dots['to'].cy()
         
-        from = @trans.inverse @object.item, from
-        to   = @trans.inverse @object.item, to
+        from = @trans.fullInverse @object.item, from
+        to   = @trans.fullInverse @object.item, to
         
         from.sub boxPos bb
         to.sub   boxPos bb
@@ -267,7 +267,7 @@ class Gradi
         if @type == 'radial'
             
             radius = pos @dots['radius'].cx(), @dots['radius'].cy()
-            radius = @trans.inverse @object.item, radius
+            radius = @trans.fullInverse @object.item, radius
             radius.sub boxPos bb
             radius.mul pos 1/w, 1/h
             @gradient.radius from.dist radius

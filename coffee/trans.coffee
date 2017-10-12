@@ -23,8 +23,11 @@ class Trans
     rotation: (item, a, c) -> if a? then @setRotation(item, a, c) else @getRotation item
     scale:    (item, s, c) -> if s? then @setScale(   item, s, c) else @getScale    item
 
-    transform: (item, p) -> pos new SVG.Point(p).transform itemMatrix(item)
-    inverse:   (item, p) -> pos new SVG.Point(p).transform itemMatrix(item).inverse()
+    fullTransform: (item, p) -> pos new SVG.Point(p).transform itemMatrix(item)
+    fullInverse:   (item, p) -> pos new SVG.Point(p).transform itemMatrix(item).inverse()
+
+    transform: (item, p) -> pos new SVG.Point(p).transform item.transform().matrix
+    inverse:   (item, p) -> pos new SVG.Point(p).transform item.transform().matrix.inverse()
     
     itemPosToView: (item, p) -> 
         pos new SVG.Point(p).transform itemMatrix item
@@ -142,7 +145,7 @@ class Trans
             when 'mask'
                 bb = @getRect item
                 delta = boxCenter(bb).to c
-                delta = @inverse item, delta
+                delta = @fullInverse item, delta
                 for child in item.children()
                     child.transform x:delta.x, y:delta.y, relative:true
             else
@@ -160,23 +163,19 @@ class Trans
     
     setPos: (item, c) -> 
         
-        bb = item.bbox()
+        bb = itemBox item
     
         switch item.type
             when 'circle', 'ellipse'
                 item.transform x:c.x+bb.width/2, y:c.y+bb.height/2
             when 'mask'
-                bb = itemBox item
                 delta = boxPos(bb).to c
                 for child in item.children()
                     child.transform x:delta.x, y:delta.y, relative:true                
             else
                 item.transform x:c.x-bb.x, y:c.y-bb.y
-        
-    getPos: (item) -> 
-    
-        # @transform item, boxOffset item.bbox()
-        @transform item, boxOffset itemBox item
+                
+    getPos: (item) -> @transform item, boxOffset itemBox item
        
     #  0000000  000  0000000  00000000    
     # 000       000     000   000         

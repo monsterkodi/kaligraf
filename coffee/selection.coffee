@@ -7,7 +7,7 @@
 
 { prefs, setStyle, last, elem, post, pos, log, _ } = require 'kxk'
 
-{   contrastColor, moveBox, scaleBox, boxOffset, 
+{   contrastColor, moveBox, scaleBox, boxOffset, bboxForItems,
     normRect, rectsIntersect, rectOffset, itemBox } = require './utils'
 
 class Selection
@@ -315,7 +315,7 @@ class Selection
     # 000   000   0000000       0      00000000  
     
     moveBy: (delta) ->
-        log 'selection moveBy', delta
+        delta = @kali.tool('snap').itemsDelta @items, delta
         @stage.moveItems @items, delta
         @update()
             

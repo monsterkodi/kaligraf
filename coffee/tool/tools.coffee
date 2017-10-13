@@ -157,6 +157,7 @@ class Tools extends Tool
                 { class: 'aspect'  }
                 { class: 'zoom'    }
                 { class: 'grid'    }
+                { class: 'snap'    }
                 { class: 'show'    }
             ]            
         ]

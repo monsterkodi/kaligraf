@@ -35,7 +35,7 @@ class Grid extends Tool
             action: @toggleGrid
         ]
         @initButtons [
-            text: 'contrast'
+            text: 'Strong'
             name: 'contrast'
             toggle: contrast
             action: @onContrast
@@ -82,20 +82,14 @@ class Grid extends Tool
         
         contrast = @button('contrast').toggle
         bright = colorBrightness @stage.color 
-        if bright > 0.5
-            colorStrong = '#000'
-        else
-            colorStrong = '#fff'
-            
-        if 0.5 <= bright <= 0.75
-            colorWeak = '#555'
-        else if 0.25 <= bright <= 0.5
-            colorWeak = '#aaa'
-        else
-            colorWeak = '#888'
-            
-        log 'colors', colorStrong, colorWeak
         
+        if bright > 0.5 then colorStrong = '#000' 
+        else                 colorStrong = '#fff'
+            
+        if       0.5 <= bright <= 0.75 then colorWeak = '#555'
+        else if 0.25 <= bright <= 0.5  then colorWeak = '#aaa'
+        else                                colorWeak = '#888'
+            
         draw = (s, a) =>
 
             ox = vx % s

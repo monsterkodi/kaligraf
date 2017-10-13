@@ -44,7 +44,6 @@ class Line extends Tool
                 count++
                 
         if count
-            log 'onSelection', width, count, width/count
             @setSpinValue 'width', width/count
         
     setWidth: (@width) =>

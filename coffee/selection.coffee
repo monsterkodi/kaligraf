@@ -242,7 +242,7 @@ class Selection
                 item.remember 'itemIDRect', idRect
                 
             if not id = item.remember 'itemID'
-                id = @ids.text item.id()
+                id = @ids.text item.id().slice 0,4
                 id.addClass     'itemID'
                 id.style font:  'inherit'
                 item.remember   'itemID', id

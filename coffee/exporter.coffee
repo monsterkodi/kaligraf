@@ -7,7 +7,7 @@
 
 { elem, empty, resolve, path, fs, fileExists, log, _ } = require 'kxk'
 
-{ bboxForItems, growBox, uuid, itemGradient } = require './utils'
+{ bboxForItems, growBox, uuid, itemGradient, itemIDs } = require './utils'
 
 class Exporter
 
@@ -207,7 +207,7 @@ class Exporter
     @cleanIDs: (items) ->
 
         return if empty items
-        
+        # log 'Exporter.cleanIDs', itemIDs items, ' '
         ids = []
         for item in items
 

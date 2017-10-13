@@ -197,8 +197,9 @@ class Stage
         if item != @svg and item.type != 'defs' and item not in @getLayers()
             items = @filterItems [item], opt
 
-        for child in item.children?() ? []
-            items = items.concat @treeItems child, opt
+        if item.type != 'defs'
+            for child in item.children?() ? []
+                items = items.concat @treeItems child, opt
             
         items
 
@@ -442,7 +443,8 @@ class Stage
                     for item in items
                         parent.add item
                         
-                    Exporter.cleanIDs items
+                    # Exporter.cleanIDs items
+                    Exporter.cleanIDs @treeItems()
                     
                     if opt?.select != false
                         for item in items        

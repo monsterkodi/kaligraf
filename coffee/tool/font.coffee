@@ -161,8 +161,6 @@ class Font extends Tool
         
         textItems = @selectedTextItems()
         
-        log 'selectedTextItems', textItems.length
-        
         if not empty textItems
             @do()
             for item in textItems

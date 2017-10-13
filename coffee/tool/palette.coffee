@@ -7,7 +7,8 @@
 
 { elem, drag, stopEvent, post, clamp, log, $, _ } = require 'kxk'
 
-{ contrastColor, checkersPattern, colorDist, colorBrightness, colorGradient, grayGradient } = require '../utils'
+{   contrastColor, checkersPattern, colorDist, colorBrightness, 
+    colorGradient, grayGradient, gradientColor } = require '../utils'
 
 Tool = require './tool'
 
@@ -174,7 +175,7 @@ class Palette extends Tool
         minDist  = 255*3
         for i in [0..255]
             value = i/255
-            c = @gradientRGB.colorAt value
+            c = gradientColor(@gradientRGB, value).color
             dist = colorDist c, color
             if dist < minDist
                 minDist = dist
@@ -236,7 +237,7 @@ class Palette extends Tool
     updateValue: ->
         
         gradient = @mode == 'rgb' and @gradientRGB or @gradientGRY
-        @updateColor new SVG.Color gradient.colorAt @value        
+        @updateColor gradientColor(gradient, @value).color
             
     #  0000000   0000000   000       0000000   00000000
     # 000       000   000  000      000   000  000   000
@@ -266,7 +267,7 @@ class Palette extends Tool
 
         @gradientCOL = @svg.gradient 'linear', (stop) =>
             stop.at 0.0, "#000"
-            stop.at 0.5, colorGradient(@svg, 0.5).colorAt @value
+            stop.at 0.5, gradientColor(colorGradient(@svg, 0.5), @value).color.toHex()
             stop.at 1.0, "#fff"
 
         @col.attr fill: @gradientCOL

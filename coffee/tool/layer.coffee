@@ -232,8 +232,6 @@ class Layer extends Tool
 
     restoreLayers: (state) ->
 
-        # @layerIndex = state.layerIndex
-        log 'restoreLayers', state
         @activateLayer state.layerIndex
         layerIDs    = state.layers
         if not _.isEqual(layerIDs, @layers.map (layer) -> layer.id())

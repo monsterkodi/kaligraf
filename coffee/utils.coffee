@@ -4,7 +4,7 @@
 # 000   000     000     000  000           000    
 #  0000000      000     000  0000000  0000000     
 
-{ stopEvent, empty, clamp, elem, pos, log, _ } = require 'kxk'
+{ stopEvent, empty, last, clamp, elem, pos, log, _ } = require 'kxk'
 
 uuid = require 'uuid/v4'
     
@@ -305,6 +305,24 @@ module.exports =
                 index:   i
             i++
         stops
+        
+    gradientColor: (gradient, offset) ->
+        
+        stops = module.exports.gradientStops gradient
+        i = f = 0
+        if stops[0].offset >= offset
+            prev = next = stops[0]
+        else if stops[stops.length-1].offset <= offset
+            prev = next = last stops
+            i = stops.length
+        else
+            i++ while stops[i].offset <= offset
+            prev = stops[i-1]
+            next = stops[i]
+            f = (offset - prev.offset) / (next.offset - prev.offset)
+        color:   new SVG.Color(prev.color).morph(new SVG.Color(next.color)).at(f)
+        opacity: prev.opacity + f * (next.opacity - prev.opacity)
+        index:   i
         
     gradientType: (gradient) -> 
         

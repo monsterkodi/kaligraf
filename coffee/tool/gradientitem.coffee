@@ -7,7 +7,7 @@
 
 { elem, drag, clamp, post, pos, log, $, _ } = require 'kxk'
 
-{ boundingBox, boxPos, checkersPattern, colorBrightness, id, gradientStops } = require '../utils'
+{ boundingBox, boxPos, checkersPattern, colorBrightness, id, gradientStops, gradientColor } = require '../utils'
 
 Palette = require './palette'
 
@@ -57,10 +57,13 @@ class GradientItem
         
         index = @indexForOffset offset
         stops = @stops()
+        
+        gcol = gradientColor @gradient, offset
+        
         stops.splice index, 0, 
                 offset:  offset
-                color:   @kali.tool('fill').color
-                opacity: @kali.tool('fill').alpha
+                color:   gcol.color
+                opacity: gcol.opacity
                 index:   index
 
         @updateGradient stops                

@@ -307,7 +307,7 @@ class Stage
     moveItem: (item, delta) ->
 
         center = @kali.trans.center item
-        @kali.trans.center item, center.plus delta.times 1.0/@zoom
+        @kali.trans.center item, center.plus delta
 
     # 0000000    0000000    000       0000000  000      000   0000000  000   000  
     # 000   000  000   000  000      000       000      000  000       000  000   

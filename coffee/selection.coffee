@@ -314,8 +314,16 @@ class Selection
     # 000 0 000  000   000     000     000       
     # 000   000   0000000       0      00000000  
     
-    moveBy: (delta) ->
-        delta = @kali.tool('snap').itemsDelta @items, delta
+    moveBy: (delta, event) ->
+        
+        delta = delta.times 1/@stage.zoom
+        
+        if event? 
+            if not event.metaKey
+                delta = @kali.tool('snap').itemsDelta @items, delta
+            else
+                @kali.tool('snap').clear()
+            
         @stage.moveItems @items, delta
         @update()
             

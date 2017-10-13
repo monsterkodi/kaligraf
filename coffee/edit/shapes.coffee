@@ -322,7 +322,7 @@ class Shapes
                 if @selection.rect?
                     @selection.moveRect eventPos, join:event.shiftKey
                 else if not @resizer.empty()
-                    @resizer.moveBy drag.delta
+                    @resizer.moveBy drag.delta, event
                     
             when 'edit'
                 
@@ -367,6 +367,8 @@ class Shapes
             return
             
         @edit?.stageStop drag, event
+        
+        @kali.tool('snap').clear()
         
         if shape == 'edit' 
             return 

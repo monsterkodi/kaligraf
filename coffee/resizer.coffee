@@ -326,14 +326,14 @@ class Resizer
 
     onDragMove: (drag, event) => 
 
-        @moveBy drag.delta
+        @moveBy drag.delta, event
 
     onDragStop: (drag) => @delete @drag.shift
     
-    moveBy: (delta) ->
+    moveBy: (delta, event) ->
 
         if not @selection.rect?
-            @selection.moveBy delta
+            @selection.moveBy delta, event
             @update()
 
     #  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000

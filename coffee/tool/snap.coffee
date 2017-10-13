@@ -5,9 +5,9 @@
 #      000  000  0000  000   000  000        
 # 0000000   000   000  000   000  000        
 
-{ elem, prefs, empty, clamp, post, log, _ } = require 'kxk'
+{ elem, prefs, empty, first, valid, clamp, post, pos, log, _ } = require 'kxk'
 
-{ itemIDs, growBox, boxOffset, bboxForItems, scaleBox, moveBox, setBox } = require '../utils'
+{ itemIDs, growBox, boxOffset, bboxForItems, scaleBox, moveBox, setBox, itemBox } = require '../utils'
 
 Tool = require './tool'
 
@@ -17,11 +17,20 @@ class Snap extends Tool
         
         super @kali, cfg
         
-        @selection = @stage.selection
+        @trans = @kali.trans
         
+        @div = elem 'div', id: 'snapDiv'
+        @kali.insertAboveSelection @div
+        
+        @svg = SVG(@div).size '100%', '100%' 
+        @svg.addClass 'snap'
+        @svg.clear()
+
         @visible  = prefs.get 'snap:visible', false
         @snapGrid = prefs.get 'snap:grid',    false
         @snapItem = prefs.get 'snap:item',    false
+        
+        @snapKeep = pos 0,0
         
         @initTitle()
         
@@ -43,6 +52,21 @@ class Snap extends Tool
             toggle: @visible
             action: @onShow
         ]
+        
+        @snapDist = clamp 1, 10, 5/@stage.zoom
+        
+        post.on 'stage', @onStage
+        
+    clear: -> 
+        
+        @svg.clear()
+        @snapKeep = pos 0,0
+        
+    onStage: (action, box) =>
+        
+        if action == 'viewbox' 
+            @svg.viewbox box
+            @snapDist = clamp 1, 20, 5/@stage.zoom
 
     # 000  000000000  00000000  00     00   0000000  0000000    00000000  000      000000000   0000000   
     # 000     000     000       000   000  000       000   000  000       000         000     000   000  
@@ -51,8 +75,60 @@ class Snap extends Tool
     # 000     000     00000000  000   000  0000000   0000000    00000000  0000000     000     000   000  
     
     itemsDelta: (items, delta) -> 
+        
+        @svg.clear()
+        
         if @snapGrid or @snapItem
-            log 'itemsDelta', delta, bboxForItems items
+            
+            itemBoxes = items.map (item) => moveBox(@trans.getRect(item), @snapKeep.times -1)
+            
+            for [orientation, attribs] in [['x' ,['x', 'cx', 'x2']], ['y', ['y', 'cy', 'y2']]]
+                combis = []
+                for a in attribs
+                    for b in attribs
+                        combis.push [a,b]
+    
+                closest = []
+                for item in @stage.treeItems()
+                    continue if item in items
+                    abox = @trans.getRect item
+                    minDist = Number.MAX_SAFE_INTEGER
+                    for [a,b] in combis
+                        for bbox in itemBoxes
+                            dist = abox[a] - bbox[b] 
+                            if Math.abs(dist) <= @snapDist
+                                closest.push dist:dist, a:a, b:b, val:abox[a]
+                                
+                if valid closest
+                    
+                    closest.sort (a,b) -> a.dist - b.dist
+                    winner = first closest
+                    
+                    val = winner.val
+                    max = Number.MAX_SAFE_INTEGER
+                    min = Number.MIN_SAFE_INTEGER
+                    if orientation == 'x'
+                        l = @svg.line val, min, val, max
+                    else
+                        l = @svg.line min, val, max, val
+                    l.style 'stroke-width', 1/@stage.zoom
+                    
+                    # log winner, @snapKeep
+                    
+                    if @snapKeep[orientation]
+                        @snapKeep[orientation] += delta[orientation]
+                        delta[orientation] = 0
+                    else
+                        @snapKeep[orientation] += delta[orientation]-winner.dist
+                        delta[orientation] = winner.dist
+                    
+                else
+                    delta[orientation] += @snapKeep[orientation]
+                    @snapKeep[orientation] = 0
+                    
+        else
+            @snapKeep = pos 0,0
+            
         delta
         
     onSnapItem: =>

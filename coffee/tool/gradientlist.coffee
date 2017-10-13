@@ -5,7 +5,8 @@
 # 000   000  000   000  000   000  000   000  000  000       000  0000     000     000      000       000     000   
 #  0000000   000   000  000   000  0000000    000  00000000  000   000     000     0000000  000  0000000      000   
 
-{ stopEvent, setStyle, childIndex, upElem, drag, childIndex, prefs, keyinfo, elem, empty, clamp, post, pos, log, $, _ } = require 'kxk'
+{   stopEvent, setStyle, childIndex, upElem, drag, childIndex, 
+    prefs, keyinfo, elem, empty, clamp, post, pos, log, $, _ } = require 'kxk'
 
 {   gradientStops, gradientState, gradientType,
     ensureInSize, winTitle, boundingBox, boxPos, highlightColor, invertColor } = require '../utils'
@@ -191,22 +192,10 @@ class GradientList
     #      000     000     000   000  000   000  000       
     # 0000000      000      0000000   000   000  00000000  
     
-    store: ->
-        # prefs.set 'gradientlist:active', @activeIndex()
-        # prefs.set 'gradientlist:list', @gradientItems().map (gradient) -> gradient.state()
-        @shadow.update()
+    store: -> @shadow.update()
         
-    restore: ->
-        # for state in prefs.get 'gradientlist:list', []
-            # gradient = new GradientItem @kali
-            # gradient.restore state
-            # @scroll.appendChild gradient.element
-        # @activate prefs.get 'gradientlist:active', 0
-        
-        @loadDocGradients()
-        
-    loadDocGradients: ->
-        
+    restore: -> 
+                
         stopList = []
         
         for item in @stage.svg.defs().children()
@@ -313,6 +302,7 @@ class GradientList
         @element.focus()
         
     onClose: => 
+        
         @kali.closeStopPalette()
         @hide()
             
@@ -330,6 +320,7 @@ class GradientList
         
         @activeItem()?.setActive false
         @itemAt(index)?.setActive true
+        @scrollToActive()
         
         prefs.set 'gradientlist:active', @activeIndex()
         
@@ -341,6 +332,16 @@ class GradientList
         @activate childIndex event.target
         stopEvent event
     
+    scrollToActive: ->
+        
+        index = @activeIndex()
+        scrollBox = boundingBox @scroll 
+        activeBox = boundingBox @activeGradient() 
+        if activeBox.y < scrollBox.y
+            @scroll.scrollTop -= scrollBox.y - activeBox.y
+        else if activeBox.y2 > scrollBox.y2
+            @scroll.scrollTop += activeBox.y2 - scrollBox.y2
+        
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
     # 0000000    0000000     00000    
@@ -355,8 +356,8 @@ class GradientList
         
         switch combo
             
-            when 'up'            then @navigate -1
-            when 'down'          then @navigate +1
+            when 'up'                        then @navigate -1
+            when 'down'                      then @navigate +1
             when 'backspace', 'delete'       then @onDelGradient()
             when 'n'                         then @onNewGradient()
             when 'c'                         then @onCopyGradient()

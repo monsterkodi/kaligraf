@@ -315,7 +315,7 @@ class Selection
     # 000   000   0000000       0      00000000  
     
     moveBy: (delta) ->
-        
+        log 'selection moveBy', delta
         @stage.moveItems @items, delta
         @update()
             

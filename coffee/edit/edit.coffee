@@ -419,7 +419,7 @@ class Edit
 
         r = normRect rect
         
-        for item in @stage.pickableItems()
+        for item in @stage.editableItems()
 
             rb = item.rbox()
             if rectsIntersect r, rb

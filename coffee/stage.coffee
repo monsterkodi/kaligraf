@@ -187,7 +187,11 @@ class Stage
         
         pickableLayers = @pickableLayers()
         @items(opt).filter (item) => @layerForItem(item) in pickableLayers
-            
+
+    editableItems: (opt) ->
+        
+        @treeItems @svg, pickable:true, noTypes: ['g', 'mask', 'clipPath']
+        
     groups: -> @treeItems @svg, pickable:false, type:'g' 
     
     treeItems: (item=@svg, opt) ->

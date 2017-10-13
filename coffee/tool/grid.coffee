@@ -7,6 +7,8 @@
 
 { stopEvent, elem, prefs, post, log, _ } = require 'kxk'
 
+{ colorBrightness } = require '../utils'
+
 Tool = require './tool'
 
 class Grid extends Tool
@@ -22,7 +24,8 @@ class Grid extends Tool
         @svg.clear()
         @svg.hide()
         
-        visible = prefs.get 'grid:visible', false
+        visible  = prefs.get 'grid:visible',  false
+        contrast = prefs.get 'grid:contrast', false
         
         @initTitle()
         @initButtons [
@@ -32,9 +35,10 @@ class Grid extends Tool
             action: @toggleGrid
         ]
         @initButtons [
-            text: 'Snap'
-            action: @onSnap
-            toggle: true
+            text: 'contrast'
+            name: 'contrast'
+            toggle: contrast
+            action: @onContrast
         ]
 
         post.on 'stage', @onStage
@@ -43,7 +47,16 @@ class Grid extends Tool
         
         @setVisible visible
 
-    onSnap: (event) => log 'onSnap'
+    #  0000000   0000000   000   000  000000000  00000000    0000000    0000000  000000000  
+    # 000       000   000  0000  000     000     000   000  000   000  000          000     
+    # 000       000   000  000 0 000     000     0000000    000000000  0000000      000     
+    # 000       000   000  000  0000     000     000   000  000   000       000     000     
+    #  0000000   0000000   000   000     000     000   000  000   000  0000000      000     
+    
+    onContrast: => 
+        
+        prefs.set 'grid:contrast', @button('contrast').toggle
+        @drawGrid()
         
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
@@ -67,6 +80,22 @@ class Grid extends Tool
         sw = @svg.width()
         sh = @svg.height()
         
+        contrast = @button('contrast').toggle
+        bright = colorBrightness @stage.color 
+        if bright > 0.5
+            colorStrong = '#000'
+        else
+            colorStrong = '#fff'
+            
+        if 0.5 <= bright <= 0.75
+            colorWeak = '#555'
+        else if 0.25 <= bright <= 0.5
+            colorWeak = '#aaa'
+        else
+            colorWeak = '#888'
+            
+        log 'colors', colorStrong, colorWeak
+        
         draw = (s, a) =>
 
             ox = vx % s
@@ -75,9 +104,9 @@ class Grid extends Tool
             yn = Math.ceil vh / s
 
             style =
-                stroke: '#444'
+                stroke: colorWeak
                 'stroke-width': 1
-                'stroke-opacity': 0.05 + a * 0.5
+                'stroke-opacity': contrast and 1 or 0.05 + a * 0.5
 
             for x in [0..xn]
                 v = (x*s-ox)*z
@@ -112,8 +141,10 @@ class Grid extends Tool
             draw 1000, z
 
         style = 
-            stroke: '#282828'
-            'stroke-opacity': 1
+            stroke: colorStrong
+            fill:   @stage.color
+            'stroke-width':     1
+            'stroke-opacity':   contrast and 1 or 0.15
             
         if vx < 0 and vx+vw > 0
             v = -vx*z
@@ -124,10 +155,11 @@ class Grid extends Tool
             @grid.line(sx,v,sw,v).style style
             
         if vx < 0 and vx+vw > 0 and vy < 0 and vy+vh > 0
-            style.fill = '#282828'
+            style['stroke-opacity'] = contrast and 1 or 0.4
             @grid.circle(10).style(style).cx(-vx*z).cy(-vy*z)
             
-    onStage: (action) => if action == 'viewbox' and @gridVisible() then @drawGrid()
+    onStage: (action) => 
+        if action in ['viewbox', 'color'] and @gridVisible() then @drawGrid()
 
     setVisible: (v) -> if v then @showGrid() else @hideGrid()
     toggleGrid:  => @setVisible not @gridVisible()

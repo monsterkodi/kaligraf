@@ -242,7 +242,6 @@ class Edit
     
     onGradient: (style, info) =>
         if style in ['fill', 'stroke']
-            # log 'Edit.onGradient', style, info
             if info.item in @items()
                 @objectForItem(info.item).updateGradi style, info
         

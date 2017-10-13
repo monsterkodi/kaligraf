@@ -25,9 +25,11 @@ class Snap extends Tool
         @svg = SVG(@div).size '100%', '100%' 
         @svg.addClass 'snap'
 
-        @visible  = prefs.get 'snap:visible', false
-        @snapGrid = prefs.get 'snap:grid',    false
-        @snapItem = prefs.get 'snap:item',    false
+        @visible    = prefs.get 'snap:visible', false
+        @snapGrid   = prefs.get 'snap:grid',    false
+        @snapBorder = prefs.get 'snap:border',  false
+        @snapCenter = prefs.get 'snap:center',  false
+        @snapDeep   = prefs.get 'snap:deep',    false
         
         @clear()
         
@@ -39,13 +41,23 @@ class Snap extends Tool
             toggle: @snapGrid
             action: @onSnapGrid
         ,
-            name:   'item'
-            tiny:   'snap-item'
-            toggle: @snapItem
-            action: @onSnapItem
+            name:   'center'
+            tiny:   'snap-center'
+            toggle: @snapCenter
+            action: @onSnapCenter
+        ,
+            name:   'border'
+            tiny:   'snap-border'
+            toggle: @snapBorder
+            action: @onSnapBorder
         ]
         
         @initButtons [
+            name:   'deep'
+            tiny:   'snap-deep'
+            toggle: @snapDeep
+            action: @onSnapDeep
+        ,    
             name:   'show'
             tiny:   'snap-show'
             toggle: @visible
@@ -80,27 +92,51 @@ class Snap extends Tool
         
         delta = pos oldDelta
         
-        if @snapGrid or @snapItem
+        if @snapGrid or @snapCenter or @snapBorder
             
-            itemBoxes = items.map (item) => moveBox @trans.getRect(item), @snapKeep.times 1 
+            if @snapDeep
+                thisItems = []
+                for item in items
+                    thisItems = thisItems.concat @stage.treeItems item:item
+            else
+                thisItems = items
+                
+            itemBoxes = thisItems.map (item) => moveBox @trans.getRect(item), @snapKeep.times 1 
             
-            for [orientation, attribs] in [['x' ,['x', 'cx', 'x2']], ['y', ['y', 'cy', 'y2']]]
+            attribList = [['x' ,[]], ['y', []]]
+            if @snapCenter
+                attribList[0][1].push 'cx'
+                attribList[1][1].push 'cy'
+            if @snapBorder
+                attribList[0][1].push 'x'
+                attribList[0][1].push 'x2'
+                attribList[1][1].push 'y'
+                attribList[1][1].push 'y2'
+            
+            for [orientation, attribs] in attribList
                 
                 combis = []
                 for a in attribs
                     for b in attribs
                         combis.push [a,b]
     
+                if @snapDeep
+                    otherItems = @stage.treeItems pickable:true
+                else
+                    otherItems = @stage.pickableItems()
+
                 closest = []
-                for item in @stage.treeItems()
-                    continue if item in items
+                for item in otherItems
+                    continue if item in thisItems
+                    if valid _.intersection item.parents(), thisItems
+                        continue
                     abox = @trans.getRect item
                     minDist = Number.MAX_SAFE_INTEGER
                     for [a,b] in combis
                         for bbox in itemBoxes
                             dist = abox[a] - bbox[b] 
                             if Math.abs(dist) < @snapDist
-                                closest.push dist:dist, a:a, b:b, val:abox[a], id:item.id()
+                                closest.push dist:dist, a:a, b:b, val:abox[a], id:a+item.id(), item:item
                                 
                 if valid closest
                     
@@ -108,18 +144,33 @@ class Snap extends Tool
                     winner = first closest
                     
                     if @visible
-                        val = winner.val
-                        max = Number.MAX_SAFE_INTEGER
-                        min = Number.MIN_SAFE_INTEGER
-                        if orientation == 'x'
-                            l = @svg.line val, min, val, max
-                        else
-                            l = @svg.line min, val, max, val
-                        l.style 'stroke-width', 1/@stage.zoom
+                        while valid(closest) and Math.abs(first(closest).dist - winner.dist) < 0.001
+                            close = closest.shift()
+                            val = close.val
+                            max = Number.MAX_SAFE_INTEGER
+                            min = Number.MIN_SAFE_INTEGER
+                            if orientation == 'x'
+                                l = @svg.line val, min, val, max
+                            else
+                                l = @svg.line min, val, max, val
+                            l.style 'stroke-width', 1/@stage.zoom
+                            size = 6/@stage.zoom
+                            center = @trans.center close.item
+                            if close.a in ['cx', 'cy']
+                                c = @svg.circle size
+                                l.addClass 'snap-center'
+                                c.addClass 'snap-center'
+                                @trans.center c, center
+                            else
+                                r = @svg.rect size, size
+                                switch close.a
+                                    when 'x', 'x2' then center.x = val
+                                    when 'y', 'y2' then center.y = val
+                                @trans.center r, center
                     
-                    if @winner[orientation] and @winner[orientation].id != winner.id
+                    if @winner[orientation]? and @winner[orientation].id != winner.id
                         oldKeep = @snapKeep[orientation]
-                        @snapKeep[orientation] = delta[orientation] - winner.dist
+                        @snapKeep[orientation] = delta[orientation]-winner.dist
                         delta[orientation] = winner.dist + oldKeep
                     else 
                         if @snapKeep[orientation]
@@ -142,10 +193,20 @@ class Snap extends Tool
             
         delta
         
-    onSnapItem: =>
+    onSnapCenter: =>
         
-        @snapItem = @button('item').toggle
-        prefs.set 'snap:item', @snapItem
+        @snapCenter = @button('center').toggle
+        prefs.set 'snap:center', @snapCenter
+
+    onSnapBorder: =>
+        
+        @snapBorder = @button('border').toggle
+        prefs.set 'snap:border', @snapBorder
+
+    onSnapDeep: =>
+        
+        @snapDeep = @button('deep').toggle
+        prefs.set 'snap:deep', @snapDeep
         
     onSnapGrid: =>
         

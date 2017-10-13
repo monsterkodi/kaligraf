@@ -125,44 +125,32 @@ class Stage
     pickItems: (eventPos, opt) ->
         
         pickableLayers = @pickableLayers()
-        # @log 'Stage.pickItems pickableLayers', pickableLayers.length, itemIDs pickableLayers, ' '
         items = @svg.node.getIntersectionList @pickRect(eventPos), null
         items = [].slice.call(items, 0).reverse()
-        # @log 'Stage.pickItems intersections:', items.length
         for item in items
             if not item.instance?
-                @log 'adopt!?', item.tagName
                 SVG.adopt item
         items = items.filter (item) => item.instance? and item.instance != @svg
-        # @log 'Stage.pickItems intersection instances:', items.length
         items = items.map (item) -> item.instance
-        # @log 'Stage.pickItems pickedItems:', itemIDs items, ' '
         items = items.filter (item) => 
-            # @log "Stage.pickItems item #{item.id()} parents:", itemIDs item.parents(), ' '
-            # @log "Stage.pickItems item #{item.id()} layer:", @layerForItem(item).id()
             @layerForItem(item) in pickableLayers
             
         stagePos = @stageForEvent eventPos
         items = items.filter (item) => 
             insideBox(stagePos, @trans.rect item)
-        # @log 'Stage.pickItems pickedItems', itemIDs items, ' '
         items = @filterItems items, opt
-        @log 'Stage.pickItems pickedItems', items.length, itemIDs items, ' '
         items
         
     leafItemAtPos: (p, opt) ->
 
         for item in @pickItems(p, opt)
             if @isLeaf item
-                # @log 'Stage.leafItemAtPos', item.id()
                 return item
         @log 'Stage.leafItemAtPos null'
         null
     
     itemAtPos: (p, opt) ->
-        # @log 'Stage.itemAtPos', p, 'opt', opt
         for item in @pickItems(p, opt)
-            # @log 'Stage.itemAtPos picked item', item.id()
             if item in @pickableItems()
                 return item
             else if item in @treeItems()
@@ -190,20 +178,22 @@ class Stage
 
     editableItems: (opt) ->
         
-        @treeItems @svg, pickable:true, noTypes: ['g', 'mask', 'clipPath']
+        @treeItems pickable:true, noTypes: ['g', 'mask', 'clipPath']
         
-    groups: -> @treeItems @svg, pickable:false, type:'g' 
+    groups: -> @treeItems pickable:false, type:'g' 
     
-    treeItems: (item=@svg, opt) ->
+    treeItems: (opt) ->
         
+        item = opt?.item ? @svg
         items = [] 
-        
         if item != @svg and item.type != 'defs' and item not in @getLayers()
             items = @filterItems [item], opt
 
         if item.type != 'defs'
             for child in item.children?() ? []
-                items = items.concat @treeItems child, opt
+                o = _.clone opt ? {}
+                o.item = child
+                items = items.concat @treeItems o
             
         items
 
@@ -252,7 +242,7 @@ class Stage
         selectedItems = @selectedLeafItems()
         
         if empty selectedItems
-            selectedItems = @treeItems @svg, @kali.tool('select').shapeTextOpt()
+            selectedItems = @treeItems @kali.tool('select').shapeTextOpt()
 
         selectedItems
         
@@ -269,7 +259,9 @@ class Stage
             if @isLeaf item 
                 items = items.concat @filterItems [item], opt
             else 
-                items = items.concat @treeItems item, opt
+                o = _.clone opt
+                o.item = item
+                items = items.concat @treeItems o
                 
         items = @filterItems(items, noType: 'g') if opt?.type != 'g'
         items

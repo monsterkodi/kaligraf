@@ -24,13 +24,12 @@ class Snap extends Tool
         
         @svg = SVG(@div).size '100%', '100%' 
         @svg.addClass 'snap'
-        @svg.clear()
 
         @visible  = prefs.get 'snap:visible', false
         @snapGrid = prefs.get 'snap:grid',    false
         @snapItem = prefs.get 'snap:item',    false
         
-        @snapKeep = pos 0,0
+        @clear()
         
         @initTitle()
         
@@ -61,12 +60,13 @@ class Snap extends Tool
         
         @svg.clear()
         @snapKeep = pos 0,0
+        @winner = x:null, y:null
         
     onStage: (action, box) =>
         
         if action == 'viewbox' 
             @svg.viewbox box
-            @snapDist = clamp 1, 20, 5/@stage.zoom
+            @snapDist = clamp 0.1, 20, 5/@stage.zoom
 
     # 000  000000000  00000000  00     00   0000000  0000000    00000000  000      000000000   0000000   
     # 000     000     000       000   000  000       000   000  000       000         000     000   000  
@@ -74,15 +74,18 @@ class Snap extends Tool
     # 000     000     000       000 0 000       000  000   000  000       000         000     000   000  
     # 000     000     00000000  000   000  0000000   0000000    00000000  0000000     000     000   000  
     
-    itemsDelta: (items, delta) -> 
+    itemsDelta: (items, oldDelta) -> 
         
         @svg.clear()
         
+        delta = pos oldDelta
+        
         if @snapGrid or @snapItem
             
-            itemBoxes = items.map (item) => moveBox(@trans.getRect(item), @snapKeep.times -1)
+            itemBoxes = items.map (item) => moveBox @trans.getRect(item), @snapKeep.times 1 
             
             for [orientation, attribs] in [['x' ,['x', 'cx', 'x2']], ['y', ['y', 'cy', 'y2']]]
+                
                 combis = []
                 for a in attribs
                     for b in attribs
@@ -96,38 +99,46 @@ class Snap extends Tool
                     for [a,b] in combis
                         for bbox in itemBoxes
                             dist = abox[a] - bbox[b] 
-                            if Math.abs(dist) <= @snapDist
-                                closest.push dist:dist, a:a, b:b, val:abox[a]
+                            if Math.abs(dist) < @snapDist
+                                closest.push dist:dist, a:a, b:b, val:abox[a], id:item.id()
                                 
                 if valid closest
                     
-                    closest.sort (a,b) -> a.dist - b.dist
+                    closest.sort (a,b) -> Math.abs(a.dist) - Math.abs(b.dist)
                     winner = first closest
                     
-                    val = winner.val
-                    max = Number.MAX_SAFE_INTEGER
-                    min = Number.MIN_SAFE_INTEGER
-                    if orientation == 'x'
-                        l = @svg.line val, min, val, max
-                    else
-                        l = @svg.line min, val, max, val
-                    l.style 'stroke-width', 1/@stage.zoom
+                    if @visible
+                        val = winner.val
+                        max = Number.MAX_SAFE_INTEGER
+                        min = Number.MIN_SAFE_INTEGER
+                        if orientation == 'x'
+                            l = @svg.line val, min, val, max
+                        else
+                            l = @svg.line min, val, max, val
+                        l.style 'stroke-width', 1/@stage.zoom
                     
-                    # log winner, @snapKeep
+                    if @winner[orientation] and @winner[orientation].id != winner.id
+                        oldKeep = @snapKeep[orientation]
+                        @snapKeep[orientation] = delta[orientation] - winner.dist
+                        delta[orientation] = winner.dist + oldKeep
+                    else 
+                        if @snapKeep[orientation]
+                            @snapKeep[orientation] += delta[orientation]
+                            delta[orientation] = 0
+                        else
+                            @snapKeep[orientation] = delta[orientation]-winner.dist
+                            delta[orientation] = winner.dist
                     
-                    if @snapKeep[orientation]
-                        @snapKeep[orientation] += delta[orientation]
-                        delta[orientation] = 0
-                    else
-                        @snapKeep[orientation] += delta[orientation]-winner.dist
-                        delta[orientation] = winner.dist
+                    @winner[orientation] = winner
                     
                 else
+                    
                     delta[orientation] += @snapKeep[orientation]
                     @snapKeep[orientation] = 0
-                    
+                    @winner[orientation] = null
         else
             @snapKeep = pos 0,0
+            @winner = x:null, y:null
             
         delta
         

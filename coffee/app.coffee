@@ -182,9 +182,9 @@ class KaliApp
     showAbout: => about
         img: "#{__dirname}/../bin/about.svg"
         pkg: pkg
-        imageWidth:    '230px'
-        imageHeight:   '230px'
-        imageOffset:   '32px'
+        imageWidth:    '250px'
+        imageHeight:   '250px'
+        imageOffset:   '10px'
         versionOffset: '15px'
         highlight:     '#88f'
 

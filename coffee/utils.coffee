@@ -44,7 +44,39 @@ module.exports =
     
     id: (prefix) -> prefix + "-" + uuid().slice(0,8).splice 2,0,'-'
     uuid: (item) -> item.id module.exports.id item.type[0].toUpperCase()
-                
+
+    # 00000000    0000000   000  000   000  000000000  00000000    0000000    0000000  
+    # 000   000  000   000  000  0000  000     000     000   000  000   000  000       
+    # 00000000   000   000  000  000 0 000     000     00000000   000   000  0000000   
+    # 000        000   000  000  000  0000     000     000        000   000       000  
+    # 000         0000000   000  000   000     000     000         0000000   0000000   
+    
+    pointPos: (item, index) ->
+        
+        points = item.array?().valueOf()
+        point = points[index]
+        itemPos = switch point[0]
+            when 'C'      then pos point[5], point[6]
+            when 'S', 'Q' then pos point[3], point[4]
+            when 'M', 'L' then pos point[1], point[2]
+            else               pos point[0], point[1]
+            
+        pos new SVG.Point(itemPos).transform module.exports.itemMatrix item
+        
+    setPointPos: (item, index, stagePos) ->
+        
+        points = item.array?().valueOf()
+        itemPos = pos new SVG.Point(stagePos).transform module.exports.itemMatrix(item).inverse()
+        point = points[index]
+        switch point[0]
+            when 'S', 'Q', 'C', 'M', 'L'
+                point[point.length-2] = itemPos.x
+                point[point.length-1] = itemPos.y
+            else
+                point[0] = itemPos.x
+                point[1] = itemPos.y
+        item.plot points
+                    
     # 00     00   0000000   000000000  00000000   000  000   000  
     # 000   000  000   000     000     000   000  000   000 000   
     # 000000000  000000000     000     0000000    000    00000    

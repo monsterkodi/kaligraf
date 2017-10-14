@@ -7,7 +7,7 @@
 
 { empty, drag, post, pos, log, _ } = require 'kxk'
 
-{ rectsIntersect, normRect, bboxForItems } = require '../utils'
+{ rectsIntersect, normRect, bboxForItems, itemIDs } = require '../utils'
 
 class DotSel
 
@@ -79,13 +79,17 @@ class DotSel
     
     moveBy: (delta, event) ->
 
+        @stage.do 'move-dots', itemIDs, @edit.objects.map (o) -> o.item
+        
         for objectDot in @objectDots()
             objectDot.object.moveDotsBy objectDot.dots, delta, event
             
         for gradiDot in @gradiDots()
             gradiDot.gradi.moveDotsBy gradiDot.dots, delta
             
-        post.emit 'dotsel', 'move', @dots
+        post.emit 'dotsel', 'move', dotsel:@, delta:delta, event:event
+        
+        @stage.done()
 
     update: ->
 
@@ -293,6 +297,10 @@ class DotSel
                 when 'mid'    then dot.cy avg
         
         @update()
+        @edit.dotres.update()
+        @stage.selection.update()
+        @stage.resizer.update()
+        
         @stage.done()
          
     #  0000000  00000000    0000000    0000000  00000000  
@@ -336,6 +344,9 @@ class DotSel
             
         @update()
         @edit.dotres.update()
+        @stage.selection.update()
+        @stage.resizer.update()
+        
         @stage.done()
         
 module.exports = DotSel

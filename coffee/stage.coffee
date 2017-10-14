@@ -83,6 +83,7 @@ class Stage
         @setSVG state.svg
         @setColor state.color, state.alpha
         @restoreLayers state.layers
+        post.emit 'stage', 'restore'
         @selection.restore state.selection
         @shapes.restore state.shapes
     
@@ -632,7 +633,7 @@ class Stage
         
         @postLayer()
         
-        post.emit 'stage', 'load', file:@currentFile
+        post.emit 'stage', 'clear', file:@currentFile
                 
     # 000   000  000  00000000  000   000
     # 000   000  000  000       000 0 000

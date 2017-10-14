@@ -5,7 +5,7 @@
 # 000   000  000   000  000   000  000       000          000
 #  0000000   0000000     0000000   00000000   0000000     000
 
-{ pos, empty, log, _ } = require 'kxk'
+{ post, empty, pos, log, _ } = require 'kxk'
 
 { itemGradient } = require '../utils'
 
@@ -125,8 +125,6 @@ class Object
 
     moveDotsBy: (dots, delta, event) ->
 
-        @do 'move-dots'
-
         indexDots = @indexDots dots
 
         if not event? or not event.ctrlKey
@@ -179,16 +177,14 @@ class Object
                 oldPos = @posAt idots.index, dot
                 newPos = oldPos.plus itemDelta
                 @movePoint idots.index, newPos, dot
-
+                
         @plot()
-        @done()
 
     # 00     00   0000000   000   000  00000000  00000000    0000000   000  000   000  000000000
     # 000   000  000   000  000   000  000       000   000  000   000  000  0000  000     000
     # 000000000  000   000   000 000   0000000   00000000   000   000  000  000 0 000     000
     # 000 0 000  000   000     000     000       000        000   000  000  000  0000     000
     # 000   000   0000000       0      00000000  000         0000000   000  000   000     000
-
 
     movePoint: (index, itemPos, dots=['point']) ->
 
@@ -214,23 +210,17 @@ class Object
                                 point[0] = itemPos.x
                                 point[1] = itemPos.y
 
-                    if @isPath() and not @edit.passive and index == @numPoints()-1
+                    # if @isPath() and not @edit.passive and index == @numPoints()-1
 
-                        #  0000000  000       0000000    0000000  00000000  0000000
-                        # 000       000      000   000  000       000       000   000
-                        # 000       000      000   000  0000000   0000000   000   000
-                        # 000       000      000   000       000  000       000   000
-                        #  0000000  0000000   0000000   0000000   00000000  0000000
+                        # log 'fix closed!'
+                        # if false
 
-                        log 'fix closed!'
-                        if false
+                            # firstPoint = @pointAt 0
+                            # firstPoint[1] = itemPos.x
+                            # firstPoint[2] = itemPos.y
 
-                            firstPoint = @pointAt 0
-                            firstPoint[1] = itemPos.x
-                            firstPoint[2] = itemPos.y
-
-                            @updateCtrlDots 0, firstPoint
-                            @updateCtrlDots 1, @pointAt 1 if points.length>1
+                            # @updateCtrlDots 0, firstPoint
+                            # @updateCtrlDots 1, @pointAt 1 if points.length>1
 
                 when 'ctrl1', 'ctrlq', 'ctrls'
                     point[1] = itemPos.x
@@ -254,7 +244,7 @@ class Object
                     return
 
         @updateCtrlDots index, point
-
+        
         if point[0] in ['Q', 'M', 'L', 'C'] and index < @numPoints()-1
             @updateCtrlDots index+1, @pointAt index+1
 
@@ -266,6 +256,8 @@ class Object
 
     setPoint: (index, dot, itemPos) ->
 
+        # log 'object.setPoint', @item.id()
+        
         points = @points()
         point  = points[index]
 
@@ -284,14 +276,16 @@ class Object
                             point[0] = itemPos.x
                             point[1] = itemPos.y
 
-                if @isPath() and not @edit.passive and index == @numPoints()-1
+                # if @isPath() and not @edit.passive and index == @numPoints()-1
 
-                    firstPoint = @pointAt 0
-                    firstPoint[1] = itemPos.x
-                    firstPoint[2] = itemPos.y
+                    # log 'fix closed!'
+                    
+                    # firstPoint = @pointAt 0
+                    # firstPoint[1] = itemPos.x
+                    # firstPoint[2] = itemPos.y
 
-                    @updateCtrlLines 0, firstPoint
-                    @updateCtrlLines 1, @pointAt 1 if points.length>1
+                    # @updateCtrlLines 0, firstPoint
+                    # @updateCtrlLines 1, @pointAt 1 if points.length>1
 
             when 'ctrl1', 'ctrlq', 'ctrls'
                 point[1] = itemPos.x
@@ -311,11 +305,15 @@ class Object
                     when 'S' then 'ctrls'
                     when 'Q' then 'ctrlq'
                 if prevCtrl
+                    log 'set prevCtrl', prevIndex, prevCtrl, refl
                     @setPoint prevIndex, prevCtrl, refl
                 return
 
         @updateCtrlLines index, point
 
+        if dot == 'point'
+            post.emit 'object', 'setPoint', object:@, index:index
+        
         if point[0] in ['Q', 'M', 'L', 'C'] and index < @numPoints()-1
             @updateCtrlLines index+1, @pointAt index+1
 
@@ -408,6 +406,13 @@ class Object
                     mid = prevp.mid thisp
                     point[1] = mid.x
                     point[2] = mid.y
+                    
+                else
+                    
+                    newPoint = [point[0], point[1]]
+                    mid = prevp.mid thisp
+                    point[0] = mid.x
+                    point[1] = mid.y
 
             @initCtrlDots   index, point
             @updateCtrlDots index, point

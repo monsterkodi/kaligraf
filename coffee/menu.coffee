@@ -75,7 +75,7 @@ class Menu
                     { label: 'Space Horizontal', accelerator: '5',         click: -> button 'space', 'horizontal'}
                     { label: 'Space Vertical',   accelerator: 'command+5', click: -> button 'space', 'vertical'}
                 ]}
-                { label: 'Convert',     submenu: [
+                { label: 'Bezier',      submenu: [
                     { label: 'Quad',    accelerator: 'ctrl+q',              click: -> post.toWins 'convert', 'Q'}
                     { label: 'Cubic',   accelerator: 'ctrl+c',              click: -> post.toWins 'convert', 'C'}
                     { label: 'Smooth',  accelerator: 'ctrl+s',              click: -> post.toWins 'convert', 'S'}
@@ -97,6 +97,9 @@ class Menu
                     { label: 'Horizontal',  accelerator: '6',               click: -> button 'flip', 'horizontal'}
                     { label: 'Vertical',    accelerator: 'command+6',       click: -> button 'flip', 'vertical'}
                 ]}
+                { type:  'separator'}                
+                { label: 'Lock',        accelerator: ';',                   click: -> button 'lock', 'lock'}
+                { label: 'Unlock',      accelerator: 'command+;',           click: -> button 'lock', 'unlock'}
                 { type:  'separator'}
                 { label: 'Group',       accelerator: 'command+g',           click: -> action 'group'}
                 { label: 'Ungroup',     accelerator: 'command+u',           click: -> action 'ungroup'}
@@ -140,8 +143,8 @@ class Menu
                 { type:  'separator'}
                 { label: 'Bezier',      accelerator: 'command+b',   click: -> action 'click', 'bezier_smooth'}
                 { label: 'Polygon',     accelerator: 'command+p',   click: -> action 'click', 'polygon'}
-                { label: 'Line',        accelerator: 'l',           click: -> action 'click', 'line'}
-                { label: 'Text',        accelerator: 't',           click: -> action 'click', 'text'}                
+                { label: 'Line',        accelerator: 'command+/',   click: -> action 'click', 'line'}
+                { label: 'Text',        accelerator: 'command+t',   click: -> action 'click', 'text'}                
                 { type:  'separator'}
                 { label: 'Grid',        accelerator: 'command+9',   click: -> button 'grid', 'grid'}
                 { label: 'Center',      accelerator: 'command+e',   click: -> action 'center'}

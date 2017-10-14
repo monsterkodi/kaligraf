@@ -180,7 +180,7 @@ class DotResizer
         
         @done()
         
-        post.emit 'dotres', 'resize'
+        # post.emit 'dotres', 'resize'
         
     # 00000000   00000000   0000000  000000000
     # 000   000  000       000          000
@@ -367,6 +367,8 @@ class DotResizer
     empty: -> not @box
     clear: ->
 
+        @g   = null
+        @gg  = null
         @box = null
         @svg.clear()
 
@@ -428,9 +430,7 @@ class DotResizer
     
     updateBox: ->
         
-        if not @gg?
-            log 'DotRes.updateBox -- without box?'
-            return
+        return if not @gg?
             
         @gg.transform rotation:0
         @gg.transform x:0, y:0

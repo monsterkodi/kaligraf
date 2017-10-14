@@ -143,6 +143,7 @@ class Tools extends Tool
                 { class: 'group'   }
                 { class: 'mask'    }
                 { class: 'clip'    }
+                { class: 'lock'    }
                 # { class: 'pattern' }
             ]
             [
@@ -284,7 +285,7 @@ class Tools extends Tool
             delete @temp
         
     clickTool: (tool) => 
-        # log "Tools.clickTool #{tool}", @getTool(tool)?.name
+        
         @getTool(tool)?.onClick()
     
     clickToolButton: (tool, button) =>  
@@ -327,7 +328,6 @@ class Tools extends Tool
             active = @getActive tool.group
             active?.deactivate?()
            
-        # log "Tools.activate #{name}", tool.name
         tool.activate()
         
         if tool.cfg.group == 'shape'
@@ -372,14 +372,11 @@ class Tools extends Tool
                     @kali.tool('pan').onClick()
                 return 
             
-            # for tool in @tools
-                # if tool.cfg.combo == combo
-                    # return tool.onClick()
-
             switch combo
                 when 'e' then return @onAction 'center'
                 when '.' then return @onAction 'browse'
                 when 'g' then return @onAction 'group'
+                when 'l' then return @onAction 'layer'
                 when 'u' then return @onAction 'ungroup'
                 when 's' then return @onAction 'save'
                 when 'a' then return @onAction 'selectAll'

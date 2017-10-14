@@ -68,9 +68,13 @@ class Edit
         @dotres?.del()
         
         @svg?.remove()
+        @linesWhite?.remove()
+        @linesBlack?.remove()
         @element?.remove()
         
         delete @svg
+        delete @linesWhite
+        delete @linesBlack
         delete @dotsel
         delete @dotres
         delete @element
@@ -148,12 +152,14 @@ class Edit
             
         dashArray = "#{2/@stage.zoom},#{6/@stage.zoom}"
         
-        @linesWhite.style 'stroke-width': 1/@stage.zoom
-        @linesWhite.style 'stroke-dasharray': dashArray
-        @linesWhite.style 'stroke-dashoffset': "#{2/@stage.zoom}"
+        @linesWhite.style 
+            'stroke-width':      1/@stage.zoom
+            'stroke-dasharray':  dashArray
+            'stroke-dashoffset': "#{2/@stage.zoom}"
         
-        @linesBlack.style 'stroke-width': 1/@stage.zoom
-        @linesBlack.style 'stroke-dasharray': dashArray
+        @linesBlack.style 
+            'stroke-width':     1/@stage.zoom
+            'stroke-dasharray': dashArray
 
     update: ->
         
@@ -200,6 +206,7 @@ class Edit
             for objectDot in @dotsel.objectDots()
                 objectDot.object.delDots objectDot.dots
             @dotsel.clear()
+            @dotres.update()
             @done()
         
         else if not @empty()
@@ -280,8 +287,11 @@ class Edit
             for dot in object.dots()
                 @dotsel.delDot dot
                 
+            post.emit 'edit', 'delObject', object:object
+            
             object.del()
             _.pull @objects, object
+            
 
     #  0000000   0000000    0000000
     # 000   000  000   000  000   000
@@ -301,6 +311,8 @@ class Edit
              
             object = new Object @, item
             @objects.push object 
+            
+            post.emit 'edit', 'addObject', object:object
             
             return object
 

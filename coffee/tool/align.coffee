@@ -74,30 +74,30 @@ class Align extends Tool
         @stage.do "align" + itemIDs items
         
         for item in items
-            bbox = @trans.getRect item
+            rect = @trans.getRect item
             switch side
-                when 'center' then sum += bbox.cx
-                when 'mid'    then sum += bbox.cy
-                when 'left'   then avg = Math.min avg, bbox.x
-                when 'top'    then avg = Math.min avg, bbox.y
-                when 'right'  then avg = Math.max avg, bbox.x2
-                when 'bot'    then avg = Math.max avg, bbox.y2
+                when 'center' then sum += rect.cx
+                when 'mid'    then sum += rect.cy
+                when 'left'   then avg = Math.min avg, rect.x
+                when 'top'    then avg = Math.min avg, rect.y
+                when 'right'  then avg = Math.max avg, rect.x2
+                when 'bot'    then avg = Math.max avg, rect.y2
         
         switch side
             when 'center', 'mid'
                 avg = sum / items.length
         
         for item in items
-            bbox = @trans.getRect item
+            rect = @trans.getRect item
             oldCenter = @trans.center item
             newCenter = pos oldCenter
             
             switch side
-                when 'left'   then newCenter.x = avg + bbox.width/2
-                when 'right'  then newCenter.x = avg - bbox.width/2
+                when 'left'   then newCenter.x = avg + rect.width/2
+                when 'right'  then newCenter.x = avg - rect.width/2
                 when 'center' then newCenter.x = avg 
-                when 'top'    then newCenter.y = avg + bbox.height/2  
-                when 'bot'    then newCenter.y = avg - bbox.height/2
+                when 'top'    then newCenter.y = avg + rect.height/2  
+                when 'bot'    then newCenter.y = avg - rect.height/2
                 when 'mid'    then newCenter.y = avg
                                
             @trans.center item, newCenter

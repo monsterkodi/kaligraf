@@ -304,10 +304,7 @@ class Stage
     moveItem: (item, delta) ->
 
         center = @trans.center item
-        log 'moveItem center', center
-        log item.bbox()
-        log '      boxCenter',  boxCenter itemBox item
-        log '      rectCenter', boxCenter @trans.rect item
+        log 'moveItem center', center, itemMatrix item
         @trans.center item, center.plus delta
 
     # 0000000    0000000    000       0000000  000      000   0000000  000   000  

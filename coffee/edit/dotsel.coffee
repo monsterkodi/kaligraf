@@ -272,6 +272,7 @@ class DotSel
         return if @numDots() < 2
         
         @stage.do 'align'
+        
         sum = 0
         min = Number.MAX_SAFE_INTEGER
         max = Number.MIN_SAFE_INTEGER

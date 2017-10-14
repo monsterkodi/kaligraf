@@ -325,9 +325,9 @@ class Edit
     stageStart: (drag, event) ->
         
         eventPos = pos event
-        
-        item = @stage.leafItemAtPos eventPos, noType: 'text'
-        # log "Edit.stageStart -- pick start item #{item?.id()} empty #{@empty()}"
+                
+        item = @stage.leafItemAtPos eventPos #, noType: 'text'
+        log "Edit.stageStart -- item:#{item?.id()} empty:#{@empty()}"
         if @empty()
             if item?
                 @addItem item, join:event.shiftKey
@@ -371,7 +371,7 @@ class Edit
                 
                 eventPos = pos event
                 
-                if item = @stage.leafItemAtPos(eventPos, noType: 'text')
+                if item = @stage.leafItemAtPos(eventPos)
                     object = @objectForItem item
                     if event.shiftKey and object
                         @delItem item

@@ -173,7 +173,7 @@ class Lock extends Tool
         else
             locks.node.innerHTML = @locklist.map((ll) -> ll.join ',').join '\n'
             
-        # log 'saveLocks', @locklist
+        log 'saveLocks', @locklist
         
     # 000       0000000    0000000   0000000    
     # 000      000   000  000   000  000   000  
@@ -190,7 +190,7 @@ class Lock extends Tool
         else
             @locklist = []
             
-        # log 'loadLocks', @locklist
+        log 'loadLocks', @locklist
             
     #  0000000   0000000    0000000    
     # 000   000  000   000  000   000  

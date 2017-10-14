@@ -7,7 +7,7 @@
 
 { post, empty, pos, log, _ } = require 'kxk'
 
-{ itemGradient } = require '../utils'
+{ itemGradient, itemMatrix } = require '../utils'
 
 Ctrl  = require './ctrl'
 Gradi = require './gradi'
@@ -60,7 +60,7 @@ class Object
 
         if points = @points()
 
-            log item.type, points
+            log 'Object.setItem', item.type, points, itemMatrix item
             
             for i in [0...points.length]
                 

@@ -16,6 +16,12 @@ class Mover
         if @cfg?.indexDots?
             @moveIndexDots()
         
+    # 00     00   0000000   000   000  00000000  0000000     0000000   000000000   0000000  
+    # 000   000  000   000  000   000  000       000   000  000   000     000     000       
+    # 000000000  000   000   000 000   0000000   000   000  000   000     000     0000000   
+    # 000 0 000  000   000     000     000       000   000  000   000     000          000  
+    # 000   000   0000000       0      00000000  0000000     0000000      000     0000000   
+    
     moveIndexDots: ->
         
         indexDots = @cfg.indexDots
@@ -69,7 +75,7 @@ class Mover
                 oldPos = @posAt idots.index, dot
                 newPos = oldPos.plus itemDelta
                 @movePoint idots.index, newPos, dot
-         
+        log 'mover.setItemPoints', @points()
         @trans.setItemPoints @item, @points()
 
     # 00     00   0000000   000   000  00000000  00000000    0000000   000  000   000  000000000
@@ -94,13 +100,10 @@ class Mover
                             point[point.length-2] = itemPos.x
                             point[point.length-1] = itemPos.y
                         else
+                            point[0] = itemPos.x
+                            point[1] = itemPos.y
                             if @item.type == 'line'
-                                point[0] = itemPos.x
-                                point[1] = itemPos.y
                                 @item.plot points
-                            else
-                                point[0] = itemPos.x
-                                point[1] = itemPos.y
 
                 when 'ctrl1', 'ctrlq', 'ctrls'
                     point[1] = itemPos.x

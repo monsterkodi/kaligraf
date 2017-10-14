@@ -137,7 +137,7 @@ class Trans
     # 000       000       000  0000     000     000       000   000  
     #  0000000  00000000  000   000     000     00000000  000   000  
     
-    setCenter: (item, c) -> 
+    setCenter: (item, c) ->
     
         switch item.type
             when 'circle', 'ellipse'
@@ -247,10 +247,12 @@ class Trans
     setItemPoints: (item, points) -> 
         
         switch item.type
-            when 'text'
-                item.transform x:points[0][0], y:points[0][1]
-            when 'circle', 'ellipse', 'rect'
-                item.center points[8][0], points[8][1]
+            
+            when 'circle', 'ellipse', 'rect', 'text'
+                
+                center = pos points[8][0], points[8][1]
+                center = @transform item, center
+                @setCenter item, center
                 switch item.type
                     when 'circle'
                         top   = pos points[1][0], points[1][1]
@@ -274,19 +276,19 @@ class Trans
             
         pos new SVG.Point(itemPos).transform itemMatrix item
 
-    setPointPos: (item, index, stagePos) ->
-        
-        points = @itemPoints item
-        itemPos = pos new SVG.Point(stagePos).transform itemMatrix(item).inverse()
-        point = points[index]
-        switch point[0]
-            when 'S', 'Q', 'C', 'M', 'L'
-                point[point.length-2] = itemPos.x
-                point[point.length-1] = itemPos.y
-            else
-                point[0] = itemPos.x
-                point[1] = itemPos.y
-                
-        @setItemPoints item, points
+    # setPointPos: (item, index, stagePos) ->
+#         
+        # points = @itemPoints item
+        # itemPos = pos new SVG.Point(stagePos).transform itemMatrix(item).inverse()
+        # point = points[index]
+        # switch point[0]
+            # when 'S', 'Q', 'C', 'M', 'L'
+                # point[point.length-2] = itemPos.x
+                # point[point.length-1] = itemPos.y
+            # else
+                # point[0] = itemPos.x
+                # point[1] = itemPos.y
+#                 
+        # @setItemPoints item, points
     
 module.exports = Trans

@@ -9,7 +9,8 @@
 
 { uuid, pointPos, setPointPos } = require '../utils'
 
-Tool = require './tool'
+Tool  = require './tool'
+Mover = require '../edit/mover'
 
 class Lock extends Tool
         
@@ -75,12 +76,23 @@ class Lock extends Tool
         
         if valid lockedIds
 
+            itemIndexDots = {}
+            
             for id in lockedIds
+                
                 split = @splitId id 
                 item  = SVG.get split.id 
                 index = split.index
-                newPos = pointPos(item, index).plus delta
-                setPointPos item, split.index, newPos
+                
+                itemIndexDots[split.id] ?= item:item, indexDots:[]
+                itemIndexDots[split.id].indexDots.push index:index, dots:['point']
+                
+            for id,itemIndexDot of itemIndexDots
+                cfg = 
+                    indexDots:  itemIndexDot.indexDots
+                    delta:      delta
+                    event:      event
+                new Mover @kali, itemIndexDot.item, cfg
                 
         for lock in locks
             @updateLock lock

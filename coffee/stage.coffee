@@ -198,9 +198,13 @@ class Stage
             
         items
 
-    isLeaf:     (item) -> not _.isFunction item.children
+    isLeaf: (item) -> not _.isFunction item.children
+    
     isEditable: (item) -> 
-        _.isFunction(item.array) and item.type != 'text' or itemGradient(item, 'fill') or itemGradient(item, 'stroke')
+        
+        return true if itemGradient(item, 'fill') or itemGradient(item, 'stroke')
+        return true if item.type in ['rect', 'circle', 'ellipse', 'text']
+        _.isFunction item.array 
     
     filterItems: (items, opt) ->
         

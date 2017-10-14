@@ -426,11 +426,11 @@ class Shapes
                 log 'remove drawing'
                 @drawing.remove()
                 
-            else 
-                if @stage.isEditable @drawing
-                    @editItems [@drawing]
-                else if @drawing.type == 'text'
+            else
+                if @drawing.type == 'text'
                     @editTextItem @drawing
+                else if  @stage.isEditable @drawing
+                    @editItems [@drawing]
                 else
                     @selection.setItems [@drawing]
                 

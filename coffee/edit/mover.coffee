@@ -7,8 +7,6 @@
 
 { empty, valid, pos, log, _ } = require 'kxk'
 
-# { itemMatrix } = require '../utils'
-
 class Mover
 
     constructor: (@kali, @item, @cfg) ->
@@ -71,8 +69,8 @@ class Mover
                 oldPos = @posAt idots.index, dot
                 newPos = oldPos.plus itemDelta
                 @movePoint idots.index, newPos, dot
-                
-        @item.plot @points()
+         
+        @trans.setItemPoints @item, @points()
 
     # 00     00   0000000   000   000  00000000  00000000    0000000   000  000   000  000000000
     # 000   000  000   000  000   000  000       000   000  000   000  000  0000  000     000
@@ -124,10 +122,17 @@ class Mover
                     if prevCtrl
                         @movePoint prevIndex, refl, prevCtrl
 
-    isPoly: -> @item.type in ['polygon', 'polyline', 'line']
+    isPoly: -> @item.type in ['polygon', 'polyline', 'line', 'circle', 'ellipse', 'rect', 'text']
     numPoints: -> @points()?.length ? 0
     pointAt: (index) -> @points()[@index index]        
-    points: -> @item.type != 'text' and @item.array?().valueOf()
+    points: -> 
+        switch @item.type
+            when 'circle', 'ellipse', 'rect', 'text'
+                if empty @fakePoints
+                    @fakePoints = @trans.itemPoints @item
+                return @fakePoints
+        @trans.itemPoints @item
+
     pointCode: (index) -> if @isPoly() then 'P' else @pointAt(index)[0]
     index: (index) -> (@numPoints() + index) % @numPoints()
     posAt: (index, dot='point') ->

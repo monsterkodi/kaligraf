@@ -60,6 +60,8 @@ class Object
 
         if points = @points()
 
+            log item.type, points
+            
             for i in [0...points.length]
                 
                 @initCtrlDots   i, points[i]
@@ -142,8 +144,6 @@ class Object
 
     setPoint: (index, dot, itemPos) ->
 
-        # log 'object.setPoint', @item.id()
-        
         points = @points()
         point  = points[index]
 
@@ -161,17 +161,6 @@ class Object
                         else
                             point[0] = itemPos.x
                             point[1] = itemPos.y
-
-                # if @isPath() and not @edit.passive and index == @numPoints()-1
-
-                    # log 'fix closed!'
-                    
-                    # firstPoint = @pointAt 0
-                    # firstPoint[1] = itemPos.x
-                    # firstPoint[2] = itemPos.y
-
-                    # @updateCtrlLines 0, firstPoint
-                    # @updateCtrlLines 1, @pointAt 1 if points.length>1
 
             when 'ctrl1', 'ctrlq', 'ctrls'
                 point[1] = itemPos.x
@@ -199,6 +188,9 @@ class Object
 
         if dot == 'point'
             post.emit 'object', 'setPoint', object:@, index:index
+            
+            if @item.type in ['rect', 'circle', 'ellipse', 'text']
+                @trans.setItemPoints @item, points
         
         if point[0] in ['Q', 'M', 'L', 'C'] and index < @numPoints()-1
             @updateCtrlLines index+1, @pointAt index+1
@@ -512,7 +504,10 @@ class Object
         for ctrl in @ctrls
             ctrl.moveBy delta.times 1.0/@kali.stage.zoom
 
-    plot: (points=@item.array()) -> @item.plot points
+    plot: (points) -> 
+    
+        points ?= @trans.itemPoints @item
+        @trans.setItemPoints @item, points
 
     dots: ->
         dots = []
@@ -543,7 +538,7 @@ class Object
             return gradi?[index]
         @ctrls[@index index]
         
-    points: -> @item.type != 'text' and @item.array?().valueOf()
+    points: -> @trans.itemPoints @item
 
     index: (index) -> (@numPoints() + index) % @numPoints()
 
@@ -585,7 +580,7 @@ class Object
         else
             @pointAt(index)[0]
 
-    isPoly: -> @item.type in ['polygon', 'polyline', 'line']
+    isPoly: -> @item.type in ['polygon', 'polyline', 'line', 'circle', 'ellipse', 'rect', 'text']
     isPath: -> not @isPoly()
 
 module.exports = Object

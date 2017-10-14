@@ -217,5 +217,76 @@ class Trans
     getWidth:  (item) -> item.bbox().width
     getHeight: (item) -> item.bbox().height
     getSize:   (item) -> pos @getWidth(item), @getHeight(item)
+
+    # 00000000    0000000   000  000   000  000000000   0000000  
+    # 000   000  000   000  000  0000  000     000     000       
+    # 00000000   000   000  000  000 0 000     000     0000000   
+    # 000        000   000  000  000  0000     000          000  
+    # 000         0000000   000  000   000     000     0000000   
+
+    itemPoints: (item) ->
+        
+        switch item.type
+            
+            when 'circle', 'ellipse', 'rect', 'text'
+                box = item.bbox()
+                [
+                    [box.x,  box.y,  'top left' ]
+                    [box.cx, box.y,  'top'      ]
+                    [box.x2, box.y,  'top right']
+                    [box.x2, box.cy, 'right'    ]
+                    [box.x2, box.y2, 'bot right']
+                    [box.cx, box.y2, 'bot'      ]
+                    [box.x,  box.y2, 'bot left' ]
+                    [box.x,  box.cy, 'left'     ]
+                    [box.cx, box.cy, 'center'   ]
+                ]
+            else
+                item.array?().valueOf()
+                
+    setItemPoints: (item, points) -> 
+        
+        switch item.type
+            when 'text'
+                item.transform x:points[0][0], y:points[0][1]
+            when 'circle', 'ellipse', 'rect'
+                item.center points[8][0], points[8][1]
+                switch item.type
+                    when 'circle'
+                        top   = pos points[1][0], points[1][1]
+                        bot   = pos points[5][0], points[5][1]
+                        left  = pos points[7][0], points[7][1]
+                        right = pos points[3][0], points[3][1]
+                        radius = (top.to(bot).length() + left.to(right).length())/4
+                        item.attr r: radius
+            else
+                item.plot points
+            
+    pointPos: (item, index) ->
+        
+        points = @itemPoints item
+        point = points[index]
+        itemPos = switch point[0]
+            when 'C'      then pos point[5], point[6]
+            when 'S', 'Q' then pos point[3], point[4]
+            when 'M', 'L' then pos point[1], point[2]
+            else               pos point[0], point[1]
+            
+        pos new SVG.Point(itemPos).transform itemMatrix item
+
+    setPointPos: (item, index, stagePos) ->
+        
+        points = @itemPoints item
+        itemPos = pos new SVG.Point(stagePos).transform itemMatrix(item).inverse()
+        point = points[index]
+        switch point[0]
+            when 'S', 'Q', 'C', 'M', 'L'
+                point[point.length-2] = itemPos.x
+                point[point.length-1] = itemPos.y
+            else
+                point[0] = itemPos.x
+                point[1] = itemPos.y
+                
+        @setItemPoints item, points
     
 module.exports = Trans

@@ -7,7 +7,7 @@
 
 { post, first, last, prefs, valid, empty, log, _ } = require 'kxk'
 
-{ uuid, pointPos, setPointPos } = require '../utils'
+{ uuid } = require '../utils'
 
 Tool  = require './tool'
 Mover = require '../edit/mover'
@@ -18,6 +18,7 @@ class Lock extends Tool
         
         super @kali, cfg
         
+        @trans  = @kali.trans
         @shapes = @stage.shapes
         
         @locklist = []
@@ -112,8 +113,8 @@ class Lock extends Tool
         for index in [1...lock.length]
             prev = @splitId lock[index-1]
             next = @splitId lock[index]
-            pos1 = pointPos SVG.get(prev.id), prev.index
-            pos2 = pointPos SVG.get(next.id), next.index
+            pos1 = @trans.pointPos SVG.get(prev.id), prev.index
+            pos2 = @trans.pointPos SVG.get(next.id), next.index
             
             if not @white[lock[index]]?
                 @white[lock[index]] ?= @shapes.edit.linesWhite.line()

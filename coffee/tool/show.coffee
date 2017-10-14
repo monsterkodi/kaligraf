@@ -19,7 +19,7 @@ class Show extends Tool
         
         super @kali, cfg
         
-        @trans     = @kali.trans
+        @trans = @kali.trans
         @selection = @stage.selection
         
         @bindStage 'ids'

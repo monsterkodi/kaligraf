@@ -29,16 +29,9 @@ class Pipette extends Tool
         item = @stage.leafItemAtPos pos event
 
         if item?
-            
-            post.emit 'color', 'stroke', color:item.style('stroke'), item.style('stroke-opacity')
-            post.emit 'color', 'fill',   color:item.style('fill'),   item.style('fill-opacity')
-            # @tools.fill.color = item.style 'fill' 
-            # @tools.fill.alpha = item.style 'fill-opacity' 
-            # @tools.fill.update()
-            
-            # @tools.stroke.color = item.style 'stroke' 
-            # @tools.stroke.alpha = item.style 'stroke-opacity' 
-            # @tools.stroke.update()
+                        
+            @tools.fill.copyFromItems [item]
+            @tools.stroke.copyFromItems [item]
             
             @tools.width.setWidth item.style 'stroke-width' 
             

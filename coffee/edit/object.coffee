@@ -215,7 +215,7 @@ class Object
 
             index   = dot.ctrl.index()
             itemPos = @dotPos index, dot.dot
-            itemPos = @trans.inverse dot.ctrl.object.item, itemPos
+            itemPos = @trans.fullInverse dot.ctrl.object.item, itemPos
             @setPoint index, dot.dot, itemPos
 
         @plot()

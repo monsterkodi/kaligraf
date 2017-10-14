@@ -72,7 +72,10 @@ class Color extends Tool
     
     onSelection: =>
         
-        items = @stage.selectedLeafItems()
+        @copyFromItems @stage.selectedLeafItems()
+        
+    copyFromItems: (items) ->
+        
         return if empty items
         
         r = g = b = a = 0

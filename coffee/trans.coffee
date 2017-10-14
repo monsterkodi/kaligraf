@@ -141,12 +141,7 @@ class Trans
     
         switch item.type
             when 'circle', 'ellipse'
-                if item.type == 'circle'
-                    rx = ry = item.attr 'r'
-                else
-                    rx = item.attr 'rx'
-                    ry = item.attr 'ry'
-                item.transform x:c.x-rx, y:c.y-ry
+                item.transform x:c.x, y:c.y
             when 'mask'
                 bb = @getRect item
                 delta = boxCenter(bb).to c

@@ -68,13 +68,14 @@ class Lock extends Tool
         dots = info.dotsel.dots.filter (dot) -> dot.dot == 'point'
         delta = info.delta
         locks = @locksForDots dots
+        
         return if empty locks
         
         movedIds = dots.map (dot) => @dotId dot
         lockedIds = _.flatten locks
         _.pullAll lockedIds, movedIds
         
-        if valid lockedIds
+        if valid(lockedIds) and not info.event?.metaKey
 
             itemIndexDots = {}
             

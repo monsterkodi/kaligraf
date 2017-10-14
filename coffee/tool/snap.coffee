@@ -157,7 +157,8 @@ class Snap extends Tool
                             size = 6/@stage.zoom
                             center = @trans.center close.item
                             if close.a in ['cx', 'cy']
-                                c = @svg.circle size
+                                c = @svg.circle()
+                                c.size size, size
                                 l.addClass 'snap-center'
                                 c.addClass 'snap-center'
                                 @trans.center c, center

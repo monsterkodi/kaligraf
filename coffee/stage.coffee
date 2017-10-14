@@ -8,7 +8,7 @@
 {   resolve, elem, post, drag, prefs, stopEvent, fileName,
     first, last, empty, clamp, pos, fs, log, _ } = require 'kxk'
 
-{   contrastColor, normRect, bboxForItems, itemIDs, insideBox,
+{   contrastColor, normRect, bboxForItems, itemIDs, insideBox, itemBox, 
     growBox, rboxForItems, boxOffset, boxCenter, itemGradient, itemMatrix } = require './utils'
 
 electron  = require 'electron'
@@ -299,8 +299,12 @@ class Stage
 
     moveItem: (item, delta) ->
 
-        center = @kali.trans.center item
-        @kali.trans.center item, center.plus delta
+        center = @trans.center item
+        log 'moveItem center', center
+        log item.bbox()
+        log '      boxCenter',  boxCenter itemBox item
+        log '      rectCenter', boxCenter @trans.rect item
+        @trans.center item, center.plus delta
 
     # 0000000    0000000    000       0000000  000      000   0000000  000   000  
     # 000   000  000   000  000      000       000      000  000       000  000   

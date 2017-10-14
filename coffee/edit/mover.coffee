@@ -7,15 +7,22 @@
 
 { empty, valid, pos, log, _ } = require 'kxk'
 
+# { itemMatrix } = require '../utils'
+
 class Mover
 
-    constructor: (@kali, @item, cfg) ->
+    constructor: (@kali, @item, @cfg) ->
 
         @trans = @kali.trans
         
-        indexDots = cfg.indexDots
+        if @cfg?.indexDots?
+            @moveIndexDots()
+        
+    moveIndexDots: ->
+        
+        indexDots = @cfg.indexDots
 
-        if not cfg.event? or not cfg.event.ctrlKey
+        if not @cfg.event? or not @cfg.event.ctrlKey
 
             for idots in indexDots
 
@@ -54,8 +61,8 @@ class Mover
                         idots.dots = idots.dots.filter (d) -> d != 'ctrlr'
                         idts.dots.push('point') if 'point' not in idts.dots
 
-        itemDelta = @trans.inverse(@item, cfg.delta).minus @trans.inverse(@item, pos(0,0))
-
+        itemDelta = @trans.fullInverse(@item, @cfg.delta).minus @trans.fullInverse(@item, pos(0,0))
+        
         indexDots = indexDots.filter (idts) -> idts.dots.length
 
         for idots in indexDots
@@ -96,18 +103,6 @@ class Mover
                             else
                                 point[0] = itemPos.x
                                 point[1] = itemPos.y
-
-                    # if @isPath() and not @edit.passive and index == @numPoints()-1
-
-                        # log 'fix closed!'
-                        # if false
-
-                            # firstPoint = @pointAt 0
-                            # firstPoint[1] = itemPos.x
-                            # firstPoint[2] = itemPos.y
-
-                            # @updateCtrlDots 0, firstPoint
-                            # @updateCtrlDots 1, @pointAt 1 if points.length>1
 
                 when 'ctrl1', 'ctrlq', 'ctrls'
                     point[1] = itemPos.x

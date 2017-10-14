@@ -62,21 +62,43 @@ class Lock extends Tool
     onDotSel: (action, info) =>
         
         switch action
-            when 'move' then @moveLocked info
-           
-    moveLocked: (info) ->
+            when 'move'
+                return if empty @locklist
+                dots = info.dotsel.dots.filter (dot) -> dot.dot == 'point'
+                movedIds = dots.map (dot) => @dotId dot
+                @moveLockedIdsBy movedIds, info.delta, info.event
+
+    onStage: (action, info) =>
         
-        dots = info.dotsel.dots.filter (dot) -> dot.dot == 'point'
-        delta = info.delta
-        locks = @locksForDots dots
+        switch action
+            when 'load', 'restore'  then @loadLocks()
+            when 'clear'            then @clear()
+            when 'moveItems'        then @moveItemsBy info.items, info.delta
+                
+    # 00     00   0000000   000   000  00000000  
+    # 000   000  000   000  000   000  000       
+    # 000000000  000   000   000 000   0000000   
+    # 000 0 000  000   000     000     000       
+    # 000   000   0000000       0      00000000  
+    
+    moveItemsBy: (items, delta) ->
+        
+        return if empty @locklist
+        movedIds = []
+        for item in items
+            movedIds = movedIds.concat @idsForItem item
+        @moveLockedIdsBy movedIds, delta
+            
+    moveLockedIdsBy: (movedIds, delta, event) ->
+        
+        locks = @locksForIDs movedIds
         
         return if empty locks
         
-        movedIds = dots.map (dot) => @dotId dot
         lockedIds = _.flatten locks
         _.pullAll lockedIds, movedIds
         
-        if valid(lockedIds) and not info.event?.metaKey
+        if valid(lockedIds) and not event?.metaKey
 
             itemIndexDots = {}
             
@@ -99,8 +121,14 @@ class Lock extends Tool
         for lock in locks
             @updateLock lock
             
-        @shapes.edit.update()
+        @shapes.edit?.update()
             
+    #  0000000   0000000          000  00000000   0000000  000000000  
+    # 000   000  000   000        000  000       000          000     
+    # 000   000  0000000          000  0000000   000          000     
+    # 000   000  000   000  000   000  000       000          000     
+    #  0000000   0000000     0000000   00000000   0000000     000     
+    
     addObject: (object) -> @updateObject object
 
     updateObject: (object) ->
@@ -110,9 +138,12 @@ class Lock extends Tool
             
     updateLock: (lock) ->
         
+        return if not @shapes.edit?
+        
         for index in [1...lock.length]
             prev = @splitId lock[index-1]
             next = @splitId lock[index]
+            log 'prev', prev, 'next', next
             pos1 = @trans.pointPos SVG.get(prev.id), prev.index
             pos2 = @trans.pointPos SVG.get(next.id), next.index
             
@@ -129,15 +160,7 @@ class Lock extends Tool
         for lock in @locksForItem object.item
             for id in lock
                 @delLine id
-                
-    onStage: (action) =>
-        
-        switch action
-            when 'load', 'restore'
-                @loadLocks()
-            when 'clear'
-                @clear()
-        
+                        
     clear: ->
         
         @locklist = []
@@ -237,6 +260,11 @@ class Lock extends Tool
         ids = _.uniq lock.map (l) -> l.split(':')[0]
         ids.map (id) -> SVG.get id
 
+    lockForID: (id) ->
+        if valid(@locklist) 
+            for lock in @locklist
+                return lock if id in lock
+        
     lockForDot: (dot) ->
         
         if valid(@locklist) and dot.dot == 'point'
@@ -249,9 +277,24 @@ class Lock extends Tool
         locks = _.uniq dots.map (dot) => @lockForDot dot
         locks = locks.filter (lock) -> lock?
                     
+    locksForIDs: (ids) ->
+        
+        locks = _.uniq ids.map (id) => @lockForID id
+        locks = locks.filter (lock) -> lock?
+        
     locksForItem: (item) ->
         
         @locklist.filter (lock) => @lockContainsItem lock, item
+        
+    idsForItem: (item) ->
+        
+        if points = @trans.itemPoints item
+            points.map (point) -> item.id() + ':' + points.indexOf point
+        else if item.type in ['g']
+            ids = []
+            for child in item.children()
+                ids = ids.concat @idsForItem child
+            ids
     
     # 000  0000000    
     # 000  000   000  

@@ -324,7 +324,7 @@ class Selection
             else
                 @kali.tool('snap').clear()
             
-        @stage.moveItems @items, delta
+        @stage.moveItemsBy @items, delta
         @update()
             
     # 00000000   00000000   0000000  000000000    

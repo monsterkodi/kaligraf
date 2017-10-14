@@ -293,19 +293,15 @@ class Stage
 
         @shapes.onMove event
             
-    moveItems: (items, delta) ->
+    moveItemsBy: (items, delta) ->
 
         @do 'move' + itemIDs items
         for item in items
-            @moveItem item, delta
+            center = @trans.center item
+            @trans.center item, center.plus delta
+            
+        post.emit 'stage', 'moveItems', items:items, delta:delta
         @done()
-        post.emit 'stage', 'moveItems'
-
-    moveItem: (item, delta) ->
-
-        center = @trans.center item
-        log 'moveItem center', center, itemMatrix item
-        @trans.center item, center.plus delta
 
     # 0000000    0000000    000       0000000  000      000   0000000  000   000  
     # 000   000  000   000  000      000       000      000  000       000  000   

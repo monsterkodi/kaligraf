@@ -68,6 +68,7 @@ class Menu
                     { type:  'separator'}                                             
                     { label: 'Center',  accelerator: '2',           click: -> button 'align', 'center'}
                     { label: 'Middle',  accelerator: '3',           click: -> button 'align', 'mid'}
+                    { label: 'Join',    accelerator: 'j',           click: -> button 'align', 'mid'; button 'align', 'center'}
                     { type:  'separator'}                                             
                     { label: 'Top',     accelerator: '4',           click: -> button 'align', 'top'}
                     { label: 'Bottom',  accelerator: 'command+4',   click: -> button 'align', 'bot'}
@@ -98,8 +99,8 @@ class Menu
                     { label: 'Vertical',    accelerator: 'command+6',       click: -> button 'flip', 'vertical'}
                 ]}
                 { type:  'separator'}                
-                { label: 'Lock',        accelerator: ';',                   click: -> button 'lock', 'lock'}
-                { label: 'Unlock',      accelerator: 'command+;',           click: -> button 'lock', 'unlock'}
+                { label: 'Lock',        accelerator: 'k',                   click: -> button 'lock', 'lock'}
+                { label: 'Unlock',      accelerator: ';',                   click: -> button 'lock', 'unlock'}
                 { type:  'separator'}
                 { label: 'Group',       accelerator: 'command+g',           click: -> action 'group'}
                 { label: 'Ungroup',     accelerator: 'command+u',           click: -> action 'ungroup'}

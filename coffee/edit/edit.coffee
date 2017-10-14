@@ -389,7 +389,7 @@ class Edit
         if not @dotsel.empty()
             @dotsel.moveBy delta
         else
-            @stage.moveItems @items(), delta
+            @stage.moveItemsBy @items(), delta
             for object in @objects
                 object.moveCtrlsBy delta
             

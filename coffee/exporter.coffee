@@ -188,7 +188,7 @@ class Exporter
         for def in item.doc().defs().children()
             if def.type.includes 'Gradient'
                 if not keepGradients.has def.id()
-                    log 'Exporter.cleanGradients -- remove unused gradient', def.id()
+                    # log 'Exporter.cleanGradients -- remove unused gradient', def.id()
                     def.remove()
 
     @cleanFilters: (item) ->

@@ -41,13 +41,6 @@ class Shadow extends Tool
             action: @setOffset
             value:  @offset
             
-        post.on 'selection', @onSelection
-        
-    onSelection: =>
-        
-        items = @stage.selectedItems()
-        return if empty items
-
     setSize: (size) =>
         
         @size = parseFloat size
@@ -68,27 +61,27 @@ class Shadow extends Tool
 
     updateSelected: ->
         
-        items = @stage.selectedItems()
+        if @kali.tool('select').shapeText == 'text'
+            items = @stage.selectedLeafItems()
+        else
+            items = @stage.selectedItems()
         return if empty items
 
         @filter = new SVG.Filter()
         
-        alphaMatrix = [
-            1.0,   0,   0,   0,   0
-            , 0,   1.0, 0,   0,   0
-            , 0,   0,   1.0, 0,   0
-            , 0,   0,   0,   0.3, 0 ]
+        alphaMatrix = [ 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0.3, 0]
         
         blur = @filter
             .offset @offset, @offset
             .in @filter.sourceAlpha
             .colorMatrix 'matrix', alphaMatrix
             .gaussianBlur @size, @size
+            
         @filter.blend @filter.source, blur            
         @filter.size('300%','300%').move('-100%', '-100%')
-#         
+
         for item in items
-#             
+
             if @offset == 0 == @size
                 item.unfilter()
             else

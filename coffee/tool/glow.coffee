@@ -42,13 +42,6 @@ class Glow extends Tool
             action: @setAlpha
             value:  @alpha
             
-        post.on 'selection', @onSelection
-        
-    onSelection: =>
-        
-        items = @stage.selectedItems()
-        return if empty items
-
     setSize: (size) =>
         
         @size = parseFloat size
@@ -72,11 +65,7 @@ class Glow extends Tool
         items = @stage.selectedItems()
         return if empty items
         
-        alphaMatrix = [ 
-                1.0,   0,   0,   0,   0
-                , 0,   1.0, 0,   0,   0
-                , 0,   0,   1.0, 0,   0
-                , 0,   0,   0,   @alpha, 0 ]
+        alphaMatrix = [ 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, @alpha, 0]
         
         @filter = new SVG.Filter()
         blur = @filter.colorMatrix('matrix', alphaMatrix).gaussianBlur @size, @size

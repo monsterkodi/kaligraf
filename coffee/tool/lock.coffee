@@ -24,6 +24,7 @@ class Lock extends Tool
         @locklist = []
         @white = {}
         @black = {}
+        @locks = {}
         
         @initTitle()
         
@@ -74,6 +75,9 @@ class Lock extends Tool
             when 'load', 'restore'  then @loadLocks()
             when 'clear'            then @clear()
             when 'moveItems'        then @moveItemsBy info.items, info.delta
+            when 'viewbox'
+                for k,lock of @locks
+                    lock.transform(scale: 1.0/@stage.zoom).transform rotation: 45
                 
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
@@ -136,47 +140,73 @@ class Lock extends Tool
     
     addObject: (object) -> @updateObject object
 
-    updateObject: (object) ->
-        
-        for lock in @locksForItem object.item
-            @updateLock lock
-            
-    updateLock: (lock) ->
-        
-        return if not @shapes.edit?
-        
-        for index in [1...lock.length]
-            
-            prev = @splitId lock[index-1]
-            next = @splitId lock[index]
-            prevItem = SVG.get prev.id 
-            nextItem = SVG.get next.id 
-            if not prevItem or not nextItem
-                log "Lock.updateLock -- missing items at index #{index} in lock:", lock
-                continue
-            pos1 = @trans.pointPos prevItem, prev.index
-            pos2 = @trans.pointPos nextItem, next.index
-            
-            if not @white[lock[index]]?
-                @white[lock[index]] ?= @shapes.edit.linesWhite.line()
-            if not @black[lock[index]]?
-                @black[lock[index]] ?= @shapes.edit.linesBlack.line()
-            
-            @white[lock[index]].plot [[pos1.x, pos1.y], [pos2.x, pos2.y]]
-            @black[lock[index]].plot [[pos1.x, pos1.y], [pos2.x, pos2.y]]                
-        
     delObject: (object) ->
         
         for lock in @locksForItem object.item
             for id in lock
                 @delLine id
-                        
+    
+    updateObject: (object) ->
+        
+        for lock in @locksForItem object.item
+            @updateLock lock
+
     clear: ->
         
         @locklist = []
         @white = {}
         @black = {}
+        @locks = {}
+            
+    # 000   000  00000000   0000000     0000000   000000000  00000000  
+    # 000   000  000   000  000   000  000   000     000     000       
+    # 000   000  00000000   000   000  000000000     000     0000000   
+    # 000   000  000        000   000  000   000     000     000       
+    #  0000000   000        0000000    000   000     000     00000000  
+    
+    updateLock: (lock) ->
+        
+        return if not @shapes.edit?
+        
+        if not @locks[lock[0]]?
+            @locks[lock[0]] = @shapes.edit.linesWhite.rect 12, 12
+            @locks[lock[0]].addClass 'lock'
+            @locks[lock[0]].transform(scale: 1.0/@stage.zoom).transform rotation: 45
+            
+        firstItem = SVG.get @splitId(lock[0]).id 
+        pos0 = @trans.pointPos firstItem, @splitId(lock[0]).index
+        @trans.center @locks[lock[0]], pos0
+        
+        for index in [1...lock.length]
+            
+            prev = @splitId lock[index-1]
+            next = @splitId lock[index]
+            
+            prevItem = SVG.get prev.id 
+            nextItem = SVG.get next.id 
+            
+            if not prevItem or not nextItem
+                log "Lock.updateLock -- missing items at index #{index} in lock:", lock
+                continue
                 
+            pos1 = @trans.pointPos prevItem, prev.index
+            pos2 = @trans.pointPos nextItem, next.index
+            
+            if not @locks[lock[index]]?
+                @locks[lock[index]] = @shapes.edit.linesWhite.rect 12, 12
+                @locks[lock[index]].addClass 'lock'
+                @locks[lock[index]].transform(scale: 1.0/@stage.zoom).transform rotation: 45
+                
+            if not @white[lock[index]]?
+                @white[lock[index]] = @shapes.edit.linesWhite.line()
+                
+            if not @black[lock[index]]?
+                @black[lock[index]] = @shapes.edit.linesBlack.line()
+            
+            @trans.center @locks[lock[index]], pos2
+            @white[lock[index]].plot [[pos1.x, pos1.y], [pos2.x, pos2.y]]
+            @black[lock[index]].plot [[pos1.x, pos1.y], [pos2.x, pos2.y]]                
+                                                
     # 000       0000000    0000000  000   000   0000000   0000000    000      00000000  
     # 000      000   000  000       000  000   000   000  000   000  000      000       
     # 000      000   000  000       0000000    000000000  0000000    000      0000000   
@@ -253,10 +283,13 @@ class Lock extends Tool
             _.pull @locklist, lock
             
     delLine: (id) ->
+        
         @white[id]?.remove()
         @black[id]?.remove()
+        @locks[id]?.remove()
         delete @white[id]
         delete @black[id]
+        delete @locks[id]
             
     #  0000000   00000000  000000000    
     # 000        000          000       

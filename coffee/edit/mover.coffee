@@ -11,6 +11,8 @@ class Mover
 
     constructor: (@kali, @item, @cfg) ->
 
+        if not @item then log 'dafuk?', @item
+        
         @trans = @kali.trans
         
         if @cfg?.indexDots?
@@ -75,7 +77,7 @@ class Mover
                 oldPos = @posAt idots.index, dot
                 newPos = oldPos.plus itemDelta
                 @movePoint idots.index, newPos, dot
-        log 'mover.setItemPoints', @points()
+
         @trans.setItemPoints @item, @points()
 
     # 00     00   0000000   000   000  00000000  00000000    0000000   000  000   000  000000000

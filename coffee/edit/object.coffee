@@ -60,7 +60,7 @@ class Object
 
         if points = @points()
 
-            log 'Object.setItem', item.type, points, itemMatrix item
+            # log 'Object.setItem', item.type, points, itemMatrix item
             
             for i in [0...points.length]
                 

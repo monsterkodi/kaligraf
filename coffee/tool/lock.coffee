@@ -105,7 +105,12 @@ class Lock extends Tool
             for id in lockedIds
                 
                 split = @splitId id 
-                item  = SVG.get split.id 
+                item  = SVG.get split.id
+                
+                if not item?
+                    log 'Lock.moveLockedIdsBy -- missing item?', split
+                    continue
+                
                 index = split.index
                 
                 itemIndexDots[split.id] ?= item:item, indexDots:[]
@@ -141,11 +146,16 @@ class Lock extends Tool
         return if not @shapes.edit?
         
         for index in [1...lock.length]
+            
             prev = @splitId lock[index-1]
             next = @splitId lock[index]
-            log 'prev', prev, 'next', next
-            pos1 = @trans.pointPos SVG.get(prev.id), prev.index
-            pos2 = @trans.pointPos SVG.get(next.id), next.index
+            prevItem = SVG.get prev.id 
+            nextItem = SVG.get next.id 
+            if not prevItem or not nextItem
+                log "Lock.updateLock -- missing items at index #{index} in lock:", lock
+                continue
+            pos1 = @trans.pointPos prevItem, prev.index
+            pos2 = @trans.pointPos nextItem, next.index
             
             if not @white[lock[index]]?
                 @white[lock[index]] ?= @shapes.edit.linesWhite.line()
@@ -196,7 +206,7 @@ class Lock extends Tool
         else
             locks.node.innerHTML = @locklist.map((ll) -> ll.join ',').join '\n'
             
-        log 'saveLocks', @locklist
+        # log 'saveLocks', @locklist
         
     # 000       0000000    0000000   0000000    
     # 000      000   000  000   000  000   000  
@@ -213,7 +223,7 @@ class Lock extends Tool
         else
             @locklist = []
             
-        log 'loadLocks', @locklist
+        # log 'loadLocks', @locklist
             
     #  0000000   0000000    0000000    
     # 000   000  000   000  000   000  

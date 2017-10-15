@@ -472,7 +472,8 @@ class Shapes
                 if @edit? and not @edit.empty()
                     @edit.dotsel.addAll()
                 else if @edit? or @kali.shapeTool() == 'edit'
-                    @editItems @stage.pickableItems()
+                    # @editItems @stage.pickableItems()
+                    @editItems @stage.treeItems pickable:true
                 else
                     @selection.setItems @stage.pickableItems()
                     

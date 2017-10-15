@@ -292,6 +292,15 @@ module.exports =
         value = item.style style 
         if value.startsWith 'url'
             module.exports.urlGradient value
+            
+    itemFilter: (item) ->
+        
+        return item.filterer if item.filterer
+        
+        if filter = item.attr 'filter'
+            if filter.startsWith 'url'
+                id = filter.split('#')[1].replace ')', ''
+                return SVG.get id
 
     gradientStops: (gradient) ->
         

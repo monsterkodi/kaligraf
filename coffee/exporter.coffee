@@ -7,7 +7,7 @@
 
 { elem, empty, resolve, path, fs, fileExists, log, _ } = require 'kxk'
 
-{ bboxForItems, growBox, uuid, itemGradient, itemIDs } = require './utils'
+{ bboxForItems, growBox, uuid, itemGradient, itemFilter, itemIDs } = require './utils'
 
 class Exporter
 
@@ -73,11 +73,13 @@ class Exporter
     @save: (svg, opt) ->
         
         @cleanGradients svg
+        @cleanFilters   svg
         fs.writeFileSync resolve(opt.file), @svg(svg, opt), encoding: 'utf8'
 
     @saveSVG: (name, svg) ->
         
         @cleanGradients svg
+        @cleanFilters   svg
         fs.writeFileSync @svgFile(name), @svg(svg), encoding: 'utf8'
 
     @hasSVG: (name) -> fileExists @svgFile name
@@ -188,7 +190,22 @@ class Exporter
                 if not keepGradients.has def.id()
                     log 'Exporter.cleanGradients -- remove unused gradient', def.id()
                     def.remove()
+
+    @cleanFilters: (item) ->
         
+        keepFilters = new Set()
+        childItems = @childItems item
+        
+        for item in childItems
+            if filter = itemFilter item
+                keepFilters.add filter.id()
+
+        for def in item.doc().defs().children()
+            if def.type == 'filter'
+                if not keepFilters.has def.id()
+                    # log 'Exporter.cleanFilters -- remove unused filter', def.id()
+                    def.remove()
+                    
     @childItems: (item) ->
         
         return [] if item.type == 'defs'

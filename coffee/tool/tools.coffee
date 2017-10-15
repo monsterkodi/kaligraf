@@ -136,8 +136,10 @@ class Tools extends Tool
                 # { name: 'arc', draw: true,  group: 'shape', popup: 'temp' }                
             ]
             [
-                { class: 'undo'  }
-                { class: 'layer' }
+                { class: 'undo'   }
+                { class: 'layer'  }
+                { class: 'glow'   }
+                { class: 'shadow' }
             ]
             [
                 { class: 'group'   }

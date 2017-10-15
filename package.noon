@@ -15,7 +15,6 @@ dependencies
                 font-manager    ^0.2.2
                 heterarchy      ^1.0.7
                 kxk             ^0.17.8
-                svg.colorat.js  ^1.0.0
                 svg.filter.js   ^2.0.2
                 svg.js          ^2.6.3
                 uuid            ^3.1.0

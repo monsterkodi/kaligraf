@@ -9,6 +9,8 @@
 
 { bboxForItems, growBox, uuid, itemGradient, itemFilter, itemIDs } = require './utils'
 
+pretty = require 'pretty-data'
+
 class Exporter
 
     #  0000000  000   000   0000000   
@@ -24,13 +26,7 @@ class Exporter
             padding = not opt?.padding? and 10 or opt.padding
             bb = growBox new SVG.BBox(opt?.viewbox ? root.bbox()), padding
 
-        svgStr = """
-            <svg width="100%" height="100%"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg" 
-            xmlns:xlink="http://www.w3.org/1999/xlink"
-            xmlns:svgjs="http://svgjs.com/svgjs"
-            """
+        svgStr = """<svg width="100%" height="100%" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" """
 
         if opt?.color and opt?.alpha
             rgba = "background: rgba(#{opt.color.r}, #{opt.color.g}, #{opt.color.b}, #{opt.alpha});"
@@ -45,6 +41,10 @@ class Exporter
             svgStr += item.svg()
             
         svgStr += '</svg>'
+        
+        svgStr = pretty.pd.xml svgStr
+        
+        svgStr
 
     @itemSVG: (items, opt) ->
 

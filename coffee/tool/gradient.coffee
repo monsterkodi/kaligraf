@@ -257,8 +257,8 @@ class Gradient extends Tool
         
         for style in ['fill', 'stroke']
             if @kali.tool('select').fillStroke.includes style
-                post.emit 'gradient', style, info
                 @applyGradient style, info
+                post.emit 'gradient', style, info
         
     # 000      000   0000000  000000000  
     # 000      000  000          000     

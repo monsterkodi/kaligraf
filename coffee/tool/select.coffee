@@ -55,7 +55,7 @@ class Select extends Tool
         ]
         
     setFillStroke: (@fillStroke) ->
-        log 'setFillStroke', @fillStroke
+
         prefs.set 'select:fillStroke', @fillStroke
         
     setShapeText: (@shapeText) ->

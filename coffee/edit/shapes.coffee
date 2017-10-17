@@ -203,7 +203,7 @@ class Shapes
         delete drag.shift
         
         @clearText()
-        log 'Shapes.onStart'
+        # log 'Shapes.onStart'
         # shape = @kali.shapeTool()
         # if shape == 'text'
             # if item = @stage.itemAtPos pos event
@@ -221,7 +221,7 @@ class Shapes
     
     handleMouseDown: (event) =>
         
-        @log 'Shapes.handleMouseDown'
+        # @log 'Shapes.handleMouseDown'
         
         @kali.focus()
         @tools.collapseTemp()
@@ -255,7 +255,7 @@ class Shapes
                     
             when 'edit'
 
-                log 'Shapes.handleMouseDown start edit', @stage.itemAtPos(eventPos)?.id()
+                # log 'Shapes.handleMouseDown start edit', @stage.itemAtPos(eventPos)?.id()
                 @selection.clear()
                 @edit ?= new Edit @kali
                 @edit.stageStart drag, event

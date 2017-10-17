@@ -133,9 +133,9 @@ class Exporter
             log "clean sodipodi: #{item.node.getAttribute 'sodipodi:nodetypes'}" 
             item.node.removeAttribute 'sodipodi:nodetypes'
             
-        if item.style('opacity') == 'unset'
-            log 'clear unset opacity'
-            item.style 'opacity', null
+        # if item.style('opacity') == 'unset'
+            # log 'clear unset opacity'
+            # item.style 'opacity', null
          
         if item.node.hasAttributes()
             

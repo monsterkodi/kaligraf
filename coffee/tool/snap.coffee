@@ -183,6 +183,11 @@ class Snap extends Tool
 
                     continue if not @snapGaps or empty gaps[xy]
 
+                    oo = x:'cy', y:'cx'
+                    os = x:'h',  y:'w'
+                    
+                    continue if Math.abs(obox[oo[xy]]-ibox[oo[xy]]) > (obox[os[xy]]+ibox[os[xy]])/2
+                    
                     ic = x:'x2', y:'y2'
                     oc = x:'x',  y:'y'
                     
@@ -229,6 +234,7 @@ class Snap extends Tool
         ic = x:'x2', y:'y2'
         nc = x:'x',  y:'y'
         oc = x:'cy', y:'cx'
+        os = x:'h',  y:'w'
 
         for xy in 'xy'
             
@@ -237,8 +243,10 @@ class Snap extends Tool
             [item, ibox] = boxes.shift()
             while valid boxes
                 [next, nbox] = boxes.shift()
-                if nbox[nc[xy]] > ibox[ic[xy]]
+                log xy, Math.abs(nbox[oc[xy]]-ibox[oc[xy]]), (ibox[os[xy]]+nbox[os[xy]]), nbox[nc[xy]] > ibox[ic[xy]], (nbox[nc[xy]] > ibox[ic[xy]]) and Math.abs(nbox[oc[xy]]-ibox[oc[xy]])<=(ibox[os[xy]]+nbox[os[xy]])
+                if (nbox[nc[xy]] > ibox[ic[xy]]) and Math.abs(nbox[oc[xy]]-ibox[oc[xy]])<=(ibox[os[xy]]+nbox[os[xy]])
                     dist = nbox[nc[xy]] - ibox[ic[xy]]
+                    dist = Math.round(dist*1000)/1000
                     gaps[xy][dist] ?= spans:[], gap:dist
                     gap = gaps[xy][dist]
                     gap.spans.push [ibox[ic[xy]], nbox[nc[xy]], (ibox[oc[xy]]+nbox[oc[xy]])/2]

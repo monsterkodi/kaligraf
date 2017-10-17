@@ -175,6 +175,16 @@ class Exporter
     # 000   000  000   000  000   000  000   000  000  000       000  0000     000          000  
     #  0000000   000   000  000   000  0000000    000  00000000  000   000     000     0000000   
     
+    @fixGradients: (doc) ->
+        
+        for child in doc.defs().children()
+            if child.type in ['linearGradient', 'radialGradient']
+                nodes = child.node.childNodes
+                for index in [nodes.length-1..0]
+                    node = nodes[index]
+                    if node.tagName != 'stop'
+                        node.remove()
+    
     @cleanGradients: (item) ->
         
         keepGradients = new Set()

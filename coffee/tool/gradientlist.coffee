@@ -129,8 +129,14 @@ class GradientList
     #  0000000   000   000  000   000  0000000    000  00000000  000   000     000     
 
     onNewGradient: =>
+        
         index = @activeIndex()
         gradient = new GradientItem @kali
+        
+        gradient.setGradient @stage.svg.gradient 'linear', (stop) ->
+            stop.at 0, '#000', 1
+            stop.at 1, '#fff', 1
+        
         @scroll.insertBefore gradient.element, @activeGradient()
         @activate Math.max 0, index
         @store()

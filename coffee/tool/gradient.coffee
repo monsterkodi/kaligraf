@@ -214,18 +214,11 @@ class Gradient extends Tool
             else
                 state = @state
 
-            log "Gradient.applyType style:#{style} type:#{type} state:", state
-                
             gradient = @stage.svg.gradient type
             setGradientState gradient, state
             
-            log "Gradient.applyType id:#{gradient.id()} outer:", gradient.node.outerHTML
-                
             item.style style, gradient                
             item.style "#{style}-opacity", 1
-            log "Gradient.applyType ", item.style style
-            log "Gradient.applyType ", item.style "#{style}-opacity"
-            
                 
         post.emit 'gradient', style, item:item, type:type
         

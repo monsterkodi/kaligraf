@@ -440,8 +440,8 @@ class Stage
                     for item in items
                         parent.add item
                         
-                    # Exporter.cleanIDs items
                     Exporter.cleanIDs @treeItems()
+                    Exporter.fixGradients parent.doc()
                     
                     if opt?.select != false
                         for item in items        

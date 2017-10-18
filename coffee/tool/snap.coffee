@@ -100,33 +100,35 @@ class Snap extends Tool
         
         if @snapGrid or @snapCenter or @snapBorder or @snapGaps
                                     
-            for orientation,closest of @calcClosest items
+            xyClosest = @calcClosest items
+            for xy,closest of xyClosest
                                                                     
                 if valid closest
                     
                     winner = first closest
                                         
-                    if @winner[orientation]? and @winner[orientation].id != winner.id
-                        oldKeep = @snapKeep[orientation]
-                        @snapKeep[orientation] = delta[orientation]-winner.dist
-                        delta[orientation] = winner.dist + oldKeep
+                    if @winner[xy]? and @winner[xy].id != winner.id
+                        oldKeep = @snapKeep[xy]
+                        @snapKeep[xy] = delta[xy]-winner.dist
+                        delta[xy] = winner.dist + oldKeep
                     else 
-                        if @snapKeep[orientation]
-                            @snapKeep[orientation] += delta[orientation]
-                            delta[orientation] = 0
+                        if @snapKeep[xy]
+                            @snapKeep[xy] += delta[xy]
+                            delta[xy] = 0
                         else
-                            @snapKeep[orientation] = delta[orientation]-winner.dist
-                            delta[orientation] = winner.dist
+                            @snapKeep[xy] = delta[xy]-winner.dist
+                            delta[xy] = winner.dist
                     
-                    @winner[orientation] = winner
+                    @winner[xy] = winner
                     
-                    if @visible then @drawClosest orientation, closest
+                    if @visible then @drawClosest xy, closest
                     
                 else
                     
-                    delta[orientation] += @snapKeep[orientation]
-                    @snapKeep[orientation] = 0
-                    @winner[orientation] = null
+                    delta[xy] += @snapKeep[xy]
+                    @snapKeep[xy] = 0
+                    @winner[xy] = null
+                    
         else
             @snapKeep = pos 0,0
             @winner = x:null, y:null
@@ -172,6 +174,7 @@ class Snap extends Tool
                     for [a,b] in combis[xy]
                     
                         dist = obox[a] - ibox[b]
+                        dist = Math.round(dist*100)/100
                         
                         if Math.abs(dist) <= @snapDist
                             
@@ -212,6 +215,11 @@ class Snap extends Tool
                                 a:      'gap'
                                 val:    gap
                                 item:   other
+                                span:   [
+                                    ibox[if neg == 1 then ic[xy] else oc[xy]], 
+                                    obox[if neg == 1 then oc[xy] else ic[xy]], 
+                                    (obox[oo[xy]]+ibox[oo[xy]])/2
+                                ]
                                 
         for xy in 'xy'
             
@@ -238,21 +246,23 @@ class Snap extends Tool
 
         for xy in 'xy'
             
-            boxes = _.clone otherBoxes
-            boxes.sort (a,b) -> a[1][xy] - b[1][xy]
-            [item, ibox] = boxes.shift()
-            while valid boxes
-                [next, nbox] = boxes.shift()
-                log xy, Math.abs(nbox[oc[xy]]-ibox[oc[xy]]), (ibox[os[xy]]+nbox[os[xy]]), nbox[nc[xy]] > ibox[ic[xy]], (nbox[nc[xy]] > ibox[ic[xy]]) and Math.abs(nbox[oc[xy]]-ibox[oc[xy]])<=(ibox[os[xy]]+nbox[os[xy]])
-                if (nbox[nc[xy]] > ibox[ic[xy]]) and Math.abs(nbox[oc[xy]]-ibox[oc[xy]])<=(ibox[os[xy]]+nbox[os[xy]])
-                    dist = nbox[nc[xy]] - ibox[ic[xy]]
-                    dist = Math.round(dist*1000)/1000
-                    gaps[xy][dist] ?= spans:[], gap:dist
-                    gap = gaps[xy][dist]
-                    gap.spans.push [ibox[ic[xy]], nbox[nc[xy]], (ibox[oc[xy]]+nbox[oc[xy]])/2]
-                [item, ibox] = [next, nbox]
-                
-        log gaps
+            skippedBoxes = _.clone otherBoxes
+            while valid skippedBoxes
+                boxes = _.clone skippedBoxes
+                skippedBoxes = []
+                boxes.sort (a,b) -> a[1][xy] - b[1][xy]
+                [item, ibox] = boxes.shift()
+                while valid boxes
+                    [next, nbox] = boxes.shift()
+                    if (nbox[nc[xy]] > ibox[ic[xy]]) and Math.abs(nbox[oc[xy]]-ibox[oc[xy]])<=(ibox[os[xy]]+nbox[os[xy]])/2
+                        dist = nbox[nc[xy]] - ibox[ic[xy]]
+                        dist = Math.round(dist*100)/100
+                        gaps[xy][dist] ?= spans:[], gap:dist
+                        gap = gaps[xy][dist]
+                        gap.spans.push [ibox[ic[xy]], nbox[nc[xy]], (ibox[oc[xy]]+nbox[oc[xy]])/2]
+                        [item, ibox] = [next, nbox]
+                    else
+                        skippedBoxes.push [next, nbox]
         gaps
         
     # 0000000    00000000    0000000   000   000  
@@ -261,19 +271,21 @@ class Snap extends Tool
     # 000   000  000   000  000   000  000   000  
     # 0000000    000   000  000   000  00     00  
     
-    drawClosest: (orientation, closest) ->
+    drawClosest: (xy, closest) ->
         
-        while valid(closest) and Math.abs(first(closest).dist - @winner[orientation].dist) < 0.001
+        while valid(closest) and Math.abs(first(closest).dist - @winner[xy].dist) < 0.01
             
             close = closest.shift()
             size  = 6/@stage.zoom
             
             if close.a == 'gap'
                 
+                oo = x:'y', y:'x'
                 gap = close.val
                 
-                for span in gap.spans
-                    if orientation == 'x'
+                for span in gap.spans.concat [close.span]
+                    
+                    if xy == 'x'
                         x1 = span[0]
                         y1 = span[2]
                         x2 = span[1]
@@ -283,6 +295,7 @@ class Snap extends Tool
                         y1 = span[0]
                         x2 = span[2]
                         y2 = span[1]
+                        
                     l = @svg.line x1, y1, x2, y2
                     l.style 'stroke-width', 1/@stage.zoom
                     l.addClass 'snap-gap'
@@ -293,10 +306,11 @@ class Snap extends Tool
                     r.addClass 'snap-gap'
                     @trans.center r, pos x2, y2
             else
+                
                 val = close.val
                 max = Number.MAX_SAFE_INTEGER
                 min = Number.MIN_SAFE_INTEGER
-                if orientation == 'x'
+                if xy == 'x'
                     l = @svg.line val, min, val, max
                 else
                     l = @svg.line min, val, max, val

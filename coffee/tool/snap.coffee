@@ -183,6 +183,7 @@ class Snap extends Tool
                                 a:      a
                                 val:    obox[a]
                                 item:   other
+                                id:     a+other.id()
 
                     continue if not @snapGaps or empty gaps[xy]
 
@@ -215,6 +216,7 @@ class Snap extends Tool
                                 a:      'gap'
                                 val:    gap
                                 item:   other
+                                id:     'gap'+other.id()
                                 span:   [
                                     ibox[if neg == 1 then ic[xy] else oc[xy]], 
                                     obox[if neg == 1 then oc[xy] else ic[xy]], 

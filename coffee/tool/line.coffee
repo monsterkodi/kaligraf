@@ -19,6 +19,9 @@ class Line extends Tool
                 
         @initTitle()
         
+        @cap   = prefs.get 'line:cap', 'round'
+        @width = prefs.get 'line:width', 1
+        
         @initSpin
             name:   'width'
             min:    0
@@ -26,8 +29,25 @@ class Line extends Tool
             reset:  [0,1]
             step:   [1,5,10,25]
             action: @setWidth
-            value:  prefs.get 'line:width', 1
-                    
+            value:  @width
+
+        @initButtons [
+            tiny: 'line-round'
+            name: 'round'
+            choice: @cap
+            action: => @setCap 'round'
+        ,
+            tiny: 'line-butt'
+            name: 'butt'
+            choice: @cap
+            action: => @setCap 'butt'
+        ,
+            tiny: 'line-square'
+            name: 'square'
+            choice: @cap
+            action: => @setCap 'square'
+        ]
+            
         post.on 'selection', @onSelection
         
     onSelection: =>
@@ -46,6 +66,24 @@ class Line extends Tool
         if count
             @setSpinValue 'width', width/count
         
+    setCap: (@cap) ->
+
+        prefs.set 'line:cap', @cap
+        
+        join = round:'round', butt:'miter', square:'bevel'
+        
+        items = @stage.selectedLeafItems types:['polygon', 'polyline', 'line', 'rect']
+        return if empty items
+                
+        @stage.do 'linecap'+ itemIDs items
+        for item in items
+            item.attr 'stroke-linecap': @cap
+            item.attr 'stroke-linejoin': join[@cap]
+            item.attr 'stroke-miterlimit': 20
+        @stage.done()
+
+        post.emit 'line', 'cap', @cap
+            
     setWidth: (@width) =>
         
         @width = 0 if _.isNaN @width

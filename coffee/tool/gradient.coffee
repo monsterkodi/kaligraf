@@ -242,8 +242,6 @@ class Gradient extends Tool
         reflect.toggle = @state.spread == 'reflect'
         reflect.classList.toggle 'active', reflect.toggle
             
-        log 'toggleSpread', spread, @state
-        
         @setState @state
         @postGradient spread:@state.spread
         

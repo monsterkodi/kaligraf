@@ -31,7 +31,7 @@ class Exporter
         if opt?.color and opt?.alpha
             rgba = "background: rgba(#{opt.color.r}, #{opt.color.g}, #{opt.color.b}, #{opt.alpha});"
         else rgba = ''
-        svgStr += "\nstyle=\"stroke-linecap: round; stroke-linejoin: round;#{rgba}\""
+        svgStr += "\nstyle=\"stroke-linecap: round; stroke-linejoin: round; stroke-miterlimit: 20; #{rgba}\""
         svgStr += "\nviewBox=\"#{bb.x} #{bb.y} #{bb.width} #{bb.height}\">"
         
         @clean root

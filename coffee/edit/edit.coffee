@@ -5,7 +5,7 @@
 # 000       000   000  000     000
 # 00000000  0000000    000     000
 
-{ post, drag, elem, empty, last, pos, log, _ } = require 'kxk'
+{ post, elem, empty, last, pos, log, _ } = require 'kxk'
 
 { rectOffset, normRect, rectsIntersect } = require '../utils'
 
@@ -24,6 +24,7 @@ class Edit
         
         @element = elem 'div', id: 'edit'
         @element.classList.add 'passive' if @passive
+        @element.addEventListener 'dblclick', @onDblClick
         @kali.insertAboveSelection @element
 
         @linesWhite = SVG(@element).size '100%', '100%'
@@ -64,6 +65,8 @@ class Edit
         post.removeListener 'convert',  @onConvert
         post.removeListener 'gradient', @onGradient
 
+        @element.removeEventListener 'dblclick', @onDblClick
+        
         @dotsel?.del()
         @dotres?.del()
         
@@ -316,6 +319,14 @@ class Edit
             
             return object
 
+    onDblClick: (event) =>
+        
+        if event.target.instance.ctrl
+            
+            ctrl = event.target.instance.ctrl
+            dot  = event.target.instance.dot
+            ctrl.object.straightenDot ctrl.index(), dot
+            
     #  0000000  000000000   0000000   00000000   000000000  
     # 000          000     000   000  000   000     000     
     # 0000000      000     000000000  0000000       000     
@@ -326,8 +337,8 @@ class Edit
         
         eventPos = pos event
                 
-        item = @stage.leafItemAtPos eventPos #, noType: 'text'
-        # log "Edit.stageStart -- item:#{item?.id()} empty:#{@empty()}"
+        item = @stage.leafItemAtPos eventPos
+        log "Edit.stageStart -- item:#{item?.id()} empty:#{@empty()}"
         if @empty()
             if item?
                 @addItem item, join:event.shiftKey

@@ -5,7 +5,7 @@
 # 000          000     000   000  000
 #  0000000     000     000   000  0000000
 
-{ drag, last, pos, log, _ } = require 'kxk'
+{ last, pos, log, _ } = require 'kxk'
 
 class Ctrl
 

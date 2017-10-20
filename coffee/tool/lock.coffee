@@ -121,11 +121,17 @@ class Lock extends Tool
                 itemIndexDots[split.id].indexDots.push index:index, dots:['point']
                 
             for id,itemIndexDot of itemIndexDots
+                
                 cfg = 
                     indexDots:  itemIndexDot.indexDots
                     delta:      delta
                     event:      event
-                new Mover @kali, itemIndexDot.item, cfg
+                    
+                obj = 
+                    kali:   @kali
+                    item:   itemIndexDot.item
+                    
+                new Mover obj, cfg
                 
         for lock in locks
             @updateLock lock

@@ -9,10 +9,10 @@
 
 class Mover
 
-    constructor: (@kali, @item, @cfg) ->
+    constructor: (@object, @cfg) ->
 
-        if not @item then log 'dafuk?', @item
-        
+        @kali = @object.kali
+        @item = @object.item
         @trans = @kali.trans
         
         if @cfg?.indexDots?
@@ -88,11 +88,21 @@ class Mover
 
     movePoint: (index, itemPos, dots=['point']) ->
 
+        # log 'movePoint', index, dots
+        
         points = @points()
         point  = points[index]
 
         if _.isString dots then dots = [dots]
 
+        if dots.length == 1 and @cfg.event? and not @cfg.event.ctrlKey
+            if dots[0] in ['ctrl1', 'ctrlq', 'ctrls']
+                follow = [index-1, 'next']
+            if dots[0] in ['ctrl2', 'ctrlq']
+                follow = [index, 'prev']
+                
+            log 'follow', follow if follow?
+        
         for dot in dots
 
             switch dot
@@ -126,7 +136,7 @@ class Mover
                         when 'Q' then 'ctrlq'
                     if prevCtrl
                         @movePoint prevIndex, refl, prevCtrl
-
+            
     isPoly: -> @item.type in ['polygon', 'polyline', 'line', 'circle', 'ellipse', 'rect', 'text']
     numPoints: -> @points()?.length ? 0
     pointAt: (index) -> @points()[@index index]        

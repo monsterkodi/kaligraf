@@ -309,7 +309,7 @@ class Stage
     # 0000000    0000000    0000000   0000000  0000000  000   0000000  000   000  
     
     onDblClick: (event) =>
-        
+
         if item = @leafItemAtPos pos event
             switch item.type 
                 when 'text' then @shapes.editTextItem item

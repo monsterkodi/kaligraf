@@ -128,7 +128,7 @@ class Object
 
     moveDotsBy: (dots, delta, event) ->
         
-        new Mover @kali, @item, indexDots:@indexDots(dots), delta:delta, event:event
+        new Mover @, indexDots:@indexDots(dots), delta:delta, event:event
 
         if points = @points()
 
@@ -180,7 +180,6 @@ class Object
                     when 'S' then 'ctrls'
                     when 'Q' then 'ctrlq'
                 if prevCtrl
-                    log 'set prevCtrl', prevIndex, prevCtrl, refl
                     @setPoint prevIndex, prevCtrl, refl
                 return
 
@@ -195,6 +194,121 @@ class Object
         if point[0] in ['Q', 'M', 'L', 'C'] and index < @numPoints()-1
             @updateCtrlLines index+1, @pointAt index+1
 
+    #  0000000  000000000  00000000    0000000   000   0000000   000   000  000000000  00000000  000   000  
+    # 000          000     000   000  000   000  000  000        000   000     000     000       0000  000  
+    # 0000000      000     0000000    000000000  000  000  0000  000000000     000     0000000   000 0 000  
+    #      000     000     000   000  000   000  000  000   000  000   000     000     000       000  0000  
+    # 0000000      000     000   000  000   000  000   0000000   000   000     000     00000000  000   000  
+    
+    straightenDot: (index, dot) ->
+        
+        previ = index-1
+        previ = @numPoints()-1 if previ == 0
+        
+        switch dot
+            when 'ctrlq'
+                @straightenPoint index, 'prev'
+                @straightenPoint previ, 'next'
+            when 'ctrlr' then
+            when 'ctrls'
+                @straightenPoint index, 'prev'
+            when 'ctrl1'
+                @straightenPoint previ, 'next'
+            when 'ctrl2'
+                @straightenPoint index, 'prev'
+            when 'point'
+                @straightenPoint index, 'none'
+
+    straightenPoint: (index, fixed) ->
+        
+        nexti = index+1
+        nexti = 0 if nexti == @numPoints()
+        
+        point = @pointAt index
+        
+        prevDot = switch point[0]
+            when 'C' then 'ctrl2'
+            when 'S' then 'ctrls'
+            when 'Q' then 'ctrlq'
+            
+        nextDot = switch @pointAt(nexti)[0]
+            when 'C' then 'ctrl1'
+            when 'S' then 'ctrlr'
+            when 'Q' then 'ctrlq'
+        
+        return if prevDot == 'ctrls' and nextDot == 'ctrlr'
+        return if fixed == 'prev' and not nextDot
+        return if fixed == 'next' and not prevDot
+        return if not nextDot and not prevDot
+            
+        if fixed == 'none' 
+            if not prevDot then fixed = 'prev'
+            if not nextDot then fixed = 'next'
+            
+        thisPos = @posAt index
+        prevPos = @posAt index, prevDot
+        nextPos = @posAt nexti, nextDot
+        
+        toNext = thisPos.to nextPos
+        toPrev = thisPos.to prevPos
+        
+        switch fixed 
+            
+            when 'next'
+                
+                prevPos = thisPos.minus toNext.normal().times toPrev.length()
+                @setPoint index, prevDot, prevPos
+            
+            when 'prev'
+                
+                nextPos = thisPos.minus toPrev.normal().times toNext.length()
+                @setPoint nexti, nextDot, nextPos
+                
+            when 'none'
+                
+                angle = toNext.angle toPrev
+                log 'angle', angle
+                if Math.abs(angle) >= 179.9999 or Math.abs(angle) < 0.0001
+                    log 'straight already!'
+                    return
+                else
+                    avg = toNext.plus(toPrev).times 0.5
+                    prevPos = thisPos.minus avg.perp().times -1
+                    nextPos = thisPos.minus avg.perp()
+                @setPoint index, prevDot, prevPos
+                @setPoint nexti, nextDot, nextPos
+                
+        @edit.update()
+        @plot()
+        
+    isStraightAt: (index) ->
+
+        nexti = index+1
+        nexti = 0 if nexti == @numPoints()
+        
+        point = @pointAt index
+        
+        prevDot = switch point[0]
+            when 'C' then 'ctrl2'
+            when 'S' then 'ctrls'
+            when 'Q' then 'ctrlq'
+            
+        nextDot = switch @pointAt(nexti)[0]
+            when 'C' then 'ctrl1'
+            when 'S' then 'ctrlr'
+            when 'Q' then 'ctrlq'
+        
+        thisPos = @posAt index
+        prevPos = @posAt index, prevDot
+        nextPos = @posAt nexti, nextDot
+
+        toNext = thisPos.to nextPos
+        toPrev = thisPos.to prevPos
+        
+        angle = toNext.angle toPrev
+
+        Math.abs(angle) >= 179.999 or Math.abs(angle) < 0.001
+            
     # 000   000  00000000   0000000     0000000   000000000  00000000  0000000     0000000   000000000   0000000
     # 000   000  000   000  000   000  000   000     000     000       000   000  000   000     000     000
     # 000   000  00000000   000   000  000000000     000     0000000   000   000  000   000     000     0000000

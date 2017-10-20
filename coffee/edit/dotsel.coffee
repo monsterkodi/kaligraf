@@ -25,7 +25,7 @@ class DotSel
             onMove:  @onDrag
             onStop:  @onStop
             constrainKey: 'shiftKey'
-            
+
         post.on 'stage', @onStage
         
     del: ->
@@ -44,7 +44,7 @@ class DotSel
     # 0000000      000     000   000  000   000     000     
     
     onStart: (drag, event) =>
-        
+        log 'onStart'
         if dot = event.target.instance
 
             if @kali.shapeTool() != 'edit'

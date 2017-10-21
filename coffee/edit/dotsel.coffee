@@ -1,9 +1,10 @@
-
-# 0000000     0000000   000000000   0000000  00000000  000    
-# 000   000  000   000     000     000       000       000    
-# 000   000  000   000     000     0000000   0000000   000    
-# 000   000  000   000     000          000  000       000    
-# 0000000     0000000      000     0000000   00000000  0000000
+###
+0000000     0000000   000000000   0000000  00000000  000    
+000   000  000   000     000     000       000       000    
+000   000  000   000     000     0000000   0000000   000    
+000   000  000   000     000          000  000       000    
+0000000     0000000      000     0000000   00000000  0000000
+###
 
 { empty, drag, post, pos, log, _ } = require 'kxk'
 
@@ -54,7 +55,8 @@ class DotSel
                 @delDot dot
             else
                 keep = event.shiftKey or dot.ctrl.isSelected dot.dot
-                @addDot dot, keep:keep
+                split = event.ctrlKey 
+                @addDot dot, keep:keep, split:split
 
     onStop: (drag, event) =>
     
@@ -175,6 +177,11 @@ class DotSel
         if dot not in @dots 
             
             @dots.push dot
+            
+            if dot.dot == 'point' and not opt.split 
+                if dot.ctrl.index() == dot.ctrl.object.numPoints()-1
+                    if dot.ctrl.object.isClosed()
+                        @dots.push dot.ctrl.object.ctrls[0].dots['point']
             
             if opt?.emit
                 post.emit 'dotsel', 'add', @dots, dot

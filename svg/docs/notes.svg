@@ -129,16 +129,6 @@ viewBox="-765.3633081054687 -29.75615417480469 1529.5176318359374 1072.652261962
     <text id="T-6e-1877b1" font-family="Noteworthy" font-size="26.186921002009335" font-weight="bold" font-style="normal" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 0; fill: rgb(0, 0, 0); fill-opacity: 1;" text-anchor="middle" class="" transform="matrix(1,0,0,1,255.192626953125,333.4096069335938)" svgjs:data="{&quot;leading&quot;:&quot;1.15&quot;}">
       <tspan id="SvgjsTspan10401" dy="30.114959152310732" x="0" svgjs:data="{&quot;newLined&quot;:true}">layerlist</tspan>
     </text>
-    <g id="G-d6-4b101c" transform="matrix(1,0,0,1,-0.7030605223431508,-44.218116760253906)" class="">
-      <path id="P-85-b04075" d="M-98.17999961116801 -101.45552875750336L-56.84262637632335 -101.31905556084412Q-45.95055733244892 -101.42667490445639 -46.03864107221473 -90.31313322825713Q-46.10180298300942 -79.52517129673328 -56.6373242216593 -79.52519307291706L-98.22963567620663 -79.66166626957633L-119.01534122931642 -79.93047985826433Q-129.2676046310804 -79.88536920256294 -129.36725249744916 -90.65818517272784Q-129.45111810427557 -101.63820311294899 -118.7843901785709 -101.7243423461914L-98.17999961116801 -101.45552875750336 " style="stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 2; fill: rgb(7, 0, 168); fill-opacity: 1;" class="" transform="matrix(1,-1.942890425442922e-16,1.942890425442922e-16,1,232.21984863281273,250.63102722167974)"></path>
-      <text id="T-dd-9ec331" font-family="Noteworthy" font-size="15.670052705803696" font-weight="bold" font-style="normal" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 0; fill: rgb(173, 174, 255); fill-opacity: 1;" text-anchor="middle" class="" transform="matrix(1,-1.942890425442922e-16,1.942890425442922e-16,1,144.51416015625,146.16918945312506)" svgjs:data="{&quot;leading&quot;:&quot;1.15&quot;}">
-        <tspan id="SvgjsTspan7816" dy="18.02056061167425" x="0" svgjs:data="{&quot;newLined&quot;:true}">init center</tspan>
-      </text>
-    </g>
-    <path id="P-b9-2bf64e" d="M-74.17640210913686 -101.27026019043139L-36.43647041265996 -101.27025453127578Q-17.161381889778298 -101.45204602398805 -17.317258782825263 -82.67895874411171Q-17.429032901859685 -64.45584348408579 -36.07315861311565 -64.45588026859713L-74.26424029155115 -64.45588592775272L-111.04754683623942 -64.90996808351277Q-129.1904069147876 -64.83376678770543 -129.36674819922493 -83.03129736349527Q-129.5151604971171 -101.57883523504748 -110.63884561247367 -101.7243423461914L-74.17640210913686 -101.27026019043139 " style="stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 2; fill: rgb(173, 174, 255); fill-opacity: 1;" class="" transform="matrix(1,0,0,1,216.9307861328125,169.35221862792974)"></path>
-    <text id="T-68-6ee68d" font-family="Noteworthy" font-size="25.40171875864719" font-weight="bold" font-style="normal" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 0; fill: rgb(0, 0, 0); fill-opacity: 1;" text-anchor="middle" class="" transform="matrix(1,0,0,1,143.5810546875,66.92570495605469)" svgjs:data="{&quot;leading&quot;:&quot;1.15&quot;}">
-      <tspan id="SvgjsTspan55019" dy="29.211976572444264" x="0" svgjs:data="{&quot;newLined&quot;:true}">dots</tspan>
-    </text>
   </svg>
-  <defs id="SvgjsDefs1504"></defs>
+  <defs id="SvgjsDefs9954"></defs>
 </svg>

@@ -1,9 +1,10 @@
-
-# 000   000  000   000  0000000     0000000 
-# 000   000  0000  000  000   000  000   000
-# 000   000  000 0 000  000   000  000   000
-# 000   000  000  0000  000   000  000   000
-#  0000000   000   000  0000000     0000000 
+###
+000   000  000   000  0000000     0000000 
+000   000  0000  000  000   000  000   000
+000   000  000 0 000  000   000  000   000
+000   000  000  0000  000   000  000   000
+ 0000000   000   000  0000000     0000000 
+###
 
 { post, first, last, empty, resolve, fs, str, log, _ } = require 'kxk'
 
@@ -53,7 +54,7 @@ class Undo
         prev = last @history
         
         noSavePoint = @savePoint != @history.length
-        # log "Undo.do #{object.name} #{object.constructor.name} #{action}"
+
         if noSavePoint and @sameState(state, prev) and prev.type != 'start'
             @log 'sameState!'
         else   
@@ -70,7 +71,7 @@ class Undo
     # 0000000     0000000   000   000  00000000
     
     done: (object) ->
-        # log "Undo.done #{object.name}"
+
         prev  = last @history
         state = @state 'end', object
         state.action = prev.action
@@ -165,8 +166,6 @@ class Undo
     # 000         0000000   0000000      000     
     
     post: (action) ->
-        
-        @log "post #{action}"
         
         info = 
             action: action

@@ -420,7 +420,7 @@ class Shapes
 
         if @drawing
             
-            @draw.handleEndDrawing()
+            @draw?.handleEndDrawing()
             @stopEdit()
             
             if @trans.width(@drawing) == 0 and @trans.height(@drawing) == 0 and @drawing.type != 'text'

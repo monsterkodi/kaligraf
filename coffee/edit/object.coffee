@@ -205,7 +205,7 @@ class Object
         
         previ = index-1
         previ = @numPoints()-1 if previ == 0
-        
+        log 'index', index, dot
         switch dot
             when 'ctrlq'
                 @straightenPoint index, 'prev'
@@ -222,22 +222,24 @@ class Object
 
     straightenPoint: (index, fixed) ->
         
+        if not @isClosed()
+            return if index >= @numPoints()-1
+            return if index <= 1
+        
         mover = new Mover @
         
         info = mover.infoAt index
         
         nexti = index+1
-        nexti = 0 if nexti == @numPoints()
+        nexti = 1 if nexti >= @numPoints()
         
         switch fixed
             
             when 'next'
-                
                 prevPos = info.thisPos.minus info.toNext.normal().times info.toPrev.length()
                 @setPoint index, info.prevDot, prevPos
             
             when 'prev'
-                
                 nextPos = info.thisPos.minus info.toPrev.normal().times info.toNext.length()
                 @setPoint nexti, info.nextDot, nextPos
                 

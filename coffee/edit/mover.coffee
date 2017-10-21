@@ -38,8 +38,16 @@ class Mover
             for idots in indexDots
 
                 if idots.dots.length == 1 and @cfg.event? and not @cfg.event.ctrlKey
-                    if idots.dots[0] in ['ctrl1', 'ctrlq']          then follow.push fixed: 'next', info: @infoAt idots.index-1
-                    if idots.dots[0] in ['ctrl2', 'ctrlq', 'ctrls'] then follow.push fixed: 'prev', info: @infoAt idots.index
+                    
+                    if idots.dots[0] in ['ctrl1', 'ctrlq']          
+                        
+                        previ = idots.index-1
+                        if previ == 0 then previ = @numPoints()-1
+                        follow.push fixed: 'next', info: @infoAt previ
+                        
+                    if idots.dots[0] in ['ctrl2', 'ctrlq', 'ctrls'] 
+                        
+                        follow.push fixed: 'prev', info: @infoAt idots.index
                     
                 add = (type, index) =>
                     idts = indexDots.find (i) -> i.index == index
@@ -58,7 +66,11 @@ class Mover
                         when 'Q' then add 'ctrlq', idots.index
 
                     nexti = idots.index+1
-                    nexti = 1 if nexti >= @numPoints()
+                    if nexti >= @numPoints()
+                        if @object.isClosed?()
+                            nexti = 1 
+                        else
+                            continue
 
                     switch @pointCode nexti
 
@@ -148,12 +160,18 @@ class Mover
     setAngle: (fixed, oldInfo) ->
         
         newInfo = @infoAt oldInfo.index
-                        
+
         switch fixed
             when 'prev'
+                nexti = oldInfo.index+1
+                if nexti >= @numPoints()
+                    if @object.isClosed?() then nexti = 1 
+                    else return
                 newPos = newInfo.thisPos.plus newInfo.toPrev.rotate(-oldInfo.angle).normal().times oldInfo.toNext.length()
-                @setDotPos oldInfo.nextDot, oldInfo.index+1, newPos
+                @setDotPos oldInfo.nextDot, nexti, newPos
             when 'next'
+                if oldInfo.index >= @numPoints()-1 and not @object.isClosed?()
+                    return
                 newPos = newInfo.thisPos.plus newInfo.toNext.rotate(oldInfo.angle).normal().times oldInfo.toPrev.length()
                 @setDotPos oldInfo.prevDot, oldInfo.index, newPos
                 
@@ -166,7 +184,7 @@ class Mover
     infoAt: (index) ->
         
         nexti = index+1
-        nexti = 0 if nexti == @numPoints()
+        nexti = 1 if nexti == @numPoints()
         
         info = {}
         
@@ -191,8 +209,6 @@ class Mover
         info.toPrev = info.thisPos.to info.prevPos
         
         info.angle  = info.toNext.rotation info.toPrev
-        if _.isNaN info.angle
-            log info.angle, info.toNext, info.toPrev
         
         info
             

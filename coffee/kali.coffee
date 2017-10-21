@@ -18,7 +18,7 @@ class Kali
 
     constructor: (element) ->
 
-        post.setMaxListeners 20
+        post.setMaxListeners 30
         
         @setStyle 'style'
         

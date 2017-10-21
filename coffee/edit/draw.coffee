@@ -130,8 +130,8 @@ class Draw
     
     handleStop: (event) -> 
         
-        return true  if not @drawing?
-        return true  if @shape == 'line'
+        return true if not @drawing?
+        return true if @shape == 'line'
         
         if @shape in ['bezier_smooth', 'bezier_quad', 'bezier_cube']
             @stage.setToolCursor "draw_move"
@@ -158,7 +158,11 @@ class Draw
         
         switch @shape
             when 'bezier_smooth', 'bezier_quad', 'bezier_cube'
-                @movePoint @dotPos 0
+                                
+                @movePoint @dotPos 0                
+                
+                if @shape == 'bezier_quad' then object.adjustLastQuadDot()
+                
             else 
                 object.delPoint object.ctrls.length-1
             
@@ -169,9 +173,15 @@ class Draw
     # 0000000   000 0 000  000   000  
     # 000       000  0000  000   000  
     # 00000000  000   000  0000000    
-    
+            
+    handleEndDrawing: ->
+        
+        if @shape == 'bezier_quad' 
+            object = @edit.objectForItem @drawing
+            object.adjustLastQuadDot()
+        
     endDrawing: ->
-    
+           
         @edit?.del()
         delete @edit
         

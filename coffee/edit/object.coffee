@@ -5,7 +5,7 @@
 # 000   000  000   000  000   000  000       000          000
 #  0000000   0000000     0000000   00000000   0000000     000
 
-{ post, empty, pos, log, _ } = require 'kxk'
+{ post, empty, last, pos, log, _ } = require 'kxk'
 
 { itemGradient, itemMatrix } = require '../utils'
 
@@ -480,8 +480,11 @@ class Object
         itemPos = @trans.inverse @item, stagePos
 
         points = @points()
-        point  = switch code
-            when 'S', 'Q'
+        point = switch code
+            when 'Q'
+                @adjustLastQuadDot()
+                [code, stagePos.x, stagePos.y, stagePos.x, stagePos.y]
+            when 'S'
                 [code, stagePos.x, stagePos.y, stagePos.x, stagePos.y]
             when 'C'
                 [code, stagePos.x, stagePos.y, stagePos.x, stagePos.y, stagePos.x, stagePos.y]
@@ -493,6 +496,17 @@ class Object
         @initCtrlDots   index, point
         @updateCtrlDots index, point
 
+    adjustLastQuadDot: ->
+        
+        points = @points()
+        lastPoint = last points
+        prevPos = @posAt points.length-2
+        if lastPoint[1] == prevPos.x and lastPoint[2] == prevPos.y
+            midPos = prevPos.mid @posAt points.length-1
+            lastPoint[1] = midPos.x
+            lastPoint[2] = midPos.y
+            @updateCtrlDots points.length-1, lastPoint
+        
     # 0000000    00000000  000      00000000    0000000   000  000   000  000000000
     # 000   000  000       000      000   000  000   000  000  0000  000     000
     # 000   000  0000000   000      00000000   000   000  000  000 0 000     000

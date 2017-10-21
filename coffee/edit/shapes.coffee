@@ -414,15 +414,15 @@ class Shapes
             if @edit.clear()        then return true
             
         false    
-    
+            
     endDrawing: ->
 
         if @drawing
             
+            @draw.handleEndDrawing()
             @stopEdit()
             
             if @trans.width(@drawing) == 0 and @trans.height(@drawing) == 0 and @drawing.type != 'text'
-                log 'remove drawing'
                 @drawing.remove()
                 
             else
@@ -472,7 +472,6 @@ class Shapes
                 if @edit? and not @edit.empty()
                     @edit.dotsel.addAll()
                 else if @edit? or @kali.shapeTool() == 'edit'
-                    # @editItems @stage.pickableItems()
                     @editItems @stage.treeItems pickable:true
                 else
                     @selection.setItems @stage.pickableItems()

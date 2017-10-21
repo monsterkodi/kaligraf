@@ -219,6 +219,7 @@ class Mover
     # 000         0000000   000  000   000     000     0000000   
     
     isPoly: -> @item.type in ['polygon', 'polyline', 'line', 'circle', 'ellipse', 'rect', 'text']
+    isPath: -> @item.type in ['polygon', 'polyline', 'line', 'path']
     numPoints: -> @points()?.length ? 0
     pointAt: (index) -> @points()[@index index]        
     points: -> 

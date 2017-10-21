@@ -15,19 +15,23 @@ class Convert
     convert: (dots, type) ->
 
         if type == 'D' then return @divide dots
-
+        
+        indexDots = @indexDots dots
+        
+        if type != 'P' and @item.type != 'path'
+            @toPath()
+        
         newDots = []
 
         points = @points()
-
-        indexDots = @indexDots dots
 
         for idots in indexDots
 
             index = idots.index
             point = points[index]
 
-            continue if index == 0
+            if index == 0
+                continue 
 
             thisp = @posAt index
             prevp = @posAt index-1
@@ -35,8 +39,11 @@ class Convert
             switch type
 
                 when 'C'
+                    
+                    log 'C', point[0]
 
                     switch point[0]
+                        
                         when 'C'
                             newDots = newDots.concat _.values @ctrls[index].dots
                             continue
@@ -89,9 +96,10 @@ class Convert
                     
                 when 'P'
                     
-                    point[0] = point[point.length-2]
-                    point[1] = point[point.length-1]
-                    point.splice 2, point.length-2
+                    point[0] = 'L'
+                    point[1] = point[point.length-2]
+                    point[2] = point[point.length-1]
+                    point.splice 3, point.length-3
 
             @initCtrlDots   index, point
             @updateCtrlDots index, point
@@ -101,6 +109,35 @@ class Convert
         @plot()
         newDots
 
+    # 000000000   0000000   00000000    0000000   000000000  000   000  
+    #    000     000   000  000   000  000   000     000     000   000  
+    #    000     000   000  00000000   000000000     000     000000000  
+    #    000     000   000  000        000   000     000     000   000  
+    #    000      0000000   000        000   000     000     000   000  
+    
+    toPath: ->
+        
+        newPoints = []
+        oldPoints = @points()
+        for index in [0...oldPoints.length]
+            oldPoint = oldPoints[index]
+            newPoint = [index==0 and 'M' or 'L', oldPoint[0], oldPoint[1]]
+            newPoints.push newPoint
+        newItem = @item.doc().path()
+        newItem.plot newPoints
+
+        newItem.style @item.style()
+        newItem.attr @item.attr()
+        
+        @del()
+        @item.remove()
+        @item = newItem
+        
+        for index in [0...newPoints.length]
+            newPoint = newPoints[index] 
+            @initCtrlDots index, newPoint
+            @updateCtrlDots index, newPoint
+        
     # 0000000    000  000   000  000  0000000    00000000
     # 000   000  000  000   000  000  000   000  000
     # 000   000  000   000 000   000  000   000  0000000

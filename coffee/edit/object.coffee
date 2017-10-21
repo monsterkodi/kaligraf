@@ -406,12 +406,33 @@ class Object extends Convert
         points ?= @trans.itemPoints @item
         @trans.setItemPoints @item, points
 
+    # 0000000     0000000   000000000   0000000  
+    # 000   000  000   000     000     000       
+    # 000   000  000   000     000     0000000   
+    # 000   000  000   000     000          000  
+    # 0000000     0000000      000     0000000   
+    
     dots: ->
+        
         dots = []
         for ctrl in @ctrls
             dots = dots.concat _.values ctrl.dots
         dots
 
+    nextDot: (dot) ->
+        
+        index = dot.ctrl.index()
+        nexti = index+1
+        nexti = 0 if nexti >= @numPoints()
+        @ctrls[nexti].dots.point
+        
+    prevDot: (dot) ->
+        
+        index = dot.ctrl.index()
+        previ = index-1
+        previ = @numPoints()-1 if previ < 0
+        @ctrls[previ].dots.point
+        
     indexDots: (dots) ->
 
         indexDots = []

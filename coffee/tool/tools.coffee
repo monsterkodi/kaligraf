@@ -72,6 +72,10 @@ class Tools extends Tool
             when 'export'     then @stage.export()
             when 'clear'      then @stage.doClear()
             when 'selectAll'  then @stage.shapes.select 'all'
+            when 'selectMore' then @stage.shapes.select 'more'
+            when 'selectLess' then @stage.shapes.select 'less'
+            when 'selectNext' then @stage.shapes.select 'next'
+            when 'selectPrev' then @stage.shapes.select 'prev'
             when 'deselect'   then @stage.shapes.select 'none'
             when 'invert'     then @stage.shapes.select 'invert'
             when 'center'     then @stage.centerSelection()

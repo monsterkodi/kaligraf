@@ -485,7 +485,23 @@ class Shapes
                     @editItems @stage.pickableItems().filter (item) => not @edit? or item not in @edit.items()
                 else
                     @selection.setItems @stage.pickableItems().filter (item) => item not in @selection.items
-        
+                    
+            when 'more'
+                if @edit? and not @edit.empty()
+                    @edit.dotsel.addMore()
+                    
+            when 'less'
+                if @edit? and not @edit.empty()
+                    @edit.dotsel.addLess()
+
+            when 'next'
+                if @edit? and not @edit.empty()
+                    @edit.dotsel.addNext()
+                    
+            when 'prev'
+                if @edit? and not @edit.empty()
+                    @edit.dotsel.addPrev()
+                    
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
     # 0000000    0000000     00000    

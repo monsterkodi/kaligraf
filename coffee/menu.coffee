@@ -93,6 +93,11 @@ class Menu
                     { label: 'All',         accelerator: 'command+a',       click: -> action 'selectAll'}
                     { label: 'None',        accelerator: 'command+d',       click: -> action 'deselect'}
                     { label: 'Invert',      accelerator: 'command+i',       click: -> action 'invert'}        
+                    { type:  'separator'}  
+                    { label: 'More',        accelerator: 'command+m',       click: -> action 'selectMore'}        
+                    { label: 'Less',        accelerator: 'command+shift+m', click: -> action 'selectLess'}        
+                    { label: 'Prev',        accelerator: 'command+[',       click: -> action 'selectPrev'}        
+                    { label: 'Next',        accelerator: 'command+]',       click: -> action 'selectNext'}        
                 ]}
                 { label: 'Flip', submenu: [
                     { label: 'Horizontal',  accelerator: '6',               click: -> button 'flip', 'horizontal'}
@@ -104,9 +109,9 @@ class Menu
                 { type:  'separator'}
                 { label: 'Group',       accelerator: 'command+g',           click: -> action 'group'}
                 { label: 'Ungroup',     accelerator: 'command+u',           click: -> action 'ungroup'}
-                { type:  'separator'}
-                { label: 'Mask',        accelerator: 'm',                   click: -> button 'mask', 'mask'}
-                { label: 'Unmask',      accelerator: 'command+m',           click: -> button 'mask', 'unmask'}
+                # { type:  'separator'}
+                # { label: 'Mask',        accelerator: 'm',                   click: -> button 'mask', 'mask'}
+                # { label: 'Unmask',      accelerator: 'command+m',           click: -> button 'mask', 'unmask'}
                 { type:  'separator'}
                 { label: 'Cut',         accelerator: 'command+x',           click: -> action 'cut'}
                 { label: 'Copy',        accelerator: 'command+c',           click: -> action 'copy'}
@@ -170,10 +175,11 @@ class Menu
             # 00     00  000  000   000  0000000     0000000   00     00
             
             label: 'Window', submenu: [
-                { label: 'Minimize',           accelerator: 'Alt+Cmd+M',        click: (i,win) -> win?.minimize()}
-                { label: 'Maximize',           accelerator: 'Cmd+Shift+m',      click: (i)     -> app.toggleMaximize()}
-                { type:  'separator'}
-                { label: 'Bring All to Front', accelerator: 'Alt+Cmd+`',        role: 'front'}
+                { label: 'Minimize Window',    accelerator: 'command+alt+shift+m', click: (i,win) -> win?.minimize()}
+                { label: 'Maximize Window',    accelerator: 'command+alt+m',       click: (i,win) -> 
+                    if win?.isMaximized() then win?.unmaximize() 
+                    else win?.maximize()
+                }
                 { type:  'separator'}
                 { label: 'Reload Window',      accelerator: 'Ctrl+Alt+Cmd+L',   click: (i,win) -> app.reloadWin win}
                 { label: 'Toggle DevTools',    accelerator: 'Cmd+Alt+I',        click: (i,win) -> win?.webContents.toggleDevTools()}

@@ -168,6 +168,14 @@ class DotSel
     # 000   000  000   000  000   000  
     # 000   000  0000000    0000000    
     
+    setDots: (dots) ->
+        
+        @clear()
+        
+        @dots = _.clone dots
+        for dot in @dots
+            dot.ctrl.setSelected dot.dot, true
+    
     addDot: (dot, opt = { keep:true, emit:true }) ->
         
         @clear() if not opt?.keep
@@ -213,6 +221,68 @@ class DotSel
                 
         post.emit 'dotsel', 'set', @dots
 
+    addMore: ->
+        
+        oldDots = @dots.filter (dot) -> dot.dot == 'point'
+        log 'addMore', oldDots.length, @dots.length
+        @setDots oldDots
+        log 'addMore', oldDots.length, @dots.length
+        
+        for object in @edit.objects
+            for dot in object.dots().filter((dot) -> dot.dot == 'point')
+                if dot not in oldDots
+                    if (object.prevDot(dot) in oldDots) or (object.nextDot(dot) in oldDots)
+                        @addDot dot, keep:true, emit:false
+
+        log 'addMore', oldDots.length, @dots.length  
+        
+        post.emit 'dotsel', 'set', @dots
+
+    addLess: ->
+        
+        oldDots = @dots.filter (dot) -> dot.dot == 'point'
+        @setDots oldDots
+        
+        for object in @edit.objects
+            for dot in object.dots().filter((dot) -> dot.dot == 'point')
+                if dot in oldDots
+                    if (object.prevDot(dot) not in oldDots) or (object.nextDot(dot) not in oldDots)
+                        @delDot dot
+                
+        post.emit 'dotsel', 'set', @dots
+
+    addNext: ->
+        
+        oldDots = @dots.filter (dot) -> dot.dot == 'point'
+        @setDots oldDots
+        
+        for object in @edit.objects
+            for dot in object.dots().filter((dot) -> dot.dot == 'point')
+                if dot in oldDots 
+                    if object.prevDot(dot) not in oldDots
+                        @delDot dot
+                else
+                    if object.prevDot(dot) in oldDots
+                        @addDot dot, keep:true, emit:false
+                
+        post.emit 'dotsel', 'set', @dots
+
+    addPrev: ->
+        
+        oldDots = @dots.filter (dot) -> dot.dot == 'point'
+        @setDots oldDots
+        
+        for object in @edit.objects
+            for dot in object.dots().filter((dot) -> dot.dot == 'point')
+                if dot in oldDots 
+                    if object.nextDot(dot) not in oldDots
+                        @delDot dot
+                else
+                    if object.nextDot(dot) in oldDots
+                        @addDot dot, keep:true, emit:false
+                
+        post.emit 'dotsel', 'set', @dots
+        
     addDots: (dots) ->
         
         for dot in dots

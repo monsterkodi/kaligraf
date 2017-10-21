@@ -240,8 +240,7 @@ class Edit
         @dotsel.clear()
         newDots = []
         for objectDot in objectDots
-            newDots = newDots.concat objectDot.object.convert objectDot.dots, type
-            
+            newDots = newDots.concat objectDot.object.convert objectDot.dots, type            
         @dotsel.addDots newDots
         @done()
     

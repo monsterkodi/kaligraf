@@ -187,6 +187,8 @@ class DotResizer
 
     createRect: ->
 
+        @clear()
+        
         @g = @svg.nested()
         @g.addClass 'resizerGroup'
         @gg = @g.group()

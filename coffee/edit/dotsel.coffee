@@ -224,9 +224,7 @@ class DotSel
     addMore: ->
         
         oldDots = @dots.filter (dot) -> dot.dot == 'point'
-        log 'addMore', oldDots.length, @dots.length
         @setDots oldDots
-        log 'addMore', oldDots.length, @dots.length
         
         for object in @edit.objects
             for dot in object.dots().filter((dot) -> dot.dot == 'point')
@@ -234,8 +232,6 @@ class DotSel
                     if (object.prevDot(dot) in oldDots) or (object.nextDot(dot) in oldDots)
                         @addDot dot, keep:true, emit:false
 
-        log 'addMore', oldDots.length, @dots.length  
-        
         post.emit 'dotsel', 'set', @dots
 
     addLess: ->

@@ -3,4 +3,3 @@
 ![browser](bin/browser.png)
 ![florakali](svg/test/florakali.svg)
 ![objects](svg/docs/objects.svg)
-![notes](svg/docs/notes.svg)

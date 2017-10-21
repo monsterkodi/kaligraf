@@ -206,7 +206,7 @@ class Object extends Convert
         
         previ = index-1
         previ = @numPoints()-1 if previ == 0
-        log 'index', index, dot
+
         switch dot
             when 'ctrlq'
                 @straightenPoint index, 'prev'

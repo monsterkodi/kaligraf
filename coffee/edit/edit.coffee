@@ -338,7 +338,7 @@ class Edit
         eventPos = pos event
                 
         item = @stage.leafItemAtPos eventPos
-        log "Edit.stageStart -- item:#{item?.id()} empty:#{@empty()}"
+        # log "Edit.stageStart -- item:#{item?.id()} empty:#{@empty()}"
         if @empty()
             if item?
                 @addItem item, join:event.shiftKey

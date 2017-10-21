@@ -11,8 +11,10 @@ class Mover
 
     constructor: (@object, @cfg) ->
 
-        @kali = @object.kali
-        @item = @object.item
+        @cfg ?= {}
+
+        @kali  = @object.kali
+        @item  = @object.item
         @trans = @kali.trans
         
         if @cfg?.indexDots?
@@ -28,10 +30,16 @@ class Mover
         
         indexDots = @cfg.indexDots
 
+        follow = []
+        
         if not @cfg.event? or not @cfg.event.ctrlKey
 
             for idots in indexDots
 
+                if idots.dots.length == 1 and @cfg.event? and not @cfg.event.ctrlKey
+                    if idots.dots[0] in ['ctrl1', 'ctrlq']          then follow.push fixed: 'next', info: @infoAt idots.index-1
+                    if idots.dots[0] in ['ctrl2', 'ctrlq', 'ctrls'] then follow.push fixed: 'prev', info: @infoAt idots.index
+                    
                 add = (type, index) =>
                     idts = indexDots.find (i) -> i.index == index
                     if not idts?
@@ -48,20 +56,20 @@ class Mover
                         when 'S' then add 'ctrls', idots.index
                         when 'Q' then add 'ctrlq', idots.index
 
-                    nextIndex = idots.index+1
-                    nextIndex = 1 if nextIndex >= @numPoints()
+                    nexti = idots.index+1
+                    nexti = 1 if nexti >= @numPoints()
 
-                    switch @pointCode nextIndex
+                    switch @pointCode nexti
 
-                        when 'C' then add 'ctrl1', nextIndex
-                        when 'Q' then add 'ctrlq', nextIndex
+                        when 'C' then add 'ctrl1', nexti
+                        when 'Q' then add 'ctrlq', nexti
 
         for idots in indexDots
             
             if 'ctrlr' in idots.dots
-                prevIndex = idots.index-1
-                prevIndex = @numPoints()-1 if prevIndex == 0
-                if idts = indexDots.find((i) -> i.index == prevIndex)
+                previ = idots.index-1
+                previ = @numPoints()-1 if previ == 0
+                if idts = indexDots.find((i) -> i.index == previ)
                     ctrls = ['point', 'ctrls', 'ctrlq', 'ctrl2']
                     if valid _.intersection(ctrls, idts.dots)
                         idots.dots = idots.dots.filter (d) -> d != 'ctrlr'
@@ -72,12 +80,15 @@ class Mover
         indexDots = indexDots.filter (idts) -> idts.dots.length
 
         for idots in indexDots
-
+            
             for dot in idots.dots
                 oldPos = @posAt idots.index, dot
                 newPos = oldPos.plus itemDelta
                 @movePoint idots.index, newPos, dot
 
+        for f in follow 
+            @setAngle f.fixed, f.info
+        
         @trans.setItemPoints @item, @points()
 
     # 00     00   0000000   000   000  00000000  00000000    0000000   000  000   000  000000000
@@ -88,20 +99,10 @@ class Mover
 
     movePoint: (index, itemPos, dots=['point']) ->
 
-        # log 'movePoint', index, dots
-        
         points = @points()
         point  = points[index]
 
         if _.isString dots then dots = [dots]
-
-        if dots.length == 1 and @cfg.event? and not @cfg.event.ctrlKey
-            if dots[0] in ['ctrl1', 'ctrlq', 'ctrls']
-                follow = [index-1, 'next']
-            if dots[0] in ['ctrl2', 'ctrlq']
-                follow = [index, 'prev']
-                
-            log 'follow', follow if follow?
         
         for dot in dots
 
@@ -126,17 +127,80 @@ class Mover
                     point[4] = itemPos.y
 
                 when 'ctrlr'
-                    prevIndex = index-1
-                    prevIndex = @numPoints()-1 if prevIndex == 0
-                    prevp = @posAt prevIndex
-                    refl = prevp.minus prevp.to itemPos
-                    prevCtrl = switch @pointAt(prevIndex)[0]
+                    previ = index-1
+                    previ = @numPoints()-1 if previ == 0
+                    prevCtrl = switch @pointAt(previ)[0]
                         when 'C' then 'ctrl2'
                         when 'S' then 'ctrls'
                         when 'Q' then 'ctrlq'
                     if prevCtrl
-                        @movePoint prevIndex, refl, prevCtrl
+                        prevp = @posAt previ 
+                        refl  = prevp.minus prevp.to itemPos
+                        @movePoint previ, refl, prevCtrl
             
+    #  0000000   000   000   0000000   000      00000000  
+    # 000   000  0000  000  000        000      000       
+    # 000000000  000 0 000  000  0000  000      0000000   
+    # 000   000  000  0000  000   000  000      000       
+    # 000   000  000   000   0000000   0000000  00000000  
+    
+    setAngle: (fixed, oldInfo) ->
+        
+        newInfo = @infoAt oldInfo.index
+                        
+        switch fixed
+            when 'prev'
+                newPos = newInfo.thisPos.plus newInfo.toPrev.rotate(-oldInfo.angle).normal().times oldInfo.toNext.length()
+                @setDotPos oldInfo.nextDot, oldInfo.index+1, newPos
+            when 'next'
+                newPos = newInfo.thisPos.plus newInfo.toNext.rotate(oldInfo.angle).normal().times oldInfo.toPrev.length()
+                @setDotPos oldInfo.prevDot, oldInfo.index, newPos
+                
+    # 000  000   000  00000000   0000000   
+    # 000  0000  000  000       000   000  
+    # 000  000 0 000  000000    000   000  
+    # 000  000  0000  000       000   000  
+    # 000  000   000  000        0000000   
+    
+    infoAt: (index) ->
+        
+        nexti = index+1
+        nexti = 0 if nexti == @numPoints()
+        
+        info = {}
+        
+        info.index = index
+        info.point = @pointAt index
+        
+        info.prevDot = switch info.point[0]
+            when 'C' then 'ctrl2'
+            when 'S' then 'ctrls'
+            when 'Q' then 'ctrlq'
+            
+        info.nextDot = switch @pointAt(nexti)[0]
+            when 'C' then 'ctrl1'
+            when 'S' then 'ctrlr'
+            when 'Q' then 'ctrlq'
+        
+        info.thisPos = @posAt index
+        info.prevPos = @posAt index, info.prevDot
+        info.nextPos = @posAt nexti, info.nextDot
+
+        info.toNext = info.thisPos.to info.nextPos
+        info.toPrev = info.thisPos.to info.prevPos
+        
+        info.angle  = info.toNext.rotation info.toPrev
+        if _.isNaN info.angle
+            log info.angle, info.toNext, info.toPrev
+        
+        info
+            
+    # 00000000    0000000   000  000   000  000000000   0000000  
+    # 000   000  000   000  000  0000  000     000     000       
+    # 00000000   000   000  000  000 0 000     000     0000000   
+    # 000        000   000  000  000  0000     000          000  
+    # 000         0000000   000  000   000     000     0000000   
+    
     isPoly: -> @item.type in ['polygon', 'polyline', 'line', 'circle', 'ellipse', 'rect', 'text']
     numPoints: -> @points()?.length ? 0
     pointAt: (index) -> @points()[@index index]        
@@ -150,6 +214,13 @@ class Mover
 
     pointCode: (index) -> if @isPoly() then 'P' else @pointAt(index)[0]
     index: (index) -> (@numPoints() + index) % @numPoints()
+            
+    # 00000000    0000000    0000000   0000000   000000000  
+    # 000   000  000   000  000       000   000     000     
+    # 00000000   000   000  0000000   000000000     000     
+    # 000        000   000       000  000   000     000     
+    # 000         0000000   0000000   000   000     000     
+    
     posAt: (index, dot='point') ->
 
         index = @index index
@@ -182,4 +253,28 @@ class Mover
                 log "Mover.posAt -- unhandled dot? #{dot}"
                 pos p[1], p[2]
 
+    setDotPos: (dot, index, itemPos) ->
+        
+        point = @points()[index]
+        
+        switch dot
+
+            when 'ctrl1', 'ctrlq', 'ctrls'
+                point[1] = itemPos.x
+                point[2] = itemPos.y
+
+            when 'ctrl2'
+                point[3] = itemPos.x
+                point[4] = itemPos.y
+                
+            when 'point'
+                switch point[0]
+                    when 'S', 'Q', 'C', 'M', 'L'
+                        point[point.length-2] = itemPos.x
+                        point[point.length-1] = itemPos.y
+                    else
+                        point[0] = itemPos.x
+                        point[1] = itemPos.y
+                
+                
 module.exports = Mover

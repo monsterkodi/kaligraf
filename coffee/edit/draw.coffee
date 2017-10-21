@@ -239,6 +239,7 @@ class Draw
                 
             mover.movePoint index, refl, [ctrl]
         
+        @edit.update()
         object.plot()
         
         if @shape in ['bezier_smooth', 'bezier_quad', 'bezier_cube']

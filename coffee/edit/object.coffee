@@ -267,9 +267,8 @@ class Object
             when 'none'
                 
                 angle = toNext.angle toPrev
-                log 'angle', angle
+
                 if Math.abs(angle) >= 179.9999 or Math.abs(angle) < 0.0001
-                    log 'straight already!'
                     return
                 else
                     avg = toNext.plus(toPrev).times 0.5
@@ -281,34 +280,6 @@ class Object
         @edit.update()
         @plot()
         
-    isStraightAt: (index) ->
-
-        nexti = index+1
-        nexti = 0 if nexti == @numPoints()
-        
-        point = @pointAt index
-        
-        prevDot = switch point[0]
-            when 'C' then 'ctrl2'
-            when 'S' then 'ctrls'
-            when 'Q' then 'ctrlq'
-            
-        nextDot = switch @pointAt(nexti)[0]
-            when 'C' then 'ctrl1'
-            when 'S' then 'ctrlr'
-            when 'Q' then 'ctrlq'
-        
-        thisPos = @posAt index
-        prevPos = @posAt index, prevDot
-        nextPos = @posAt nexti, nextDot
-
-        toNext = thisPos.to nextPos
-        toPrev = thisPos.to prevPos
-        
-        angle = toNext.angle toPrev
-
-        Math.abs(angle) >= 179.999 or Math.abs(angle) < 0.001
-            
     # 000   000  00000000   0000000     0000000   000000000  00000000  0000000     0000000   000000000   0000000
     # 000   000  000   000  000   000  000   000     000     000       000   000  000   000     000     000
     # 000   000  00000000   000   000  000000000     000     0000000   000   000  000   000     000     0000000

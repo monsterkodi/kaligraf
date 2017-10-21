@@ -44,7 +44,7 @@ class DotSel
     # 0000000      000     000   000  000   000     000     
     
     onStart: (drag, event) =>
-        log 'onStart'
+
         if dot = event.target.instance
 
             if @kali.shapeTool() != 'edit'

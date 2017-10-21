@@ -221,61 +221,42 @@ class Object
 
     straightenPoint: (index, fixed) ->
         
+        mover = new Mover @
+        
+        info = mover.infoAt index
+        
         nexti = index+1
         nexti = 0 if nexti == @numPoints()
         
-        point = @pointAt index
-        
-        prevDot = switch point[0]
-            when 'C' then 'ctrl2'
-            when 'S' then 'ctrls'
-            when 'Q' then 'ctrlq'
-            
-        nextDot = switch @pointAt(nexti)[0]
-            when 'C' then 'ctrl1'
-            when 'S' then 'ctrlr'
-            when 'Q' then 'ctrlq'
-        
-        return if prevDot == 'ctrls' and nextDot == 'ctrlr'
-        return if fixed == 'prev' and not nextDot
-        return if fixed == 'next' and not prevDot
-        return if not nextDot and not prevDot
-            
-        if fixed == 'none' 
-            if not prevDot then fixed = 'prev'
-            if not nextDot then fixed = 'next'
-            
-        thisPos = @posAt index
-        prevPos = @posAt index, prevDot
-        nextPos = @posAt nexti, nextDot
-        
-        toNext = thisPos.to nextPos
-        toPrev = thisPos.to prevPos
-        
-        switch fixed 
+        switch fixed
             
             when 'next'
                 
-                prevPos = thisPos.minus toNext.normal().times toPrev.length()
-                @setPoint index, prevDot, prevPos
+                prevPos = info.thisPos.minus info.toNext.normal().times info.toPrev.length()
+                @setPoint index, info.prevDot, prevPos
             
             when 'prev'
                 
-                nextPos = thisPos.minus toPrev.normal().times toNext.length()
-                @setPoint nexti, nextDot, nextPos
+                nextPos = info.thisPos.minus info.toPrev.normal().times info.toNext.length()
+                @setPoint nexti, info.nextDot, nextPos
                 
             when 'none'
                 
-                angle = toNext.angle toPrev
-
-                if Math.abs(angle) >= 179.9999 or Math.abs(angle) < 0.0001
+                if Math.abs(info.angle) > 179.9999 or Math.abs(info.angle) < 0.0001
                     return
+
+                if info.angle > 0
+                    prevAngle =  90 - info.angle / 2
+                    nextAngle = -90 + info.angle / 2
                 else
-                    avg = toNext.plus(toPrev).times 0.5
-                    prevPos = thisPos.minus avg.perp().times -1
-                    nextPos = thisPos.minus avg.perp()
-                @setPoint index, prevDot, prevPos
-                @setPoint nexti, nextDot, nextPos
+                    prevAngle = -90 - info.angle / 2
+                    nextAngle =  90 + info.angle / 2
+                
+                prevPos = info.thisPos.plus info.toPrev.rotate(prevAngle)
+                nextPos = info.thisPos.plus info.toNext.rotate(nextAngle)
+
+                @setPoint index, info.prevDot, prevPos
+                @setPoint nexti, info.nextDot, nextPos
                 
         @edit.update()
         @plot()

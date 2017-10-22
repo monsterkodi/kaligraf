@@ -121,6 +121,7 @@ class LayerList
             when 'load'  then @scroll.style.background = @stage.color.toHex()
             when 'layer' then @updateActive info
             when 'color' then @updateColor()
+            when 'clear' then @update()
         
     # 000   000  00000000   0000000     0000000   000000000  00000000  
     # 000   000  000   000  000   000  000   000     000     000       
@@ -142,7 +143,9 @@ class LayerList
         @shadow.update()
 
     updateActive: (info) ->
+        
         @log 'LayerList.updateActive', info
+        
         if info.num != @scroll.children.length
             @log 'LayerList.updateActive num differs -> update()'
             @update()

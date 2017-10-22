@@ -14,7 +14,7 @@ dependencies
                 colors          ^1.1.2
                 font-manager    ^0.2.2
                 heterarchy      ^1.0.7
-                kxk             ^0.17.8
+                kxk             ^0.18.0
                 pretty-data     ^0.40.0
                 svg.filter.js   ^2.0.2
                 svg.js          ^2.6.3

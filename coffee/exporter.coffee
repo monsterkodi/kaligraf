@@ -130,13 +130,8 @@ class Exporter
     @clean: (item) ->
 
         if item.node.getAttribute 'sodipodi:nodetypes'
-            log "clean sodipodi: #{item.node.getAttribute 'sodipodi:nodetypes'}" 
             item.node.removeAttribute 'sodipodi:nodetypes'
             
-        # if item.style('opacity') == 'unset'
-            # log 'clear unset opacity'
-            # item.style 'opacity', null
-         
         if item.node.hasAttributes()
             
             item.node.removeAttribute 'xmlns:svgjs'
@@ -144,13 +139,10 @@ class Exporter
             attr = item.node.attributes
             for i in [attr.length-1..0]
                 if attr[i]?.name.startsWith('inkscape:')
-                    log 'clean inkscape', item.node.getAttribute attr[i].name
                     item.node.removeAttribute attr[i].name
                 if attr[i]?.name.startsWith('sodipodi:')
-                    log 'clean sodipodi', item.node.getAttribute attr[i].name
                     item.node.removeAttribute attr[i].name
 
-        # if item.type in ['defs', 'g']
         if item.type in ['g']
             if item.children?().length == 0
                 return item.remove()
@@ -198,7 +190,6 @@ class Exporter
         for def in item.doc().defs().children()
             if def.type.includes 'Gradient'
                 if not keepGradients.has def.id()
-                    # log 'Exporter.cleanGradients -- remove unused gradient', def.id()
                     def.remove()
 
     @cleanFilters: (item) ->
@@ -213,7 +204,6 @@ class Exporter
         for def in item.doc().defs().children()
             if def.type == 'filter'
                 if not keepFilters.has def.id()
-                    # log 'Exporter.cleanFilters -- remove unused filter', def.id()
                     def.remove()
                     
     @childItems: (item) ->
@@ -234,7 +224,7 @@ class Exporter
     @cleanIDs: (items) ->
 
         return if empty items
-        # log 'Exporter.cleanIDs', itemIDs items, ' '
+
         ids = []
         for item in items
 

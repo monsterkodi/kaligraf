@@ -62,7 +62,7 @@ class Resizer
         ep = @stage.stageForEvent drag.pos
         v1 = sp.minus @rotationCenter 
         v2 = ep.minus @rotationCenter
-        angle = v1.rotation v2
+        angle = v2.rotation v1
         
         if event.shiftKey
             angle = Math.round(angle/15) * 15

@@ -75,6 +75,9 @@ class Menu
                     { type:  'separator'}
                     { label: 'Space Horizontal', accelerator: '5',         click: -> button 'space', 'horizontal'}
                     { label: 'Space Vertical',   accelerator: 'command+5', click: -> button 'space', 'vertical'}
+                    { type:  'separator'}
+                    { label: 'Space Radial',     accelerator: '6',         click: -> action 'spaceRadial'}
+                    { label: 'Average Radius',   accelerator: 'command+6', click: -> action 'averageRadius'}
                 ]}
                 { label: 'Bezier',      submenu: [
                     { label: 'Quad',    accelerator: 'ctrl+q',              click: -> post.toWins 'convert', 'Q'}

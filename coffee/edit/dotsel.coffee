@@ -6,9 +6,9 @@
 0000000     0000000      000     0000000   00000000  0000000
 ###
 
-{ empty, drag, post, pos, log, _ } = require 'kxk'
+{ empty, drag, post, first, pos, log, _ } = require 'kxk'
 
-{ rectsIntersect, normRect, bboxForItems, itemIDs } = require '../utils'
+{ rectsIntersect, normRect, bboxForItems, itemIDs, boxCenter } = require '../utils'
 
 class DotSel
 
@@ -415,6 +415,96 @@ class DotSel
 
             b.cx newPos.x
             b.cy newPos.y
+            
+        @update()
+        @edit.dotres.update()
+        @stage.selection.update()
+        @stage.resizer.update()
+        
+        @stage.done()
+        
+    # 00000000    0000000   0000000    000   0000000   000      
+    # 000   000  000   000  000   000  000  000   000  000      
+    # 0000000    000000000  000   000  000  000000000  000      
+    # 000   000  000   000  000   000  000  000   000  000      
+    # 000   000  000   000  0000000    000  000   000  0000000  
+    
+    spaceRadial: ->
+        
+        return if @numDots() < 3
+
+        @stage.do "space-radial"
+        
+        center = pos 0,0
+        centerDots = []
+        for i in [0...@dots.length]
+            log 'index', @dots[i].ctrl.index()
+            if @dots[i].ctrl.index() == 0 and @dots[i].ctrl.object.isClosed()
+                log 'closed'
+                continue 
+            dotCenter = pos @dots[i].cx(), @dots[i].cy()
+            center.add dotCenter
+            centerDots.push center:dotCenter, dot:@dots[i]
+            
+        center.scale 1/centerDots.length
+                
+        for centerDot in centerDots
+            angle = center.to(centerDot.center).rotation(pos 1,0)
+            angle += 360 if angle < 0
+            centerDot.angle = angle
+
+        centerDots.sort (a,b) -> a.angle - b.angle 
+          
+        angle = first(centerDots).angle
+        aincr = 360/centerDots.length
+        
+        for centerDot in centerDots
+            length = center.to(centerDot.center).length()
+            direction = pos(1,0).rotate angle
+            newPos = center.plus direction.scale length
+            centerDot.dot.cx newPos.x
+            centerDot.dot.cy newPos.y
+            angle += aincr
+            
+        @update()
+        @edit.dotres.update()
+        @stage.selection.update()
+        @stage.resizer.update()
+        
+        @stage.done()
+        
+    # 00000000    0000000   0000000    000  000   000   0000000  
+    # 000   000  000   000  000   000  000  000   000  000       
+    # 0000000    000000000  000   000  000  000   000  0000000   
+    # 000   000  000   000  000   000  000  000   000       000  
+    # 000   000  000   000  0000000    000   0000000   0000000   
+    
+    averageRadius: ->
+        
+        return if @numDots() < 3
+        
+        @stage.do "average-radius"
+        
+        center = pos 0,0
+        dotCenters = []
+        for i in [0...@dots.length]
+        
+            dotCenter = pos @dots[i].cx(), @dots[i].cy()
+            center.add dotCenter
+            dotCenters.push dotCenter
+            
+        center.scale 1/@dots.length
+        
+        radius = 0
+        for i in [0...@dots.length]
+            radius += center.to(dotCenters[i]).length()
+            
+        radius /= @dots.length
+        
+        for i in [0...@dots.length]
+            newPos = center.plus center.to(dotCenters[i]).normal().scale radius
+            @dots[i].cx newPos.x
+            @dots[i].cy newPos.y
             
         @update()
         @edit.dotres.update()

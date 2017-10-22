@@ -208,7 +208,7 @@ class Mover
         info.toNext = info.thisPos.to info.nextPos
         info.toPrev = info.thisPos.to info.prevPos
         
-        info.angle  = info.toNext.rotation info.toPrev
+        info.angle  = info.toPrev.rotation info.toNext
         
         info
             

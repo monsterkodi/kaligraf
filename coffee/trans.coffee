@@ -275,20 +275,5 @@ class Trans
             else               pos point[0], point[1]
             
         pos new SVG.Point(itemPos).transform itemMatrix item
-
-    # setPointPos: (item, index, stagePos) ->
-#         
-        # points = @itemPoints item
-        # itemPos = pos new SVG.Point(stagePos).transform itemMatrix(item).inverse()
-        # point = points[index]
-        # switch point[0]
-            # when 'S', 'Q', 'C', 'M', 'L'
-                # point[point.length-2] = itemPos.x
-                # point[point.length-1] = itemPos.y
-            # else
-                # point[0] = itemPos.x
-                # point[1] = itemPos.y
-#                 
-        # @setItemPoints item, points
     
 module.exports = Trans

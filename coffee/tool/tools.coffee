@@ -49,38 +49,40 @@ class Tools extends Tool
             
         switch action
             
-            when 'click'      then @clickTool        tool
-            when 'button'     then @clickToolButton  tool, button
-            when 'activate'   then @activateTool     tool
-            when 'browse'     then @kali.openBrowser()
-            when 'font'       then @getTool('font').toggleList()
-            when 'layer'      then @getTool('layer').toggleList()
-            when 'gradient'   then @getTool('gradient').toggleList()
-            when 'group'      then @stage.group()
-            when 'ungroup'    then @stage.ungroup()
-            when 'cut'        then @stage.cut()
-            when 'copy'       then @stage.copy()
-            when 'paste'      then @stage.paste()
-            when 'undo'       then @stage.undo.undo()
-            when 'redo'       then @stage.undo.redo()
-            when 'new'        then @stage.new()
-            when 'open'       then @stage.open()
-            when 'load'       then @stage.load()
-            when 'save'       then @stage.save()
-            when 'saveAs'     then @stage.saveAs()
-            when 'import'     then @stage.import()
-            when 'export'     then @stage.export()
-            when 'clear'      then @stage.doClear()
-            when 'selectAll'  then @stage.shapes.select 'all'
-            when 'selectMore' then @stage.shapes.select 'more'
-            when 'selectLess' then @stage.shapes.select 'less'
-            when 'selectNext' then @stage.shapes.select 'next'
-            when 'selectPrev' then @stage.shapes.select 'prev'
-            when 'deselect'   then @stage.shapes.select 'none'
-            when 'invert'     then @stage.shapes.select 'invert'
-            when 'center'     then @stage.centerSelection()
-            when 'swapColor'  then @stroke.swapColor()
-            when 'toggleTools' then @toggleTools()
+            when 'click'         then @clickTool        tool
+            when 'button'        then @clickToolButton  tool, button
+            when 'activate'      then @activateTool     tool
+            when 'browse'        then @kali.openBrowser()
+            when 'font'          then @getTool('font').toggleList()
+            when 'layer'         then @getTool('layer').toggleList()
+            when 'gradient'      then @getTool('gradient').toggleList()
+            when 'group'         then @stage.group()
+            when 'ungroup'       then @stage.ungroup()
+            when 'cut'           then @stage.cut()
+            when 'copy'          then @stage.copy()
+            when 'paste'         then @stage.paste()
+            when 'undo'          then @stage.undo.undo()
+            when 'redo'          then @stage.undo.redo()
+            when 'new'           then @stage.new()
+            when 'open'          then @stage.open()
+            when 'load'          then @stage.load()
+            when 'save'          then @stage.save()
+            when 'saveAs'        then @stage.saveAs()
+            when 'import'        then @stage.import()
+            when 'export'        then @stage.export()
+            when 'clear'         then @stage.doClear()
+            when 'spaceRadial'   then @stage.shapes.edit?.dotsel.spaceRadial()
+            when 'averageRadius' then @stage.shapes.edit?.dotsel.averageRadius()
+            when 'selectAll'     then @stage.shapes.select 'all'
+            when 'selectMore'    then @stage.shapes.select 'more'
+            when 'selectLess'    then @stage.shapes.select 'less'
+            when 'selectNext'    then @stage.shapes.select 'next'
+            when 'selectPrev'    then @stage.shapes.select 'prev'
+            when 'deselect'      then @stage.shapes.select 'none'
+            when 'invert'        then @stage.shapes.select 'invert'
+            when 'center'        then @stage.centerSelection()
+            when 'swapColor'     then @stroke.swapColor()
+            when 'toggleTools'   then @toggleTools()
             when 'toggleProperties' then @toggleProperties()
             else log "unhandled tool action #{action} #{tool}"
         

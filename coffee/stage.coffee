@@ -625,8 +625,10 @@ class Stage
     clear: (file=@currentFile) ->
 
         @layers = []
+        @layerIndex = 0
         
         @currentFile = file
+
         @shapes.edit?.clear()
         @selection.clear()
         @svg.clear()

@@ -152,7 +152,25 @@ class DotSel
     empty:   -> empty @dots
     numDots: -> @dots.length
     bbox:    -> bboxForItems @dots
+    bbox2:   -> 
+        
+        minx = Number.MAX_SAFE_INTEGER
+        miny = Number.MAX_SAFE_INTEGER
+        maxx = Number.MIN_SAFE_INTEGER
+        maxy = Number.MIN_SAFE_INTEGER
+        
+        for dot in @dots
+            minx = Math.min dot.cx(), minx
+            maxx = Math.max dot.cx(), maxx
 
+            miny = Math.min dot.cy(), miny
+            maxy = Math.max dot.cy(), maxy
+            
+        x:minx
+        y:miny
+        width:maxx-minx
+        height:maxy-miny
+            
     invert: ->
         
         for object in @edit.objects
@@ -438,7 +456,6 @@ class DotSel
         center = pos 0,0
         centerDots = []
         for i in [0...@dots.length]
-            log 'index', @dots[i].ctrl.index()
             if @dots[i].ctrl.index() == 0 and @dots[i].ctrl.object.isClosed()
                 log 'closed'
                 continue 

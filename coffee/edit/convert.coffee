@@ -157,7 +157,9 @@ class Convert
             index = idots.index
             point = points[index]
 
-            continue if index == 0 and _.isString point[0]
+            if index == 0 and _.isString point[0]
+                log 'continue', index, point[0] 
+                # continue 
 
             previ = index-1
             previ = @numPoints()-1 if index < 0

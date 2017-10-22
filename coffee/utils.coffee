@@ -82,11 +82,10 @@ module.exports =
     bboxForItems: (items, offset={x:0,y:0}) ->
         
         if empty items
-            return new SVG.BBox() 
+            return new SVG.BBox()
             
         bb = null
         for item in items
-            # b = item.bbox()
             b = module.exports.itemBox item
             continue if b.width == 0 == b.height 
             b = b.transform module.exports.itemMatrix item
@@ -246,6 +245,20 @@ module.exports =
         if b.x2 < a.x then return false
         if b.y2 < a.y then return false
         true
+        
+    linesIntersect: (p1, q1, p2, q2) ->
+        
+        orientation = (p,q,r) ->
+            val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y)
+            if val == 0 then return 0 # colinear
+            return val > 0 and 1 or 2 # cw or ccw
+        
+        o1 = orientation p1, q1, p2
+        o2 = orientation p1, q1, q2
+        o3 = orientation p2, q2, p1
+        o4 = orientation p2, q2, q1
+ 
+        return o1 != o2 and o3 != o4
         
     # 000   000   0000000   00000000   00     00  
     # 0000  000  000   000  000   000  000   000  

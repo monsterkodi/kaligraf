@@ -62,9 +62,10 @@ class Angle extends Tool
             @setSpinValue 'angle', @angle
         
     onApply: =>
-        
+        log 'leafItems', @stage.selectedLeafItems().length
         @stage.do 'apply'
         for item in @stage.selectedLeafItems()
+            log 'item.transform().rotation', item.transform().rotation
             if item.transform().rotation
 
                 angle = item.transform().rotation

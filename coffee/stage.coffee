@@ -8,7 +8,7 @@
 {   resolve, elem, post, drag, prefs, stopEvent, fileName,
     first, last, empty, clamp, pos, fs, log, _ } = require 'kxk'
 
-{   contrastColor, normRect, bboxForItems, itemIDs, insideBox, itemBox, 
+{   contrastColor, normRect, bboxForItems, itemIDs, insideBox, itemBox, linesIntersect,
     growBox, rboxForItems, boxOffset, boxCenter, itemGradient, itemMatrix } = require './utils'
 
 electron  = require 'electron'
@@ -19,6 +19,7 @@ SVG       = require 'svg.js'
 flt       = require 'svg.filter.js'
 Undo      = require './edit/undo'
 Shapes    = require './edit/shapes'
+Mover     = require './edit/mover'
 Selection = require './selection'
 Resizer   = require './resizer'
 Exporter  = require './exporter'
@@ -97,20 +98,11 @@ class Stage
         
     foregroundColor: -> contrastColor @color
 
-    # 000  000000000  00000000  00     00
-    # 000     000     000       000   000
-    # 000     000     0000000   000000000
-    # 000     000     000       000 0 000
-    # 000     000     00000000  000   000
-
-    pickRect: (p) ->
-        
-        r = @svg.node.createSVGRect()
-        r.x      = p.x - @viewPos().x
-        r.y      = p.y - @viewPos().y
-        r.width  = 1
-        r.height = 1
-        r
+    # 000       0000000   000   000  00000000  00000000    0000000  
+    # 000      000   000   000 000   000       000   000  000       
+    # 000      000000000    00000    0000000   0000000    0000000   
+    # 000      000   000     000     000       000   000       000  
+    # 0000000  000   000     000     00000000  000   000  0000000   
     
     getLayers: (opt) -> 
         
@@ -121,7 +113,22 @@ class Stage
         
     pickableLayers: -> @getLayers pickable:true 
     disabledLayers: -> @getLayers pickable:false
+
+    # 00000000   000   0000000  000   000  
+    # 000   000  000  000       000  000   
+    # 00000000   000  000       0000000    
+    # 000        000  000       000  000   
+    # 000        000   0000000  000   000  
+    
+    pickRect: (p) ->
         
+        r = @svg.node.createSVGRect()
+        r.x      = p.x - @viewPos().x
+        r.y      = p.y - @viewPos().y
+        r.width  = 1
+        r.height = 1
+        r
+    
     pickItems: (eventPos, opt) ->
         
         pickableLayers = @pickableLayers()
@@ -132,37 +139,58 @@ class Stage
                 SVG.adopt item
         items = items.filter (item) => item.instance? and item.instance != @svg
         items = items.map (item) -> item.instance
-        items = items.filter (item) => 
-            @layerForItem(item) in pickableLayers
+        items = items.filter (item) => @layerForItem(item) in pickableLayers
             
         stagePos = @stageForEvent eventPos
-        items = items.filter (item) => 
-            insideBox(stagePos, @trans.rect item)
+        items = items.filter (item) => insideBox stagePos, @trans.rect item
+        items = items.filter (item) => @oddEvenTest stagePos, item
         items = @filterItems items, opt
         items
-        
-    leafItemAtPos: (p, opt) ->
 
-        for item in @pickItems(p, opt)
-            if @isLeaf item
-                return item
-        @log 'Stage.leafItemAtPos null'
-        null
-    
+    oddEvenTest: (stagePos, item) ->
+        
+        mover = new Mover kali:@kali, item:item
+        numPoints = mover.numPoints()
+        return false if not numPoints
+        outsidePos = pos stagePos.x+999999, stagePos.y
+        count = 0
+        for index in [0...numPoints]
+            previ = index
+            nexti = index+1
+            nexti = 0 if nexti >= numPoints
+            prevPos = @trans.fullTransform item, mover.posAt previ
+            nextPos = @trans.fullTransform item, mover.posAt nexti
+            if linesIntersect prevPos, nextPos, stagePos, outsidePos
+                count += 1
+        return (count % 2) != 0
+        
     itemAtPos: (p, opt) ->
+        
         for item in @pickItems(p, opt)
             if item in @pickableItems()
                 return item
             else if item in @treeItems()
                 return @rootItem item
-        @log 'Stage.itemAtPos null'
         null
-                
-    rootItem: (item) ->
-        
-        if item.parent() in @getLayers() then item
-        else @rootItem item.parent()
 
+    leafItemAtPos: (p, opt) ->
+
+        for item in @pickItems(p, opt)
+            if @isLeaf item
+                return item
+        null
+        
+    pickableItems: (opt) -> 
+        
+        pickableLayers = @pickableLayers()
+        @items(opt).filter (item) => @layerForItem(item) in pickableLayers
+                        
+    # 000  000000000  00000000  00     00
+    # 000     000     000       000   000
+    # 000     000     0000000   000000000
+    # 000     000     000       000 0 000
+    # 000     000     00000000  000   000
+    
     items: (opt) -> 
         
         items = []
@@ -170,16 +198,22 @@ class Stage
             items = items.concat layer.children()
         items = items.filter (item) -> item.type != 'defs'
         @filterItems items, opt
-            
-    pickableItems: (opt) -> 
+
+    rootItem: (item) ->
         
-        pickableLayers = @pickableLayers()
-        @items(opt).filter (item) => @layerForItem(item) in pickableLayers
+        if item.parent() in @getLayers() then item
+        else @rootItem item.parent()
 
     editableItems: (opt) ->
         
         @treeItems pickable:true, noTypes: ['g', 'mask', 'clipPath']
+
+    isEditable: (item) -> 
         
+        return true if itemGradient(item, 'fill') or itemGradient(item, 'stroke')
+        return true if item.type in ['rect', 'circle', 'ellipse', 'text']
+        _.isFunction item.array 
+            
     groups: -> @treeItems pickable:false, type:'g' 
     
     treeItems: (opt) ->
@@ -196,14 +230,14 @@ class Stage
                 items = items.concat @treeItems o
             
         items
-
-    isLeaf: (item) -> not _.isFunction item.children
-    
-    isEditable: (item) -> 
         
-        return true if itemGradient(item, 'fill') or itemGradient(item, 'stroke')
-        return true if item.type in ['rect', 'circle', 'ellipse', 'text']
-        _.isFunction item.array 
+    isLeaf: (item) -> not _.isFunction item.children
+        
+    # 00000000  000  000      000000000  00000000  00000000   
+    # 000       000  000         000     000       000   000  
+    # 000000    000  000         000     0000000   0000000    
+    # 000       000  000         000     000       000   000  
+    # 000       000  0000000     000     00000000  000   000  
     
     filterItems: (items, opt) ->
         

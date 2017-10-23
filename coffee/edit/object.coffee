@@ -163,60 +163,20 @@ class Object extends Points
 
         switch dot
             when 'ctrlq'
-                @straightenPoint index, 'prev'
-                @straightenPoint previ, 'next'
+                @straighten index, 'prev'
+                @straighten previ, 'next'
             when 'ctrlr' then
             when 'ctrls'
-                @straightenPoint index, 'prev'
+                @straighten index, 'prev'
             when 'ctrl1'
-                @straightenPoint previ, 'next'
+                @straighten previ, 'next'
             when 'ctrl2'
-                @straightenPoint index, 'prev'
+                @straighten index, 'prev'
             when 'point'
-                @straightenPoint index, 'none'
-
-    straightenPoint: (index, fixed) ->
-        
-        if not @isClosed()
-            return if index >= @numPoints()-1
-            return if index <= 1
-        
-        info  = @infoAt index
-        
-        nexti = index+1
-        nexti = 1 if nexti >= @numPoints()
-        
-        switch fixed
-            
-            when 'next'
-                prevPos = info.thisPos.minus info.toNext.normal().times info.toPrev.length()
-                @setPoint index, prevPos, info.prevDot
-            
-            when 'prev'
-                nextPos = info.thisPos.minus info.toPrev.normal().times info.toNext.length()
-                @setPoint nexti, nextPos, info.nextDot
-                
-            when 'none'
-                
-                if Math.abs(info.angle) > 179.9999 or Math.abs(info.angle) < 0.0001
-                    return
-
-                if info.angle > 0
-                    prevAngle =  90 - info.angle / 2
-                    nextAngle = -90 + info.angle / 2
-                else
-                    prevAngle = -90 - info.angle / 2
-                    nextAngle =  90 + info.angle / 2
-                
-                prevPos = info.thisPos.plus info.toPrev.rotate(prevAngle)
-                nextPos = info.thisPos.plus info.toNext.rotate(nextAngle)
-
-                @setPoint index, prevPos, info.prevDot
-                @setPoint nexti, nextPos, info.nextDot
+                @straighten index, 'none'
                 
         @edit.update()
-        @applyPoints()
-        
+            
     # 000   000  00000000   0000000     0000000   000000000  00000000  0000000     0000000   000000000   0000000
     # 000   000  000   000  000   000  000   000     000     000       000   000  000   000     000     000
     # 000   000  00000000   000   000  000000000     000     0000000   000   000  000   000     000     0000000
@@ -401,36 +361,4 @@ class Object extends Points
             return gradi?[index]
         @ctrls[@index index]
         
-    posAt: (index, dot='point') ->
-
-        index = @index index
-
-        p = @pointAt index
-
-        switch dot
-            when 'point'
-                switch p[0]
-                    when 'C'               then pos p[5], p[6]
-                    when 'S', 'Q'          then pos p[3], p[4]
-                    when 'M', 'L'          then pos p[1], p[2]
-                    else                        pos p[0], p[1]
-            when 'ctrl1', 'ctrls', 'ctrlq' then pos p[1], p[2]
-            when 'ctrl2'                   then pos p[3], p[4]
-            when 'ctrlb'
-                point = @pointAt index
-                switch point[0]
-                    when 'C' then @posAt index, 'ctrl2'
-                    when 'S' then @posAt index, 'ctrls'
-                    when 'Q' then @posAt index, 'ctrlq'
-                    else          @posAt index
-            when 'ctrlr'
-                index = @numPoints() if index == 1
-                prevp = @posAt index-1
-                ctrlb = @posAt index-1, 'ctrlb'
-                prevp.minus prevp.to ctrlb
-
-            else
-                log "Object.posAt -- unhandled dot? #{dot}"
-                pos p[1], p[2]
-
 module.exports = Object

@@ -71,34 +71,36 @@ class Angle extends Tool
                 angle = item.transform().rotation
                     
                 rectCenter = @trans.transform item, boxCenter item.bbox()
+                
                 item.transform new SVG.Matrix()
                 @trans.setCenter item, rectCenter
                 
                 boxcntr = boxCenter item.bbox()
+                
                 transmat = new SVG.Matrix().around boxcntr.x, boxcntr.y, new SVG.Matrix().rotate angle
-                points = new Points @kali, item
+                points   = new Points @kali, item
                 
-                continue if not points.isPath()
+                if points.isPath()
                 
-                rotDot = (index, dot) ->
-                    dotPos = points.posAt index, dot
-                    newPos = pos new SVG.Point(dotPos).transform transmat
-                    points.setDotPos dot, index, newPos
-                
-                for index in [0...points.numPoints()]
-                    rotDot index, 'point'
-                    point = points.pointAt index
-                    switch point[0]
-                        when 'S' 
-                            rotDot index, 'ctrls'
-                        when 'C'
-                            rotDot index, 'ctrl1'
-                            rotDot index, 'ctrl2'
-                        when 'Q'
-                            rotDot index, 'ctrlq'
+                    rotDot = (index, dot) ->
+                        dotPos = points.posAt index, dot
+                        newPos = pos new SVG.Point(dotPos).transform transmat
+                        points.setDotPos index, dot, newPos
                     
-                item.plot points.points()   
-                
+                    for index in [0...points.numPoints()]
+                        rotDot index, 'point'
+                        point = points.pointAt index
+                        switch point[0]
+                            when 'S' 
+                                rotDot index, 'ctrls'
+                            when 'C'
+                                rotDot index, 'ctrl1'
+                                rotDot index, 'ctrl2'
+                            when 'Q'
+                                rotDot index, 'ctrlq'
+                    
+                    points.applyPoints()
+                    
         @stage.selection.update()
         @stage.resizer.update()
         @stage.done()

@@ -3,8 +3,8 @@
   xmlns:xlink="http://www.w3.org/1999/xlink" 
   xmlns:svgjs="http://svgjs.com/svgjs" 
 style="stroke-linecap: round; stroke-linejoin: round; stroke-miterlimit: 20; background: rgba(255, 255, 255, 1);"
-viewBox="-896.2686462402344 -609.1706785583497 16533.669494628906 7075.128207092285">
-  <defs id="SvgjsDefs1334">
+viewBox="-760.7467651367188 -551.1778244018554 16262.625732421875 6959.142498779297">
+  <defs id="SvgjsDefs1649">
     <locks id="locks">L-f2-ce9ff1:0,L-05-af3e59:1,L-ed-3f9ace:0,L-ff-bb82e5:1,L-c8-c49176:1,R-0e-ba0a7d:8,T-8a-1c103d:8
 L-7f-db1f9f:1,R-4d-ee8552:8,T-b1-f019c8:8,L-ed-3f9ace:1,L-a4-00f553:0
 L-0f-3659a1:0,R-3b-e56f5f:8,T-3a-e12be1:8,L-a4-00f553:1
@@ -519,6 +519,18 @@ T-26-954cd9:8,R-35-68d308:8,L-2e-537c79:0,L-11-06671b:0,L-1b-5f1cf6:0,L-81-ddbef
       <rect id="R-41-5ef8b2" width="835.9700927734375" height="341.0960693359375" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 8; fill: rgb(255, 255, 255); fill-opacity: 1;" transform="matrix(1,0,0,1,1314.5004272460938,380.91632080078125)"></rect>
       <text id="T-cd-81e7ad" font-family="Apple SD Gothic Neo" font-size="182.94811167481518" font-weight="bold" font-style="normal" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 0; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,1732.4708251953125,398.89154052734375)" text-anchor="middle" filter="url(#SvgjsFilter20546)" svgjs:data="{&quot;leading&quot;:&quot;1.15&quot;}">
         <tspan id="SvgjsTspan19901" dy="210.39032842603743" x="0" svgjs:data="{&quot;newLined&quot;:true}">Shadow</tspan>
+      </text>
+    </g>
+    <g id="G-ba-370a12" transform="matrix(1,0,0,1,4106.821974681357,3603.2913665771484)" filter="url(#SvgjsFilter19431)">
+      <rect id="R-38-ba6173" width="347.3840637207031" height="168.21385192871094" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 8; fill: rgb(255, 255, 255); fill-opacity: 1;" transform="matrix(1,0,0,1,546.2352752685547,187.85147857666016)"></rect>
+      <text id="T-87-d84a16" font-family="Apple SD Gothic Neo" font-size="86.62148578269984" font-weight="bold" font-style="normal" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 0; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,719.9114379882812,198.62457275390625)" text-anchor="middle" filter="url(#SvgjsFilter20546)" svgjs:data="{&quot;leading&quot;:&quot;1.15&quot;}">
+        <tspan id="SvgjsTspan3376" dy="99.6147086501048" x="0" svgjs:data="{&quot;newLined&quot;:true}">Points</tspan>
+      </text>
+    </g>
+    <g id="G-94-5721bf" transform="matrix(1,0,0,1,4398.022262573242,3576.9879157049763)" filter="url(#SvgjsFilter19431)">
+      <rect id="R-ce-99a627" width="290.6777038574219" height="100.88456726074219" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 8; fill: rgb(255, 255, 255); fill-opacity: 1;" transform="matrix(1,0,0,1,457.0690460205078,112.66202545166016)"></rect>
+      <text id="T-ab-202a4f" font-family="Apple SD Gothic Neo" font-size="54.50371598858823" font-weight="bold" font-style="normal" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 0; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,602.3924560546875,116.89804077148438)" text-anchor="middle" filter="url(#SvgjsFilter20546)" svgjs:data="{&quot;leading&quot;:&quot;1.15&quot;}">
+        <tspan id="SvgjsTspan4238" dy="62.67927338687646" x="0" svgjs:data="{&quot;newLined&quot;:true}">Convert</tspan>
       </text>
     </g>
   </svg>

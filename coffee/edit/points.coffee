@@ -18,14 +18,14 @@ class Points extends Convert
 
         @trans = @kali.trans
         
-    # 00     00   0000000   000   000  00000000  0000000     0000000   000000000   0000000  
-    # 000   000  000   000  000   000  000       000   000  000   000     000     000       
-    # 000000000  000   000   000 000   0000000   000   000  000   000     000     0000000   
-    # 000 0 000  000   000     000     000       000   000  000   000     000          000  
-    # 000   000   0000000       0      00000000  0000000     0000000      000     0000000   
+    # 00     00   0000000   000   000  00000000     0000000     0000000   000000000   0000000  
+    # 000   000  000   000  000   000  000          000   000  000   000     000     000       
+    # 000000000  000   000   000 000   0000000      000   000  000   000     000     0000000   
+    # 000 0 000  000   000     000     000          000   000  000   000     000          000  
+    # 000   000   0000000       0      00000000     0000000     0000000      000     0000000   
     
     moveIndexDots: (cfg) ->
-        # log 'moveIndexDots', cfg
+
         indexDots = cfg.indexDots
 
         follow = []
@@ -101,11 +101,11 @@ class Points extends Convert
         
         @applyPoints @points()
 
-    # 00     00   0000000   000   000  00000000  00000000    0000000   000  000   000  000000000
-    # 000   000  000   000  000   000  000       000   000  000   000  000  0000  000     000
-    # 000000000  000   000   000 000   0000000   00000000   000   000  000  000 0 000     000
-    # 000 0 000  000   000     000     000       000        000   000  000  000  0000     000
-    # 000   000   0000000       0      00000000  000         0000000   000  000   000     000
+    # 00     00   0000000   000   000  00000000     00000000    0000000   000  000   000  000000000
+    # 000   000  000   000  000   000  000          000   000  000   000  000  0000  000     000
+    # 000000000  000   000   000 000   0000000      00000000   000   000  000  000 0 000     000
+    # 000 0 000  000   000     000     000          000        000   000  000  000  0000     000
+    # 000   000   0000000       0      00000000     000         0000000   000  000   000     000
 
     movePoint: (index, itemPos, dots=['point']) =>
         
@@ -118,11 +118,11 @@ class Points extends Convert
 
             @setDotPos index, dot, itemPos, @movePoint
 
-    #  0000000  00000000  000000000  00000000    0000000   000  000   000  000000000  
-    # 000       000          000     000   000  000   000  000  0000  000     000     
-    # 0000000   0000000      000     00000000   000   000  000  000 0 000     000     
-    #      000  000          000     000        000   000  000  000  0000     000     
-    # 0000000   00000000     000     000         0000000   000  000   000     000     
+    #  0000000  00000000  000000000     00000000    0000000   000  000   000  000000000  
+    # 000       000          000        000   000  000   000  000  0000  000     000     
+    # 0000000   0000000      000        00000000   000   000  000  000 0 000     000     
+    #      000  000          000        000        000   000  000  000  0000     000     
+    # 0000000   00000000     000        000         0000000   000  000   000     000     
     
     setPoint: (index, itemPos, dot='point') =>
         
@@ -174,6 +174,52 @@ class Points extends Convert
                     prevp = @posAt previ
                     refl = prevp.minus prevp.to itemPos
                     setRefl previ, refl, prevDot
+
+    #  0000000  000000000  00000000    0000000   000   0000000   000   000  000000000  00000000  000   000  
+    # 000          000     000   000  000   000  000  000        000   000     000     000       0000  000  
+    # 0000000      000     0000000    000000000  000  000  0000  000000000     000     0000000   000 0 000  
+    #      000     000     000   000  000   000  000  000   000  000   000     000     000       000  0000  
+    # 0000000      000     000   000  000   000  000   0000000   000   000     000     00000000  000   000  
+    
+    straighten: (index, fixed) ->
+        
+        if not @isClosed()
+            return if index >= @numPoints()-1
+            return if index <= 1
+        
+        info  = @infoAt index
+        nexti = index+1
+        nexti = 1 if nexti >= @numPoints()
+        
+        switch fixed
+            
+            when 'next'
+                prevPos = info.thisPos.minus info.toNext.normal().times info.toPrev.length()
+                @setPoint index, prevPos, info.prevDot
+            
+            when 'prev'
+                nextPos = info.thisPos.minus info.toPrev.normal().times info.toNext.length()
+                @setPoint nexti, nextPos, info.nextDot
+                
+            when 'none'
+                
+                if Math.abs(info.angle) > 179.9999 or Math.abs(info.angle) < 0.0001
+                    return
+
+                if info.angle > 0
+                    prevAngle =  90 - info.angle / 2
+                    nextAngle = -90 + info.angle / 2
+                else
+                    prevAngle = -90 - info.angle / 2
+                    nextAngle =  90 + info.angle / 2
+                
+                prevPos = info.thisPos.plus info.toPrev.rotate(prevAngle)
+                nextPos = info.thisPos.plus info.toNext.rotate(nextAngle)
+
+                @setPoint index, prevPos, info.prevDot
+                @setPoint nexti, nextPos, info.nextDot
+                
+        @applyPoints()
                     
     #  0000000   000   000   0000000   000      00000000  
     # 000   000  0000  000  000        000      000       
@@ -305,11 +351,11 @@ class Points extends Convert
         else
             @item.plot points
         
-    # 00000000    0000000    0000000   0000000   000000000  
-    # 000   000  000   000  000       000   000     000     
-    # 00000000   000   000  0000000   000000000     000     
-    # 000        000   000       000  000   000     000     
-    # 000         0000000   0000000   000   000     000     
+    # 00000000    0000000    0000000       0000000   000000000  
+    # 000   000  000   000  000           000   000     000     
+    # 00000000   000   000  0000000       000000000     000     
+    # 000        000   000       000      000   000     000     
+    # 000         0000000   0000000       000   000     000     
     
     posAt: (index, dot='point') ->
 
@@ -343,11 +389,11 @@ class Points extends Convert
                 log "Points.posAt -- unhandled dot? #{dot}"
                 pos p[1], p[2]
 
-    #  0000000   0000000    0000000    00000000  000   000  00000000  000   000  
-    # 000   000  000   000  000   000  000       000   000  000       0000  000  
-    # 000   000  000   000  000   000  0000000    000 000   0000000   000 0 000  
-    # 000   000  000   000  000   000  000          000     000       000  0000  
-    #  0000000   0000000    0000000    00000000      0      00000000  000   000  
+    #  0000000   0000000    0000000         00000000  000   000  00000000  000   000  
+    # 000   000  000   000  000   000       000       000   000  000       0000  000  
+    # 000   000  000   000  000   000       0000000    000 000   0000000   000 0 000  
+    # 000   000  000   000  000   000       000          000     000       000  0000  
+    #  0000000   0000000    0000000         00000000      0      00000000  000   000  
     
     oddEvenTest: (stagePos) ->
         
@@ -357,11 +403,6 @@ class Points extends Convert
         outsidePos = pos stagePos.x+999999, stagePos.y
         count = 0
         for index in [0...numPoints-1]
-            
-            # l = @kali.stage.svg.line()
-            # l.style 'stroke-width': 2, 'stroke': 'white'
-            # l.plot positions[index].x, positions[index].y, positions[index+1].x, positions[index+1].y
-            
             if linesIntersect positions[index], positions[index+1], stagePos, outsidePos
                 count += 1
         return (count % 2) != 0

@@ -246,7 +246,7 @@ class Draw
             
             ctrl = @shape == 'bezier_cube' and 'ctrl2' or 'ctrls'
                 
-            points.movePoint index, refl, [ctrl]
+            object.movePoint index, refl, [ctrl]
         
         @edit.update()
         object.applyPoints()

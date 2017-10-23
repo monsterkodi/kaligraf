@@ -39,6 +39,11 @@ class Stage
         @svg.addClass 'stageSVG'
         @svg.id 'kaligraf'
         @svg.clear()
+        
+        @debug = SVG(@element).size '100%', '100%'
+        @debug.addClass 'stageSVG'
+        @debug.id 'debug'
+        @debug.clear()
 
         @kali.stage = @
         @trans = @kali.trans
@@ -146,8 +151,8 @@ class Stage
         oddeven = items.filter (item) => new Points(@kali,item).oddEvenTest stagePos
         if oddeven.length
             items = oddeven
-        # else if items.length
-            # log 'missed oddeven', items.length
+        else if items.length
+            log 'missed oddeven', items.length
         items = @filterItems items, opt
         items
         
@@ -653,6 +658,7 @@ class Stage
         @shapes.edit?.clear()
         @selection.clear()
         @svg.clear()
+        @debug.clear()
         
         @postLayer()
         
@@ -748,11 +754,13 @@ class Stage
 
         @svg.viewbox box
         
+        @debug.viewbox box
+        @debug.style 'stroke-width': 1/@zoom
+        
         box = @svg.viewbox()
         
         box.zoom = @zoom
         
-        @log 'Stage.setViewBox', box
         post.emit 'stage', 'viewbox', box
         post.emit 'stage', 'zoom',    @zoom
         

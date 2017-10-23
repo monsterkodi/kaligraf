@@ -6,7 +6,7 @@
 000         0000000   000  000   000     000     0000000   
 ###
 
-{ post, empty, valid, pos, log, _ } = require 'kxk'
+{ post, empty, first, valid, pos, log, _ } = require 'kxk'
 
 { linesIntersect } = require '../utils'
 
@@ -359,19 +359,13 @@ class Points extends Convert
     
     posAt: (index, dot='point') ->
 
-        index = @index index
-
-        p = @pointAt index
+        index = @index   index
+        point = @pointAt index
 
         switch dot
-            when 'point'
-                switch p[0]
-                    when 'C'               then pos p[5], p[6]
-                    when 'S', 'Q'          then pos p[3], p[4]
-                    when 'M', 'L'          then pos p[1], p[2]
-                    else                        pos p[0], p[1]
-            when 'ctrl1', 'ctrls', 'ctrlq' then pos p[1], p[2]
-            when 'ctrl2'                   then pos p[3], p[4]
+            when 'point' then @posForPoint point
+            when 'ctrl1', 'ctrls', 'ctrlq' then pos point[1], point[2]
+            when 'ctrl2'                   then pos point[3], point[4]
             when 'ctrlb'
                 point = @pointAt index
                 switch point[0]
@@ -387,8 +381,16 @@ class Points extends Convert
 
             else
                 log "Points.posAt -- unhandled dot? #{dot}"
-                pos p[1], p[2]
+                pos point[1], point[2]
 
+    posForPoint: (point) ->
+                
+        switch point[0]
+            when 'C'               then pos point[5], point[6]
+            when 'S', 'Q'          then pos point[3], point[4]
+            when 'M', 'L'          then pos point[1], point[2]
+            else                        pos point[0], point[1]
+                
     #  0000000   0000000    0000000         00000000  000   000  00000000  000   000  
     # 000   000  000   000  000   000       000       000   000  000       0000  000  
     # 000   000  000   000  000   000       0000000    000 000   0000000   000 0 000  
@@ -402,7 +404,13 @@ class Points extends Convert
         return false if not numPoints
         outsidePos = pos stagePos.x+999999, stagePos.y
         count = 0
+                
         for index in [0...numPoints-1]
+            
+            if true
+                l = @kali.stage.debug.line()
+                l.plot positions[index].x, positions[index].y, positions[index+1].x, positions[index+1].y
+            
             if linesIntersect positions[index], positions[index+1], stagePos, outsidePos
                 count += 1
         return (count % 2) != 0
@@ -410,21 +418,30 @@ class Points extends Convert
     approxPositions: (subdivisions) ->
 
         points = @points()
-        numPoints = points.length
-        positions = []
+        
+        indexPoints = []
+        for index,point of points
+            indexPoints.push [index, point]
 
+        if @isFake()
+            indexPoints.pop()
+        
+        indexPoints.push first indexPoints
+            
+        numPoints = indexPoints.length
+        positions = []
+        
         addPos = (p) => positions.push @trans.fullTransform @item, p
         
-        for index in [0...numPoints]
-            point = points[index]
+        for [index, point] in indexPoints
             switch point[0]
                 when 'S', 'Q', 'C'
                     if index > 0
                         for subdiv in [1..subdivisions]
                             addPos @deCasteljauPos index, point, subdiv/(subdivisions+1)
-                    addPos @posAt index
+                    addPos @posForPoint point
                 else
-                    addPos @posAt index
+                    addPos @posForPoint point
         positions
 
     deCasteljauPos: (index, point, factor) ->

@@ -1,9 +1,10 @@
-
-#  0000000  000   000   0000000   000   000  
-# 000       000   000  000   000  000 0 000  
-# 0000000   000000000  000   000  000000000  
-#      000  000   000  000   000  000   000  
-# 0000000   000   000   0000000   00     00  
+###
+ 0000000  000   000   0000000   000   000  
+000       000   000  000   000  000 0 000  
+0000000   000000000  000   000  000000000  
+     000  000   000  000   000  000   000  
+0000000   000   000   0000000   00     00  
+###
 
 { post, prefs, log, _ } = require 'kxk'
 
@@ -13,8 +14,6 @@ Tool = require './tool'
 
 class Show extends Tool
         
-    log: -> #log.apply log, [].slice.call arguments, 0
-    
     constructor: (@kali, cfg) ->
         
         super @kali, cfg
@@ -22,11 +21,12 @@ class Show extends Tool
         @trans = @kali.trans
         @selection = @stage.selection
         
-        @bindStage 'ids'
+        @bindStage ['ids', 'dbg']
         
         @initTitle()
                 
         groups = prefs.get 'stage:groups', false
+        dbg    = prefs.get 'stage:dbg',    false
         
         @initButtons [
             text:   'Groups'
@@ -35,24 +35,33 @@ class Show extends Tool
             toggle: groups
         ]
         @initButtons [
-            text:   'IDs'
+            text:   'ID'
             name:   'ids'
             action: @stage.ids
             toggle: prefs.get 'stage:ids', false
+        ,
+            text:   'Dbg'
+            name:   'dbg'
+            action: @stage.dbg
+            toggle: dbg
         ]
         
         post.on 'stage', @onStage
         post.on 'undo',  @onUndo
         
+        @stage.debug.hide() if not dbg
+        
         @showGroups groups
         
     execute: -> 
 
-    #  0000000  000000000   0000000    0000000   00000000    
-    # 000          000     000   000  000        000         
-    # 0000000      000     000000000  000  0000  0000000     
-    #      000     000     000   000  000   000  000         
-    # 0000000      000     000   000   0000000   00000000    
+    ###
+     0000000  000000000   0000000    0000000   00000000    
+    000          000     000   000  000        000         
+    0000000      000     000000000  000  0000  0000000     
+         000     000     000   000  000   000  000         
+    0000000      000     000   000   0000000   00000000    
+    ###
             
     ids: -> 
     
@@ -61,11 +70,18 @@ class Show extends Tool
         prefs.set 'stage:ids', ids
         
         @selection.showIDs ids
+
+    dbg: -> 
+    
+        dbg = prefs.get 'stage:dbg', false
+        dbg = !dbg
+        prefs.set 'stage:dbg', dbg
+        if dbg then @debug.show()
+        else @debug.hide()
         
     onStage: (action) =>
     
         if @grps?
-            # @log "Show.onStage #{action}"
             switch action 
                 when 'load' then @refreshGroups()
                 when 'viewbox' 
@@ -113,7 +129,6 @@ class Show extends Tool
                 @selection.element.insertBefore @grps.node, @selection.rectsBlack.node.nextSibling
             @refreshGroups()
         else
-            @log 'Show.showGroups false'
             @clearGroups()
             @grps?.remove()
             delete @grps
@@ -126,7 +141,6 @@ class Show extends Tool
     
     clearGroups: ->
         if @grps
-            @log 'Show.clearGroups'
             for group in @stage.groups()
                 group.forget 'groupRect'
             @grps.clear()
@@ -144,7 +158,6 @@ class Show extends Tool
             @grps.viewbox @stage.svg.viewbox()
             @grps.style 'stroke-width', 1/@stage.zoom
         
-            @log 'Show.updateGroups', @grps?, @stage.groups().length
             for group in @stage.groups()
                 @updateGroup group
             

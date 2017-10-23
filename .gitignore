@@ -2,8 +2,10 @@
 /package.json
 /package-lock.json
 /node_modules
-/Icon
 /kaligraf-darwin-x64
+/svg/test/blank.svg
+/bin/*.json
+/Icon
 *x1.svg
 *x2.svg
-/svg/test/blank.svg
+*.dmg

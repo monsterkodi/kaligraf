@@ -54,7 +54,7 @@ class Button
                 btn.spin = button.spin
                 if not btn.name.endsWith 'reset'
                     btn.classList.add 'toolSpinButton' 
-
+            
             span.appendChild btn
                                 
             btn.addEventListener 'mousedown', @onButtonClick

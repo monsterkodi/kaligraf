@@ -5,7 +5,7 @@
 #      000  000        000  000  0000
 # 0000000   000        000  000   000
 
-{ stopEvent, downElem, upElem, first, last, log, _ } = require 'kxk'
+{ stopEvent, downElem, upElem, elem, first, last, log, _ } = require 'kxk'
 
 class Spin
         
@@ -13,7 +13,7 @@ class Spin
         
         spin.step ?= [1,5,10,50]
         
-        span = @initButtons [
+        buttons = [
             tiny:   'spin-minus'
             button: true
             name:   spin.name + ' minus'
@@ -30,6 +30,13 @@ class Spin
             action: @onSpin
             spin:   spin
         ]
+        
+        span = @initButtons buttons
+        
+        if spin.triple
+            @element.classList.add 'toolTripleSpin'
+            title = elem 'span', text: spin.triple
+            span.insertBefore title, span.firstChild
         
         @button(spin.name + ' reset').innerHTML = spin.str? and spin.str(spin.value) or spin.value
         

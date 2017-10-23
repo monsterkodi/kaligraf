@@ -671,6 +671,19 @@ button
     &.down
         height              toolSize / 2
 
+.toolTripleSpin .toolButtons
+    padding-top             3px
+    & :nth-child(1)
+        padding-right       2px
+        padding-top         1px
+        color               #444
+    & :nth-child(2)
+        border-top-left-radius 4px
+        border-bottom-left-radius 4px
+        
+.toolTripleSpin .toolButtons:first-child
+    padding-top             4px
+    
 .tool
 #fileInfo
     filter                  drop-shadow(8px 8px 4px rgba(0,0,0,0.15))
@@ -696,7 +709,7 @@ button
     margin-left             10%
     display                 inline-flex
     margin-bottom           -1px
-
+    
 .toolIcon
 .toolButton
 .toolLabel
@@ -736,7 +749,7 @@ button
        
     border                  1px solid #181818
     background              linear-gradient(to bottom, transparent, #181818)
-
+    
 .toolToggle:hover:not(.active)
     color                   #666
     & .toolIconSVG
@@ -811,7 +824,7 @@ button
     opacity                 0.25
 .toolSpinButton:active .toolIconSVG
     opacity                 0.25
-    
+        
 // 000       0000000   000   000  00000000   00000000
 // 000      000   000  000   000  000   000  000
 // 000      000   000  000   000  00000000   0000000

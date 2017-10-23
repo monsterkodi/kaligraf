@@ -106,6 +106,8 @@ class Tools extends Tool
             [
                 { class: 'select' }
                 { class: 'wire'   }                
+                { class: 'rgb'    }                
+                { class: 'hsv'    }                
             ]
             [
                 { class: 'gradient' }

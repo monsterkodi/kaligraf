@@ -41,6 +41,7 @@ class Color extends Tool
         post.on 'palette',   @onPalette
         post.on 'gradient',  @onGradient
         post.on 'selection', @onSelection
+        post.on 'edit',      @onSelection
 
     set: (v) ->
 

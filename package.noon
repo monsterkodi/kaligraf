@@ -11,6 +11,7 @@ repository
                 type  git
                 url   git+https://github.com/monsterkodi/kaligraf.git
 dependencies
+                chroma-js       ^1.3.4
                 colors          ^1.1.2
                 font-manager    ^0.2.2
                 heterarchy      ^1.0.7

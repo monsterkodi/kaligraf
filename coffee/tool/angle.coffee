@@ -76,7 +76,7 @@ class Angle extends Tool
                 
                 boxcntr = boxCenter item.bbox()
                 transmat = new SVG.Matrix().around boxcntr.x, boxcntr.y, new SVG.Matrix().rotate angle
-                mover = new Mover item:item, kali:@kali
+                mover = new Mover @kali, item
                 
                 continue if not mover.isPath()
                 

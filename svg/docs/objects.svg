@@ -2,9 +2,9 @@
   xmlns="http://www.w3.org/2000/svg" 
   xmlns:xlink="http://www.w3.org/1999/xlink" 
   xmlns:svgjs="http://svgjs.com/svgjs" 
-style="stroke-linecap: round; stroke-linejoin: round;background: rgba(255, 255, 255, 1);"
-viewBox="-1031.79052734375 -667.1635327148438 16804.713256835938 7191.1139154052735">
-  <defs id="SvgjsDefs35284">
+style="stroke-linecap: round; stroke-linejoin: round; stroke-miterlimit: 20; background: rgba(255, 255, 255, 1);"
+viewBox="-896.2686462402344 -609.1706785583497 16533.669494628906 7075.128207092285">
+  <defs id="SvgjsDefs1334">
     <locks id="locks">L-f2-ce9ff1:0,L-05-af3e59:1,L-ed-3f9ace:0,L-ff-bb82e5:1,L-c8-c49176:1,R-0e-ba0a7d:8,T-8a-1c103d:8
 L-7f-db1f9f:1,R-4d-ee8552:8,T-b1-f019c8:8,L-ed-3f9ace:1,L-a4-00f553:0
 L-0f-3659a1:0,R-3b-e56f5f:8,T-3a-e12be1:8,L-a4-00f553:1

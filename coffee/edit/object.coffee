@@ -62,7 +62,7 @@ class Object extends Convert
 
         if points = @points()
 
-            # log 'Object.setItem', item.type, points, itemMatrix item
+            log 'Object.setItem', item.type, points, itemMatrix item
             
             for i in [0...points.length]
                 
@@ -130,7 +130,7 @@ class Object extends Convert
 
     moveDotsBy: (dots, delta, event) ->
         
-        new Mover @, indexDots:@indexDots(dots), delta:delta, event:event
+        new Mover @kali, @item, indexDots:@indexDots(dots), delta:delta, event:event
 
         if points = @points()
 
@@ -190,7 +190,7 @@ class Object extends Convert
         if dot == 'point'
             post.emit 'object', 'setPoint', object:@, index:index
             
-            if @item.type in ['rect', 'circle', 'ellipse', 'text']
+            if @item.type in ['rect', 'circle', 'ellipse', 'text', 'image']
                 @trans.setItemPoints @item, points
         
         if point[0] in ['Q', 'M', 'L', 'C'] and index < @numPoints()-1
@@ -227,7 +227,7 @@ class Object extends Convert
             return if index >= @numPoints()-1
             return if index <= 1
         
-        mover = new Mover @
+        mover = new Mover @kali, @item
         
         info = mover.infoAt index
         

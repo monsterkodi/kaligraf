@@ -8,7 +8,7 @@
 {   resolve, elem, post, drag, prefs, stopEvent, fileName,
     first, last, empty, clamp, pos, fs, log, _ } = require 'kxk'
 
-{   contrastColor, normRect, bboxForItems, itemIDs, insideBox, itemBox, linesIntersect,
+{   contrastColor, normRect, bboxForItems, itemIDs, insideBox, itemBox, 
     growBox, rboxForItems, boxOffset, boxCenter, itemGradient, itemMatrix } = require './utils'
 
 electron  = require 'electron'
@@ -153,20 +153,8 @@ class Stage
 
     oddEvenTest: (stagePos, item) ->
         
-        mover = new Mover kali:@kali, item:item
-        numPoints = mover.numPoints()
-        return false if not numPoints
-        outsidePos = pos stagePos.x+999999, stagePos.y
-        count = 0
-        for index in [0...numPoints]
-            previ = index
-            nexti = index+1
-            nexti = 0 if nexti >= numPoints
-            prevPos = @trans.fullTransform item, mover.posAt previ
-            nextPos = @trans.fullTransform item, mover.posAt nexti
-            if linesIntersect prevPos, nextPos, stagePos, outsidePos
-                count += 1
-        return (count % 2) != 0
+        mover = new Mover @kali, item
+        mover.oddEvenTest stagePos
         
     itemAtPos: (p, opt) ->
         
@@ -215,7 +203,7 @@ class Stage
     isEditable: (item) -> 
         
         return true if itemGradient(item, 'fill') or itemGradient(item, 'stroke')
-        return true if item.type in ['rect', 'circle', 'ellipse', 'text']
+        return true if item.type in ['rect', 'circle', 'ellipse', 'text', 'image']
         _.isFunction item.array 
             
     groups: -> @treeItems pickable:false, type:'g' 

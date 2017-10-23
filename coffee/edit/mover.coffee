@@ -8,14 +8,14 @@
 
 { empty, valid, pos, log, _ } = require 'kxk'
 
+{ linesIntersect } = require '../utils'
+
 class Mover
 
-    constructor: (@object, @cfg) ->
+    constructor: (@kali, @item, @cfg) ->
 
         @cfg ?= {}
 
-        @kali  = @object.kali
-        @item  = @object.item
         @trans = @kali.trans
         
         if @cfg?.indexDots?
@@ -67,7 +67,7 @@ class Mover
 
                     nexti = idots.index+1
                     if nexti >= @numPoints()
-                        if @object.isClosed?()
+                        if @isClosed()
                             nexti = 1 
                         else
                             continue
@@ -165,12 +165,12 @@ class Mover
             when 'prev'
                 nexti = oldInfo.index+1
                 if nexti >= @numPoints()
-                    if @object.isClosed?() then nexti = 1 
+                    if @isClosed() then nexti = 1 
                     else return
                 newPos = newInfo.thisPos.plus newInfo.toPrev.rotate(-oldInfo.angle).normal().times oldInfo.toNext.length()
                 @setDotPos oldInfo.nextDot, nexti, newPos
             when 'next'
-                if oldInfo.index >= @numPoints()-1 and not @object.isClosed?()
+                if oldInfo.index >= @numPoints()-1 and not @isClosed()
                     return
                 newPos = newInfo.thisPos.plus newInfo.toNext.rotate(oldInfo.angle).normal().times oldInfo.toPrev.length()
                 @setDotPos oldInfo.prevDot, oldInfo.index, newPos
@@ -218,13 +218,13 @@ class Mover
     # 000        000   000  000  000  0000     000          000  
     # 000         0000000   000  000   000     000     0000000   
     
-    isPoly: -> @item.type in ['polygon', 'polyline', 'line', 'circle', 'ellipse', 'rect', 'text']
+    isPoly: -> @item.type in ['polygon', 'polyline', 'line', 'circle', 'ellipse', 'rect', 'text', 'image']
     isPath: -> @item.type in ['polygon', 'polyline', 'line', 'path']
     numPoints: -> @points()?.length ? 0
     pointAt: (index) -> @points()[@index index]        
     points: -> 
         switch @item.type
-            when 'circle', 'ellipse', 'rect', 'text'
+            when 'circle', 'ellipse', 'rect', 'text', 'image'
                 if empty @fakePoints
                     @fakePoints = @trans.itemPoints @item
                 return @fakePoints
@@ -232,7 +232,9 @@ class Mover
 
     pointCode: (index) -> if @isPoly() then 'P' else @pointAt(index)[0]
     index: (index) -> (@numPoints() + index) % @numPoints()
-            
+
+    isClosed: -> @posAt(0).to(@posAt @numPoints()-1).length() < 0.0001
+    
     # 00000000    0000000    0000000   0000000   000000000  
     # 000   000  000   000  000       000   000     000     
     # 00000000   000   000  0000000   000000000     000     
@@ -293,6 +295,70 @@ class Mover
                     else
                         point[0] = itemPos.x
                         point[1] = itemPos.y
-                
-                
+
+    #  0000000   0000000    0000000    00000000  000   000  00000000  000   000  
+    # 000   000  000   000  000   000  000       000   000  000       0000  000  
+    # 000   000  000   000  000   000  0000000    000 000   0000000   000 0 000  
+    # 000   000  000   000  000   000  000          000     000       000  0000  
+    #  0000000   0000000    0000000    00000000      0      00000000  000   000  
+    
+    oddEvenTest: (stagePos) ->
+        
+        positions = @approxPositions 3
+        numPoints = positions.length
+        return false if not numPoints
+        outsidePos = pos stagePos.x+999999, stagePos.y
+        count = 0
+        for index in [0...numPoints-1]
+            
+            # l = @kali.stage.svg.line()
+            # l.style 'stroke-width': 2, 'stroke': 'white'
+            # l.plot positions[index].x, positions[index].y, positions[index+1].x, positions[index+1].y
+            
+            if linesIntersect positions[index], positions[index+1], stagePos, outsidePos
+                count += 1
+        return (count % 2) != 0
+        
+    approxPositions: (subdivisions) ->
+        log @item.type
+        points    = @points()
+        numPoints = points.length
+        positions = []
+
+        for index in [0...numPoints]
+            point = points[index]
+            switch point[0]
+                when 'S', 'Q', 'C'
+                    if index > 0
+                        for subdiv in [1..subdivisions]
+                            positions.push @trans.fullTransform @item, @deCasteljauPos index, point, subdiv/(subdivisions+1)
+                    positions.push @trans.fullTransform @item, @posAt index
+                else
+                    positions.push @trans.fullTransform @item, @posAt index
+        positions
+
+    deCasteljauPos: (index, point, factor) ->
+        
+        thisp = @posAt index
+        prevp = @posAt index-1
+        
+        switch point[0]
+            when 'C'
+                ctrl1 = @posAt index, 'ctrl1'
+                ctrl2 = @posAt index, 'ctrl2'
+            when 'Q'
+                ctrl1 = @posAt index, 'ctrlq'
+                ctrl2 = ctrl1
+            when 'S'
+                ctrl1 = @posAt index, 'ctrlr'
+                ctrl2 = @posAt index, 'ctrls'
+
+        p1 = prevp.interpolate ctrl1, factor
+        p2 = ctrl1.interpolate ctrl2, factor
+        p3 = ctrl2.interpolate thisp, factor
+        
+        p4 = p1.interpolate p2, factor
+        p5 = p2.interpolate p3, factor
+        p6 = p4.interpolate p5, factor
+        
 module.exports = Mover

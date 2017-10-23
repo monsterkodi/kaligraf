@@ -237,7 +237,7 @@ class Draw
                     when 'bezier_smooth' then dots.push 'ctrls'
                     when 'bezier_cube'   then dots.push 'ctrl2'
                         
-        mover = new Mover object
+        mover = new Mover @kali, object.item
         mover.movePoint object.ctrls.length-1, stagePos, dots
 
         if action == 'drag' and object.ctrls.length > 2 and @shape in ['bezier_cube', 'bezier_smooth']

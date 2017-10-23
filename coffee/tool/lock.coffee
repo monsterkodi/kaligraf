@@ -127,11 +127,7 @@ class Lock extends Tool
                     delta:      delta
                     event:      event
                     
-                obj = 
-                    kali:   @kali
-                    item:   itemIndexDot.item
-                    
-                new Mover obj, cfg
+                new Mover @kali, itemIndexDot.item, cfg
                 
         for lock in locks
             @updateLock lock

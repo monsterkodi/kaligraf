@@ -228,7 +228,7 @@ class Trans
         
         switch item.type
             
-            when 'circle', 'ellipse', 'rect', 'text'
+            when 'circle', 'ellipse', 'rect', 'text', 'image'
                 box = item.bbox()
                 [
                     [box.x,  box.y,  'top left' ]
@@ -248,7 +248,7 @@ class Trans
         
         switch item.type
             
-            when 'circle', 'ellipse', 'rect', 'text'
+            when 'circle', 'ellipse', 'rect', 'text', 'image'
                 
                 center = pos points[8][0], points[8][1]
                 center = @transform item, center

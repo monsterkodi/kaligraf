@@ -142,8 +142,12 @@ class Stage
         items = items.filter (item) => @layerForItem(item) in pickableLayers
             
         stagePos = @stageForEvent eventPos
-        items = items.filter (item) => insideBox stagePos, @trans.rect item
-        items = items.filter (item) => @oddEvenTest stagePos, item
+        items   = items.filter (item) => insideBox stagePos, @trans.rect item
+        oddeven = items.filter (item) => @oddEvenTest stagePos, item
+        if oddeven.length
+            items = oddeven
+        else if items.length
+            log 'missed oddeven', items.length
         items = @filterItems items, opt
         items
 

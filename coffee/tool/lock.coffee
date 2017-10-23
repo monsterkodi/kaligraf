@@ -39,7 +39,7 @@ class Lock extends Tool
         ]
         
         post.on 'stage',  @onStage
-        post.on 'object', @onObject
+        post.on 'points', @onPoints
         post.on 'dotsel', @onDotSel
         post.on 'edit',   @onEdit
 
@@ -55,10 +55,10 @@ class Lock extends Tool
             when 'addObject' then @addObject info.object
             when 'delObject' then @delObject info.object
             
-    onObject: (action, info) =>
+    onPoints: (action, info) =>
         
         switch action
-            when 'setPoint'  then @updateObject info.object
+            when 'setPoint'  then @updateItem info.item
             
     onDotSel: (action, info) =>
         
@@ -139,7 +139,7 @@ class Lock extends Tool
     # 000   000  000   000  000   000  000       000          000     
     #  0000000   0000000     0000000   00000000   0000000     000     
     
-    addObject: (object) -> @updateObject object
+    addObject: (object) -> @updateItem object.item
 
     delObject: (object) ->
         
@@ -147,9 +147,9 @@ class Lock extends Tool
             for id in lock
                 @delLine id
     
-    updateObject: (object) ->
+    updateItem: (item) ->
         
-        for lock in @locksForItem object.item
+        for lock in @locksForItem item
             @updateLock lock
 
     clear: ->

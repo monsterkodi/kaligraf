@@ -6,7 +6,7 @@
 000         0000000   000  000   000     000     0000000   
 ###
 
-{ empty, valid, pos, log, _ } = require 'kxk'
+{ post, empty, valid, pos, log, _ } = require 'kxk'
 
 { linesIntersect } = require '../utils'
 
@@ -107,7 +107,7 @@ class Points extends Convert
     # 000 0 000  000   000     000     000       000        000   000  000  000  0000     000
     # 000   000   0000000       0      00000000  000         0000000   000  000   000     000
 
-    movePoint: (index, itemPos, dots=['point']) ->
+    movePoint: (index, itemPos, dots=['point']) =>
         
         points = @points()
         point  = points[index]
@@ -116,38 +116,65 @@ class Points extends Convert
         
         for dot in dots
 
-            switch dot
-                when 'point'
-                    switch point[0]
-                        when 'S', 'Q', 'C', 'M', 'L'
-                            point[point.length-2] = itemPos.x
-                            point[point.length-1] = itemPos.y
-                        else
-                            point[0] = itemPos.x
-                            point[1] = itemPos.y
-                            if @item.type == 'line'
-                                @item.plot points
+            @setDotPos index, dot, itemPos, @movePoint
 
-                when 'ctrl1', 'ctrlq', 'ctrls'
-                    point[1] = itemPos.x
-                    point[2] = itemPos.y
+    #  0000000  00000000  000000000  00000000    0000000   000  000   000  000000000  
+    # 000       000          000     000   000  000   000  000  0000  000     000     
+    # 0000000   0000000      000     00000000   000   000  000  000 0 000     000     
+    #      000  000          000     000        000   000  000  000  0000     000     
+    # 0000000   00000000     000     000         0000000   000  000   000     000     
+    
+    setPoint: (index, itemPos, dot='point') =>
+        
+        points = @points()
+        point  = points[index]
 
-                when 'ctrl2'
-                    point[3] = itemPos.x
-                    point[4] = itemPos.y
+        @setDotPos index, dot, itemPos, @setPoint
 
-                when 'ctrlr'
-                    previ = index-1
-                    previ = @numPoints()-1 if previ == 0
-                    prevCtrl = switch @pointAt(previ)[0]
-                        when 'C' then 'ctrl2'
-                        when 'S' then 'ctrls'
-                        when 'Q' then 'ctrlq'
-                    if prevCtrl
-                        prevp = @posAt previ 
-                        refl  = prevp.minus prevp.to itemPos
-                        @movePoint previ, refl, prevCtrl
+        if dot == 'point'
             
+            post.emit 'points', 'setPoint', item:@item, index:index
+            
+            if @isFake() then @applyPoints points
+
+    setDotPos: (index, dot, itemPos, setRefl) ->
+        
+        points    = @points()
+        numPoints = points.length
+        point     = points[index]
+        
+        switch dot
+            when 'point'
+                switch point[0]
+                    when 'S', 'Q', 'C', 'M', 'L'
+                        point[point.length-2] = itemPos.x
+                        point[point.length-1] = itemPos.y
+                    else
+                        point[0] = itemPos.x
+                        point[1] = itemPos.y
+                        if @item.type == 'line'
+                            @item.plot points
+
+            when 'ctrl1', 'ctrlq', 'ctrls'
+                point[1] = itemPos.x
+                point[2] = itemPos.y
+
+            when 'ctrl2'
+                point[3] = itemPos.x
+                point[4] = itemPos.y
+
+            when 'ctrlr'
+                previ = index-1
+                previ = numPoints-1 if previ == 0
+                prevDot = switch points[previ][0]
+                    when 'C' then 'ctrl2'
+                    when 'S' then 'ctrls'
+                    when 'Q' then 'ctrlq'
+                if prevDot and setRefl?
+                    prevp = @posAt previ
+                    refl = prevp.minus prevp.to itemPos
+                    setRefl previ, refl, prevDot
+                    
     #  0000000   000   000   0000000   000      00000000  
     # 000   000  0000  000  000        000      000       
     # 000000000  000 0 000  000  0000  000      0000000   
@@ -159,18 +186,20 @@ class Points extends Convert
         newInfo = @infoAt oldInfo.index
 
         switch fixed
+            
             when 'prev'
                 nexti = oldInfo.index+1
                 if nexti >= @numPoints()
                     if @isClosed() then nexti = 1 
                     else return
                 newPos = newInfo.thisPos.plus newInfo.toPrev.rotate(-oldInfo.angle).normal().times oldInfo.toNext.length()
-                @setDotPos oldInfo.nextDot, nexti, newPos
+                @setDotPos nexti, oldInfo.nextDot, newPos
+                
             when 'next'
                 if oldInfo.index >= @numPoints()-1 and not @isClosed()
                     return
                 newPos = newInfo.thisPos.plus newInfo.toNext.rotate(oldInfo.angle).normal().times oldInfo.toPrev.length()
-                @setDotPos oldInfo.prevDot, oldInfo.index, newPos
+                @setDotPos oldInfo.index, oldInfo.prevDot, newPos
                 
     # 000  000   000  00000000   0000000   
     # 000  0000  000  000       000   000  
@@ -313,29 +342,6 @@ class Points extends Convert
             else
                 log "Points.posAt -- unhandled dot? #{dot}"
                 pos p[1], p[2]
-
-    setDotPos: (dot, index, itemPos) ->
-        
-        point = @points()[index]
-        
-        switch dot
-
-            when 'ctrl1', 'ctrlq', 'ctrls'
-                point[1] = itemPos.x
-                point[2] = itemPos.y
-
-            when 'ctrl2'
-                point[3] = itemPos.x
-                point[4] = itemPos.y
-                
-            when 'point'
-                switch point[0]
-                    when 'S', 'Q', 'C', 'M', 'L'
-                        point[point.length-2] = itemPos.x
-                        point[point.length-1] = itemPos.y
-                    else
-                        point[0] = itemPos.x
-                        point[1] = itemPos.y
 
     #  0000000   0000000    0000000    00000000  000   000  00000000  000   000  
     # 000   000  000   000  000   000  000       000   000  000       0000  000  

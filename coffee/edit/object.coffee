@@ -141,52 +141,11 @@ class Object extends Points
 
     setPoint: (index, dot, itemPos) ->
 
-        points = @points()
-        point  = points[index]
-
-        switch dot
-            when 'point'
-                switch point[0]
-                    when 'S', 'Q', 'C', 'M', 'L'
-                        point[point.length-2] = itemPos.x
-                        point[point.length-1] = itemPos.y
-                    else
-                        if @item.type == 'line'
-                            point[0] = itemPos.x
-                            point[1] = itemPos.y
-                            @item.plot points
-                        else
-                            point[0] = itemPos.x
-                            point[1] = itemPos.y
-
-            when 'ctrl1', 'ctrlq', 'ctrls'
-                point[1] = itemPos.x
-                point[2] = itemPos.y
-
-            when 'ctrl2'
-                point[3] = itemPos.x
-                point[4] = itemPos.y
-
-            when 'ctrlr'
-                prevIndex = index-1
-                prevIndex = @numPoints()-1 if prevIndex == 0
-                prevp = @posAt prevIndex
-                refl = prevp.minus prevp.to itemPos
-                prevCtrl = switch @pointAt(prevIndex)[0]
-                    when 'C' then 'ctrl2'
-                    when 'S' then 'ctrls'
-                    when 'Q' then 'ctrlq'
-                if prevCtrl
-                    @setPoint prevIndex, prevCtrl, refl
-                return
-
+        super index, dot, itemPos
+        
+        point = @points()[index]
+        
         @updateCtrlLines index, point
-
-        if dot == 'point'
-            post.emit 'object', 'setPoint', object:@, index:index
-            
-            if @isFake()
-                @applyPoints points
         
         if point[0] in ['Q', 'M', 'L', 'C'] and index < @numPoints()-1
             @updateCtrlLines index+1, @pointAt index+1
@@ -231,11 +190,11 @@ class Object extends Points
             
             when 'next'
                 prevPos = info.thisPos.minus info.toNext.normal().times info.toPrev.length()
-                @setPoint index, info.prevDot, prevPos
+                @setPoint index, prevPos, info.prevDot
             
             when 'prev'
                 nextPos = info.thisPos.minus info.toPrev.normal().times info.toNext.length()
-                @setPoint nexti, info.nextDot, nextPos
+                @setPoint nexti, nextPos, info.nextDot
                 
             when 'none'
                 
@@ -252,8 +211,8 @@ class Object extends Points
                 prevPos = info.thisPos.plus info.toPrev.rotate(prevAngle)
                 nextPos = info.thisPos.plus info.toNext.rotate(nextAngle)
 
-                @setPoint index, info.prevDot, prevPos
-                @setPoint nexti, info.nextDot, nextPos
+                @setPoint index, prevPos, info.prevDot
+                @setPoint nexti, nextPos, info.nextDot
                 
         @edit.update()
         @applyPoints()
@@ -271,7 +230,7 @@ class Object extends Points
             index   = dot.ctrl.index()
             itemPos = @dotPos index, dot.dot
             itemPos = @trans.fullInverse dot.ctrl.object.item, itemPos
-            @setPoint index, dot.dot, itemPos
+            @setPoint index, itemPos, dot.dot
 
         @applyPoints()
         

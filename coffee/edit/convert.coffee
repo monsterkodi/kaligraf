@@ -106,7 +106,7 @@ class Convert
 
             newDots = newDots.concat _.values @ctrls[index].dots
 
-        @plot()
+        @applyPoints()
         newDots
 
     # 000000000   0000000   00000000    0000000   000000000  000   000  
@@ -214,7 +214,7 @@ class Convert
 
             newDots = newDots.concat _.values @ctrls[index+1].dots
 
-        @plot()
+        @applyPoints()
         newDots
 
     #  0000000   0000000    0000000  000000000  00000000  000            000   0000000   000   000  

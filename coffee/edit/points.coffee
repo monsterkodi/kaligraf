@@ -1,25 +1,22 @@
 ###
-00     00   0000000   000   000  00000000  00000000 
-000   000  000   000  000   000  000       000   000
-000000000  000   000   000 000   0000000   0000000  
-000 0 000  000   000     000     000       000   000
-000   000   0000000       0      00000000  000   000
+00000000    0000000   000  000   000  000000000   0000000  
+000   000  000   000  000  0000  000     000     000       
+00000000   000   000  000  000 0 000     000     0000000   
+000        000   000  000  000  0000     000          000  
+000         0000000   000  000   000     000     0000000   
 ###
 
 { empty, valid, pos, log, _ } = require 'kxk'
 
 { linesIntersect } = require '../utils'
 
-class Mover
+Convert = require './convert'
 
-    constructor: (@kali, @item, @cfg) ->
+class Points extends Convert
 
-        @cfg ?= {}
+    constructor: (@kali, @item) ->
 
         @trans = @kali.trans
-        
-        if @cfg?.indexDots?
-            @moveIndexDots()
         
     # 00     00   0000000   000   000  00000000  0000000     0000000   000000000   0000000  
     # 000   000  000   000  000   000  000       000   000  000   000     000     000       
@@ -27,17 +24,17 @@ class Mover
     # 000 0 000  000   000     000     000       000   000  000   000     000          000  
     # 000   000   0000000       0      00000000  0000000     0000000      000     0000000   
     
-    moveIndexDots: ->
-        
-        indexDots = @cfg.indexDots
+    moveIndexDots: (cfg) ->
+        # log 'moveIndexDots', cfg
+        indexDots = cfg.indexDots
 
         follow = []
         
-        if not @cfg.event? or not @cfg.event.ctrlKey
+        if not cfg.event? or not cfg.event.ctrlKey
 
             for idots in indexDots
 
-                if idots.dots.length == 1 and @cfg.event? and not @cfg.event.ctrlKey
+                if idots.dots.length == 1 and cfg.event? and not cfg.event.ctrlKey
                     
                     if idots.dots[0] in ['ctrl1', 'ctrlq']          
                         
@@ -88,7 +85,7 @@ class Mover
                         idots.dots = idots.dots.filter (d) -> d != 'ctrlr'
                         idts.dots.push('point') if 'point' not in idts.dots
 
-        itemDelta = @trans.fullInverse(@item, @cfg.delta).minus @trans.fullInverse(@item, pos(0,0))
+        itemDelta = @trans.fullInverse(@item, cfg.delta).minus @trans.fullInverse(@item, pos(0,0))
         
         indexDots = indexDots.filter (idts) -> idts.dots.length
 
@@ -102,7 +99,7 @@ class Mover
         for f in follow 
             @setAngle f.fixed, f.info
         
-        @trans.setItemPoints @item, @points()
+        @applyPoints @points()
 
     # 00     00   0000000   000   000  00000000  00000000    0000000   000  000   000  000000000
     # 000   000  000   000  000   000  000       000   000  000   000  000  0000  000     000
@@ -111,7 +108,7 @@ class Mover
     # 000   000   0000000       0      00000000  000         0000000   000  000   000     000
 
     movePoint: (index, itemPos, dots=['point']) ->
-
+        
         points = @points()
         point  = points[index]
 
@@ -218,23 +215,67 @@ class Mover
     # 000        000   000  000  000  0000     000          000  
     # 000         0000000   000  000   000     000     0000000   
     
+    @isFakeItem: (item) -> item.type in ['circle', 'ellipse', 'rect', 'text', 'image']
+    isFake: -> Points.isFakeItem @item
     isPoly: -> @item.type in ['polygon', 'polyline', 'line', 'circle', 'ellipse', 'rect', 'text', 'image']
-    isPath: -> @item.type in ['polygon', 'polyline', 'line', 'path']
+    isPath: -> @item.type == 'path'
     numPoints: -> @points()?.length ? 0
     pointAt: (index) -> @points()[@index index]        
-    points: -> 
-        switch @item.type
-            when 'circle', 'ellipse', 'rect', 'text', 'image'
-                if empty @fakePoints
-                    @fakePoints = @trans.itemPoints @item
-                return @fakePoints
-        @trans.itemPoints @item
-
     pointCode: (index) -> if @isPoly() then 'P' else @pointAt(index)[0]
     index: (index) -> (@numPoints() + index) % @numPoints()
 
     isClosed: -> @posAt(0).to(@posAt @numPoints()-1).length() < 0.0001
+
+    @itemPoints: (item) ->
+        
+        if @isFakeItem item
+            
+            box = item.bbox()
+            return [
+                [box.x,  box.y,  'top left' ]
+                [box.cx, box.y,  'top'      ]
+                [box.x2, box.y,  'top right']
+                [box.x2, box.cy, 'right'    ]
+                [box.x2, box.y2, 'bot right']
+                [box.cx, box.y2, 'bot'      ]
+                [box.x,  box.y2, 'bot left' ]
+                [box.x,  box.cy, 'left'     ]
+                [box.cx, box.cy, 'center'   ]
+            ]
+        item.array?().valueOf()
     
+    points: -> 
+        
+        if @isFake()
+            if empty @fakePoints
+                @updateFakePoints()
+            return @fakePoints
+
+        if not @item.array? then log 'DAFUK!', @item
+        
+        @item.array?().valueOf()
+    
+    updateFakePoints: -> @fakePoints = Points.itemPoints @item
+        
+    applyPoints: (points=@points()) -> 
+        
+        if @isFake()
+            
+            center = pos points[8][0], points[8][1]
+            center = @trans.transform @item, center
+            @trans.setCenter @item, center
+            switch @item.type
+                when 'circle'
+                    top   = pos points[1][0], points[1][1]
+                    bot   = pos points[5][0], points[5][1]
+                    left  = pos points[7][0], points[7][1]
+                    right = pos points[3][0], points[3][1]
+                    radius = (top.to(bot).length() + left.to(right).length())/4
+                    @item.attr r: radius
+            @updateFakePoints()
+        else
+            @item.plot points
+        
     # 00000000    0000000    0000000   0000000   000000000  
     # 000   000  000   000  000       000   000     000     
     # 00000000   000   000  0000000   000000000     000     
@@ -270,7 +311,7 @@ class Mover
                 prevp.minus prevp.to ctrlb
 
             else
-                log "Mover.posAt -- unhandled dot? #{dot}"
+                log "Points.posAt -- unhandled dot? #{dot}"
                 pos p[1], p[2]
 
     setDotPos: (dot, index, itemPos) ->
@@ -320,21 +361,23 @@ class Mover
         return (count % 2) != 0
         
     approxPositions: (subdivisions) ->
-        log @item.type
-        points    = @points()
+
+        points = @points()
         numPoints = points.length
         positions = []
 
+        addPos = (p) => positions.push @trans.fullTransform @item, p
+        
         for index in [0...numPoints]
             point = points[index]
             switch point[0]
                 when 'S', 'Q', 'C'
                     if index > 0
                         for subdiv in [1..subdivisions]
-                            positions.push @trans.fullTransform @item, @deCasteljauPos index, point, subdiv/(subdivisions+1)
-                    positions.push @trans.fullTransform @item, @posAt index
+                            addPos @deCasteljauPos index, point, subdiv/(subdivisions+1)
+                    addPos @posAt index
                 else
-                    positions.push @trans.fullTransform @item, @posAt index
+                    addPos @posAt index
         positions
 
     deCasteljauPos: (index, point, factor) ->
@@ -360,5 +403,17 @@ class Mover
         p4 = p1.interpolate p2, factor
         p5 = p2.interpolate p3, factor
         p6 = p4.interpolate p5, factor
+                            
+    pointPos: (item, index) ->
         
-module.exports = Mover
+        points = @itemPoints item
+        point = points[index]
+        itemPos = switch point[0]
+            when 'C'      then pos point[5], point[6]
+            when 'S', 'Q' then pos point[3], point[4]
+            when 'M', 'L' then pos point[1], point[2]
+            else               pos point[0], point[1]
+            
+        pos new SVG.Point(itemPos).transform itemMatrix item
+        
+module.exports = Points

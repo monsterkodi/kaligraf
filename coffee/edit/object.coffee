@@ -10,24 +10,25 @@
 
 { itemGradient, itemMatrix } = require '../utils'
 
-Ctrl    = require './ctrl'
-Gradi   = require './gradi'
-Mover   = require './mover'
-Convert = require './convert'
+Ctrl   = require './ctrl'
+Gradi  = require './gradi'
+Points = require './points'
 
-class Object extends Convert
+class Object extends Points
 
-    constructor: (@edit, item) ->
+    constructor: (@edit, @item) ->
 
-        @name  = "Object-#{item.id()}" 
+        super @edit.kali, @item
+        
+        @name  = "Object-#{@item.id()}" 
         @svg   = @edit.svg
         @kali  = @edit.kali
         @trans = @kali.trans
         @stage = @kali.stage
-
+        
         @ctrls = []
         
-        if item? then @setItem item
+        @initItem()
 
     do:   (action) -> @stage.undo.do @, action
     done:          -> @stage.undo.done   @
@@ -54,23 +55,17 @@ class Object extends Convert
     #      000  000          000        000     000     000       000 0 000
     # 0000000   00000000     000        000     000     00000000  000   000
 
-    setItem: (item) ->
-
-        @del()
-
-        @item = item
+    initItem: ->
 
         if points = @points()
 
-            log 'Object.setItem', item.type, points, itemMatrix item
-            
             for i in [0...points.length]
                 
                 @initCtrlDots   i, points[i]
                 @updateCtrlDots i, points[i]
             
         for style in ['stroke', 'fill']
-            if gradient = itemGradient item, style
+            if gradient = itemGradient @item, style
                 @addGradi style
                 
     addGradi: (style) ->
@@ -130,7 +125,7 @@ class Object extends Convert
 
     moveDotsBy: (dots, delta, event) ->
         
-        new Mover @kali, @item, indexDots:@indexDots(dots), delta:delta, event:event
+        @moveIndexDots indexDots:@indexDots(dots), delta:delta, event:event
 
         if points = @points()
 
@@ -190,8 +185,8 @@ class Object extends Convert
         if dot == 'point'
             post.emit 'object', 'setPoint', object:@, index:index
             
-            if @item.type in ['rect', 'circle', 'ellipse', 'text', 'image']
-                @trans.setItemPoints @item, points
+            if @isFake()
+                @applyPoints points
         
         if point[0] in ['Q', 'M', 'L', 'C'] and index < @numPoints()-1
             @updateCtrlLines index+1, @pointAt index+1
@@ -227,9 +222,7 @@ class Object extends Convert
             return if index >= @numPoints()-1
             return if index <= 1
         
-        mover = new Mover @kali, @item
-        
-        info = mover.infoAt index
+        info  = @infoAt index
         
         nexti = index+1
         nexti = 1 if nexti >= @numPoints()
@@ -263,7 +256,7 @@ class Object extends Convert
                 @setPoint nexti, info.nextDot, nextPos
                 
         @edit.update()
-        @plot()
+        @applyPoints()
         
     # 000   000  00000000   0000000     0000000   000000000  00000000  0000000     0000000   000000000   0000000
     # 000   000  000   000  000   000  000   000     000     000       000   000  000   000     000     000
@@ -280,7 +273,7 @@ class Object extends Convert
             itemPos = @trans.fullInverse dot.ctrl.object.item, itemPos
             @setPoint index, dot.dot, itemPos
 
-        @plot()
+        @applyPoints()
         
     #  0000000   0000000    0000000    00000000    0000000   000  000   000  000000000
     # 000   000  000   000  000   000  000   000  000   000  000  0000  000     000
@@ -340,7 +333,7 @@ class Object extends Convert
         if empty points
             @edit.delItem @item
         else
-            @plot()
+            @applyPoints()
             @updateCtrlDots index,   @pointAt index   if index < @numPoints()
             @updateCtrlDots index+1, @pointAt index+1 if index < @numPoints()-1
 
@@ -387,7 +380,7 @@ class Object extends Convert
 
         @initCtrlDots   index, point
         @updateCtrlDots index, point
-        @plot()
+        @applyPoints()
         @updateCtrlDots index+1, @pointAt index+1 if index < @numPoints()-1
 
     # 00     00   0000000   000   000  00000000
@@ -400,11 +393,6 @@ class Object extends Convert
 
         for ctrl in @ctrls
             ctrl.moveBy delta.times 1.0/@kali.stage.zoom
-
-    plot: (points) -> 
-    
-        points ?= @trans.itemPoints @item
-        @trans.setItemPoints @item, points
 
     # 0000000     0000000   000000000   0000000  
     # 000   000  000   000     000     000       
@@ -449,17 +437,11 @@ class Object extends Convert
         else
             log "no dot #{dot} at index #{index}?"
 
-    numPoints: -> @points()?.length ? 0
-    pointAt: (index) -> @points()[@index index]
     ctrlAt: (index) -> 
         if index in ['fill', 'stroke']
             return gradi?[index]
         @ctrls[@index index]
         
-    points: -> @trans.itemPoints @item
-
-    index: (index) -> (@numPoints() + index) % @numPoints()
-
     posAt: (index, dot='point') ->
 
         index = @index index
@@ -491,14 +473,5 @@ class Object extends Convert
             else
                 log "Object.posAt -- unhandled dot? #{dot}"
                 pos p[1], p[2]
-
-    pointCode: (index) ->
-        if @isPoly()
-            'P'
-        else
-            @pointAt(index)[0]
-
-    isPoly: -> @item.type in ['polygon', 'polyline', 'line', 'circle', 'ellipse', 'rect', 'text']
-    isPath: -> not @isPoly()
 
 module.exports = Object

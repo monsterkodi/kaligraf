@@ -9,8 +9,8 @@
 
 { boxCenter } = require '../utils'
 
-Tool  = require './tool'
-Mover = require '../edit/mover'
+Tool   = require './tool'
+Points = require '../edit/points'
 
 class Angle extends Tool
 
@@ -62,10 +62,10 @@ class Angle extends Tool
             @setSpinValue 'angle', @angle
         
     onApply: =>
-        log 'leafItems', @stage.selectedLeafItems().length
+
         @stage.do 'apply'
         for item in @stage.selectedLeafItems()
-            log 'item.transform().rotation', item.transform().rotation
+
             if item.transform().rotation
 
                 angle = item.transform().rotation
@@ -76,18 +76,18 @@ class Angle extends Tool
                 
                 boxcntr = boxCenter item.bbox()
                 transmat = new SVG.Matrix().around boxcntr.x, boxcntr.y, new SVG.Matrix().rotate angle
-                mover = new Mover @kali, item
+                points = new Points @kali, item
                 
-                continue if not mover.isPath()
+                continue if not points.isPath()
                 
                 rotDot = (index, dot) ->
-                    dotPos = mover.posAt index, dot
+                    dotPos = points.posAt index, dot
                     newPos = pos new SVG.Point(dotPos).transform transmat
-                    mover.setDotPos dot, index, newPos
+                    points.setDotPos dot, index, newPos
                 
-                for index in [0...mover.numPoints()]
+                for index in [0...points.numPoints()]
                     rotDot index, 'point'
-                    point = mover.pointAt index
+                    point = points.pointAt index
                     switch point[0]
                         when 'S' 
                             rotDot index, 'ctrls'
@@ -97,7 +97,7 @@ class Angle extends Tool
                         when 'Q'
                             rotDot index, 'ctrlq'
                     
-                item.plot mover.points()   
+                item.plot points.points()   
                 
         @stage.selection.update()
         @stage.resizer.update()

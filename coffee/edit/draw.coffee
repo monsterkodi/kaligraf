@@ -8,8 +8,7 @@
 
 { post, first, last, pos, log, _ } = require 'kxk'
 
-Edit  = require './edit'
-Mover = require './mover'
+Edit = require './edit'
 
 class Draw
 
@@ -200,14 +199,14 @@ class Draw
     addPoint: (p) ->
 
         stagePos = @stage.stageForEvent pos event 
-        object  = @edit.objectForItem @drawing
-        code    = switch @shape
+        object = @edit.objectForItem @drawing
+        code = switch @shape
             when 'bezier_smooth' then 'S'
             when 'bezier_quad'   then 'Q'
             when 'bezier_cube'   then 'C'
             else 'P'
         object.addPoint object.numPoints(), stagePos, code
-        object.plot()
+        object.applyPoints()
         
         if code != 'P'
             @stage.setToolCursor "draw_drag"
@@ -237,8 +236,7 @@ class Draw
                     when 'bezier_smooth' then dots.push 'ctrls'
                     when 'bezier_cube'   then dots.push 'ctrl2'
                         
-        mover = new Mover @kali, object.item
-        mover.movePoint object.ctrls.length-1, stagePos, dots
+        object.movePoint object.ctrls.length-1, stagePos, dots
 
         if action == 'drag' and object.ctrls.length > 2 and @shape in ['bezier_cube', 'bezier_smooth']
             
@@ -248,10 +246,10 @@ class Draw
             
             ctrl = @shape == 'bezier_cube' and 'ctrl2' or 'ctrls'
                 
-            mover.movePoint index, refl, [ctrl]
+            points.movePoint index, refl, [ctrl]
         
         @edit.update()
-        object.plot()
+        object.applyPoints()
         
         if @shape in ['bezier_smooth', 'bezier_quad', 'bezier_cube']
             @stage.setToolCursor "draw_#{action}"

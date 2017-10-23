@@ -9,8 +9,8 @@
 
 { uuid } = require '../utils'
 
-Tool  = require './tool'
-Mover = require '../edit/mover'
+Tool   = require './tool'
+Points = require '../edit/points'
 
 class Lock extends Tool
         
@@ -122,12 +122,11 @@ class Lock extends Tool
                 
             for id,itemIndexDot of itemIndexDots
                 
-                cfg = 
+                points = new Points @kali, itemIndexDot.item
+                points.moveIndexDots 
                     indexDots:  itemIndexDot.indexDots
                     delta:      delta
                     event:      event
-                    
-                new Mover @kali, itemIndexDot.item, cfg
                 
         for lock in locks
             @updateLock lock
@@ -333,7 +332,7 @@ class Lock extends Tool
         
     idsForItem: (item) ->
         
-        if points = @trans.itemPoints item
+        if points = Points.itemPoints item
             points.map (point) -> item.id() + ':' + points.indexOf point
         else if item.type in ['g']
             ids = []

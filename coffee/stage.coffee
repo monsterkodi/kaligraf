@@ -18,8 +18,8 @@ dialog    = electron.remote.dialog
 SVG       = require 'svg.js'
 flt       = require 'svg.filter.js'
 Undo      = require './edit/undo'
+Points    = require './edit/points'
 Shapes    = require './edit/shapes'
-Mover     = require './edit/mover'
 Selection = require './selection'
 Resizer   = require './resizer'
 Exporter  = require './exporter'
@@ -143,18 +143,13 @@ class Stage
             
         stagePos = @stageForEvent eventPos
         items   = items.filter (item) => insideBox stagePos, @trans.rect item
-        oddeven = items.filter (item) => @oddEvenTest stagePos, item
+        oddeven = items.filter (item) => new Points(@kali,item).oddEvenTest stagePos
         if oddeven.length
             items = oddeven
-        else if items.length
-            log 'missed oddeven', items.length
+        # else if items.length
+            # log 'missed oddeven', items.length
         items = @filterItems items, opt
         items
-
-    oddEvenTest: (stagePos, item) ->
-        
-        mover = new Mover @kali, item
-        mover.oddEvenTest stagePos
         
     itemAtPos: (p, opt) ->
         
@@ -203,7 +198,7 @@ class Stage
     isEditable: (item) -> 
         
         return true if itemGradient(item, 'fill') or itemGradient(item, 'stroke')
-        return true if item.type in ['rect', 'circle', 'ellipse', 'text', 'image']
+        return true if Points.isFakeItem item
         _.isFunction item.array 
             
     groups: -> @treeItems pickable:false, type:'g' 

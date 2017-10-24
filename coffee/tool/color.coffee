@@ -107,7 +107,6 @@ class Color extends Tool
             @color = @color.toHex()      
             @gradient = false
             if @kali.palette.proxy == @name
-                log 'color.copyFromItems', @color
                 @kali.palette.setClosestColor @color, @alpha
                 @set @kali.palette
             else

@@ -134,7 +134,7 @@ class HSV extends Tool
                     g += c.g
                     b += c.b
                     n++
-        log 'hsv.selectionHSV', r,g,b,n 
+
         chroma(r/n, g/n, b/n).hsv()
     
 module.exports = HSV

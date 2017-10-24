@@ -149,8 +149,6 @@ class Palette extends Tool
         @saturation = hsv[1]
         @luminance  = hsv[2]
                             
-        log 'closest', @hue, @saturation, @luminance, @alpha
-        
         @update()
         
     # 000   000   0000000   000      000   000  00000000  

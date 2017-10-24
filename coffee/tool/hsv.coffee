@@ -40,7 +40,7 @@ class HSV extends Tool
             step:   [0.01, 0.05, 0.1, 0.2]
             action: @postColor
             value:  1
-            str: (value) -> value.toPrecision 2
+            str: (value) -> Number(value).toFixed 2
 
         @initSpin
             triple: 'V'
@@ -52,7 +52,7 @@ class HSV extends Tool
             step:   [0.01, 0.05, 0.1, 0.2]
             action: @postColor
             value:  1
-            str: (value) -> value.toPrecision 2
+            str: (value) -> Number(value).toFixed 2
             
         post.on 'selection', @update
         post.on 'edit',      @update
@@ -134,7 +134,7 @@ class HSV extends Tool
                     g += c.g
                     b += c.b
                     n++
-            
+        log 'hsv.selectionHSV', r,g,b,n 
         chroma(r/n, g/n, b/n).hsv()
     
 module.exports = HSV

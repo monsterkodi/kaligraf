@@ -13,32 +13,27 @@
 Tool   = require './tool'
 chroma = require 'chroma-js'
 
-WIDTH  = 255
-HEIGHT = 0
-
 class Palette extends Tool
 
     constructor: (@kali, cfg) ->
-
+        
         cfg       ?= {}
         cfg.name  ?= 'palette'
         cfg.class ?= 'palette'
+
+        @width  = cfg.width  ? 360
+        @height = cfg.height ? @kali.toolSize
         
         cfg.halo        ?= {}
         cfg.halo.x      ?= 0
-        cfg.halo.width  ?= 255+66
+        cfg.halo.width  ?= @width+@height
         
         super @kali, cfg
 
-        HEIGHT = @kali.toolSize/2
-        
         @element.style.zIndex = 1000
         @element.addEventListener 'mouseleave', @onMouseLeave
         
-        @luminance = 1
-        @saturation = 1
-
-        @svg = SVG(@element).size "#{WIDTH}", "#{HEIGHT*2}"
+        @svg = SVG(@element).size "#{@width}", "#{@height}"
         @svg.node.style.zIndex = 100
         @svg.node.style.position = 'absolute'
                 
@@ -50,29 +45,28 @@ class Palette extends Tool
         @alx = @grd.rect()
         @alp = @grd.rect()
         
+        @dot = @grd.rect()
         @ssl = @grd.rect()
         @lum = @grd.rect()
         @lph = @grd.rect()
 
-        @rgb.attr width:WIDTH, height:HEIGHT,   x:0, stroke: 'none',
-        @sat.attr width:WIDTH, height:HEIGHT/3, x:0, stroke: 'none', y:HEIGHT
-        @val.attr width:WIDTH, height:HEIGHT/3, x:0, stroke: 'none', y:HEIGHT+HEIGHT/3
-        @alx.attr width:WIDTH, height:HEIGHT/3, x:0, stroke: 'none', y:HEIGHT*2-HEIGHT/3, fill:checkersPattern(@svg, @kali.toolSize/6, '#fff'), 'fill-opacity': 1
-        @alp.attr width:WIDTH, height:HEIGHT/3, x:0, stroke: 'none', y:HEIGHT*2-HEIGHT/3
+        @rgb.attr width:@width, height:@height/2, x:0, stroke: 'none',
+        @sat.attr width:@width, height:@height/6, x:0, stroke: 'none', y:@height/2
+        @val.attr width:@width, height:@height/6, x:0, stroke: 'none', y:@height/2+@height/6
+        @alx.attr width:@width, height:@height/6, x:0, stroke: 'none', y:@height/2+@height/3, fill:checkersPattern(@svg, @kali.toolSize/6, '#fff'), 'fill-opacity': 1
+        @alp.attr width:@width, height:@height/6, x:0, stroke: 'none', y:@height-@height/6
 
-        @ssl.attr width:HEIGHT/3, height:HEIGHT/3, x:WIDTH/2-HEIGHT/3, y:HEIGHT
-        @lum.attr width:HEIGHT/3, height:HEIGHT/3, x:WIDTH/2-HEIGHT/3, y:HEIGHT+HEIGHT/3
-        
-        @lph.attr width:HEIGHT/3, height:HEIGHT/3, x:WIDTH-HEIGHT/3,   y:HEIGHT*2-HEIGHT/3
-        @lph.attr stroke:'black', fill:'white'
+        @dot.attr width:@height/6, height:@height/2-0.5, y:0.5
+        @ssl.attr width:@height/6, height:@height/6, y:@height/2
+        @lum.attr width:@height/6, height:@height/6, y:@height/2+@height/6
+        @lph.attr width:@height/6, height:@height/6-0.5, y:@height-@height/6
 
         @rgb.on 'mousedown', @selectRGB
         @sat.on 'mousedown', @selectSAT
         @val.on 'mousedown', @selectLUM
         @alp.on 'mousedown', @selectLPH
 
-        @dot = @grd.line()
-        @dot.plot [[HEIGHT*2,0], [HEIGHT*2,HEIGHT]]
+        @dot.style fill: 'none'
 
         @ssl.addClass 'trans'
         @lum.addClass 'trans'
@@ -81,7 +75,6 @@ class Palette extends Tool
 
         post.on 'palette', @onPalette
 
-        @setClosestColor new SVG.Color(r:128, g:128, b:255), 1
         @hide()
 
     # 0000000    00000000  000      
@@ -135,10 +128,16 @@ class Palette extends Tool
     
     setProxy: (color) ->
         
-        @proxy = color.name
-                
-        @setClosestColor color.color, color.alpha
+        if @proxy != color.name
+            @proxy = color.name
+            @setClosestColor color.color, color.alpha
         
+    #  0000000  000       0000000    0000000  00000000   0000000  000000000  
+    # 000       000      000   000  000       000       000          000     
+    # 000       000      000   000  0000000   0000000   0000000      000     
+    # 000       000      000   000       000  000            000     000     
+    #  0000000  0000000   0000000   0000000   00000000  0000000      000     
+    
     setClosestColor: (color, @alpha) ->
         
         if color.toHex?
@@ -183,9 +182,13 @@ class Palette extends Tool
     postColor: (prop='color') ->
         
         post.emit 'color', @proxy, 
-            prop:  prop
-            color: @color
-            alpha: @alpha
+            prop:       prop
+            color:      @color
+            alpha:      @alpha
+            hue:        @hue
+            luminance:  @luminance
+            saturation: @saturation
+            hex:        chroma(@hue, @saturation, @luminance).hex()
             
     # 000   000  00000000   0000000     0000000   000000000  00000000  
     # 000   000  000   000  000   000  000   000     000     000       
@@ -204,10 +207,7 @@ class Palette extends Tool
         @lum.attr stroke: i, fill: @color
         @ssl.attr stroke: i, fill: @color
         @lph.attr stroke: i, fill: @color
-        
-        x = WIDTH*@hue/360
-        @dot.plot [[x,0], [x,HEIGHT]]
-        
+                
         @gradientRGB = colorGradient @svg, @luminance, @saturation
         
         @gradientSAT = @svg.gradient 'linear', (stop) =>
@@ -227,9 +227,11 @@ class Palette extends Tool
         @val.attr fill: @gradientVAL
         @alp.attr fill: @gradientALP
         
-        @lph.attr x: @alpha*(WIDTH-HEIGHT/3)        
-        @lum.attr x: @luminance*(WIDTH-HEIGHT/3)
-        @ssl.attr x: @saturation*(WIDTH-HEIGHT/3)
+        r = @width-@height/6-1
+        @dot.attr x: 0.5+r*@hue/360
+        @lph.attr x: 0.5+r*@alpha
+        @lum.attr x: 0.5+r*@luminance
+        @ssl.attr x: 0.5+r*@saturation
         
     # 0000000    00000000    0000000    0000000   
     # 000   000  000   000  000   000  000        
@@ -270,7 +272,7 @@ class Palette extends Tool
     slide: (drag, event) =>
 
         slider = drag.target
-        f = clamp 0, 1, @xPosEvent(event) / WIDTH
+        f = clamp 0, 1, @xPosEvent(event) / @width
 
         switch slider
             when @rgb then @setHue clamp 0, 360, f*360
@@ -297,9 +299,10 @@ class Palette extends Tool
         x = event.pageX - r.left - @element.offsetLeft
 
     checkers: (c='#fff') ->
+        s = @height/6
         @svg.pattern 10, 10, (add) ->
             add.rect(10,10).fill c
-            add.rect(5,5)
-            add.rect(5,5).move 5,5
+            add.rect(s,s)
+            add.rect(s,s).move s,s
 
 module.exports = Palette

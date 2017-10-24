@@ -274,7 +274,7 @@ class Tools extends Tool
                 child = parent.getTool name 
                 continue if not child
                 index = names.indexOf name
-                child.setPos parent.pos().plus pos 66*index, 0
+                child.setPos parent.pos().plus pos @height*index, 0
                 childIndex = parent.children.indexOf(child)
                 parent.children.splice childIndex, 1
                 parent.children.splice index, 0, child

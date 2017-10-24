@@ -18,18 +18,21 @@ class GradientItem
         @element = elem class:'gradientItem'
         @element.gradient = @
         
+        @width  = 360
+        @height = @kali.toolSize
+        
         @svg = SVG(@element).size '100%', '100%'
         @svg.id id 'gradient'
         @svg.addClass 'gradientItemSVG'
-        @svg.viewbox x:0, y:0, width:100, height:25
+        @svg.viewbox x:0, y:0, width:@width, height:@height
 
         @alp = @svg.rect()
         checkers = checkersPattern @svg, 2.5, '#fff'
-        @alp.attr width:100, height:10, x:0, y:15, stroke: 'none', fill:checkers
+        @alp.attr width:@width, height:@height/4, x:0, y:@height*3/4, stroke: 'none', fill:checkers
         
         @grd = @svg.rect()
-        @grd.width  100
-        @grd.height 25
+        @grd.width  @width
+        @grd.height @height
                 
     del: ->
         
@@ -89,17 +92,17 @@ class GradientItem
     stopAtPos: (eventPos) ->
         
         itemPos = @itemPosFor eventPos
-        return if not (15 < itemPos.y < 25)
+        return if not (@height*3/5 < itemPos.y < @height)
         minStop = null
         minDist = 666
-        offset  = itemPos.x / 100
+        offset  = itemPos.x / @width
         for stop in @stops().reverse()
             dist = Math.abs offset - stop.offset
             if dist < minDist
                 minStop = stop
                 minDist = dist
 
-        if (minStop.offset * 100 - 5 < itemPos.x < minStop.offset * 100 + 5)
+        if (minStop.offset * @width - @height/5 < itemPos.x < minStop.offset * @width + @height/5)
             minStop
         else
             null
@@ -118,7 +121,7 @@ class GradientItem
         
         br = boundingBox @element
         op = eventPos.minus boxPos br
-        op.mul pos 100/br.w, 25/br.h
+        op.mul pos @width/br.w, @height/br.h
             
     #  0000000  000000000   0000000   00000000   000000000  
     # 000          000     000   000  000   000     000     
@@ -131,7 +134,7 @@ class GradientItem
         eventPos = pos event
         
         itemPos = @itemPosFor eventPos
-        return 'skip' if not (10 < itemPos.y < 25)
+        return 'skip' if not (@height*2/5 < itemPos.y < @height)
         
         if drag.stop = @stopAtPos eventPos
             @activateStop drag.stop.index
@@ -164,7 +167,7 @@ class GradientItem
         itemPos = @itemPosFor eventPos
         prev = @prevOffset stop.index
         next = @nextOffset stop.index
-        offset = clamp prev, next, itemPos.x/100
+        offset = clamp prev, next, itemPos.x/@width
         @gradient.get(stop.index)?.update offset, stop.color, stop.opacity
         @updateStops()
     
@@ -188,7 +191,7 @@ class GradientItem
     onStopDblClick: (event) =>
 
         itemPos = @itemPosFor pos event
-        stop = @addStop itemPos.x / 100
+        stop = @addStop itemPos.x/@width
         @activateStop stop.index
             
     # 00000000    0000000   000      00000000  000000000  000000000  00000000  
@@ -209,10 +212,10 @@ class GradientItem
             onLeave:@closePalette 
             onClose:@closePalette 
             halo: 
-                x:      -66
+                x:      -@height
                 y:      0
-                width:  255+2*66
-                height: 2*66
+                width:  @width+2*@height
+                height: 2*@height
         palette.proxy = 'stop'
         palette.setPos stopPos
         palette.show()
@@ -276,11 +279,12 @@ class GradientItem
         
         @stp.clear()
         
+        h = @height/5
         for stop in @stops()
-            rct = @stp.polygon '-5,5 0,0 5,5'
+            rct = @stp.polygon "-#{h},#{h} 0,0 #{h},#{h}"
             rct.id id 'stop'
             rct.addClass 'gradientStop'
-            rct.y 21
+            rct.y @height*4/5
             
         @updateStops()
         
@@ -294,7 +298,7 @@ class GradientItem
                 
         for stop in @stops()
             rct = @stp.children()[stop.index]
-            rct.cx stop.offset * 100
+            rct.cx stop.offset * @width
             if colorBrightness(stop.color) < 0.2
                 rct.style 'stroke', '#666'
             
@@ -323,10 +327,10 @@ class GradientItem
     
     state: -> 
         
-        name:       @name
-        type:       @gradient.type
-        stops:      @stops()
-        gradient:   @gradient
+        name:     @name
+        type:     @gradient.type
+        stops:    @stops()
+        gradient: @gradient
                 
     restore: (state) ->
         

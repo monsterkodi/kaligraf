@@ -21,6 +21,7 @@ class Tool extends multi Spin, Button
 
         super @kali
         
+        @height = @kali.toolSize
         @name   = @cfg.name ? @cfg.class
         @stage  = @kali.stage 
         @draw   = @cfg.draw
@@ -170,10 +171,10 @@ class Tool extends multi Spin, Button
     addHalo: -> 
 
         halo = elem class: 'toolHalo'
-        halo.style.width      = "#{@cfg.halo?.width  ? ((@children.length+1)*66)}px"
-        halo.style.height     = "#{@cfg.halo?.height ? 3*66}px"
-        halo.style.left       = "#{not @cfg.halo?.x? and  66 or @cfg.halo.x}px"
-        halo.style.top        = "#{not @cfg.halo?.y? and -66 or @cfg.halo.y}px"
+        halo.style.width      = "#{@cfg.halo?.width  ? ((@children.length+1)*@height)}px"
+        halo.style.height     = "#{@cfg.halo?.height ? 3*@height}px"
+        halo.style.left       = "#{not @cfg.halo?.x? and  @height or @cfg.halo.x}px"
+        halo.style.top        = "#{not @cfg.halo?.y? and -@height or @cfg.halo.y}px"
         halo.style.background = 'rgba(0,0,0,0.0)'
         halo.style.position   = 'absolute'
         halo.style.zIndex     = 0
@@ -197,7 +198,7 @@ class Tool extends multi Spin, Button
             
         @setPos prt.pos()
         for c in @children
-            c.setPos @pos().plus pos 66*(1+@children.indexOf c), 0
+            c.setPos @pos().plus pos @height*(1+@children.indexOf c), 0
         
         delete prt.children
         @parent = top

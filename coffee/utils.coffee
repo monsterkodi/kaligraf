@@ -6,8 +6,9 @@
 
 { stopEvent, empty, last, clamp, elem, pos, log, _ } = require 'kxk'
 
-uuid = require 'uuid/v4'
-    
+uuid   = require 'uuid/v4'
+chroma = require 'chroma-js'
+
 module.exports = 
         
     #  0000000  000   000   0000000   000  000000000  00000000  00     00   0000000  
@@ -280,19 +281,17 @@ module.exports =
     # 000   000  000   000  000   000  000   000  000  000       000  0000     000     
     #  0000000   000   000  000   000  0000000    000  00000000  000   000     000     
     
-    colorGradient: (svg, f) ->
-        
-        c = parseInt 255 * clamp 0, 1, f*2
-        h = parseInt 255 * clamp 0, 1, (f-0.5)*2
-        
+    colorGradient: (svg, luminance=1, saturation=1) ->
+                
         svg.gradient 'linear', (stop) ->
-            stop.at 0.0,   new SVG.Color r:c, g:h, b:h
-            stop.at 1.0/6, new SVG.Color r:c, g:c, b:h
-            stop.at 2.0/6, new SVG.Color r:h, g:c, b:h
-            stop.at 3.0/6, new SVG.Color r:h, g:c, b:c
-            stop.at 4.0/6, new SVG.Color r:h, g:h, b:c
-            stop.at 5.0/6, new SVG.Color r:c, g:h, b:c
-            stop.at 6.0/6, new SVG.Color r:c, g:h, b:h
+            
+            stop.at 0.0,   chroma(  0, saturation, luminance, 'hsv').hex()
+            stop.at 1.0/6, chroma( 60, saturation, luminance, 'hsv').hex()
+            stop.at 2.0/6, chroma(120, saturation, luminance, 'hsv').hex()
+            stop.at 3.0/6, chroma(180, saturation, luminance, 'hsv').hex()
+            stop.at 4.0/6, chroma(240, saturation, luminance, 'hsv').hex()
+            stop.at 5.0/6, chroma(300, saturation, luminance, 'hsv').hex()
+            stop.at 6.0/6, chroma(360, saturation, luminance, 'hsv').hex()
 
     grayGradient: (svg) ->
         

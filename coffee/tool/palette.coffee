@@ -7,10 +7,11 @@
 
 { elem, drag, stopEvent, post, clamp, log, $, _ } = require 'kxk'
 
-{   contrastColor, checkersPattern, colorDist, colorBrightness, 
+{   contrastColor, checkersPattern, colorDist, 
     colorGradient, grayGradient, gradientColor } = require '../utils'
 
-Tool = require './tool'
+Tool   = require './tool'
+chroma = require 'chroma-js'
 
 WIDTH  = 255
 HEIGHT = 0
@@ -34,52 +35,53 @@ class Palette extends Tool
         @element.style.zIndex = 1000
         @element.addEventListener 'mouseleave', @onMouseLeave
         
-        @mode      = 'rgb'
-        @alpha     = 1
-        @value     = 2.0/3
-        @luminance = 0.5
+        @luminance = 1
+        @saturation = 1
 
         @svg = SVG(@element).size "#{WIDTH}", "#{HEIGHT*2}"
         @svg.node.style.zIndex = 100
         @svg.node.style.position = 'absolute'
-        
-        @gradientGRY = grayGradient @svg
-        @gradientRGB = colorGradient @svg, @luminance  
-        
+                
         @grd = @svg.group()
 
         @rgb = @grd.rect()
-        @gry = @grd.rect()
-        @col = @grd.rect()
+        @sat = @grd.rect()
+        @val = @grd.rect()
+        @alx = @grd.rect()
         @alp = @grd.rect()
         
+        @ssl = @grd.rect()
         @lum = @grd.rect()
         @lph = @grd.rect()
 
         @rgb.attr width:WIDTH, height:HEIGHT,   x:0, stroke: 'none',
-        @gry.attr width:WIDTH, height:HEIGHT,   x:0, stroke: 'none', y:HEIGHT, fill:@gradientGRY
-        @col.attr width:WIDTH, height:HEIGHT/3, x:0, stroke: 'none', y:HEIGHT, fill:@gradientCOL
-        @alp.attr width:WIDTH, height:HEIGHT/3, x:0, stroke: 'none', y:HEIGHT*2-HEIGHT/3, fill:checkersPattern(@svg, @kali.toolSize/6, '#fff'), 'fill-opacity': 1-@alpha
+        @sat.attr width:WIDTH, height:HEIGHT/3, x:0, stroke: 'none', y:HEIGHT
+        @val.attr width:WIDTH, height:HEIGHT/3, x:0, stroke: 'none', y:HEIGHT+HEIGHT/3
+        @alx.attr width:WIDTH, height:HEIGHT/3, x:0, stroke: 'none', y:HEIGHT*2-HEIGHT/3, fill:checkersPattern(@svg, @kali.toolSize/6, '#fff'), 'fill-opacity': 1
+        @alp.attr width:WIDTH, height:HEIGHT/3, x:0, stroke: 'none', y:HEIGHT*2-HEIGHT/3
 
-        @lum.attr width:HEIGHT/3, height:HEIGHT/3, x:WIDTH/2-HEIGHT/3, y:HEIGHT
+        @ssl.attr width:HEIGHT/3, height:HEIGHT/3, x:WIDTH/2-HEIGHT/3, y:HEIGHT
+        @lum.attr width:HEIGHT/3, height:HEIGHT/3, x:WIDTH/2-HEIGHT/3, y:HEIGHT+HEIGHT/3
         
         @lph.attr width:HEIGHT/3, height:HEIGHT/3, x:WIDTH-HEIGHT/3,   y:HEIGHT*2-HEIGHT/3
         @lph.attr stroke:'black', fill:'white'
 
         @rgb.on 'mousedown', @selectRGB
-        @gry.on 'mousedown', @selectGRY
-        @col.on 'mousedown', @selectLUM
+        @sat.on 'mousedown', @selectSAT
+        @val.on 'mousedown', @selectLUM
         @alp.on 'mousedown', @selectLPH
 
         @dot = @grd.line()
         @dot.plot [[HEIGHT*2,0], [HEIGHT*2,HEIGHT]]
 
+        @ssl.addClass 'trans'
         @lum.addClass 'trans'
         @lph.addClass 'trans'
         @dot.addClass 'trans'
 
         post.on 'palette', @onPalette
 
+        @setClosestColor new SVG.Color(r:128, g:128, b:255), 1
         @hide()
 
     # 0000000    00000000  000      
@@ -137,113 +139,46 @@ class Palette extends Tool
                 
         @setClosestColor color.color, color.alpha
         
-    setClosestColor: (color, alpha) ->
+    setClosestColor: (color, @alpha) ->
         
-        @alpha = alpha
-        @color = new SVG.Color color
-        
-        if @color.r == @color.g == @color.b
-            @setMode 'gry'
-            @value = colorBrightness @color
-            @luminance = @value
+        if color.toHex?
+            hsv = chroma(color.toHex()).hsv()
         else
-            @setMode 'rgb'
-            @value = @valueForColor @color
-            
-        @updateColor @color
-        @updateSliders()
+            hsv = chroma(color).hsv()
         
-    updateSliders: ->
+        @hue        = hsv[0] if not _.isNaN hsv[0]
+        @saturation = hsv[1]
+        @luminance  = hsv[2]
+                            
+        log 'closest', @hue, @saturation, @luminance, @alpha
         
-        @gradientRGB = colorGradient @svg, @luminance
+        @update()
         
-        @updateAlpha()
-        @updateLuminance()
-        
-    valueForColor: (color) -> 
-        
-        minRGB = Math.min color.r, color.g, color.b 
-        maxRGB = Math.max color.r, color.g, color.b 
-        if minRGB > 0
-            @luminance = 0.5+minRGB/255/2
-        else
-            @luminance = maxRGB/255/2
-            
-        @updateLuminance()
-        
-        minValue = 0
-        minDist  = 255*3
-        for i in [0..255]
-            value = i/255
-            c = gradientColor(@gradientRGB, value).color
-            dist = colorDist c, color
-            if dist < minDist
-                minDist = dist
-                minValue = value
-        
-        minValue
-            
-    #  0000000   000      00000000   000   000   0000000
-    # 000   000  000      000   000  000   000  000   000
-    # 000000000  000      00000000   000000000  000000000
-    # 000   000  000      000        000   000  000   000
-    # 000   000  0000000  000        000   000  000   000
-
-    setAlpha: (f) ->
-
-        @alpha = f
-
-        @updateAlpha()
-        @postColor 'alpha'
-        @setValue @value        
-
-    updateAlpha: ->
-        
-        @lph.attr x:@alpha*(WIDTH-HEIGHT/3)        
-        @alp.attr 'fill-opacity': 1-@alpha
-                
-    # 000      000   000  00     00  000  000   000   0000000   000   000   0000000  00000000
-    # 000      000   000  000   000  000  0000  000  000   000  0000  000  000       000
-    # 000      000   000  000000000  000  000 0 000  000000000  000 0 000  000       0000000
-    # 000      000   000  000 0 000  000  000  0000  000   000  000  0000  000       000
-    # 0000000   0000000   000   000  000  000   000  000   000  000   000   0000000  00000000
-
-    setLuminance: (f) ->
-
-        @luminance = f
-
-        @updateLuminance()
-        @setValue @value
-        
-    updateLuminance: ->
-        
-        @gradientRGB = colorGradient @svg, @luminance
-        @rgb.attr fill: @gradientRGB
-        @lum.attr x: @luminance*(WIDTH-HEIGHT/3)
-
     # 000   000   0000000   000      000   000  00000000  
     # 000   000  000   000  000      000   000  000       
     #  000 000   000000000  000      000   000  0000000   
     #    000     000   000  000      000   000  000       
     #     0      000   000  0000000   0000000   00000000  
     
-    setValue: (@value) ->
-        
-        @updateValue()
-
-        post.emit 'palette', 'change', @
-        @postColor()
-
-    updateValue: ->
-        
-        gradient = @mode == 'rgb' and @gradientRGB or @gradientGRY
-        @updateColor gradientColor(gradient, @value).color
+    setHue:        (@hue)     -> @update(); @postColor 'hue'
+    setAlpha:      (@alpha)    -> @update(); @postColor 'alpha'
+    setLuminance:  (@luminance) -> @update(); @postColor 'luminance'
+    setSaturation: (@saturation) -> @update(); @postColor 'saturation'
             
-    #  0000000   0000000   000       0000000   00000000
-    # 000       000   000  000      000   000  000   000
-    # 000       000   000  000      000   000  0000000
-    # 000       000   000  000      000   000  000   000
-    #  0000000   0000000   0000000   0000000   000   000
+    # 00000000    0000000    0000000  000000000  
+    # 000   000  000   000  000          000     
+    # 00000000   000   000  0000000      000     
+    # 000        000   000       000     000     
+    # 000         0000000   0000000      000     
+
+    postChange: (stage) ->
+        
+        post.emit 'palette', 'change', @
+        
+        if @proxy == 'fill' and stage
+            post.emit 'stage', 'setColor', @color, @alpha
+        else   
+            @postColor()
 
     postColor: (prop='color') ->
         
@@ -251,54 +186,59 @@ class Palette extends Tool
             prop:  prop
             color: @color
             alpha: @alpha
+            
+    # 000   000  00000000   0000000     0000000   000000000  00000000  
+    # 000   000  000   000  000   000  000   000     000     000       
+    # 000   000  00000000   000   000  000000000     000     0000000   
+    # 000   000  000        000   000  000   000     000     000       
+    #  0000000   000        0000000    000   000     000     00000000  
+    
+    update: ->
         
-    updateColor: (color) ->
-
-        @color = color
-
+        @hue = parseInt @hue
+        
+        @color = new SVG.Color chroma(@hue, @saturation, @luminance, 'hsv').hex()
         i = contrastColor @color
 
         @dot.attr stroke: i
         @lum.attr stroke: i, fill: @color
+        @ssl.attr stroke: i, fill: @color
+        @lph.attr stroke: i, fill: @color
         
-        x = @value*WIDTH
-        y = @mode == 'gry' and HEIGHT or 0
-        @dot.plot [[x,y], [x,HEIGHT+y]]
+        x = WIDTH*@hue/360
+        @dot.plot [[x,0], [x,HEIGHT]]
+        
+        @gradientRGB = colorGradient @svg, @luminance, @saturation
+        
+        @gradientSAT = @svg.gradient 'linear', (stop) =>
+            stop.at 0.0, chroma(@hue, 0, @luminance,  'hsv').hex()
+            stop.at 1.0, chroma(@hue, 1, @luminance,  'hsv').hex()
 
-        @gradientCOL = @svg.gradient 'linear', (stop) =>
-            stop.at 0.0, "#000"
-            stop.at 0.5, gradientColor(colorGradient(@svg, 0.5), @value).color.toHex()
-            stop.at 1.0, "#fff"
+        @gradientVAL = @svg.gradient 'linear', (stop) =>
+            stop.at 0.0, chroma(@hue, @saturation, 0, 'hsv').hex()
+            stop.at 1.0, chroma(@hue, @saturation, 1, 'hsv').hex()
 
-        @col.attr fill: @gradientCOL
+        @gradientALP = @svg.gradient 'linear', (stop) =>
+            stop.at 0.0, chroma(@hue, @saturation, @luminance,  'hsv').hex(), @alpha
+            stop.at 1.0, chroma(@hue, @saturation, @luminance,  'hsv').hex(), @alpha
 
-    # 00     00   0000000   0000000    00000000
-    # 000   000  000   000  000   000  000
-    # 000000000  000   000  000   000  0000000
-    # 000 0 000  000   000  000   000  000
-    # 000   000   0000000   0000000    00000000
-
-    setMode: (mode) ->
-
-        @mode = mode
-
-        switch @mode
-            when 'gry'
-                @lum.hide()
-                @col.hide()
-            when 'rgb'
-                @lum.show()
-                @col.show()
-                
+        @rgb.attr fill: @gradientRGB
+        @sat.attr fill: @gradientSAT
+        @val.attr fill: @gradientVAL
+        @alp.attr fill: @gradientALP
+        
+        @lph.attr x: @alpha*(WIDTH-HEIGHT/3)        
+        @lum.attr x: @luminance*(WIDTH-HEIGHT/3)
+        @ssl.attr x: @saturation*(WIDTH-HEIGHT/3)
+        
     # 0000000    00000000    0000000    0000000   
     # 000   000  000   000  000   000  000        
     # 000   000  0000000    000000000  000  0000  
     # 000   000  000   000  000   000  000   000  
     # 0000000    000   000  000   000   0000000   
 
-    selectGRY: (event) => @startDrag event, @gry, @pick
-    selectRGB: (event) => @startDrag event, @rgb, @pick
-
+    selectRGB: (event) => @startDrag event, @rgb, @slide
+    selectSAT: (event) => @startDrag event, @ssl, @slide
     selectLUM: (event) => @startDrag event, @lum, @slide
     selectLPH: (event) => @startDrag event, @lph, @slide
                 
@@ -332,48 +272,14 @@ class Palette extends Tool
         slider = drag.target
         f = clamp 0, 1, @xPosEvent(event) / WIDTH
 
-        if @proxy == 'fill' and event.metaKey
-            
-            if slider == @lum
-                @luminance = f
-                @updateLuminance()
-            else
-                @alpha = f
-                @updateAlpha()
-
-            @updateValue()
-            post.emit 'palette', 'change', @
-            post.emit 'stage', 'setColor', @color, @alpha
-        else        
-            if slider == @lum
-                @setLuminance f
-            else
-                @setAlpha f
-            
-    # 00000000   000   0000000  000   000
-    # 000   000  000  000       000  000
-    # 00000000   000  000       0000000
-    # 000        000  000       000  000
-    # 000        000   0000000  000   000
-
-    pick: (drag, event) =>
-
-        grd = drag.target
-        @setMode grd == @gry and 'gry' or 'rgb'
-        
-        @value = clamp 0, 1, @xPosEvent(event) / WIDTH
-                
-        if @proxy == 'fill' and event.metaKey
-            @updateValue()
-            post.emit 'palette', 'change', @
-            post.emit 'stage', 'setColor', @color, @alpha
-        else        
-            @setValue @value
-
-        if @mode == 'gry'
-            @luminance = @value
-            @updateLuminance()
-            
+        switch slider
+            when @rgb then @setHue clamp 0, 360, f*360
+            when @lum then @setLuminance f
+            when @ssl then @setSaturation f
+            when @lph then @setAlpha f
+          
+        @postChange event.metaKey
+                    
     # 00000000  000   000  00000000  000   000  000000000   0000000
     # 000       000   000  000       0000  000     000     000
     # 0000000    000 000   0000000   000 0 000     000     0000000

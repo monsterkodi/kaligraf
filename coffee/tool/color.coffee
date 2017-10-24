@@ -148,7 +148,7 @@ class Color extends Tool
     copy: (v) ->
 
         @color = new SVG.Color v.color if v.color?
-        @alpha = v.alpha     if v.alpha?
+        @alpha = v.alpha if v.alpha?
 
         prefs.set @name, color:@color.toHex(), alpha:@alpha
 
@@ -193,7 +193,6 @@ class Color extends Tool
             luminance:  @luminance
             alpha:      @alpha
             value:      @value
-            mode:       @mode
         
         fill = first @children
         @copy fill

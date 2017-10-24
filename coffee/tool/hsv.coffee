@@ -56,6 +56,7 @@ class HSV extends Tool
             
         post.on 'selection', @update
         post.on 'edit',      @update
+        post.on 'color',     @onColor
         @update()
 
 
@@ -80,6 +81,13 @@ class HSV extends Tool
     # 000   000  000        000   000  000   000     000     000       
     #  0000000   000        0000000    000   000     000     00000000  
     
+    onColor: (action, info) =>
+    
+        if action in ['fill', 'stroke'] 
+            color = info.color
+            if color.r? and color.g? and color.b?
+                @setHSV chroma(color.r, color.g, color.b).hsv() 
+                
     update: =>
         
         items = @stage.selectedLeafItems()
@@ -88,14 +96,18 @@ class HSV extends Tool
             @disableSpin 'saturation'
             @disableSpin 'value'
         else 
-            @enableSpin 'hue'
-            @enableSpin 'saturation'
-            @enableSpin 'value'
-            hsv = @selectionHSV()
-            @setSpinValue 'hue',        hsv[0]
-            @setSpinValue 'saturation', hsv[1]
-            @setSpinValue 'value',      hsv[2]
-                                
+            @setHSV @selectionHSV()
+
+    setHSV: (hsv) ->
+        
+        @enableSpin 'hue'
+        @enableSpin 'saturation'
+        @enableSpin 'value'
+        
+        @setSpinValue 'hue',        hsv[0]
+        @setSpinValue 'saturation', hsv[1]
+        @setSpinValue 'value',      hsv[2]
+        
     selectionHSV: ->
         
         items = @stage.selectedLeafItems()

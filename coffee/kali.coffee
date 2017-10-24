@@ -18,6 +18,7 @@ class Kali
 
     constructor: (element) ->
 
+        # post.debug ['emit']
         post.setMaxListeners 30
         
         @setStyle 'style'

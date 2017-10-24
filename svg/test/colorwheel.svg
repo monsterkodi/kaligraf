@@ -3,8 +3,8 @@
   xmlns:xlink="http://www.w3.org/1999/xlink" 
   xmlns:svgjs="http://svgjs.com/svgjs" 
 style="stroke-linecap: round; stroke-linejoin: round; stroke-miterlimit: 20; "
-viewBox="100.27950134277344 -1338.0720849196955 3536.7304870605467 4684.713322671422">
-  <defs id="SvgjsDefs1865">
+viewBox="132.4315966796875 -1295.4837819863192 3472.4262963867186 4599.53671680467">
+  <defs id="SvgjsDefs2843">
     <locks id="SvgjsLocks2343"></locks>
     <locks id="locks"></locks>
   </defs>
@@ -58,7 +58,7 @@ viewBox="100.27950134277344 -1338.0720849196955 3536.7304870605467 4684.71332267
       </text>
     </g>
   </svg>
-  <svg id="S-9a-f4156c" style="overflow: visible; pointer-events: none;" data-disabled="true" data-hidden="false">
+  <svg id="S-9a-f4156c" style="overflow: visible; pointer-events: all;" data-disabled="false" data-hidden="false">
     <g id="G-3d-cfa084" transform="matrix(1,0,0,1,0,5.684341886080802e-14)">
       <path id="P-4e-7710bd" d="M162.11154174804688 460.168701171875L162.11154174804688 460.168701171875L271.1729736328125 44.777095794677734L458.81207275390625 151.8892822265625 " style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 0; fill: rgb(64, 32, 0); fill-opacity: 1;" points="105.569664777568,99.18323034097523 137.29920959472656,12.58405876159668 155.56626892089844,12.58405876159668 164.7296274178553,28.462669405040472" transform="matrix(0.9999999999999999,0,0,0.9999999999999999,1706.6263427734375,544.2728881835935)"></path>
       <path id="P-76-371f15" d="M319.7890319824219 148.2635955810547L-93.61308288574219 260.76263427734375L-93.61308288574219 260.76263427734375L203.3731689453125 -47.65100860595703 " style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 0; fill: rgb(64, 64, 0); fill-opacity: 1;" points="-0.5,86.23653737165994 49.5,-0.3659973799407729 99.5,86.23653737165994" transform="matrix(0.9999999999999999,0,0,0.9999999999999999,1962.3504638671873,743.67919921875)"></path>

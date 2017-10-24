@@ -53,6 +53,7 @@ class RGB extends Tool
             
         post.on 'selection', @update
         post.on 'edit',      @update
+        post.on 'color',     @onColor
         @update()
 
     # 00000000    0000000    0000000  000000000  
@@ -62,6 +63,7 @@ class RGB extends Tool
     # 000         0000000   0000000      000     
     
     postColor: => 
+        
         color = new SVG.Color r:@getSpin('red').value, g:@getSpin('green').value, b:@getSpin('blue').value
         if @kali.tool('select').fillStroke.includes 'stroke'
             post.emit 'color', 'stroke', prop:'color', color: color, alpha: @kali.tool('stroke').alpha
@@ -73,7 +75,11 @@ class RGB extends Tool
     # 000   000  00000000   000   000  000000000     000     0000000   
     # 000   000  000        000   000  000   000     000     000       
     #  0000000   000        0000000    000   000     000     00000000  
-                
+      
+    onColor: (action, info) => 
+
+        if action in ['fill', 'stroke'] then @setColor info.color
+    
     update: =>
         
         items = @stage.selectedLeafItems()
@@ -82,14 +88,18 @@ class RGB extends Tool
             @disableSpin 'green'
             @disableSpin 'blue'
         else 
-            @enableSpin 'red'
-            @enableSpin 'green'
-            @enableSpin 'blue'
-            color = @selectionColor()
-            @setSpinValue 'red',   color.r
-            @setSpinValue 'green', color.g
-            @setSpinValue 'blue',  color.b
-                                
+            @setColor @selectionColor()
+            
+    setColor: (color) ->
+        
+        @enableSpin 'red'
+        @enableSpin 'green'
+        @enableSpin 'blue'
+        
+        @setSpinValue 'red',   color.r
+        @setSpinValue 'green', color.g
+        @setSpinValue 'blue',  color.b
+           
     selectionColor: ->
         
         items = @stage.selectedLeafItems()

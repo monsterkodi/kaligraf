@@ -133,9 +133,11 @@ class GradientList
         index = @activeIndex()
         gradient = new GradientItem @kali
         
-        gradient.setGradient @stage.svg.gradient 'linear', (stop) ->
-            stop.at 0, '#000', 1
-            stop.at 1, '#fff', 1
+        gradient.setGradient type:'linear', stops: [
+                offset:0, color:'#000', opacity:1
+            ,
+                offset:1, color:'#fff', opacity:1
+            ]
         
         @scroll.insertBefore gradient.element, @activeGradient()
         @activate Math.max 0, index
@@ -172,17 +174,26 @@ class GradientList
             @activeGradient().gradient.update()
             @store()
             
-    onDelGradient:  =>
-        
+    onDelStopOrGradient: =>
+    
         index = @activeIndex()
         return if index < 0
         
-        if @activeGradient().gradient.activeStop()?
+        if @activeGradient().gradient.activeStop()? and @activeGradient().gradient.numStops() > 1
             @activeGradient().gradient.delStop()
         else
             @activeItem().del()
             @activate index
             @store()
+        
+    onDelGradient: =>
+        
+        index = @activeIndex()
+        return if index < 0
+        
+        @activeItem().del()
+        @activate index
+        @store()
          
     gradientItems: -> 
         
@@ -341,8 +352,9 @@ class GradientList
     scrollToActive: ->
         
         index = @activeIndex()
+        return if index < 0
         scrollBox = boundingBox @scroll 
-        activeBox = boundingBox @activeGradient() 
+        activeBox = boundingBox @activeGradient()
         if activeBox.y < scrollBox.y
             @scroll.scrollTop -= scrollBox.y - activeBox.y
         else if activeBox.y2 > scrollBox.y2
@@ -364,7 +376,7 @@ class GradientList
             
             when 'up'                        then @navigate -1
             when 'down'                      then @navigate +1
-            when 'backspace', 'delete'       then @onDelGradient()
+            when 'backspace', 'delete'       then @onDelStopOrGradient()
             when 'n'                         then @onNewGradient()
             when 'c'                         then @onCopyGradient()
             when 'esc'                       then @hide()

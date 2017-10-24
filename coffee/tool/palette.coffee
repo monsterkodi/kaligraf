@@ -21,7 +21,7 @@ class Palette extends Tool
         cfg.name  ?= 'palette'
         cfg.class ?= 'palette'
 
-        @width  = cfg.width  ? 360
+        @width  = cfg.width  ? @kali.paletteWidth
         @height = cfg.height ? @kali.toolSize
         
         cfg.halo        ?= {}
@@ -57,8 +57,8 @@ class Palette extends Tool
         @alp.attr width:@width, height:@height/6, x:0, stroke: 'none', y:@height-@height/6
 
         @dot.attr width:@height/6, height:@height/2-0.5, y:0.5
-        @ssl.attr width:@height/6, height:@height/6, y:@height/2
-        @lum.attr width:@height/6, height:@height/6, y:@height/2+@height/6
+        @ssl.attr width:@height/6, height:@height/6,     y:@height/2
+        @lum.attr width:@height/6, height:@height/6,     y:@height/2+@height/6
         @lph.attr width:@height/6, height:@height/6-0.5, y:@height-@height/6
 
         @rgb.on 'mousedown', @selectRGB
@@ -272,13 +272,13 @@ class Palette extends Tool
     slide: (drag, event) =>
 
         slider = drag.target
-        f = clamp 0, 1, @xPosEvent(event) / @width
+        f = clamp 0, 1, (@xPosEvent(event)- @height/12) / (@width - @height/6)
 
         switch slider
             when @rgb then @setHue clamp 0, 360, f*360
-            when @lum then @setLuminance f
-            when @ssl then @setSaturation f
-            when @lph then @setAlpha f
+            when @lum then @setLuminance   f
+            when @ssl then @setSaturation  f
+            when @lph then @setAlpha       f
           
         @postChange event.metaKey
                     

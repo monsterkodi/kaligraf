@@ -31,7 +31,8 @@ class Kali
         @toolDiv = elem id: 'tools'
         @element.appendChild @toolDiv
         
-        @toolSize = 72
+        @toolSize     = 75
+        @paletteWidth = 375
         
         @trans = new Trans @
         @tools = new Tools @, name: 'tools', text: 'tools', orient: 'down'

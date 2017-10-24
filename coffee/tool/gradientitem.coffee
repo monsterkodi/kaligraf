@@ -18,7 +18,7 @@ class GradientItem
         @element = elem class:'gradientItem'
         @element.gradient = @
         
-        @width  = 360
+        @width  = @kali.paletteWidth
         @height = @kali.toolSize
         
         @svg = SVG(@element).size '100%', '100%'
@@ -28,7 +28,7 @@ class GradientItem
 
         @alp = @svg.rect()
         checkers = checkersPattern @svg, 2.5, '#fff'
-        @alp.attr width:@width, height:@height/4, x:0, y:@height*3/4, stroke: 'none', fill:checkers
+        @alp.attr width:@width, height:@height/5, x:0, y:@height*4/5, stroke: 'none', fill:checkers
         
         @grd = @svg.rect()
         @grd.width  @width

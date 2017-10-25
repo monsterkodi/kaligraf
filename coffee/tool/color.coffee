@@ -282,21 +282,23 @@ class Color extends Tool
 
     showChildren: -> 
         
-        @hideChildren()
-        
         childPos = pos(@kali.toolSize,0).plus @kali.tools.stroke.pos()
         
         if @gradient
             
-            gradient = itemGradient @top, 'fill' #<- must be fill!
-            @kali.gradientEdit = new GradientEdit @kali, name:@name
-            @kali.gradientEdit.setPos childPos
-            @kali.gradientEdit.setGradient gradient
+            if not @kali.gradientEdit?
+                @hideChildren()
+                gradient = itemGradient @top, 'fill' #<- must be fill!
+                @kali.gradientEdit = new GradientEdit @kali, name:@name
+                @kali.gradientEdit.setPos childPos
+                @kali.gradientEdit.setGradient gradient
             
         else
             
-            post.emit 'palette', 'proxy', @
-            post.emit 'palette', 'show', childPos
+            if not @kali.palette?.isVisible() or @kali.palette.proxy != @name
+                @hideChildren()
+                post.emit 'palette', 'proxy', @
+                post.emit 'palette', 'show', childPos
     
     hideChildren: -> 
         
@@ -314,16 +316,20 @@ class Color extends Tool
     #  0000000   000        0000000    000   000     000     00000000
 
     update: ->
-    
-        visible = @childrenVisible()
-        @hideChildren() if visible
+            
+        gradient = _.isString(@color) and @color.startsWith 'url'
         
-        @gradient = _.isString(@color) and @color.startsWith 'url'
+        if @gradient != gradient
+            visible = @childrenVisible()
+            @hideChildren() if visible
+            @gradient = gradient
         
         if @gradient
             @updateGradient()
         else
             @updateColor()
+            if @kali.palette and @kali.palette.proxy != @name
+                post.emit 'palette', 'proxy', @
             
         @showChildren() if visible
 

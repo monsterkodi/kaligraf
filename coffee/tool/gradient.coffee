@@ -173,27 +173,23 @@ class Gradient extends Tool
 
     applyType: (item, style, type) ->
         
-        # log 'Gradient.applyType', style, type
-        
         if type == 'none'
                                 
-            if item.data(style)?
-                item.style style, item.data style
-            else
-                @kali.tool(style).color
-                
-            if item.data("#{style}-opacity")?
-                item.style "#{style}-opacity", item.data "#{style}-opacity"
-            else
-                @kali.tool(style).alpha
+            color = item.data(style) ? @kali.tool(style).color
+            color = style == 'fill' and "#fff" or '#000' if color.startsWith 'url'
+            item.style style, color
+            item.style "#{style}-opacity", item.data "#{style}-opacity" ? @kali.tool(style).alpha
                                 
+            item.data style, null
+            item.data "#{style}-opacity", null
+            
         else
             
-            if not item.data(style)?
+            if not item.data(style)? and not item.style(style).startsWith 'url'
                 item.data style, item.style style
                 
-            if not item.data("#{style}opacity")?
-                item.data "#{style}opacity", item.style "#{style}opacity"
+            if not item.data("#{style}-opacity")?
+                item.data "#{style}-opacity", item.style "#{style}-opacity"
             
             if gradient = itemGradient item, style
             

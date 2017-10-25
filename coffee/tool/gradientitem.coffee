@@ -209,13 +209,14 @@ class GradientItem
         stopPos.add pos 0, br.h
         
         palette = new Palette @kali, 
-            onLeave:@closePalette 
-            onClose:@closePalette 
+            onLeave: @closePalette 
+            onClose: @closePalette 
             halo: 
                 x:      -@height
                 y:      0
                 width:  @width+2*@height
                 height: 2*@height
+                
         palette.proxy = 'stop'
         palette.setPos stopPos
         palette.show()
@@ -247,6 +248,7 @@ class GradientItem
     showStops: ->
         
         return if @stp?
+        
         @stp = @svg.group()
         @stp.id id 'stops'
         
@@ -257,7 +259,7 @@ class GradientItem
             onStop:  @onStopStop
              
         @element.addEventListener 'dblclick', @onStopDblClick
-            
+        
         @createStops()
         
     hideStops: ->
@@ -285,7 +287,7 @@ class GradientItem
             rct.id id 'stop'
             rct.addClass 'gradientStop'
             rct.y @height*4/5
-            
+           
         @updateStops()
         
     # 000   000  00000000   0000000     0000000   000000000  00000000  
@@ -301,7 +303,6 @@ class GradientItem
             rct.cx stop.offset * @width
             if colorBrightness(stop.color) < 0.2
                 rct.style 'stroke', '#666'
-            
         @update()
         post.emit 'gradient', 'changed', @state()
 
@@ -316,8 +317,8 @@ class GradientItem
     setActive: (active=true) ->
         
         @element.classList.toggle 'active', active
-        if active then  @showStops()
-        else            @hideStops()
+        if active then @showStops()
+        else           @hideStops()
         
     #  0000000  000000000   0000000   000000000  00000000  
     # 000          000     000   000     000     000       

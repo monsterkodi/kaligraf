@@ -27,7 +27,7 @@ class RGB extends Tool
             step:   [1,5,10,25]
             action: @postColor
             value:  255
-            str: (value) -> parseInt value
+            str: (value) -> if _.isNaN(value) then ' ' else parseInt value
 
         @initSpin
             triple: 'G'
@@ -38,7 +38,7 @@ class RGB extends Tool
             step:   [1,5,10,25]
             action: @postColor
             value:  255
-            str: (value) -> parseInt value
+            str: (value) -> if _.isNaN(value) then ' ' else parseInt value
 
         @initSpin
             triple: 'B'
@@ -49,7 +49,7 @@ class RGB extends Tool
             step:   [1,5,10,25]
             action: @postColor
             value:  255
-            str: (value) -> parseInt value
+            str: (value) -> if _.isNaN(value) then ' ' else parseInt value
             
         post.on 'selection', @update
         post.on 'edit',      @update

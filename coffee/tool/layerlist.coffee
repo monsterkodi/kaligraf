@@ -1,9 +1,10 @@
-
-# 000       0000000   000   000  00000000  00000000   000      000   0000000  000000000
-# 000      000   000   000 000   000       000   000  000      000  000          000   
-# 000      000000000    00000    0000000   0000000    000      000  0000000      000   
-# 000      000   000     000     000       000   000  000      000       000     000   
-# 0000000  000   000     000     00000000  000   000  0000000  000  0000000      000   
+###
+000       0000000   000   000  00000000  00000000   000      000   0000000  000000000
+000      000   000   000 000   000       000   000  000      000  000          000   
+000      000000000    00000    0000000   0000000    000      000  0000000      000   
+000      000   000     000     000       000   000  000      000       000     000   
+0000000  000   000     000     00000000  000   000  0000000  000  0000000      000   
+###
 
 { stopEvent, drag, empty, setStyle, childIndex, prefs, keyinfo, elem, clamp, last, post, log, $, _ } = require 'kxk'
 
@@ -116,12 +117,15 @@ class LayerList
         
     onStage: (action, info) =>
         
+        @log "LayerList.onStage action:#{action} info:", info
+        
         switch action
             
-            when 'load'  then @scroll.style.background = @stage.color.toHex()
-            when 'layer' then @updateActive info
-            when 'color' then @updateColor()
-            when 'clear' then @update()
+            when 'load'    then @scroll.style.background = @stage.color.toHex()
+            when 'layer'   then @updateActive info
+            when 'color'   then @updateColor()
+            when 'clear'   then @update()
+            when 'restore' then @update()
         
     # 000   000  00000000   0000000     0000000   000000000  00000000  
     # 000   000  000   000  000   000  000   000     000     000       
@@ -144,15 +148,15 @@ class LayerList
 
     updateActive: (info) ->
         
-        @log 'LayerList.updateActive', info
+        # @log 'LayerList.updateActive', info
         
         if info.num != @scroll.children.length
-            @log 'LayerList.updateActive num differs -> update()'
+            # @log 'LayerList.updateActive num differs -> update()'
             @update()
         else
-            @log 'LayerList.updateActive highlight', @activeLayer()?
+            # @log 'LayerList.updateActive highlight', @activeLayer()?
             if @activeLayer()
-                @log 'LayerList.updateActive highlight', @activeLayer().index, @activeLayer().className, info
+                # @log 'LayerList.updateActive highlight', @activeLayer().index, @activeLayer().className, info
                 @activeLayer()?.classList.remove 'active'
             @layerAt(info.active)?.classList.add 'active'
 

@@ -195,7 +195,7 @@ class Palette extends Tool
     #  0000000   000        0000000    000   000     000     00000000  
     
     update: ->
-        
+        # log 'palette.update'
         @hue = parseInt @hue
         
         @color = new SVG.Color chroma(@hue, @saturation, @luminance, 'hsv').hex()

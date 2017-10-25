@@ -8,7 +8,7 @@
 { elem, post, pos, log, fs, fileExists, $, _ } = require 'kxk'
 
 Exporter = require '../exporter'
-Tool = require './tool' 
+Tool     = require './tool' 
  
 class Pipette extends Tool
 
@@ -46,20 +46,28 @@ class Pipette extends Tool
         
         @kali.stage.setToolCursor 'pipette'
         
+        doFill   = @tools.select.fillStroke.includes 'fill'
+        doStroke = @tools.select.fillStroke.includes 'stroke'
+        
         if drag.startPos == drag.lastPos
-            post.emit 'color', 'fill',   prop:'color', color: @tools.fill.color,   alpha:  @tools.fill.alpha
-            post.emit 'color', 'stroke', prop:'color', color: @tools.stroke.color, stroke: @tools.fill.alpha
+            if doFill
+                post.emit 'color', 'fill',   prop:'color', color: @tools.fill.color,   alpha:  @tools.fill.alpha
+            if doStroke
+                post.emit 'color', 'stroke', prop:'color', color: @tools.stroke.color, stroke: @tools.fill.alpha
             return
             
         item = @stage.leafItemAtPos pos event
         if item?
             @stage.undo.do @stage, 'color'+item.id()
-            item.style 
-                'fill':           @tools.fill.color
-                'fill-opacity':   @tools.fill.alpha
-                'stroke':         @tools.stroke.color
-                'stroke-opacity': @tools.stroke.alpha
-                'stroke-width':   "#{@tools.width.width}px"
+            style = {}
+            if doFill
+                style['fill']         = @tools.fill.color
+                style['fill-opacity'] = @tools.fill.alpha
+            if doStroke
+                style['stroke']         = @tools.stroke.color
+                style['stroke-opacity'] = @tools.stroke.alpha
+                style['stroke-width']   = "#{@tools.width.width}px"
+            item.style style
             @stage.undo.done @stage
             
 module.exports = Pipette

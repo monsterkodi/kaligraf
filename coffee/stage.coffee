@@ -151,8 +151,8 @@ class Stage
         oddeven = items.filter (item) => new Points(@kali,item).oddEvenTest stagePos
         if oddeven.length
             items = oddeven
-        else if items.length
-            log 'missed oddeven', items.length
+        # else if items.length
+            # log 'missed oddeven', items.length
         items = @filterItems items, opt
         items
         
@@ -444,11 +444,6 @@ class Stage
                         else
                             items.push child
                           
-                    for item in items
-                        tag = item.node.tagName
-                        if tag == 'metadata' or tag.startsWith 'sodipodi'
-                            item.remove()
-
                     if opt?.id?
                         
                         if items.length == 1 and first(items).type == 'g'
@@ -810,7 +805,9 @@ class Stage
                             @shapes.edit.moveBy p
                         else
                             @resizer.moveBy p
-                                                
+
+        if @kali.gradientEdit?
+            return if 'unhandled' != @kali.gradientEdit.handleKey mod, key, combo, char, event, down
         return if 'unhandled' != @selection.handleKey mod, key, combo, char, event, down
         return if 'unhandled' != @shapes   .handleKey mod, key, combo, char, event, down
 

@@ -28,7 +28,7 @@ class HSV extends Tool
             step:   [1, 6, 12, 26]
             action: @postColor            
             value:  0
-            str: (value) -> parseInt value
+            str: (value) -> if _.isNaN(value) then ' ' else parseInt value
 
         @initSpin
             triple: 'S'
@@ -40,7 +40,7 @@ class HSV extends Tool
             step:   [0.01, 0.05, 0.1, 0.2]
             action: @postColor
             value:  1
-            str: (value) -> Number(value).toFixed 2
+            str: (value) -> if _.isNaN(value) then ' ' else parseInt value * 100
 
         @initSpin
             triple: 'V'
@@ -52,7 +52,7 @@ class HSV extends Tool
             step:   [0.01, 0.05, 0.1, 0.2]
             action: @postColor
             value:  1
-            str: (value) -> Number(value).toFixed 2
+            str: (value) -> if _.isNaN(value) then ' ' else parseInt value * 100
             
         post.on 'selection', @update
         post.on 'edit',      @update

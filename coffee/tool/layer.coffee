@@ -216,7 +216,7 @@ class Layer extends Tool
         else
             parents[parents.length-1]
 
-    indexOfLayer: (layer) -> @layers.indexOf layer
+    indexOfLayer: (layer) -> Math.max 0, @layers.indexOf layer
 
     activeLayer: -> @layerAt @layerIndex
     
@@ -254,9 +254,11 @@ class Layer extends Tool
     splitLayer: (index=@layerIndex) ->
 
         selected = @selectedItems()
-        items = selected.filter (item) => index == @indexOfLayer @layerForItem item
+        items = selected.filter (item) => 
+            index == @indexOfLayer @layerForItem item
         if not empty items
             @selection.setItems items
+            log 'splitLayer', index+1
             @createLayer selection:'move', index:index+1
             @selection.setItems selected
 
@@ -292,7 +294,8 @@ class Layer extends Tool
 
         layer = @svg.nested()
         layer.id "layer #{@numLayers()}"
-        if index < @numLayers()-1
+        
+        if index <= @numLayers()-1
             @layerAt(index).before layer
 
         @layers.splice index, 0, layer

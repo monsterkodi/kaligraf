@@ -59,5 +59,21 @@ class GradientEdit extends Tool
     onMouseLeave: => 
         @delHalo()
         @cfg.onLeave?()
+
+    # 000   000  00000000  000   000  
+    # 000  000   000        000 000   
+    # 0000000    0000000     00000    
+    # 000  000   000          000     
+    # 000   000  00000000     000     
+    
+    handleKey: (mod, key, combo, char, event, down) ->
+        
+        log 'gradientEdit.handleKey', @gradientItem.activeStop()
+        
+        if @gradientItem.activeStop() and down
+            switch combo
+                when 'backspace', 'delete'
+                    return @gradientItem.delStop()
+        'unhandled'
         
 module.exports = GradientEdit

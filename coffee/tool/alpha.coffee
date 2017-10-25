@@ -30,6 +30,7 @@ class Alpha extends Tool
             str: (value) -> parseInt value
                     
         post.on 'selection', @update
+        post.on 'color',     @onColor
         @update()
     
     # 000   000  00000000   0000000     0000000   000000000  00000000  
@@ -38,13 +39,19 @@ class Alpha extends Tool
     # 000   000  000        000   000  000   000     000     000       
     #  0000000   000        0000000    000   000     000     00000000  
     
+    onColor: (action, info) => 
+        
+        if info.prop == 'alpha'
+            @enableSpin   'alpha'
+            @setSpinValue 'alpha', info.alpha*100
+    
     update: =>
         
         items = @stage.selectedLeafItems()
         if empty items
             @disableSpin 'alpha'
         else 
-            @enableSpin 'alpha'
+            @enableSpin   'alpha'
             @setSpinValue 'alpha', @alpha()*100
                         
     setAlpha: (alpha) => 

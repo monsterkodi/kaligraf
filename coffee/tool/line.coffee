@@ -37,15 +37,15 @@ class Line extends Tool
             choice: @cap
             action: => @setCap 'round'
         ,
-            tiny: 'line-butt'
-            name: 'butt'
-            choice: @cap
-            action: => @setCap 'butt'
-        ,
             tiny: 'line-square'
             name: 'square'
             choice: @cap
             action: => @setCap 'square'
+        ,
+            tiny: 'line-butt'
+            name: 'butt'
+            choice: @cap
+            action: => @setCap 'butt'
         ]
             
         post.on 'selection', @onSelection
@@ -70,9 +70,9 @@ class Line extends Tool
 
         prefs.set 'line:cap', @cap
         
-        join = round:'round', butt:'miter', square:'bevel'
+        join = round:'round', butt:'bevel', square:'miter'
         
-        items = @stage.selectedLeafItems types:['polygon', 'polyline', 'line', 'rect']
+        items = @stage.selectedLeafItems types:['polygon', 'polyline', 'line', 'rect', 'path']
         return if empty items
                 
         @stage.do 'linecap'+ itemIDs items

@@ -3,9 +3,10 @@
   xmlns:xlink="http://www.w3.org/1999/xlink" 
   xmlns:svgjs="http://svgjs.com/svgjs" 
 style="stroke-linecap: round; stroke-linejoin: round; stroke-miterlimit: 20; "
-viewBox="46.126243591308594 92.23318756103515 306.9167785644531 269.6609899902344">
-  <defs id="SvgjsDefs1138">
+viewBox="76.15072052001953 106.23491027832031 246.86783233642578 293.23319763183594">
+  <defs id="SvgjsDefs1139">
     <locks id="locks"></locks>
   </defs>
-  <polyline id="P-ab-171a4d" points="116.18333435058594,300.34112548828125 199.5846405029297,153.78623962402344 282.9859313964844,300.34112548828125" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 86; fill: none; fill-opacity: 0;" stroke-linecap="square" stroke-linejoin="bevel" stroke-miterlimit="20"></polyline>
+  <polyline id="P-ab-171a4d" points="116.18333435058594,300.34112548828125 199.5846405029297,153.78623962402344 282.9859313964844,300.34112548828125" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 86; fill: none; fill-opacity: 0;" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="20" transform="matrix(-0.9999999999999996,5.196319875560927e-17,-5.196319875560927e-17,-0.9999999999999996,399.16927337646484,454.12735748291016)"></polyline>
+  <rect id="R-89-3db21d" width="100" height="100" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 0; fill: rgb(0, 0, 0); fill-opacity: 0;" transform="matrix(1,0,0,1,150.83396911621094,251.91677856445312)" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="20"></rect>
 </svg>

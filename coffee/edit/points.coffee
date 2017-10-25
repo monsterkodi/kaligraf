@@ -8,7 +8,7 @@
 
 { post, empty, first, valid, pos, log, _ } = require 'kxk'
 
-{ linesIntersect } = require '../utils'
+{ linesIntersect, itemMatrix } = require '../utils'
 
 Convert = require './convert'
 
@@ -318,7 +318,19 @@ class Points extends Convert
                 [box.cx, box.cy, 'center'   ]
             ]
         item.array?().valueOf()
-    
+
+    @itemPos: (item, index) ->
+        
+        points = @itemPoints item
+        point = points[index]
+        itemPos = switch point[0]
+            when 'C'      then pos point[5], point[6]
+            when 'S', 'Q' then pos point[3], point[4]
+            when 'M', 'L' then pos point[1], point[2]
+            else               pos point[0], point[1]
+            
+        pos new SVG.Point(itemPos).transform itemMatrix item
+        
     points: -> 
         
         if @isFake()
@@ -467,17 +479,5 @@ class Points extends Convert
         p4 = p1.interpolate p2, factor
         p5 = p2.interpolate p3, factor
         p6 = p4.interpolate p5, factor
-                            
-    pointPos: (item, index) ->
-        
-        points = @itemPoints item
-        point = points[index]
-        itemPos = switch point[0]
-            when 'C'      then pos point[5], point[6]
-            when 'S', 'Q' then pos point[3], point[4]
-            when 'M', 'L' then pos point[1], point[2]
-            else               pos point[0], point[1]
-            
-        pos new SVG.Point(itemPos).transform itemMatrix item
-        
+                                    
 module.exports = Points

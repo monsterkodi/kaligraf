@@ -175,7 +175,7 @@ class Lock extends Tool
             @locks[lock[0]].transform(scale: 1.0/@stage.zoom).transform rotation: 45
             
         firstItem = SVG.get @splitId(lock[0]).id 
-        pos0 = @trans.pointPos firstItem, @splitId(lock[0]).index
+        pos0 = Points.itemPos firstItem, @splitId(lock[0]).index
         @trans.center @locks[lock[0]], pos0
         
         for index in [1...lock.length]
@@ -190,8 +190,8 @@ class Lock extends Tool
                 log "Lock.updateLock -- missing items at index #{index} in lock:", lock
                 continue
                 
-            pos1 = @trans.pointPos prevItem, prev.index
-            pos2 = @trans.pointPos nextItem, next.index
+            pos1 = Points.itemPos prevItem, prev.index
+            pos2 = Points.itemPos nextItem, next.index
             
             if not @locks[lock[index]]?
                 @locks[lock[index]] = @shapes.edit.linesWhite.rect 12, 12

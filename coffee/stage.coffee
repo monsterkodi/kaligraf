@@ -346,7 +346,9 @@ class Stage
                 when 'image'
                     @loadImage item
                 else
-                    log 'dblclick', item?.id()
+                    log 'Stage.onDblClick', item?.id()
+        else
+            post.emit 'fill', color:@color, alpha:@alpha
 
     loadImage: (item) ->
         

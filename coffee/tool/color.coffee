@@ -42,6 +42,7 @@ class Color extends Tool
         post.on 'gradient',  @onGradient
         post.on 'selection', @onSelection
         post.on 'edit',      @onSelection
+        post.on 'fill',      @onFill
 
     set: (v) ->
 
@@ -144,14 +145,21 @@ class Color extends Tool
         if action == 'change' and value.proxy == @name
 
             @copy value
-
+            
     copy: (v) ->
 
-        @color = new SVG.Color v.color if v.color?
+        @color = new SVG.Color(v.color).toHex() if v.color?
         @alpha = v.alpha if v.alpha?
 
-        prefs.set @name, color:@color.toHex(), alpha:@alpha
-
+        @update()
+        
+    onFill: (info) =>
+        
+        return if @name != 'fill'
+        
+        @color = info.color.toHex()
+        @alpha = info.alpha
+                
         @update()
 
     # 00000000  000  000      000             0000000  000000000  00000000    0000000   000   000  00000000
@@ -346,6 +354,8 @@ class Color extends Tool
 
     updateColor: ->
 
+        prefs.set @name, color:@color, alpha:@alpha
+                
         @top.attr height:'50%'
         @bot.attr height:'50%'
         @top.style fill: @color

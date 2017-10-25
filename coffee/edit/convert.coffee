@@ -6,7 +6,7 @@
  0000000   0000000   000   000      0      00000000  000   000     000   
 ###
 
-{ pos, log, _ } = require 'kxk'
+{ first, pos, log, _ } = require 'kxk'
 
 Ctrl = require './ctrl'
 
@@ -18,11 +18,17 @@ class Convert
         
         indexDots = @indexDots dots
         
-        if type != 'P' and @item.type != 'path'
-            @toPath()
+        # log "convert #{type} item.type #{@item.type}"
         
         newDots = []
-
+        
+        if type != 'P' and @item.type != 'path'
+            @toPath()
+        else if type == 'P' 
+            if @item.type == 'path'
+                @toPoly()
+                return indexDots.map (idots) => @ctrls[idots.index].dots.point 
+        
         points = @points()
 
         for idots in indexDots
@@ -30,7 +36,7 @@ class Convert
             index = idots.index
             point = points[index]
 
-            if index == 0
+            if index == 0 and @item.type == 'path'
                 continue 
 
             thisp = @posAt index
@@ -94,13 +100,13 @@ class Convert
 
                     point[0] = 'S'
                     
-                when 'P'
+                when 'L', 'M'
                     
-                    point[0] = 'L'
+                    point[0] = type
                     point[1] = point[point.length-2]
                     point[2] = point[point.length-1]
                     point.splice 3, point.length-3
-
+                    
             @initCtrlDots   index, point
             @updateCtrlDots index, point
 
@@ -109,20 +115,22 @@ class Convert
         @applyPoints()
         newDots
 
-    # 000000000   0000000   00000000    0000000   000000000  000   000  
-    #    000     000   000  000   000  000   000     000     000   000  
-    #    000     000   000  00000000   000000000     000     000000000  
-    #    000     000   000  000        000   000     000     000   000  
-    #    000      0000000   000        000   000     000     000   000  
+    # 000000000   0000000         00000000    0000000   000000000  000   000  
+    #    000     000   000        000   000  000   000     000     000   000  
+    #    000     000   000        00000000   000000000     000     000000000  
+    #    000     000   000        000        000   000     000     000   000  
+    #    000      0000000         000        000   000     000     000   000  
     
     toPath: ->
-        
+
         newPoints = []
         oldPoints = @points()
         for index in [0...oldPoints.length]
             oldPoint = oldPoints[index]
             newPoint = [index==0 and 'M' or 'L', oldPoint[0], oldPoint[1]]
             newPoints.push newPoint
+        newPoints.push ['L', first(oldPoints)[0], first(oldPoints)[1]]
+        
         newItem = @item.doc().path()
         newItem.plot newPoints
 
@@ -132,12 +140,34 @@ class Convert
         @del()
         @item.remove()
         @item = newItem
+        @initItem()
+            
+    # 000000000   0000000         00000000    0000000   000      000   000  
+    #    000     000   000        000   000  000   000  000       000 000   
+    #    000     000   000        00000000   000   000  000        00000    
+    #    000     000   000        000        000   000  000         000     
+    #    000      0000000         000         0000000   0000000     000     
+    
+    toPoly: ->
+
+        newPoints = []
+        oldPoints = @points()
+        for index in [0...oldPoints.length]
+            oldPoint = oldPoints[index]
+            oldPos = @posForPoint oldPoint
+            newPoints.push [oldPos.x, oldPos.y]
+            
+        newItem = @item.doc().polygon()
+        newItem.plot newPoints
+                
+        newItem.style @item.style()
+        newItem.attr @item.attr()
         
-        for index in [0...newPoints.length]
-            newPoint = newPoints[index] 
-            @initCtrlDots index, newPoint
-            @updateCtrlDots index, newPoint
-        
+        @del()
+        @item.remove()
+        @item = newItem
+        @initItem()
+
     # 0000000    000  000   000  000  0000000    00000000
     # 000   000  000  000   000  000  000   000  000
     # 000   000  000   000 000   000  000   000  0000000

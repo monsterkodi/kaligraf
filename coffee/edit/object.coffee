@@ -63,6 +63,10 @@ class Object extends Points
                 
                 @initCtrlDots   i, points[i]
                 @updateCtrlDots i, points[i]
+                
+            for i in [0...points.length]
+                if points[i][0] =='M'
+                    @ctrls[i].dots.point.front()
             
         for style in ['stroke', 'fill']
             if gradient = itemGradient @item, style

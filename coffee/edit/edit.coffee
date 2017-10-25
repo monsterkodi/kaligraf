@@ -133,7 +133,7 @@ class Edit
         
         @defs['P'] = @svg.defs().polygon [[0,sh], [sh,0], [0,-sh], [-sh,0]]
         @defs['L'] = @svg.defs().rect s, s         
-        @defs['M'] = @svg.defs().rect s, s 
+        @defs['M'] = @svg.defs().polygon [[-sh,-sh], [sh,-sh], [sh,sh]]
         @defs['C'] = @svg.defs().circle s
         @defs['Q'] = @svg.defs().circle s
         @defs['S'] = @svg.defs().circle s

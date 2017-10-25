@@ -80,10 +80,12 @@ class Menu
                     { label: 'Average Radius',   accelerator: 'command+6', click: -> action 'averageRadius'}
                 ]}
                 { label: 'Bezier',      submenu: [
+                    { label: 'Polygon', accelerator: 'ctrl+p',              click: -> post.toWins 'convert', 'P'}
+                    { label: 'Line',    accelerator: 'ctrl+l',              click: -> post.toWins 'convert', 'L'}
+                    { label: 'Move',    accelerator: 'ctrl+m',              click: -> post.toWins 'convert', 'M'}
                     { label: 'Quad',    accelerator: 'ctrl+q',              click: -> post.toWins 'convert', 'Q'}
                     { label: 'Cubic',   accelerator: 'ctrl+c',              click: -> post.toWins 'convert', 'C'}
                     { label: 'Smooth',  accelerator: 'ctrl+s',              click: -> post.toWins 'convert', 'S'}
-                    { label: 'Polygon', accelerator: 'ctrl+m',              click: -> post.toWins 'convert', 'P'}
                     { label: 'Divide',  accelerator: 'ctrl+d',              click: -> post.toWins 'convert', 'D'}
                 ]}
                 { label: 'Order', submenu: [

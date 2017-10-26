@@ -3,9 +3,8 @@
   xmlns:xlink="http://www.w3.org/1999/xlink" 
   xmlns:svgjs="http://svgjs.com/svgjs" 
 style="stroke-linecap: round; stroke-linejoin: round; stroke-miterlimit: 20; "
-viewBox="5.967849159240723 1006.5064758300781 137.24009628295897 162.6173583984375">
-  <line id="L-6e-b0291e" x1="723" y1="151" x2="809.4737548828125" y2="256.06195068359375" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(4, 0, 172); fill-opacity: 1;" transform="matrix(1,0,0,1,-677.7024765014648,899.5104064941406)"></line>
-  <circle id="C-9f-2a3445" r="15.225515365600586" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(3, 0, 172); fill-opacity: 0;" transform="matrix(1,0,0,1,32.63003921508789,1035.283447265625)"></circle>
-  <circle id="C-a0-8c19ff" r="4.423068523406982" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 0; stroke-width: 1; fill: rgb(255, 0, 0); fill-opacity: 0;" transform="matrix(1,0,0,1,42.70463562011719,1037.1633638304104)"></circle>
-  <defs id="SvgjsDefs1650"></defs>
+viewBox="-34.81423080444336 -28.586410217285156 132.6654374694824 157.19664703369142">
+  <line id="L-6e-b0291e" x1="723" y1="151" x2="809.4737548828125" y2="256.06195068359375" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(4, 0, 172); fill-opacity: 1;" transform="matrix(1,0,0,1,-720.7718918188815,-138.29286193847656)"></line>
+  <circle id="C-9f-2a3445" r="15.225515365600586" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(3, 0, 172); fill-opacity: 0;" transform="matrix(1,0,0,1,-10.439375148654486,-2.5197458267211914)"></circle>
+  <defs id="SvgjsDefs11788"></defs>
 </svg>

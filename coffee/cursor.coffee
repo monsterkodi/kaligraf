@@ -77,31 +77,33 @@ class Cursor
 
     @calcTip: (svg, name) ->
         
-        for circle in svgItems(svg, type:'circle')
-            if circle.style('stroke-opacity') == '0' and circle.style('fill-opacity') == '0'
-                circlePos = @kali.trans.pos circle
-                s = 32
-                switch name
-                    when 'rect', 'circle', 'ellipse'     then s = 16
-                    when 'draw_drag', 'draw_move'        then s = 16
-                    when 'rot top left', 'rot top right' then s = 22
-                    when 'rot bot left', 'rot bot right' then s = 22
-                    when 'rect', 'circle', 'ellipse'     then s = 16
-                    when 'draw_drag', 'draw_move'        then s = 16
-                    when 'triangle', 'triangle_square'   then s = 16
-                    when 'text-cursor'
-                        s = @kali.tool('font').size
-                        s *= @kali.stage.zoom
-                        s = Math.round clamp 20, 128, s
-                        name = "#{name}-#{s}"
-                        
-                x = s * (circlePos.x-svg.viewbox().x) / svg.viewbox().width
-                y = s * (circlePos.y-svg.viewbox().y) / svg.viewbox().height
-                log 'gotcha!', name, x, y
+        # for circle in svgItems(svg, type:'circle')
+            # if circle.style('stroke-opacity') == '0' and circle.style('fill-opacity') == '0'
+                # circlePos = @kali.trans.pos circle
+        s = 32  
+        switch name
+            when 'rect', 'circle', 'ellipse'     then s = 16
+            when 'draw_drag', 'draw_move'        then s = 16
+            when 'rot top left', 'rot top right' then s = 22
+            when 'rot bot left', 'rot bot right' then s = 22
+            when 'rect', 'circle', 'ellipse'     then s = 16
+            when 'draw_drag', 'draw_move'        then s = 16
+            when 'triangle', 'triangle_square'   then s = 16
+            when 'text-cursor'
+                s = @kali.tool('font').size
+                s *= @kali.stage.zoom
+                s = Math.round clamp 20, 128, s
+                name = "#{name}-#{s}"
                 
-                return x:x, y:y, s:s, name:name
+        # x = s * (circlePos.x-svg.viewbox().x) / svg.viewbox().width
+        # y = s * (circlePos.y-svg.viewbox().y) / svg.viewbox().height
+        box = svg.viewbox()
+        x = s * -box.x / box.width
+        y = s * -box.y / box.height
+        log name, x, y, s
+        return x:x, y:y, s:s, name:name
         
-        log "unhandled tip for  cursor#{name}"
-        x:0, y:0, s:32, name:name
+        # log "unhandled tip for  cursor#{name}"
+        # x:0, y:0, s:32, name:name
             
 module.exports = Cursor

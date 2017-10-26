@@ -3,8 +3,7 @@
   xmlns:xlink="http://www.w3.org/1999/xlink" 
   xmlns:svgjs="http://svgjs.com/svgjs" 
 style="stroke-linecap: round; stroke-linejoin: round; stroke-miterlimit: 20; "
-viewBox="141.3700035095215 237.91870681762694 126.01968231201172 126.0197183227539">
-  <circle id="C-22-05d797" r="53.39817968369854" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,204.37985229492188,300.928559107361)"></circle>
-  <defs id="SvgjsDefs36782"></defs>
-  <circle id="C-a0-8c19ff" r="4.423068523406982" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 0; stroke-width: 1; fill: rgb(255, 0, 0); fill-opacity: 0;" transform="matrix(1,0,0,1,204.37698364257812,300.9277648925781)"></circle>
+viewBox="-60.125223846435546 -61.29217788696289 121.74784606933594 121.74784606933594">
+  <circle id="C-22-05d797" r="53.39817968369854" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,0.7486975527801016,-0.41825348138809204)"></circle>
+  <defs id="SvgjsDefs5505"></defs>
 </svg>

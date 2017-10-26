@@ -3,13 +3,13 @@
   xmlns:xlink="http://www.w3.org/1999/xlink" 
   xmlns:svgjs="http://svgjs.com/svgjs" 
 style="stroke-linecap: round; stroke-linejoin: round; stroke-miterlimit: 20; "
-viewBox="-32.26314819335938 847.676083984375 126.26 128.62">
-  <g id="G-62-ceb98d">
+viewBox="-62.28665405273438 -62.09070083618164 124.12 126.44">
+  <g id="G-62-ceb98d" transform="matrix(1,0,0,1,-31.093505862968613,-910.8567867243116)">
     <rect id="R-07-4ad7d9" width="107" height="109" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" x="128" y="34" transform="matrix(1,0,0,1,-150.63314056396484,823.486083984375)"></rect>
     <rect id="R-8c-574f30" width="107" height="109" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" x="128" y="34" transform="matrix(1,0,0,1,-150.63314056396484,823.486083984375)"></rect>
     <rect id="R-cd-374547" width="107" height="109" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" x="128" y="34" transform="matrix(1,0,0,1,-150.63314056396484,823.486083984375)"></rect>
     <polygon id="P-b8-b4026f" points="-34.84730152462021,26.994389301606645 -7.3621081509854776,-26.994383396604462 6.380488535831887,11.288564516672523 22.086313320765953,-2.454032170144899 34.84729595852491,26.994389301606645 34.84729595852491,26.994389301606645" transform="matrix(1,0,0,1,31.991863250732422,912.5018291473389)" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;"></polygon>
   </g>
-  <defs id="SvgjsDefs42018"></defs>
-  <circle id="C-a0-8c19ff" r="4.423068523406982" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 0; stroke-width: 1; fill: rgb(255, 0, 0); fill-opacity: 0;" transform="matrix(1,0,0,1,30.865476608276367,911.9872436523438)"></circle>
+  <circle id="C-a0-8c19ff" r="4.423068523406982" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 0; stroke-width: 1; fill: rgb(255, 0, 0); fill-opacity: 0;" transform="matrix(1,0,0,1,-0.22802734734361385,1.1304569280320904)"></circle>
+  <defs id="SvgjsDefs4798"></defs>
 </svg>

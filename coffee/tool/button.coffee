@@ -156,16 +156,10 @@ class Button
         
         btn = @button button
 
-        if btn.icon? and event? and not btn.spin?
+        if btn.icon? and event?.metaKey and not btn.spin?
             
-            if event?.metaKey
-                @kali.stage.addSVG Exporter.loadSVG btn.icon
-                return
-
-            if event?.ctrlKey
-                btn.innerHTML = @kali.stage.copy()
-                Exporter.saveSVG btn.icon, SVG.adopt btn.firstChild 
-                return
+            @kali.stage.load Exporter.svgFile btn.icon
+            return
                 
         if btn.toggle?
             @toggleButton button

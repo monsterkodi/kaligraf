@@ -3,8 +3,8 @@
   xmlns:xlink="http://www.w3.org/1999/xlink" 
   xmlns:svgjs="http://svgjs.com/svgjs" 
 style="stroke-linecap: round; stroke-linejoin: round; stroke-miterlimit: 20; "
-viewBox="331.6553021240234 238.46559524536133 67.54657348632813 130.0523452758789">
-  <ellipse id="E-35-8351a1" rx="28.6214243104624" ry="55.10692143357687" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,365.4285888671875,303.4917594961546)"></ellipse>
-  <circle id="C-a0-8c19ff" r="4.423068523406982" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 0; stroke-width: 1; fill: rgb(255, 0, 0); fill-opacity: 0;" transform="matrix(1,0,0,1,365.4268493652344,303.4952087402344)"></circle>
-  <defs id="SvgjsDefs41632"></defs>
+viewBox="-33.29504783630371 -63.931685791015624 66.40170303344726 127.84805938720703">
+  <ellipse id="E-35-8351a1" rx="28.6214243104624" ry="55.10692143357687" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,-0.09419545531272888,-0.00765651655017921)"></ellipse>
+  <circle id="C-a0-8c19ff" r="4.423068523406982" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 0; stroke-width: 1; fill: rgb(255, 0, 0); fill-opacity: 0;" transform="matrix(1,0,0,1,-0.09593495726585388,-0.00420803022205421)"></circle>
+  <defs id="SvgjsDefs6704"></defs>
 </svg>

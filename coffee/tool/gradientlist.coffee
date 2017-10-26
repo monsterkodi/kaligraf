@@ -134,9 +134,9 @@ class GradientList
         gradient = new GradientItem @kali
         
         gradient.setGradient type:'linear', stops: [
-                offset:0, color:'#000', opacity:1
+                offset:0, color:@kali.tools.fill.color, opacity:1
             ,
-                offset:1, color:'#fff', opacity:1
+                offset:1, color:@kali.tools.stroke.color, opacity:1
             ]
         
         @scroll.insertBefore gradient.element, @activeGradient()

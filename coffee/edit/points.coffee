@@ -6,7 +6,7 @@
 000         0000000   000  000   000     000     0000000   
 ###
 
-{ post, empty, first, valid, pos, log, _ } = require 'kxk'
+{ post, empty, first, valid, last, pos, log, _ } = require 'kxk'
 
 { linesIntersect, itemMatrix } = require '../utils'
 
@@ -28,41 +28,54 @@ class Points extends Convert
 
         indexDots = cfg.indexDots
 
-        follow = []
-        
-        if not cfg.event? or not cfg.event.ctrlKey
+        coincident = @coincident()
 
+        follow = []
+
+        add = (type, idx) =>
+            idts = indexDots.find (i) -> i.index == idx
+            if not idts?
+                idts = index:idx, dots:[]
+                indexDots.push idts
+            if type not in idts.dots
+                idts.dots.push type
+        
+        if not cfg.event? or not cfg.event.altKey
+            
+            for idots in indexDots
+                index = idots.index
+                if valid idots.dots.filter((dot) -> dot == 'point')
+                    li = coincident.indices.indexOf index
+                    if li > -1
+                        for idx in coincident.lists[li]
+                            add 'point', idx
+
+        if not cfg.event? or not cfg.event.ctrlKey
+                                            
             for idots in indexDots
 
+                index = idots.index
+                
                 if idots.dots.length == 1 and cfg.event? and not cfg.event.ctrlKey
                     
                     if idots.dots[0] in ['ctrl1', 'ctrlq']          
                         
-                        previ = idots.index-1
+                        previ = index-1
                         if previ == 0 then previ = @numPoints()-1
                         follow.push fixed: 'next', info: @infoAt previ
                         
                     if idots.dots[0] in ['ctrl2', 'ctrlq', 'ctrls'] 
                         
-                        follow.push fixed: 'prev', info: @infoAt idots.index
+                        follow.push fixed: 'prev', info: @infoAt index
                     
-                add = (type, index) =>
-                    idts = indexDots.find (i) -> i.index == index
-                    if not idts?
-                        idts = index:index, dots:[]
-                        indexDots.push idts
-                    if type not in idts.dots
-                        idts.dots.push type
-
                 if valid idots.dots.filter((dot) -> dot == 'point')
+                    
+                    switch @pointCode index
+                        when 'C' then add 'ctrl2', index
+                        when 'S' then add 'ctrls', index
+                        when 'Q' then add 'ctrlq', index
 
-                    switch @pointCode idots.index
-
-                        when 'C' then add 'ctrl2', idots.index
-                        when 'S' then add 'ctrls', idots.index
-                        when 'Q' then add 'ctrlq', idots.index
-
-                    nexti = idots.index+1
+                    nexti = index+1
                     if nexti >= @numPoints()
                         if @isClosed()
                             nexti = 1 
@@ -101,6 +114,48 @@ class Points extends Convert
         
         @applyPoints @points()
 
+    #  0000000   0000000   000  000   000   0000000  000  0000000    00000000  000   000  000000000  
+    # 000       000   000  000  0000  000  000       000  000   000  000       0000  000     000     
+    # 000       000   000  000  000 0 000  000       000  000   000  0000000   000 0 000     000     
+    # 000       000   000  000  000  0000  000       000  000   000  000       000  0000     000     
+    #  0000000   0000000   000  000   000   0000000  000  0000000    00000000  000   000     000     
+    
+    coincident: ->
+        
+        indexPositions = @indexPositions()
+        coincident = indices:[], lists:[]
+        
+        while indexPositions.length > 1
+            [i1, p1] = indexPositions.shift()
+
+            numPos = indexPositions.length-1
+            for index in [numPos..0]
+                [i2, p2] = indexPositions[index]
+                
+                if p1.isClose p2, 1/@kali.stage.zoom
+                    
+                    li1 = coincident.indices.indexOf i1
+                    if li1 < 0
+                        coincident.indices.push i1
+                        coincident.lists.push [i2]
+                    else
+                        coincident.lists[li1].push i2
+                        
+                    coincident.indices.push i2
+                    coincident.lists.push []
+                        
+                    indexPositions.splice index, 1
+
+        for li1,i1 of coincident.indices
+            for i2 in coincident.lists[li1]
+                li2 = coincident.indices.indexOf i2
+                l = _.clone coincident.lists[li1]
+                _.pull l, i2
+                l.push i1
+                coincident.lists[li2] = l
+                
+        coincident
+        
     # 00     00   0000000   000   000  00000000     00000000    0000000   000  000   000  000000000
     # 000   000  000   000  000   000  000          000   000  000   000  000  0000  000     000
     # 000000000  000   000   000 000   0000000      00000000   000   000  000  000 0 000     000
@@ -402,7 +457,14 @@ class Points extends Convert
             when 'S', 'Q'          then pos point[3], point[4]
             when 'M', 'L'          then pos point[1], point[2]
             else                        pos point[0], point[1]
-                
+
+    indexPositions: ->
+        
+        positions = []
+        for index in [0...@numPoints()]
+            positions.push [index, @posAt index]
+        positions
+            
     #  0000000   0000000    0000000         00000000  000   000  00000000  000   000  
     # 000   000  000   000  000   000       000       000   000  000       0000  000  
     # 000   000  000   000  000   000       0000000    000 000   0000000   000 0 000  

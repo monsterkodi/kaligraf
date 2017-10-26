@@ -131,7 +131,8 @@ class Convert
             newPoints.push newPoint
         newPoints.push ['L', first(oldPoints)[0], first(oldPoints)[1]]
         
-        newItem = @item.doc().path()
+        newItem = @item.parent().path()
+        @item.after newItem
         newItem.plot newPoints
 
         newItem.style @item.style()
@@ -157,7 +158,8 @@ class Convert
             oldPos = @posForPoint oldPoint
             newPoints.push [oldPos.x, oldPos.y]
             
-        newItem = @item.doc().polygon()
+        newItem = @item.parent().polygon()
+        @item.after newItem
         newItem.plot newPoints
                 
         newItem.style @item.style()

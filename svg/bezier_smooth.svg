@@ -1,8 +1,13 @@
-<svg width="100%" height="100%"
-version="1.1"
-xmlns="http://www.w3.org/2000/svg" 
-xmlns:xlink="http://www.w3.org/1999/xlink"
-xmlns:svgjs="http://svgjs.com/svgjs"
-style="stroke-linecap: round; stroke-linejoin: round;"
-viewBox="-38.79313430786133 414.61473693847654 158.1345703125 142.78392333984374">
-<g id="G-5c-c5b345"><path id="P-45-29eea6" d="M-11 353.5S-11 247.5 41 246.5S94 354.5 94 354.5 " style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,-2,191)"></path><circle id="C-c5-ff3885" r="11" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,-14.61525296189949,437.5133972167969)"></circle><line id="L-2d-363da6" x1="-2.026951014532628" y1="437.45132862307406" x2="83.56330108642578" y2="436.52099609375" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: none; fill-opacity: 0;"></line><circle id="C-2b-9845c8" r="11" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,95.1635513305664,437.82366943359375)"></circle></g></svg>
+<svg width="100%" height="100%" version="1.1" 
+  xmlns="http://www.w3.org/2000/svg" 
+  xmlns:xlink="http://www.w3.org/1999/xlink" 
+  xmlns:svgjs="http://svgjs.com/svgjs" 
+style="stroke-linecap: round; stroke-linejoin: round; stroke-miterlimit: 20; "
+viewBox="262.7912368774414 402.6267102050781 167.1496124267578 166.06774658203125">
+  <path id="P-d8-35a4a4" d="M302.9955749511719 535.7423097236731C302.19565517319023 453.7769984599986 329.4270409127404 416.6742497400129 354.7556187180084 425.4875279585362C380.2504956021198 434.35867125186184 390.14549580900115 482.45359588704935 390.41363525390625 535.7423097236731 " style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,-0.0002593994140625,22.7550048828125)"></path>
+  <circle id="C-c9-8c8de6" r="11.89224624633789" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,407.7850341796875,462.7903690381999)"></circle>
+  <circle id="C-9f-2a3445" r="15.225515365600586" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(3, 0, 172); fill-opacity: 0;" transform="matrix(1,0,0,1,288.28033447265625,428.0493831590657)"></circle>
+  <circle id="C-a0-8c19ff" r="4.423068523406982" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 0; stroke-width: 1; fill: rgb(255, 0, 0); fill-opacity: 0;" transform="matrix(1,0,0,1,298.35491943359375,429.9292659715657)"></circle>
+  <line id="L-c6-87eb52" x1="294.1962876021862" y1="471.4376882314682" x2="386.9985727965832" y2="498.1608213186264" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: none; fill-opacity: 0;" transform="matrix(1,0,0,1,8.444244384765625,-38.379852294921875)"></line>
+  <defs id="SvgjsDefs1196"></defs>
+</svg>

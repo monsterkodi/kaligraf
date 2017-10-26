@@ -1,6 +1,10 @@
-<svg width="100%" height="100%"
-version="1.1"
-xmlns="http://www.w3.org/2000/svg" 
-style="stroke-linecap: round; stroke-linejoin: round; "
-viewBox="672.3875122070312 247.80142211914062 120 120">
-<polygon id="SvgjsPolygon1138" points="0,0 100,100 0,100" transform="matrix(1,0,0,1,682.3875122070312,257.8014221191406)" style="stroke: rgb(255, 255, 255); stroke-opacity: 0.9; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 0.5;"></polygon></svg>
+<svg width="100%" height="100%" version="1.1" 
+  xmlns="http://www.w3.org/2000/svg" 
+  xmlns:xlink="http://www.w3.org/1999/xlink" 
+  xmlns:svgjs="http://svgjs.com/svgjs" 
+style="stroke-linecap: round; stroke-linejoin: round; stroke-miterlimit: 20; "
+viewBox="668.5653399658203 248.40318145751954 123.22033325195312 123.22137756347657">
+  <polygon id="P-f1-66eb0a" points="0,0 100,100 0,100" transform="matrix(1,0,0,1,682.3875122070312,257.8014221191406)" style="stroke: rgb(255, 255, 255); stroke-opacity: 0.9; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 0.5;"></polygon>
+  <defs id="SvgjsDefs7097"></defs>
+  <circle id="C-a0-8c19ff" r="4.423068523406982" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 0; stroke-width: 1; fill: rgb(255, 0, 0); fill-opacity: 0;" transform="matrix(1,0,0,1,682.3865991210937,357.8032531738281)"></circle>
+</svg>

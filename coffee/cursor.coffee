@@ -5,7 +5,7 @@
 # 000       000   000  000   000       000  000   000  000   000
 #  0000000   0000000   000   000  0000000    0000000   000   000
 
-{ elem, clamp, fileExists, fileName, path, fs, log } = require 'kxk' 
+{ elem, clamp, fileExists, fileName, path, fs, log, _ } = require 'kxk' 
 
 { svgItems, growBox } = require './utils'
 
@@ -55,55 +55,53 @@ class Cursor
                 
         Exporter.clean svg
         
-        o = 6
-        x = o
-        y = o
-        s = 32
-        switch name
-            when 'loupe', 'zoom-in', 'zoom-out' then x = 10;   y = 9; 
-            when 'rect', 'circle', 'ellipse'    then x =  7;   y = 7;   s = 16
-            when 'draw_drag', 'draw_move'       then x =  7;   y = 7;   s = 16
-            when 'pipette'                      then           y = 32-o; 
-            when 'pan'                          then x = 12;   y = 8;    
-            when 'edit hover'                   then x = 2;    y = 2;    
-            when 'edit'                         then x = 4;    y = 4;    
-            when 'triangle'                     then x = 7;    y = 3;   s = 16
-            when 'triangle_square'              then x = 2;    y = 14;  s = 16
-            when 'line'                         then x = 2;    y = 28
-            when 'bezier_quad'                  then x = 16
-            when 'polygon', 'polyline'          then x = 4;    y = 2;  s = 22
-            when 'rot top left'                 then x = 18;   y = 18; s = 22
-            when 'rot top right'                then x =  4;   y = 18; s = 22
-            when 'rot bot left'                 then x = 18;   y =  4; s = 22
-            when 'rot bot right'                then x =  4;   y =  4; s = 22
-            when 'rot top'                      then x = 16;   y = 32-o
-            when 'rot left'                     then x = 32-o; y = 16
-            when 'rot right'                    then           y = 16
-            when 'rot bot'                      then x = 16
-            when 'text-cursor'                  
-                s = @kali.tool('font').size
-                s *= @kali.stage.zoom
-                s = Math.round clamp 20, 128, s
-                name = "#{name}-#{s}"
-                x = s/2;  y = s/2
-            else "unhandled tip for  cursor#{name}"
+        tip = @calcTip svg, name
             
         cursorDir = path.join path.dirname(svgFile), 'cursor'
         fs.ensureDirSync cursorDir 
-                
-        svgFileX1 = path.join cursorDir, name + " x1.svg"
-        svgFileX2 = path.join cursorDir, name + " x2.svg"
-        
+                        
         if opt?.fill or opt?.stroke
             svg.attr width: 32, height:32
-            "url(data:image/svg+xml;base64,#{btoa svg.svg()}) #{x} #{y}, auto"
+            "url(data:image/svg+xml;base64,#{btoa svg.svg()}) #{tip.x} #{tip.y}, auto"
         else
-            svg.attr width: s, height:s
+            svgFileX1 = path.join cursorDir, tip.name + " x1.svg"
+            svgFileX2 = path.join cursorDir, tip.name + " x2.svg"
+            
+            svg.attr width: tip.s, height:tip.s
             fs.writeFileSync svgFileX1, svg.svg(), encoding: 'utf8'
-            svg.attr width: s*2, height:s*2
+            svg.attr width: tip.s*2, height:tip.s*2
             fs.writeFileSync svgFileX2, svg.svg(), encoding: 'utf8'
             
-            """-webkit-image-set( url("#{svgFileX1}") 1x, url("#{svgFileX2}") 2x ) #{x} #{y}, auto
+            """-webkit-image-set( url("#{svgFileX1}") 1x, url("#{svgFileX2}") 2x ) #{tip.x} #{tip.y}, auto
             """
 
+    @calcTip: (svg, name) ->
+        
+        for circle in svgItems(svg, type:'circle')
+            if circle.style('stroke-opacity') == '0' and circle.style('fill-opacity') == '0'
+                circlePos = @kali.trans.pos circle
+                s = 32
+                switch name
+                    when 'rect', 'circle', 'ellipse'     then s = 16
+                    when 'draw_drag', 'draw_move'        then s = 16
+                    when 'rot top left', 'rot top right' then s = 22
+                    when 'rot bot left', 'rot bot right' then s = 22
+                    when 'rect', 'circle', 'ellipse'     then s = 16
+                    when 'draw_drag', 'draw_move'        then s = 16
+                    when 'triangle', 'triangle_square'   then s = 16
+                    when 'text-cursor'
+                        s = @kali.tool('font').size
+                        s *= @kali.stage.zoom
+                        s = Math.round clamp 20, 128, s
+                        name = "#{name}-#{s}"
+                        
+                x = s * (circlePos.x-svg.viewbox().x) / svg.viewbox().width
+                y = s * (circlePos.y-svg.viewbox().y) / svg.viewbox().height
+                log 'gotcha!', name, x, y
+                
+                return x:x, y:y, s:s, name:name
+        
+        log "unhandled tip for  cursor#{name}"
+        x:0, y:0, s:32, name:name
+            
 module.exports = Cursor

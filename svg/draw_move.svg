@@ -1,11 +1,13 @@
-<svg width="100%" height="100%"
-version="1.1"
-xmlns="http://www.w3.org/2000/svg" 
-xmlns:xlink="http://www.w3.org/1999/xlink"
-xmlns:svgjs="http://svgjs.com/svgjs"
-style="stroke-linecap: round; stroke-linejoin: round; background: rgba(130, 130, 130, 0);"
-viewBox="31.706595611572265 31.546875 136.67872009277343 136.6787109375">
-<circle id="SvgjsCircle2327" r="56.949462890625" cx="0" cy="0" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 15; fill: rgb(130, 130, 130); fill-opacity: 0;" transform="matrix(1,0,0,1,100.04595184326172,99.88623046875)"></circle>
-<circle id="SvgjsCircle2327" r="50" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 9; fill: rgb(255, 255, 255); fill-opacity: 0;" transform="matrix(-0.999993039607731,-0.003731050266576859,0.003731050266576859,-0.999993039607731,100.04595184326172,99.88623046875)"></circle>
-<polygon id="SvgjsPolygon2383" points="-0.5,41.3995237160093 23.613332748413086,-0.3659973768171338 47.72666549682617,41.3995237160093" transform="matrix(-0.999993039607731,-0.003731050266576859,0.003731050266576859,-0.999993039607731,123.77985987067223,99.84428714215755)" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 9; fill: rgb(255, 255, 255); fill-opacity: 1;"></polygon>
-<polygon id="SvgjsPolygon2383" points="-0.5,46.39670073078096 26.498451232910156,-0.3659973771472872 53.49690246582031,46.39670073078096" transform="matrix(-0.999993039607731,-0.003731050266576859,0.003731050266576859,-0.999993039607731,126.65563502907753,90.95454333722591)" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 0; fill: rgb(0, 0, 0); fill-opacity: 1;"></polygon></svg>
+<svg width="100%" height="100%" version="1.1" 
+  xmlns="http://www.w3.org/2000/svg" 
+  xmlns:xlink="http://www.w3.org/1999/xlink" 
+  xmlns:svgjs="http://svgjs.com/svgjs" 
+style="stroke-linecap: round; stroke-linejoin: round; stroke-miterlimit: 20; "
+viewBox="32.84558494567871 32.6858642578125 134.40074142456055 134.400732421875">
+  <circle id="C-e3-f5120e" r="56.949462890625" cx="0" cy="0" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 15; fill: rgb(130, 130, 130); fill-opacity: 0;" transform="matrix(1,0,0,1,100.04595184326172,99.88623046875)"></circle>
+  <circle id="C-ae-cb27ee" r="50" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 9; fill: rgb(255, 255, 255); fill-opacity: 0;" transform="matrix(-0.999993039607731,-0.003731050266576859,0.003731050266576859,-0.999993039607731,100.04595184326172,99.88623046875)"></circle>
+  <polygon id="P-fd-5096cc" points="-0.5,41.3995237160093 23.613332748413086,-0.3659973768171338 47.72666549682617,41.3995237160093" transform="matrix(-0.999993039607731,-0.003731050266576859,0.003731050266576859,-0.999993039607731,123.77985987067223,99.84428714215755)" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 9; fill: rgb(255, 255, 255); fill-opacity: 1;"></polygon>
+  <polygon id="P-df-2fa114" points="-0.5,46.39670073078096 26.498451232910156,-0.3659973771472872 53.49690246582031,46.39670073078096" transform="matrix(-0.999993039607731,-0.003731050266576859,0.003731050266576859,-0.999993039607731,126.65563502907753,90.95454333722591)" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 0; fill: rgb(0, 0, 0); fill-opacity: 1;"></polygon>
+  <defs id="SvgjsDefs19730"></defs>
+  <circle id="C-a0-8c19ff" r="4.423068523406982" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 0; stroke-width: 1; fill: rgb(255, 0, 0); fill-opacity: 0;" transform="matrix(1,0,0,1,100.04714965820312,99.88526153564453)"></circle>
+</svg>

@@ -77,16 +77,18 @@ class Group extends Tool
         groups = @selectedItems type:'g'
         if not empty groups
             @do()
-            oldItems = _.clone @items()
+            newItems = []
             
             for group in groups
+                groupParent = group.parent()
                 for child in group.children()
-                    child.toParent group.parent()
+                    child.toParent groupParent
                     group.before child
+                    newItems.push child
                 group.remove()
                 
             @selection.clear()
-            @selection.setItems @items().filter (item) -> item not in oldItems
+            @selection.setItems newItems
             @done()  
             post.emit 'group', 'ungroup'
     

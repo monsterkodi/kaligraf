@@ -144,7 +144,7 @@ class Snap extends Tool
         
     closest: (opt) ->
         
-        thisItems = opt.items
+        thisItems = opt.items ? []
         
         otherBoxes = @otherBoxes thisItems
         
@@ -156,6 +156,9 @@ class Snap extends Tool
             box = _.clone opt.box
             combis = @boxCombis box, opt.side, combis
             itemBoxes = [box]
+        else if opt.dots?
+            opt.side = 'top left'
+            itemBoxes = @dotCombis opt.dots, combis
         else
             itemBoxes = thisItems.map (item) => moveBox @trans.getRect(item), @snapKeep
         
@@ -163,39 +166,14 @@ class Snap extends Tool
         
         for xy in 'xy'
             
-            for [other,obox] in otherBoxes
-                for ibox in itemBoxes
+            for ibox in itemBoxes
+                
+                @closestGrid xy, closest, ibox, opt
+                
+                for [other,obox] in otherBoxes
                     
                     @closestCombis xy, closest, combis, ibox, obox, other
-
-                    continue if not @snapGaps or empty gaps[xy]
-
-                    oo = x:'cy', y:'cx'
-                    os = x:'h',  y:'w'
-                    
-                    continue if Math.abs(obox[oo[xy]]-ibox[oo[xy]]) > (obox[os[xy]]+ibox[os[xy]])/2
-                    
-                    ic = x:'x2', y:'y2'
-                    oc = x:'x',  y:'y'
-                    
-                    if obox[oc[xy]] > ibox[ic[xy]]
-                        dist = obox[oc[xy]] - ibox[ic[xy]]
-                        neg = 1
-                    else if ibox[oc[xy]] > obox[ic[xy]]
-                        dist = ibox[oc[xy]] - obox[ic[xy]]
-                        neg = -1
-                    else
-                        continue
-
-                    if opt.side 
-                        if xy == 'x' 
-                            continue if neg < 0 and opt.side.includes 'right'
-                            continue if neg > 0 and opt.side.includes 'left'
-                        else
-                            continue if neg < 0 and opt.side.includes 'bot'
-                            continue if neg > 0 and opt.side.includes 'top'
-                        
-                    @closestGaps xy, closest, gaps, ibox, obox, other, dist, neg
+                    @closestGaps   xy, closest, gaps,   ibox, obox, other
                         
         for xy in 'xy'
             
@@ -209,11 +187,34 @@ class Snap extends Tool
     # 000   000  000   000  000             000  
     #  0000000   000   000  000        0000000   
 
-    closestGaps: (xy, closest, gaps, ibox, obox, other, dist, neg) ->
+    closestGaps: (xy, closest, gaps, ibox, obox, other) ->
 
+        return if not @snapGaps or empty gaps[xy]
+
+        oo = x:'cy', y:'cx'
+        os = x:'h',  y:'w'
+        
+        return if Math.abs(obox[oo[xy]]-ibox[oo[xy]]) > (obox[os[xy]]+ibox[os[xy]])/2
+        
         ic = x:'x2', y:'y2'
         oc = x:'x',  y:'y'
-        oo = x:'cy', y:'cx'
+        
+        if obox[oc[xy]] > ibox[ic[xy]]
+            dist = obox[oc[xy]] - ibox[ic[xy]]
+            neg = 1
+        else if ibox[oc[xy]] > obox[ic[xy]]
+            dist = ibox[oc[xy]] - obox[ic[xy]]
+            neg = -1
+        else
+            return
+
+        if opt.side 
+            if xy == 'x' 
+                return if neg < 0 and opt.side.includes 'right'
+                return if neg > 0 and opt.side.includes 'left'
+            else
+                return if neg < 0 and opt.side.includes 'bot'
+                return if neg > 0 and opt.side.includes 'top'
         
         for gapDist,gap of gaps[xy]
             
@@ -266,6 +267,60 @@ class Snap extends Tool
                     else
                         skippedBoxes.push [next, nbox]
         gaps
+        
+    #  0000000   00000000   000  0000000    
+    # 000        000   000  000  000   000  
+    # 000  0000  0000000    000  000   000  
+    # 000   000  000   000  000  000   000  
+    #  0000000   000   000  000  0000000    
+    
+    closestGrid: (xy, closest, ibox, opt) ->
+        
+        return if not @snapGrid
+        
+        if opt.side
+            sides = []
+            if xy == 'x'
+                sides.push 'x'  if opt.side.includes 'left'
+                sides.push 'x2' if opt.side.includes 'right'
+            else
+                sides.push 'y'  if opt.side.includes 'top'
+                sides.push 'y2' if opt.side.includes 'bot'
+        else
+            if xy == 'x' then sides = ['x', 'x2', 'cx']
+            else              sides = ['y', 'y2', 'cy']
+            
+        z = @stage.zoom
+        
+        grid = switch
+            when z >= 100  then 0.1
+            when z >= 50   then 0.5
+            when z >= 10   then 1
+            when z >= 5    then 5
+            when z >= 1    then 10
+            when z >= 0.5  then 50
+            when z >= 0.1  then 100
+            when z >= 0.05 then 500
+            when z >= 0.01 then 1000
+
+        for side in sides
+            
+            val  = grid * Math.floor ibox[side]/grid
+            rest = ibox[side] - val
+            
+            if rest > grid/2
+                dist = grid - rest
+                val += grid
+            else
+                dist = -rest
+                
+            if Math.abs(dist) <= @snapDist
+                
+                closest[xy].push 
+                    dist:   dist
+                    a:      side
+                    val:    val
+                    id:     'grid'+side
 
     #  0000000   0000000   00     00  0000000    000   0000000  
     # 000       000   000  000   000  000   000  000  000       
@@ -307,6 +362,13 @@ class Snap extends Tool
                 for b in attrib
                     combis[orientation].push [a,b]
         combis    
+
+    dotCombis: (dots, combis) ->
+
+        combis.x = combis.x.filter (c) -> c[1] == 'x'
+        combis.y = combis.y.filter (c) -> c[1] == 'y'
+        
+        dots.map (dot) => pos dot.cx()+@snapKeep.x, dot.cy()+@snapKeep.y
         
     boxCombis: (box, side, combis) ->
         
@@ -388,19 +450,23 @@ class Snap extends Tool
                 else
                     l = @svg.line min, val, max, val
                 l.style 'stroke-width', 1/@stage.zoom
-                center = @trans.center close.item
-                if close.a in ['cx', 'cy']
-                    c = @svg.circle()
-                    c.size size, size
-                    l.addClass 'snap-center'
-                    c.addClass 'snap-center'
-                    @trans.center c, center
+                
+                if close.item?
+                    center = @trans.center close.item
+                    if close.a in ['cx', 'cy']
+                        c = @svg.circle()
+                        c.size size, size
+                        l.addClass 'snap-center'
+                        c.addClass 'snap-center'
+                        @trans.center c, center
+                    else
+                        r = @svg.rect size, size
+                        switch close.a
+                            when 'x', 'x2' then center.x = val
+                            when 'y', 'y2' then center.y = val
+                        @trans.center r, center
                 else
-                    r = @svg.rect size, size
-                    switch close.a
-                        when 'x', 'x2' then center.x = val
-                        when 'y', 'y2' then center.y = val
-                    @trans.center r, center    
+                   l.addClass 'snap-grid' 
 
     # 0000000     0000000   000   000  00000000   0000000  
     # 000   000  000   000   000 000   000       000       
@@ -410,6 +476,9 @@ class Snap extends Tool
     
     otherBoxes: (items) ->
         
+        if not @snapCenter and not @snapGaps and not @snapBorder
+            return [] 
+            
         if @snapDeep
             otherItems = @stage.treeItems pickable:true
         else

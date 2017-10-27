@@ -71,7 +71,7 @@ class DotSel
     onDrag: (drag, event) =>
 
         if not @empty()
-            @moveBy drag.delta.times(1/@kali.stage.zoom), event
+            @moveBy drag.delta.times(1/@stage.zoom), event
 
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
@@ -82,6 +82,11 @@ class DotSel
     moveBy: (delta, event) ->
 
         @stage.do 'move-dots', itemIDs, @edit.objects.map (o) -> o.item
+        
+        if not event.metaKey
+            delta = @kali.tool('snap').delta delta, dots:@dots
+        else
+            @kali.tool('snap').clear()
         
         for objectDot in @objectDots()
             objectDot.object.moveDotsBy objectDot.dots, delta, event

@@ -321,7 +321,7 @@ class Selection
         
         if event? 
             if not event.metaKey
-                delta = @kali.tool('snap').itemsDelta @items, delta
+                delta = @kali.tool('snap').delta delta, items:@items
             else
                 @kali.tool('snap').clear()
             

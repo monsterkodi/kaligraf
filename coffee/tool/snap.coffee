@@ -86,190 +86,22 @@ class Snap extends Tool
             @svg.viewbox box
             @snapDist = clamp 0.1, 20, 5/@stage.zoom
 
-    # 0000000     0000000   000   000        0000000    00000000  000      000000000   0000000   
-    # 000   000  000   000   000 000         000   000  000       000         000     000   000  
-    # 0000000    000   000    00000          000   000  0000000   000         000     000000000  
-    # 000   000  000   000   000 000         000   000  000       000         000     000   000  
-    # 0000000     0000000   000   000        0000000    00000000  0000000     000     000   000  
-    
-    boxDelta: (box, side, items, oldDelta) -> 
-        
-        @svg.clear()
-        
-        delta = pos oldDelta
-        
-        if @snapGrid or @snapCenter or @snapBorder or @snapGaps
-                                    
-            xyClosest = @calcClosestBox box, side, items
-            for xy,closest of xyClosest
-                                                                    
-                if valid closest
-                    
-                    winner = first closest
-                                        
-                    if @winner[xy]? and @winner[xy].id != winner.id
-                        oldKeep = @snapKeep[xy]
-                        @snapKeep[xy] = delta[xy]-winner.dist
-                        delta[xy] = winner.dist + oldKeep
-                    else 
-                        if @snapKeep[xy]
-                            @snapKeep[xy] += delta[xy]
-                            delta[xy] = 0
-                        else
-                            @snapKeep[xy] = delta[xy]-winner.dist
-                            delta[xy] = winner.dist
-                    
-                    @winner[xy] = winner
-                    
-                    if @visible then @drawClosest xy, closest
-                    
-                else
-                    
-                    delta[xy] += @snapKeep[xy]
-                    @snapKeep[xy] = 0
-                    @winner[xy] = null
-                    
-        else
-            @snapKeep = pos 0,0
-            @winner = x:null, y:null
-            
-        delta
-
-    #  0000000   0000000   000       0000000      0000000     0000000   000   000  
-    # 000       000   000  000      000           000   000  000   000   000 000   
-    # 000       000000000  000      000           0000000    000   000    00000    
-    # 000       000   000  000      000           000   000  000   000   000 000   
-    #  0000000  000   000  0000000   0000000      0000000     0000000   000   000  
-    
-    calcClosestBox: (box, side, thisItems) ->
-        
-        itemBox = _.clone box
-                
-        combis  = @combinations()
-        
-        if side.includes 'right'
-            itemBox.x2    += @snapKeep.x
-            itemBox.width += @snapKeep.x
-            itemBox.w = itemBox.width
-            combis.x = combis.x.filter (c) -> c[1] == 'x2'
-        else if side.includes 'left'
-            itemBox.x     += @snapKeep.x
-            itemBox.width -= @snapKeep.x
-            itemBox.w = itemBox.width
-            combis.x = combis.x.filter (c) -> c[1] == 'x'
-        else
-            combis.x = []
-            
-        if side.includes 'bot'
-            itemBox.y2     += @snapKeep.y
-            itemBox.height += @snapKeep.y
-            itemBox.h = itemBox.height
-            combis.y = combis.y.filter (c) -> c[1] == 'y2'
-        else if side.includes 'top'
-            itemBox.y      += @snapKeep.y
-            itemBox.height -= @snapKeep.y
-            itemBox.h = itemBox.height
-            combis.y = combis.y.filter (c) -> c[1] == 'y'
-        else
-            combis.y = []
-            
-        if @snapDeep
-            otherItems = @stage.treeItems pickable:true
-        else
-            otherItems = @stage.pickableItems()
-        
-        otherItems = otherItems.filter (o) -> o not in thisItems and empty _.intersection o.parents(), thisItems
-        otherBoxes = otherItems.map (item) => [item, @trans.getRect item]
-            
-        closest = x:[], y:[]
-        
-        gaps = @calcGaps otherBoxes
-        
-        for xy in 'xy'
-            
-            for [other,obox] in otherBoxes
-                
-                ibox = itemBox
-                    
-                for [a,b] in combis[xy]
-                
-                    dist = obox[a] - ibox[b]
-                    dist = Math.round(dist*100)/100
-                    
-                    if Math.abs(dist) <= @snapDist
-                        
-                        closest[xy].push 
-                            dist:   dist
-                            a:      a
-                            val:    obox[a]
-                            item:   other
-                            id:     a+other.id()
-
-                continue if not @snapGaps or empty gaps[xy]
-
-                oo = x:'cy', y:'cx'
-                os = x:'h',  y:'w'
-                
-                continue if Math.abs(obox[oo[xy]]-ibox[oo[xy]]) > (obox[os[xy]]+ibox[os[xy]])/2
-                
-                ic = x:'x2', y:'y2'
-                oc = x:'x',  y:'y'
-                
-                if obox[oc[xy]] > ibox[ic[xy]]
-                    dist = obox[oc[xy]] - ibox[ic[xy]]
-                    neg = 1
-                else if ibox[oc[xy]] > obox[ic[xy]]
-                    dist = ibox[oc[xy]] - obox[ic[xy]]
-                    neg = -1
-                else
-                    continue
-                 
-                if xy == 'x' 
-                    continue if neg < 0 and side.includes 'right'
-                    continue if neg > 0 and side.includes 'left'
-                else
-                    continue if neg < 0 and side.includes 'bot'
-                    continue if neg > 0 and side.includes 'top'
-                        
-                for gapDist,gap of gaps[xy]
-                    
-                    gapDiff = dist - gapDist
-                    gapDiff *= neg
-                    
-                    if Math.abs(gapDiff) <= @snapDist
-                        closest[xy].push 
-                            dist:   gapDiff
-                            gap:    gapDist
-                            a:      'gap'
-                            val:    gap
-                            item:   other
-                            id:     'gap'+other.id()
-                            span:   [
-                                ibox[if neg == 1 then ic[xy] else oc[xy]], 
-                                obox[if neg == 1 then oc[xy] else ic[xy]], 
-                                (obox[oo[xy]]+ibox[oo[xy]])/2
-                            ]
-        for xy in 'xy'
-            
-            closest[xy].sort (a,b) -> Math.abs(a.dist) - Math.abs(b.dist)
-            
-        closest
-        
     # 0000000    00000000  000      000000000   0000000   
     # 000   000  000       000         000     000   000  
     # 000   000  0000000   000         000     000000000  
     # 000   000  000       000         000     000   000  
     # 0000000    00000000  0000000     000     000   000  
     
-    itemsDelta: (items, oldDelta) -> 
-        
+    delta: (oldDelta, opt) ->             
+
         @svg.clear()
         
         delta = pos oldDelta
         
         if @snapGrid or @snapCenter or @snapBorder or @snapGaps
                                     
-            xyClosest = @calcClosest items
+            xyClosest = @closest opt
+            
             for xy,closest of xyClosest
                                                                     
                 if valid closest
@@ -303,56 +135,38 @@ class Snap extends Tool
             @winner = x:null, y:null
             
         delta
-
-    #  0000000   0000000   000       0000000  
-    # 000       000   000  000      000       
-    # 000       000000000  000      000       
-    # 000       000   000  000      000       
-    #  0000000  000   000  0000000   0000000  
-    
-    calcClosest: (items) ->
         
-        if @snapDeep
-            thisItems = []
-            for item in items
-                thisItems = thisItems.concat @stage.treeItems item:item
-        else
-            thisItems = items
-                
-        itemBoxes = thisItems.map (item) => [item, moveBox @trans.getRect(item), @snapKeep]
-
-        if @snapDeep
-            otherItems = @stage.treeItems pickable:true
-        else
-            otherItems = @stage.pickableItems()
+    #  0000000  000       0000000    0000000  00000000   0000000  000000000  
+    # 000       000      000   000  000       000       000          000     
+    # 000       000      000   000  0000000   0000000   0000000      000     
+    # 000       000      000   000       000  000            000     000     
+    #  0000000  0000000   0000000   0000000   00000000  0000000      000     
         
-        otherItems = otherItems.filter (o) -> o not in thisItems and empty _.intersection o.parents(), thisItems
-            
-        otherBoxes = otherItems.map (item) => [item, @trans.getRect item]
-            
+    closest: (opt) ->
+        
+        thisItems = opt.items
+        
+        otherBoxes = @otherBoxes thisItems
+        
         closest = x:[], y:[]
-        combis  = @combinations()
+        
+        combis = @combis()
+        
+        if opt.box?
+            box = _.clone opt.box
+            combis = @boxCombis box, opt.side, combis
+            itemBoxes = [box]
+        else
+            itemBoxes = thisItems.map (item) => moveBox @trans.getRect(item), @snapKeep
         
         gaps = @calcGaps otherBoxes
         
         for xy in 'xy'
             
             for [other,obox] in otherBoxes
-                for [item,ibox] in itemBoxes
+                for ibox in itemBoxes
                     
-                    for [a,b] in combis[xy]
-                    
-                        dist = obox[a] - ibox[b]
-                        dist = Math.round(dist*100)/100
-                        
-                        if Math.abs(dist) <= @snapDist
-                            
-                            closest[xy].push 
-                                dist:   dist
-                                a:      a
-                                val:    obox[a]
-                                item:   other
-                                id:     a+other.id()
+                    @closestCombis xy, closest, combis, ibox, obox, other
 
                     continue if not @snapGaps or empty gaps[xy]
 
@@ -372,37 +186,55 @@ class Snap extends Tool
                         neg = -1
                     else
                         continue
+
+                    if opt.side 
+                        if xy == 'x' 
+                            continue if neg < 0 and opt.side.includes 'right'
+                            continue if neg > 0 and opt.side.includes 'left'
+                        else
+                            continue if neg < 0 and opt.side.includes 'bot'
+                            continue if neg > 0 and opt.side.includes 'top'
                         
-                    for gapDist,gap of gaps[xy]
+                    @closestGaps xy, closest, gaps, ibox, obox, other, dist, neg
                         
-                        gapDiff = dist - gapDist
-                        gapDiff *= neg
-                        
-                        if Math.abs(gapDiff) <= @snapDist
-                            closest[xy].push 
-                                dist:   gapDiff
-                                gap:    gapDist
-                                a:      'gap'
-                                val:    gap
-                                item:   other
-                                id:     'gap'+other.id()
-                                span:   [
-                                    ibox[if neg == 1 then ic[xy] else oc[xy]], 
-                                    obox[if neg == 1 then oc[xy] else ic[xy]], 
-                                    (obox[oo[xy]]+ibox[oo[xy]])/2
-                                ]
         for xy in 'xy'
             
             closest[xy].sort (a,b) -> Math.abs(a.dist) - Math.abs(b.dist)
             
-        closest
-
+        closest   
+            
     #  0000000    0000000   00000000    0000000  
     # 000        000   000  000   000  000       
     # 000  0000  000000000  00000000   0000000   
     # 000   000  000   000  000             000  
     #  0000000   000   000  000        0000000   
-    
+
+    closestGaps: (xy, closest, gaps, ibox, obox, other, dist, neg) ->
+
+        ic = x:'x2', y:'y2'
+        oc = x:'x',  y:'y'
+        oo = x:'cy', y:'cx'
+        
+        for gapDist,gap of gaps[xy]
+            
+            gapDiff = dist - gapDist
+            gapDiff *= neg
+            
+            if Math.abs(gapDiff) <= @snapDist
+                
+                closest[xy].push 
+                    dist:   gapDiff
+                    gap:    gapDist
+                    a:      'gap'
+                    val:    gap
+                    item:   other
+                    id:     'gap'+other.id()
+                    span:   [
+                        ibox[if neg == 1 then ic[xy] else oc[xy]], 
+                        obox[if neg == 1 then oc[xy] else ic[xy]], 
+                        (obox[oo[xy]]+ibox[oo[xy]])/2
+                    ]
+                            
     calcGaps: (otherBoxes) ->
         
         gaps = x:{}, y:{}
@@ -434,7 +266,78 @@ class Snap extends Tool
                     else
                         skippedBoxes.push [next, nbox]
         gaps
+
+    #  0000000   0000000   00     00  0000000    000   0000000  
+    # 000       000   000  000   000  000   000  000  000       
+    # 000       000   000  000000000  0000000    000  0000000   
+    # 000       000   000  000 0 000  000   000  000       000  
+    #  0000000   0000000   000   000  0000000    000  0000000   
+
+    closestCombis: (xy, closest, combis, ibox, obox, other) ->
         
+        for [a,b] in combis[xy]
+        
+            dist = obox[a] - ibox[b]
+            dist = Math.round(dist*100)/100
+            
+            if Math.abs(dist) <= @snapDist
+                
+                closest[xy].push 
+                    dist:   dist
+                    a:      a
+                    val:    obox[a]
+                    item:   other
+                    id:     a+other.id()
+    
+    combis: ->
+        
+        attribs = x:[], y:[]
+        if @snapCenter
+            attribs.x.push 'cx'
+            attribs.y.push 'cy'
+        if @snapBorder
+            attribs.x.push 'x'
+            attribs.x.push 'x2'
+            attribs.y.push 'y'
+            attribs.y.push 'y2'
+        
+        combis = x:[], y:[]
+        for orientation,attrib of attribs
+            for a in attrib
+                for b in attrib
+                    combis[orientation].push [a,b]
+        combis    
+        
+    boxCombis: (box, side, combis) ->
+        
+        if side.includes 'right'
+            box.x2    += @snapKeep.x
+            box.width += @snapKeep.x
+            box.w = box.width
+            combis.x = combis.x.filter (c) -> c[1] == 'x2'
+        else if side.includes 'left'
+            box.x     += @snapKeep.x
+            box.width -= @snapKeep.x
+            box.w = box.width
+            combis.x = combis.x.filter (c) -> c[1] == 'x'
+        else
+            combis.x = []
+            
+        if side.includes 'bot'
+            box.y2     += @snapKeep.y
+            box.height += @snapKeep.y
+            box.h = box.height
+            combis.y = combis.y.filter (c) -> c[1] == 'y2'
+        else if side.includes 'top'
+            box.y      += @snapKeep.y
+            box.height -= @snapKeep.y
+            box.h = box.height
+            combis.y = combis.y.filter (c) -> c[1] == 'y'
+        else
+            combis.y = []
+        
+        combis
+
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
     # 000   000  0000000    000000000  000000000  
@@ -497,33 +400,30 @@ class Snap extends Tool
                     switch close.a
                         when 'x', 'x2' then center.x = val
                         when 'y', 'y2' then center.y = val
-                    @trans.center r, center
-        
-    #  0000000   0000000   00     00  0000000    000   0000000  
-    # 000       000   000  000   000  000   000  000  000       
-    # 000       000   000  000000000  0000000    000  0000000   
-    # 000       000   000  000 0 000  000   000  000       000  
-    #  0000000   0000000   000   000  0000000    000  0000000   
+                    @trans.center r, center    
+
+    # 0000000     0000000   000   000  00000000   0000000  
+    # 000   000  000   000   000 000   000       000       
+    # 0000000    000   000    00000    0000000   0000000   
+    # 000   000  000   000   000 000   000            000  
+    # 0000000     0000000   000   000  00000000  0000000   
     
-    combinations: ->
+    otherBoxes: (items) ->
         
-        attribs = x:[], y:[]
-        if @snapCenter
-            attribs.x.push 'cx'
-            attribs.y.push 'cy'
-        if @snapBorder
-            attribs.x.push 'x'
-            attribs.x.push 'x2'
-            attribs.y.push 'y'
-            attribs.y.push 'y2'
+        if @snapDeep
+            otherItems = @stage.treeItems pickable:true
+        else
+            otherItems = @stage.pickableItems()
         
-        combis = x:[], y:[]
-        for orientation,attrib of attribs
-            for a in attrib
-                for b in attrib
-                    combis[orientation].push [a,b]
-        combis        
+        otherItems = otherItems.filter (o) -> o not in items and empty _.intersection o.parents(), items
+        otherBoxes = otherItems.map (item) => [item, @trans.getRect item]
         
+    #  0000000   000   000         0000000  000   000   0000000   00000000   
+    # 000   000  0000  000        000       0000  000  000   000  000   000  
+    # 000   000  000 0 000        0000000   000 0 000  000000000  00000000   
+    # 000   000  000  0000             000  000  0000  000   000  000        
+    #  0000000   000   000        0000000   000   000  000   000  000        
+    
     onSnapCenter: =>
         
         @snapCenter = @button('center').toggle

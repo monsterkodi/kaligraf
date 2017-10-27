@@ -141,7 +141,7 @@ class Resizer
         if not event.metaKey
             box    = @selection.bbox()
             sdelta = delta.times 1/@stage.zoom
-            sdelta = @kali.tool('snap').boxDelta box, center, items, sdelta
+            sdelta = @kali.tool('snap').delta sdelta, box:box, side:center, items:items
             delta  = sdelta.times @stage.zoom 
         else
             @kali.tool('snap').clear()

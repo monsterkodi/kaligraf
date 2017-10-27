@@ -123,46 +123,54 @@ class Resizer
 
     onResize: (drag, event) =>
         
-        dx = drag.delta.x
-        dy = drag.delta.y
+        return if drag.delta.x == 0 and drag.delta.dy == 0
         
-        return if dx == 0 and dy == 0
-
         center = drag.id
+        items = @selection.items
         
+        delta = pos drag.delta
+                
         left  = center.includes 'left'
         right = center.includes 'right'
         top   = center.includes 'top'
         bot   = center.includes 'bot'
 
-        if not left and not right then dx = 0
-        if not top  and not bot   then dy = 0
-                
-        if left then dx = -dx
-        if top  then dy = -dy
+        if not left and not right then delta.x = 0
+        if not top  and not bot   then delta.y = 0
+
+        if not event.metaKey
+            box    = @selection.bbox()
+            sdelta = delta.times 1/@stage.zoom
+            sdelta = @kali.tool('snap').boxDelta box, center, items, sdelta
+            delta  = sdelta.times @stage.zoom 
+        else
+            @kali.tool('snap').clear()
+        
+        if left then delta.x = -delta.x
+        if top  then delta.y = -delta.y
 
         aspect = @sbox.w / @sbox.h
         
         if not event.shiftKey
-            if Math.abs(dx) > Math.abs(dy)
-                dy = dx / aspect
+            if Math.abs(delta.x) > Math.abs(delta.y)
+                delta.y = delta.x / aspect
             else
-                dx = dy * aspect
+                delta.x = delta.y * aspect
 
         if event.ctrlKey
-            dx *= 2
-            dy *= 2
+            delta.x *= 2
+            delta.y *= 2
             center = 'center'
             
-        sx = (@sbox.w + dx)/@sbox.w
-        sy = (@sbox.h + dy)/@sbox.h
+        sx = (@sbox.w + delta.x)/@sbox.w
+        sy = (@sbox.h + delta.y)/@sbox.h
                 
         resizeCenter = boxPos @selection.bbox(), opposide center
         transmat = new SVG.Matrix().around resizeCenter.x, resizeCenter.y, new SVG.Matrix().scale sx, sy
 
         @do 'resize'
                 
-        for item in @selection.items
+        for item in items
             
             @trans.resize item, transmat, pos sx, sy
             
@@ -201,6 +209,7 @@ class Resizer
                 target:  border.node
                 onStart: @onBorderStart
                 onMove:  @onBorderMove
+                onStop:  @onBorderStop
             @borderDrag[id].id = id
 
         addBorder 0,      0, 6, '100%', 'ew-resize', 'left'
@@ -219,6 +228,7 @@ class Resizer
                 target:  corner.node
                 onStart: @onCornerStart
                 onMove:  @onCornerMove
+                onStop:  @onCornerStop
             @cornerDrag[id].id = id
             
         addCorner '100%',      0, 'ne-resize', 'top right', 'M10,-10L10,10L0,10L0,0L-10,0L-10,-10Z'
@@ -277,8 +287,10 @@ class Resizer
 
     onCornerStart: (drag, event) => @onStart()
     onCornerMove:  (drag, event) => @onResize   drag, event
+    onCornerStop:  (drag, event) => @kali.tool('snap').clear()
     onBorderStart: (drag, event) => @onStart()
     onBorderMove:  (drag, event) => @onResize   drag, event
+    onBorderStop:  (drag, event) => @kali.tool('snap').clear()
     onRotMove:     (drag, event) => @onRotation drag, event
     
     onRotStart: (drag, event) =>
@@ -328,7 +340,9 @@ class Resizer
 
         @moveBy drag.delta, event
 
-    onDragStop: (drag) => @delete @drag.shift
+    onDragStop: (drag) => 
+        
+        @delete @drag.shift
     
     moveBy: (delta, event) ->
 

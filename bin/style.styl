@@ -423,7 +423,6 @@ button
     overflow                hidden
     cursor                  pointer
     box-sizing              border-box
-    // background              white
     border                  1px solid #222
     &.active
         border              1px solid #fff
@@ -674,22 +673,18 @@ button
     width                   toolSize
     height                  toolSize
     cursor                  pointer
-    &.down
-        height              toolSize / 2
 
 .toolTripleSpin .toolButtons
-    padding-top             3px
+    padding-top             4px
+    height                  20px
     & :nth-child(1)
         padding-right       2px
-        padding-top         1px
+        padding-top         3px
         color               #444
     & :nth-child(2)
         border-top-left-radius 4px
         border-bottom-left-radius 4px
         
-.toolTripleSpin .toolButtons:first-child
-    padding-top             4px
-    
 .tool
 #fileInfo
     filter                  drop-shadow(8px 8px 4px rgba(0,0,0,0.15))
@@ -699,22 +694,22 @@ button
         
 .tool .title
     text-align              center
-    padding-top             4px
-    padding-bottom          4px
+    padding-top             6px
     color                   #444
+    height                  22px
     
 .tool:hover .title
     text-shadow             0 0 1px black
     color                   #bbb
 
 .tools .title
-    margin-top              34px
+    margin-top              32px
 
 .toolButtons
     width                   80%
     margin-left             10%
     display                 inline-flex
-    margin-bottom           -1px
+    height                  22px
     
 .toolIcon
 .toolButton
@@ -739,6 +734,7 @@ button
         opacity             0.6
     
 .toolButton
+    height                  20px    
     &:hover
         z-index             1
         color               #fff
@@ -778,7 +774,16 @@ button
         top                 0
         opacity             1.0
         height              31px
- 
+
+.toolTiny    
+    height                  20px
+    & .toolIconSVG
+        height              15px        
+        top                 0
+        &:hover:not(:active)  
+            top             -3px
+            height          22px
+                
 .toolSmall 
     height                  24px
     & .toolIconSVG
@@ -787,16 +792,7 @@ button
         &:hover:not(:active)  
             top             -2px
             height          24px
-        
-.toolTiny    
-    height                  18px
-    & .toolIconSVG
-        height              15px        
-        top                 0
-        &:hover:not(:active)  
-            top             -3px
-            height          22px
-        
+                
 .toolSVG
     position                absolute
     left                    25%

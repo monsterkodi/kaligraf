@@ -133,11 +133,10 @@ class Draw
         return true if not @drawing?
         return true if @shape == 'line'
         
-        if @shape in ['bezier_smooth', 'bezier_quad', 'bezier_cube']
-            @stage.setToolCursor "draw_move"
-            return false 
-        
         @stage.setToolCursor @kali.shapeTool()
+        if @shape in ['bezier_smooth', 'bezier_quad', 'bezier_cube']
+            # @stage.setToolCursor "draw_move"
+            return false 
         
         return not @picking
             
@@ -252,7 +251,10 @@ class Draw
         object.applyPoints()
         
         if @shape in ['bezier_smooth', 'bezier_quad', 'bezier_cube']
-            @stage.setToolCursor "draw_#{action}"
+            if action == 'drag'
+                @stage.setToolCursor "draw_drag"
+            else
+                @stage.setToolCursor @shape
        
     # 0000000     0000000   000000000  00000000    0000000    0000000  
     # 000   000  000   000     000     000   000  000   000  000       

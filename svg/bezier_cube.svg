@@ -3,12 +3,11 @@
   xmlns:xlink="http://www.w3.org/1999/xlink" 
   xmlns:svgjs="http://svgjs.com/svgjs" 
 style="stroke-linecap: round; stroke-linejoin: round; stroke-miterlimit: 20; "
-viewBox="-22.209606323242188 -23.71485279083252 148.1611865234375 166.96847625732423">
-  <path id="P-d8-35a4a4" d="M302.99556448484134 522.0166172192421C301.3957458615391 442.6315845405449 408.58359362278566 440.44667538425074 407.7836843111346 522.74492027134 " style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,-302.00542068481445,-388.43605374366285)"></path>
-  <circle id="C-c9-8c8de6" r="11.89224624633789" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,106.12212371826172,49.49115038841724)"></circle>
-  <line id="L-54-5dfccc" x1="407.87180146574974" y1="473.29975056648254" x2="407.87180146574974" y2="544.8635017871857" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: none; fill-opacity: 0;" transform="matrix(1,0,0,1,-302.0051956176758,-410.5715670493269)"></line>
-  <circle id="C-9f-2a3445" r="15.225515365600586" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(3, 0, 172); fill-opacity: 0;" transform="matrix(1,0,0,1,0.9531154632568359,0.4554023835039125)"></circle>
-  <circle id="C-a0-8c19ff" r="4.423068523406982" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 0; stroke-width: 1; fill: rgb(255, 0, 0); fill-opacity: 0;" transform="matrix(1,0,0,1,11.027704238891602,2.33528472847998)"></circle>
-  <line id="L-c6-87eb52" x1="302.8092441558838" y1="426.2863948941231" x2="302.8092441558838" y2="543.6538890004158" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: none; fill-opacity: 0;" transform="matrix(1,0,0,1,-302.00522804260254,-410.57086514503004)"></line>
-  <defs id="SvgjsDefs12184"></defs>
+viewBox="-21.594684143066406 -20.73328140258789 145.76449493408202 161.00554710388184">
+  <path id="P-d8-35a4a4" d="M302.99556448484134 522.0166172192421C301.3957458615391 442.6315845405449 408.58359362278566 440.44667538425074 407.7836843111346 522.74492027134 " style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 1;" transform="matrix(1,0,0,1,-303.929036431059,-388.4358367919922)"></path>
+  <circle id="C-c9-8c8de6" r="14.572614669799805" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(0, 0, 0); fill-opacity: 0;" transform="matrix(1,0,0,1,104.1985092163086,46.810768127441406)"></circle>
+  <line id="L-54-5dfccc" x1="407.87180146574974" y1="473.29975056648254" x2="407.87180146574974" y2="544.8635017871857" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: none; fill-opacity: 0;" transform="matrix(1,0,0,1,-303.9288113639203,-410.5715637207031)"></line>
+  <circle id="C-9f-2a3445" r="15.225515365600586" cx="0" cy="0" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: rgb(3, 0, 172); fill-opacity: 0;" transform="matrix(1,0,0,1,-0.9704840705242898,0.4554023742675781)"></circle>
+  <line id="L-c6-87eb52" x1="302.8092441558838" y1="426.2863948941231" x2="302.8092441558838" y2="543.6538890004158" style="stroke: rgb(255, 255, 255); stroke-opacity: 1; stroke-width: 10; fill: none; fill-opacity: 0;" transform="matrix(1,0,0,1,-303.92882769559293,-410.5706481933594)"></line>
+  <defs id="SvgjsDefs1196"></defs>
 </svg>

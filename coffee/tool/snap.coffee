@@ -173,7 +173,7 @@ class Snap extends Tool
                 for [other,obox] in otherBoxes
                     
                     @closestCombis xy, closest, combis, ibox, obox, other
-                    @closestGaps   xy, closest, gaps,   ibox, obox, other
+                    @closestGaps   xy, closest, gaps,   ibox, obox, other, opt
                         
         for xy in 'xy'
             
@@ -187,7 +187,7 @@ class Snap extends Tool
     # 000   000  000   000  000             000  
     #  0000000   000   000  000        0000000   
 
-    closestGaps: (xy, closest, gaps, ibox, obox, other) ->
+    closestGaps: (xy, closest, gaps, ibox, obox, other, opt) ->
 
         return if not @snapGaps or empty gaps[xy]
 

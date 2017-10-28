@@ -61,6 +61,7 @@ class DotSel
     onStop: (drag, event) =>
     
         delete @shift
+        @kali.tool('snap').clear()
                 
     # 0000000    00000000    0000000    0000000   
     # 000   000  000   000  000   000  000        
@@ -250,7 +251,8 @@ class DotSel
         @setDots oldDots
         
         for object in @edit.objects
-            for dot in object.dots().filter((dot) -> dot.dot == 'point')
+            for dot in object.dots()
+                continue if dot.dot != 'point'
                 if dot not in oldDots
                     if (object.prevDot(dot) in oldDots) or (object.nextDot(dot) in oldDots)
                         @addDot dot, keep:true, emit:false
@@ -263,7 +265,8 @@ class DotSel
         @setDots oldDots
         
         for object in @edit.objects
-            for dot in object.dots().filter((dot) -> dot.dot == 'point')
+            for dot in object.dots()
+                continue if dot.dot != 'point'                               
                 if dot in oldDots
                     if (object.prevDot(dot) not in oldDots) or (object.nextDot(dot) not in oldDots)
                         @delDot dot
@@ -276,7 +279,8 @@ class DotSel
         @setDots oldDots
         
         for object in @edit.objects
-            for dot in object.dots().filter((dot) -> dot.dot == 'point')
+            for dot in object.dots()
+                continue if dot.dot != 'point' 
                 if dot in oldDots 
                     if object.prevDot(dot) not in oldDots
                         @delDot dot
@@ -292,7 +296,8 @@ class DotSel
         @setDots oldDots
         
         for object in @edit.objects
-            for dot in object.dots().filter((dot) -> dot.dot == 'point')
+            for dot in object.dots()
+                continue if dot.dot != 'point'
                 if dot in oldDots 
                     if object.nextDot(dot) not in oldDots
                         @delDot dot

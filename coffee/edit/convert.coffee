@@ -244,7 +244,7 @@ class Convert
             @initCtrlDots   index+1, newPoint
             @updateCtrlDots index+1, newPoint
 
-            newDots = newDots.concat _.values @ctrls[index+1].dots
+            # newDots = newDots.concat _.values @ctrls[index+1].dots
 
         @applyPoints()
         newDots

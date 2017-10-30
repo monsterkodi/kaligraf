@@ -38,6 +38,8 @@ body
 #selection
 #DotRes
 #ItemRes
+#ItemResRES
+#DotResRES
 #stage
 #edit
 #grid
@@ -48,6 +50,8 @@ body
 #selection
 #DotRes
 #ItemRes
+#ItemResRES
+#DotResRES
 #snapDiv
 #edit
 #grid
@@ -59,7 +63,7 @@ body
 //      000     000     000   000
 // 0000000       0       0000000
 
-.resizerSVG
+.resSVG
     position                absolute
 
 .stageSVG
@@ -629,27 +633,27 @@ button
 // 000   000  000            000  000   000     000       000   000
 // 000   000  00000000  0000000   000  0000000  00000000  000   000
 
-.resizerSVG
+.resSVG
     opacity                 1
-    &.resizerInactive
+    &.resInactive
         opacity             0.3
 
-.resizerRect
+.resRect
     fill                    none
     stroke                  none
     cursor                  move
 
-.resizerBorder
+.resBorder
     fill                    none
     stroke                  none
     pointer-events          all
-
-.resizerCorner
+    
+.resCorner
     fill                    #fff
     stroke                  #000
     pointer-events          all
 
-.resizerCenter
+.resCenter
     fill                    #fff
     stroke                  #000
     pointer-events          all
@@ -657,7 +661,7 @@ button
         fill                #000
         stroke              #fff
     
-.resizerRot
+.resRot
     fill                    #fff
     stroke                  #000
     pointer-events          all

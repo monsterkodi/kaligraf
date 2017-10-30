@@ -106,7 +106,7 @@ class Trans
             @resize item, transmat, scale
                   
     setGroupWidth:  (group, w) -> @setGroupSize group, x:w, y:@height(group)
-    setGroupHeight: (group, w) -> @setGroupSize group, x:@width(group), y:h
+    setGroupHeight: (group, h) -> @setGroupSize group, x:@width(group), y:h
     
     # 00000000   00000000   0000000  000000000  
     # 000   000  000       000          000     

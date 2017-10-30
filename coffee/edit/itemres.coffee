@@ -9,9 +9,9 @@
 
 { opposide, itemIDs, boxPos } = require '../utils'
 
-Resizer = require './resizer'
+Res = require './res'
     
-class ItemRes extends Resizer
+class ItemRes extends Res
 
     constructor: (@kali) ->
 
@@ -66,7 +66,7 @@ class ItemRes extends Resizer
             
         @selection.update()
         
-        @didRotate angle
+        @didTransform transmat
         
         @done()
         
@@ -82,7 +82,7 @@ class ItemRes extends Resizer
         
         @itemRotation = @getItemRotation()
         oldCenter = @rotationCenter
-        @rotationCenter = boxPos @selection.bbox(), opposide 'center'
+        @rotationCenter = boxPos @bbox(), opposide 'center'
         @doRotate angle - @angle()
         delete @itemRotation
         @rotationCenter = oldCenter
@@ -118,8 +118,8 @@ class ItemRes extends Resizer
         if not left and not right then delta.x = 0
         if not top  and not bot   then delta.y = 0
 
+        box = @bbox()
         if not event.metaKey
-            box    = @selection.bbox()
             sdelta = delta.times 1/@stage.zoom
             sdelta = @kali.tool('snap').delta sdelta, box:box, side:center, items:items
             delta  = sdelta.times @stage.zoom 
@@ -129,7 +129,7 @@ class ItemRes extends Resizer
         if left then delta.x = -delta.x
         if top  then delta.y = -delta.y
 
-        aspect = @box.w / @box.h
+        aspect = box.w / box.h
         
         if not event.shiftKey
             if Math.abs(delta.x) > Math.abs(delta.y)
@@ -142,12 +142,11 @@ class ItemRes extends Resizer
             delta.y *= 2
             center = 'center'
             
-        sx = (@box.w + delta.x)/@box.w
-        sy = (@box.h + delta.y)/@box.h
+        z  = @stage.zoom 
+        sx = (box.w * z + delta.x)/(box.w * z)
+        sy = (box.h * z + delta.y)/(box.h * z)
                 
-        # resizeCenter = boxPos @selection.bbox(), opposide center
-        resizeCenter = @rotationCenter
-        transmat = new SVG.Matrix().around resizeCenter.x, resizeCenter.y, new SVG.Matrix().scale sx, sy
+        transmat = new SVG.Matrix().around @rotationCenter.x, @rotationCenter.y, new SVG.Matrix().scale sx, sy
 
         @do 'resize'
                 
@@ -156,7 +155,11 @@ class ItemRes extends Resizer
             @trans.resize item, transmat, pos sx, sy
             
         @selection.update()
-        @update()
+
+        sx = @gg.transform().scaleX * sx
+        sy = @gg.transform().scaleY * sy
+        transmat = new SVG.Matrix().around @rotationCenter.x, @rotationCenter.y, new SVG.Matrix().scale sx, sy
+        @didTransform transmat
         
         @done()
         
@@ -168,7 +171,7 @@ class ItemRes extends Resizer
     # 000          000     000       000  0000     000          000    
     # 00000000      0      00000000  000   000     000     0000000     
 
-    onRotStop: (drag, event) => 
+    onRotStop: (drag, event) =>
         
         super drag, event
         
@@ -217,19 +220,8 @@ class ItemRes extends Resizer
     # 000     000     000       000 0 000       000
     # 000     000     00000000  000   000  0000000
 
-    setItems: (items) ->
-
-        if items.length
-            @createRect()
-        @update()
-
-    addItem: (items, item) ->
-
-        if items.length == 1
-            @createRect()
-
-        @updateBox()
-
-    delItem: (items, item) -> @update()
+    setItems: (items)       -> @update()
+    addItem:  (items, item) -> @update()
+    delItem:  (items, item) -> @update()
 
 module.exports = ItemRes

@@ -10,9 +10,9 @@
 
 { opposide, scaleBox, boxPos, boxRelPos } = require '../utils'
 
-Resizer = require './resizer'
+Res = require './res'
     
-class DotRes extends Resizer
+class DotRes extends Res
 
     constructor: (@dotsel) ->
         
@@ -76,15 +76,15 @@ class DotRes extends Resizer
             dot.cy newCenter.y
             
         @dotsel.update()
-            
-        @didRotate angle
+          
+        @didTransform transmat
         
         @done()
 
     setRotationCenter: (@rotationCenter, custom) ->
         log 'setRotationCenter', @rotationCenter, custom
         super @rotationCenter, custom
-        @customCenter = @percCenter @rotationCenter
+        @customCenter = @rotationCenter
                 
     calcCenter: -> @dotsel.center()
         
@@ -98,7 +98,7 @@ class DotRes extends Resizer
         
         @dotInfo = @getDotInfo
         oldCenter = @rotationCenter
-        @rotationCenter = boxPos @dotsel.dotBox(), opposide 'center'
+        @rotationCenter = boxPos @bbox(), opposide 'center'
         @doRotate angle - @angle()
         @rotationCenter = oldCenter
         delete @dotInfo
@@ -132,7 +132,8 @@ class DotRes extends Resizer
         if left then dx = -dx
         if top  then dy = -dy
 
-        aspect = @box.w / @box.h
+        box = @bbox()
+        aspect = box.w / box.h
         
         if not event.shiftKey
             if Math.abs(dx) > Math.abs(dy)
@@ -145,13 +146,12 @@ class DotRes extends Resizer
             dy *= 2
             center = 'center'
             
-        sx = (@box.w + dx)/@box.w
-        sy = (@box.h + dy)/@box.h
+        sx = (box.w + dx) / box.w
+        sy = (box.h + dy) / box.h
             
         resizeCenter = @rotationCenter
         
         if true
-            box = @dotsel.dotBox()
             @kali.stage.debug.clear()
             l = @kali.stage.debug.line()
             l.plot resizeCenter.x, resizeCenter.y, box.x, box.y
@@ -170,7 +170,11 @@ class DotRes extends Resizer
             dot.cy newCenter.y
             
         @dotsel.update()
-        @update()
+        
+        sx = @gg.transform().scaleX * sx
+        sy = @gg.transform().scaleY * sy
+        transmat = new SVG.Matrix().around @rotationCenter.x, @rotationCenter.y, new SVG.Matrix().scale sx, sy
+        @didTransform transmat
         
         @done()
         
@@ -245,28 +249,20 @@ class DotRes extends Resizer
     # 000   000  000   000     000          000  
     # 0000000     0000000      000     0000000   
 
-    setDots: (dots) ->
-
-        if @validSelection()
-            @createRect()
-            
-        @update()
+    setDots: (dots) -> @update()
 
     addDot: (dots, dot) ->
 
         if not @validSelection()
             return
             
-        if dots.length == 2
-            @createRect()
-
-        @updateBox()
+        @update()
 
     delDot: (dots, dot) -> @update()
 
     validSelection: ->
         
-        bb = @dotsel.dotBox()
+        bb = @bbox()
         scaleBox bb, @stage.zoom
         @dotsel.dots.length >= 2 and bb.width + bb.height > 30
     

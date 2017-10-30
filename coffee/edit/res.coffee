@@ -1,9 +1,9 @@
 
-# 00000000   00000000   0000000  000  0000000  00000000  00000000
-# 000   000  000       000       000     000   000       000   000
-# 0000000    0000000   0000000   000    000    0000000   0000000
-# 000   000  000            000  000   000     000       000   000
-# 000   000  00000000  0000000   000  0000000  00000000  000   000
+# 00000000   00000000   0000000  
+# 000   000  000       000       
+# 0000000    0000000   0000000   
+# 000   000  000            000  
+# 000   000  00000000  0000000   
 
 { elem, post, drag, first, last, pos, log, _ } = require 'kxk'
 
@@ -11,10 +11,12 @@
 
 Cursor = require '../cursor'
     
-class Resizer
+class Res
 
     constructor: (@kali) ->
 
+        log 'Res', @name
+        
         @trans = @kali.trans
         @stage = @kali.stage
         @selection = @stage.selection
@@ -27,7 +29,8 @@ class Resizer
 
         @svg = SVG(@element).size '100%', '100%'
         @svg.id @name+'SVG'
-        @svg.addClass 'resizerSVG'
+        @svg.viewbox @stage.svg.viewbox()
+        @svg.addClass 'resSVG'
         @svg.clear()
 
         @svg.node.addEventListener 'wheel', (event) => @stage.onWheel event
@@ -49,6 +52,7 @@ class Resizer
     
     del: ->
         
+        log 'Res.del', @name
         @svg.clear()
         @svg.remove()
         @element.remove()
@@ -65,16 +69,18 @@ class Resizer
 
     createRect: ->
 
-        @g = @svg.nested()
-        @g.addClass 'resizerGroup'
-        @gg = @g.group()
-
-        @rect = @gg.rect().addClass 'resizerRect'
-        @rect.attr width: '100%', height: '100%'
+        box = @bbox()
         
+        @gg = @svg.group()
+        @gg.addClass 'resizerGroup'
         
-        @rotKnob = @gg.circle(10,10)
-        @rotKnob.addClass 'resizerCenter'
+        z = @stage.zoom
+        
+        @rect = @gg.rect().addClass 'resRect'
+        @rect.attr width: box.width, height: box.height
+        
+        @rotKnob = @gg.circle(10/z,10/z)
+        @rotKnob.addClass 'resCenter'
         @setRotationCorner 'center'
 
         @rotDrag['center'] = new drag
@@ -83,13 +89,13 @@ class Resizer
             onStop:  @onRotKnobStop
         
         addBorder = (x, y, w, h, cursor, id) =>
-            group  = @gg.nested() 
-            group.attr   x:x, y:y
-            border = group.rect()
-            border.addClass 'resizerBorder'
-            border.attr  x:-3, y:-3
-            border.attr  width:w, height:h
-            border.style cursor: cursor
+            border = @gg.rect()
+            border.x x
+            border.y y
+            border.width  w
+            border.height h
+            border.addClass 'resBorder'
+            border.style cursor: cursor, 'stroke-width': 1/z
             @borderDrag[id] = new drag
                 target:  border.node
                 onStart: @onBorderStart
@@ -97,18 +103,16 @@ class Resizer
                 onStop:  @onBorderStop
             @borderDrag[id].id = id
 
-        addBorder 0,      0, 6, '100%', 'ew-resize', 'left'
-        addBorder '100%', 0, 6, '100%', 'ew-resize', 'right'
-        addBorder 0,      0, '100%', 6, 'ns-resize', 'top'
-        addBorder 0, '100%', '100%', 6, 'ns-resize', 'bot'
+        addBorder box.x  - 20/z,  box.y,  20/z, box.h, 'ew-resize', 'left'
+        addBorder box.x2, box.y,  20/z, box.h, 'ew-resize', 'right'
+        addBorder box.x,  box.y - 20/z,  box.w, 20/z, 'ns-resize', 'top'
+        addBorder box.x,  box.y2, box.w, 20/z, 'ns-resize', 'bot'
 
-        addCorner = (x, y, cx, cy, cursor, id) =>
-            group = @gg.nested() 
-            group.attr x:x, y:y
-            corner = group.rect(20,20).addClass 'resizerCorner'
+        addCorner = (cx, cy, cursor, id) =>
+            corner = @gg.rect(20/z,20/z).addClass 'resCorner'
             corner.cx cx
             corner.cy cy
-            corner.style cursor:cursor
+            corner.style cursor: cursor, 'stroke-width': 1/z
             @cornerDrag[id] = new drag
                 target:  corner.node
                 onStart: @onCornerStart
@@ -116,22 +120,21 @@ class Resizer
                 onStop:  @onCornerStop
             @cornerDrag[id].id = id
             
-        addCorner 0,           0, -10, -10, 'nw-resize', 'top left'  
-        addCorner '100%',      0,  10, -10, 'ne-resize', 'top right' 
-        addCorner '100%', '100%',  10,  10, 'se-resize', 'bot right' 
-        addCorner 0,      '100%', -10,  10, 'sw-resize', 'bot left'  
+        addCorner box.x  - 10/z, box.y  - 10/z, 'nw-resize', 'top left'  
+        addCorner box.x2 + 10/z, box.y  - 10/z, 'ne-resize', 'top right' 
+        addCorner box.x2 + 10/z, box.y2 + 10/z, 'se-resize', 'bot right' 
+        addCorner box.x  - 10/z, box.y2 + 10/z, 'sw-resize', 'bot left'  
 
-        addCorner 0,      '50%', -10,   0, 'ew-resize', 'left' 
-        addCorner '100%', '50%',  10,   0, 'ew-resize', 'right'
-        addCorner '50%',      0,   0, -10, 'ns-resize', 'top'  
-        addCorner '50%', '100%',   0,  10, 'ns-resize', 'bot'  
+        addCorner box.x  - 10/z, box.cy,        'ew-resize', 'left' 
+        addCorner box.x2 + 10/z, box.cy,        'ew-resize', 'right'
+        addCorner box.cx,        box.y  - 10/z, 'ns-resize', 'top'  
+        addCorner box.cx,        box.y2 + 10/z, 'ns-resize', 'bot'  
         
-        addRot = (x, y, r, cx, cy, id) =>
-            group = @gg.nested() 
-            group.attr x:x, y:y
-            rot = group.circle(r).addClass 'resizerRot'
-            rot.attr cx:cx, cy:cy
-            rot.style cursor: Cursor.forTool 'rot ' + id
+        addRot = (cx, cy, id) =>
+            rot = @gg.circle(14/z).addClass 'resRot'
+            rot.cx cx
+            rot.cy cy
+            rot.style 'stroke-width': 1/z, cursor: Cursor.forTool 'rot ' + id
             @rotDrag[id] = new drag
                     target:  rot.node
                     onStart: @onRotStart
@@ -139,23 +142,21 @@ class Resizer
                     onStop:  @onRotStop
             @rotDrag[id].id = id
                    
-        addRot      0,      0, 14, -7, -7, 'top left'
-        addRot '100%',      0, 14,  7, -7, 'top right'
-        addRot      0, '100%', 14, -7,  7, 'bot left'
-        addRot '100%', '100%', 14,  7,  7, 'bot right'
-
-        addRot      0,  '50%', 14, -7,  0, 'left'
-        addRot '100%',  '50%', 14,  7,  0, 'right'
-        addRot  '50%',      0, 14,  0, -7, 'top'
-        addRot  '50%', '100%', 14,  0,  7, 'bot'        
+        addRot box.x  - 7/z, box.y  - 7/z, 'top left'
+        addRot box.x2 + 7/z, box.y  - 7/z, 'top right'
+        addRot box.x  - 7/z, box.y2 + 7/z, 'bot left'
+        addRot box.x2 + 7/z, box.y2 + 7/z, 'bot right'
+ 
+        addRot box.x  - 7/z, box.cy,     'left'
+        addRot box.x2 + 7/z, box.cy,     'right'
+        addRot box.cx,       box.y  - 7/z, 'top'
+        addRot box.cx,       box.y2 + 7/z, 'bot'        
         
         @drag = new drag
             target:  @rect.node
             onMove:  @onDragMove
             onStop:  @onDragStop
             
-        # log 'createRect', @name, @svg.id(), @svg.children().length, @svg.bbox()
-
     #  0000000    0000000  000000000  000  000   000   0000000   000000000  00000000
     # 000   000  000          000     000  000   000  000   000     000     000
     # 000000000  000          000     000   000 000   000000000     000     0000000
@@ -167,10 +168,10 @@ class Resizer
     activate: (active=true) ->
         if active
             @drag?.activate()
-            @svg?.removeClass 'resizerInactive'
+            @svg?.removeClass 'resInactive'
         else
             @drag?.deactivate()
-            @svg?.addClass 'resizerInactive'
+            @svg?.addClass 'resInactive'
 
     # 00000000    0000000   000000000      000   0000000  000  0000000  00000000
     # 000   000  000   000     000        000   000       000     000   000
@@ -178,13 +179,15 @@ class Resizer
     # 000   000  000   000     000      000          000  000   000     000
     # 000   000   0000000      000     000      0000000   000  0000000  00000000
 
-    onCornerStart: (drag, event) => @onStart()
-    onCornerMove:  (drag, event) => @onResize   drag, event
-    onCornerStop:  (drag, event) => @kali.tool('snap').clear()
-    onBorderStart: (drag, event) => @onStart()
-    onBorderMove:  (drag, event) => @onResize   drag, event
-    onBorderStop:  (drag, event) => @kali.tool('snap').clear()
-    onRotMove:     (drag, event) => @onRotation drag, event
+    onCornerStart: (drag, event) => @onSizeStart drag, event
+    onCornerMove:  (drag, event) => @onResize    drag, event
+    onCornerStop:  (drag, event) => @onSizeStop  drag, event
+    onBorderStart: (drag, event) => @onSizeStart drag, event
+    onBorderMove:  (drag, event) => @onResize    drag, event
+    onBorderStop:  (drag, event) => @onSizeStop  drag, event
+    onRotMove:     (drag, event) => @onRotation  drag, event
+    
+    onSizeStart: (drag, event) => @onRotStart drag, event
     
     onRotStart: (drag, event) =>
         
@@ -194,30 +197,24 @@ class Resizer
         else
             @setRotationCorner drag.id
 
+    onSizeStop: (drag, event) => 
+
+        @kali.tool('snap').clear()
+        @update()
+            
     onRotStop: (drag, event) => 
         
-        @updateBox()
+        @update()
         @setRotationCorner 'center'
-        
-    onStart: =>
-            
+                    
     setRotationCorner: (@rotationCorner) ->
             
         if @rotationCorner == 'center'
             
             if @customCenter
-                
-                box = @bbox()
-                bps = boxPos box
-                x = bps.x + 0.01 * @customCenter.x * box.w
-                y = bps.y + 0.01 * @customCenter.y * box.h
-                center = pos x, y
-                @setRotationCenter center, true
-                
+                @setRotationCenter @customCenter, true
             else
-                
                 @setRotationCenter @calcCenter()
-            
         else
             
             box = @bbox()
@@ -227,41 +224,24 @@ class Resizer
         
     setRotationCenter: (@rotationCenter, custom) ->
         
-        perc = @percCenter @rotationCenter
-        
         if custom
-            @customCenter = perc
-        
+            @customCenter = @rotationCenter
             @rotKnob.addClass 'custom'
         else
             @rotKnob.removeClass 'custom'
             
-        @rotKnob.attr 
-            cx: "#{perc.x}%"
-            cy: "#{perc.y}%"
+        @rotKnob.cx @rotationCenter.x
+        @rotKnob.cy @rotationCenter.y
 
     calcCenter: -> boxCenter @bbox()
-            
-    percCenter: (stagePos) ->
-        
-        box = @bbox()
-        toRot = boxPos(box).to stagePos
-        percx = 100 * toRot.x / box.w
-        percy = 100 * toRot.y / box.h
-        pos percx, percy
-            
+                        
     onRotKnobMove: (drag, event) =>
             
         @setRotationCenter @stage.stageForEvent(pos event), true        
 
-    didRotate: (angle) ->
-        
-        if @customCenter
-            p = boxRelPos @rect.bbox(), @customCenter.times 0.01
-        else
-            p = boxPos @rect.bbox(), opposide @rotationCorner
-            
-        @gg.transform rotation:angle, cx:p.x, cy:p.y
+    didTransform: (transmat) -> 
+        log 'didTransform'
+        @gg.transform transmat
             
     onRotKnobStop: (drag, event) =>
         
@@ -307,54 +287,26 @@ class Resizer
 
     update: -> 
 
+        @svg.viewbox @stage.svg.viewbox()
+        
         if @empty()
             @clear()
         else
-            @updateBox()
+            @freshBox()
     
-    updateBox: ->
+    freshBox: ->
 
-        return if not @gg?
+        @clear()
+        @createRect()
         
-        @gg.transform rotation:0
-        @gg.transform x:0, y:0
-        
-        @setBox @bbox()
-        
-    setBox: (box) ->
-
-        @box = new SVG.RBox box
-        moveBox  @box, boxOffset(@stage.svg.viewbox()).scale -1
-        scaleBox @box, @stage.zoom
-        moveBox  @box, boxOffset @viewPos()
-
-        @g.attr
-            x:      @box.x
-            y:      @box.y
-            width:  @box.w
-            height: @box.h
-                    
-    # 000   000  000  00000000  000   000
-    # 000   000  000  000       000 0 000
-    #  000 000   000  0000000   000000000
-    #    000     000  000       000   000
-    #     0      000  00000000  00     00
-
-    viewPos:  -> r = @element.getBoundingClientRect(); pos r.left, r.top
-    viewSize: -> r = @element.getBoundingClientRect(); pos r.width, r.height
+    #  0000000  000000000   0000000    0000000   00000000  
+    # 000          000     000   000  000        000       
+    # 0000000      000     000000000  000  0000  0000000   
+    #      000     000     000   000  000   000  000       
+    # 0000000      000     000   000   0000000   00000000  
 
     onStage: (action, box) =>
 
         if action == 'viewbox' then @update()
 
-    # 000   000  00000000  000   000
-    # 000  000   000        000 000
-    # 0000000    0000000     00000
-    # 000  000   000          000
-    # 000   000  00000000     000
-
-    handleKey: (mod, key, combo, char, event, down) ->
-
-        'unhandled'
-
-module.exports = Resizer
+module.exports = Res

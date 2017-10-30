@@ -21,7 +21,7 @@ Undo      = require './edit/undo'
 Points    = require './edit/points'
 Shapes    = require './edit/shapes'
 Selection = require './selection'
-Resizer   = require './resizer'
+ItemRes   = require './edit/itemres'
 Exporter  = require './exporter'
 Cursor    = require './cursor'
 
@@ -49,7 +49,7 @@ class Stage
         @trans = @kali.trans
 
         @selection = new Selection @kali
-        @resizer   = new Resizer   @kali
+        @resizer   = new ItemRes   @kali
         @shapes    = new Shapes    @kali
         @undo      = new Undo      @kali
 

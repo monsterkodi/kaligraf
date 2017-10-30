@@ -55,8 +55,7 @@ class DotSel
                 @delDot dot
             else
                 keep = event.shiftKey or dot.ctrl.isSelected dot.dot
-                split = event.ctrlKey 
-                @addDot dot, keep:keep, split:split
+                @addDot dot, keep:keep
 
     onStop: (drag, event) =>
     
@@ -84,7 +83,7 @@ class DotSel
 
         @stage.do 'move-dots', itemIDs, @edit.objects.map (o) -> o.item
         
-        if not event.metaKey
+        if not event?.metaKey
             delta = @kali.tool('snap').delta delta, dots:@dots
         else
             @kali.tool('snap').clear()
@@ -157,8 +156,7 @@ class DotSel
 
     empty:   -> empty @dots
     numDots: -> @dots.length
-    bbox:    -> bboxForItems @dots
-    bbox2:   -> 
+    dotBox:  -> 
         
         minx = Number.MAX_SAFE_INTEGER
         miny = Number.MAX_SAFE_INTEGER
@@ -172,11 +170,38 @@ class DotSel
             miny = Math.min dot.cy(), miny
             maxy = Math.max dot.cy(), maxy
             
-        x:minx
-        y:miny
+        x:  minx
+        y:  miny
+        x2: maxx
+        y2: maxy
+        cx: minx+(maxx-minx)/2
+        cy: miny+(maxy-miny)/2
+        w:  maxx-minx
+        h:  maxy-miny
         width:maxx-minx
         height:maxy-miny
-            
+        
+    center: ->
+        
+        center = pos 0,0
+        unique = @uniqueDotPositions()
+        for dotPos in unique
+            center.add dotPos
+        center.scale 1/unique.length
+
+    uniqueDotPositions: ->
+        
+        dotPositions = []
+        for dot in @dots
+            dotPos = pos dot.cx(), dot.cy()
+            use = true
+            for usedPos in dotPositions
+                if dotPos.isClose usedPos, 0.01
+                    use = false
+                    break
+            if use then dotPositions.push dotPos
+        dotPositions
+        
     invert: ->
         
         for object in @edit.objects
@@ -209,12 +234,7 @@ class DotSel
         if dot not in @dots 
             
             @dots.push dot
-            
-            if dot.dot == 'point' and not opt.split 
-                if dot.ctrl.index() == dot.ctrl.object.numPoints()-1
-                    if dot.ctrl.object.isClosed()
-                        @dots.push dot.ctrl.object.ctrls[0].dots['point']
-            
+                        
             if opt?.emit
                 post.emit 'dotsel', 'add', @dots, dot
 

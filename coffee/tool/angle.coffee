@@ -61,11 +61,16 @@ class Angle extends Tool
             @angle += 360 while @angle < -360
             @setSpinValue 'angle', @angle
         
+    #  0000000   00000000   00000000   000      000   000  
+    # 000   000  000   000  000   000  000       000 000   
+    # 000000000  00000000   00000000   000        00000    
+    # 000   000  000        000        000         000     
+    # 000   000  000        000        0000000     000     
+    
     onApply: =>
 
         @stage.do 'apply'
         for item in @stage.selectedLeafItems()
-
             if item.transform().rotation
 
                 angle = item.transform().rotation
@@ -80,26 +85,23 @@ class Angle extends Tool
                 transmat = new SVG.Matrix().around boxcntr.x, boxcntr.y, new SVG.Matrix().rotate angle
                 points   = new Points @kali, item
                 
-                if points.isPath()
+                rotDot = (index, dot) ->
+                    dotPos = points.posAt index, dot
+                    newPos = pos new SVG.Point(dotPos).transform transmat
+                    points.setDotPos index, dot, newPos
+                for index in [0...points.numPoints()]
+                    rotDot index, 'point'
+                    point = points.pointAt index
+                    switch point[0]
+                        when 'S' 
+                            rotDot index, 'ctrls'
+                        when 'C'
+                            rotDot index, 'ctrl1'
+                            rotDot index, 'ctrl2'
+                        when 'Q'
+                            rotDot index, 'ctrlq'
                 
-                    rotDot = (index, dot) ->
-                        dotPos = points.posAt index, dot
-                        newPos = pos new SVG.Point(dotPos).transform transmat
-                        points.setDotPos index, dot, newPos
-                    
-                    for index in [0...points.numPoints()]
-                        rotDot index, 'point'
-                        point = points.pointAt index
-                        switch point[0]
-                            when 'S' 
-                                rotDot index, 'ctrls'
-                            when 'C'
-                                rotDot index, 'ctrl1'
-                                rotDot index, 'ctrl2'
-                            when 'Q'
-                                rotDot index, 'ctrlq'
-                    
-                    points.applyPoints()
+                points.applyPoints()
                     
         @stage.selection.update()
         @stage.resizer.update()

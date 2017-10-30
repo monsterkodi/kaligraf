@@ -481,12 +481,13 @@ class Points extends Convert
                 
         for index in [0...numPoints-1]
             
-            if true
-                l = @kali.stage.debug.line()
-                l.plot positions[index].x, positions[index].y, positions[index+1].x, positions[index+1].y
+            # if true
+                # l = @kali.stage.debug.line()
+                # l.plot positions[index].x, positions[index].y, positions[index+1].x, positions[index+1].y
             
             if linesIntersect positions[index], positions[index+1], stagePos, outsidePos
                 count += 1
+                
         return (count % 2) != 0
         
     approxPositions: (subdivisions) ->

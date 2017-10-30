@@ -115,6 +115,8 @@ module.exports =
     boxOffset: (box) -> pos box.x, box.y
     boxSize:   (box) -> pos box.width, box.height
     
+    boxRelPos: (box, rel) -> pos box.x + rel.x * box.width, box.y + rel.y * box.height
+    
     boxPos: (box, name='top left') ->
         
         return pos box.x, box.y if name == 'top left'

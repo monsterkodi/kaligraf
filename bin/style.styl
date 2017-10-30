@@ -36,9 +36,8 @@ font()
 body
 #kali
 #selection
-#resizer
-#snapDiv
-#dotres
+#DotRes
+#ItemRes
 #stage
 #edit
 #grid
@@ -47,9 +46,9 @@ body
     overflow                hidden
 
 #selection
-#resizer
+#DotRes
+#ItemRes
 #snapDiv
-#dotres
 #edit
 #grid
     pointer-events          none
@@ -61,6 +60,8 @@ body
 // 0000000       0       0000000
 
 .resizerSVG
+    position                absolute
+
 .stageSVG
     position                absolute
     stroke-linecap          round
@@ -633,9 +634,6 @@ button
     &.resizerInactive
         opacity             0.3
 
-.resizerGroup
-    cursor                  -webkit-grab
-
 .resizerRect
     fill                    none
     stroke                  none
@@ -651,6 +649,11 @@ button
     stroke                  #000
     pointer-events          all
 
+.resizerCenter
+    fill                    #fff
+    stroke                  #000
+    pointer-events          all
+    
 .resizerRot
     fill                    #fff
     stroke                  #000

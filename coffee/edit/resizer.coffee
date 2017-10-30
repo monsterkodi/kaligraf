@@ -232,6 +232,10 @@ class Resizer
         if custom
             @customCenter = perc
         
+            @rotKnob.addClass 'custom'
+        else
+            @rotKnob.removeClass 'custom'
+            
         @rotKnob.attr 
             cx: "#{perc.x}%"
             cy: "#{perc.y}%"
@@ -248,7 +252,7 @@ class Resizer
             
     onRotKnobMove: (drag, event) =>
             
-        @setRotationCenter @stage.stageForEvent(pos event), true
+        @setRotationCenter @stage.stageForEvent(pos event), true        
 
     didRotate: (angle) ->
         

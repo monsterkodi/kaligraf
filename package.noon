@@ -1,6 +1,6 @@
 name            kaligraf
 productName     kaligraf
-version         0.4.0
+version         0.4.1
 description     svg editor
 main            js/app.js
 author          monsterkodi
@@ -15,7 +15,7 @@ dependencies
                 colors          ^1.1.2
                 font-manager    ^0.2.2
                 heterarchy      ^1.0.7
-                kxk             ^0.19.0
+                kxk             ^0.19.1
                 pretty-data     ^0.40.0
                 svg.filter.js   ^2.0.2
                 svg.js          ^2.6.3

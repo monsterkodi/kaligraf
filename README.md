@@ -1,4 +1,4 @@
-![kaligraf](svg/test/trio.svg)
+![kaligraf](svg/test/kaligraf.svg)
 ![kali](bin/kali.png)
 ![browser](bin/browser.png)
 ![florakali](svg/test/florakali.svg)

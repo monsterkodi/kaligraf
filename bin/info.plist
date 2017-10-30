@@ -1,0 +1,43 @@
+<plist>
+<dict>
+    <key>CFBundleDocumentTypes</key>
+    <array>
+        
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Viewer</string>
+            <key>CFBundleTypeName</key>
+            <string>svg</string>
+            <key>CFBundleTypeExtensions</key>
+            <array>
+                <string>svg</string>
+            </array>
+            <key>CFBundleTypeMIMETypes</key>
+            <array>
+                <string>image/svg+xml</string>
+            </array>            
+            <key>CFBundleTypeIconFile</key>
+            <string>file.icns</string>
+            <key>LSHandlerRank</key>
+            <string>Alternate</string>
+        </dict>        
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleTypeName</key>
+            <string>kaligraf</string>
+            <key>CFBundleTypeOSTypes</key>
+            <array>
+                <string>****</string>
+            </array>
+            <key>CFBundleTypeExtensions</key>
+            <array>
+                <string>svg</string>
+            </array>
+            <key>CFBundleTypeIconFile</key>
+            <string>file.icns</string>
+        </dict>
+        
+    </array>
+</dict>
+</plist>

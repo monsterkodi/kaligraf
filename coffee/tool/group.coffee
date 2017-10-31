@@ -73,11 +73,10 @@ class Group extends Tool
     #  0000000   000   000   0000000   000   000   0000000    0000000   000        
     
     ungroup: ->
-
         groups = @selectedItems type:'g'
         if not empty groups
             @do()
-            newItems = []
+            newItems = @selectedItems noType:'g'
             
             for group in groups
                 groupParent = group.parent()

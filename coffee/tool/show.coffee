@@ -169,6 +169,8 @@ class Show extends Tool
             
             box = group.bbox()
             
+            return if box.w <= 0 and box.h <= 0
+            
             if not rect = group.remember 'groupRect'    
                 rect = @grps.rect()
                 rect.addClass  'groupRect'

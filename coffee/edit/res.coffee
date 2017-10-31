@@ -206,7 +206,6 @@ class Res
                     
     setRotationCorner: (@rotationCorner) ->
             
-        log 'setRotationCorner', @name, @rotationCorner, @customCenter
         if @rotationCorner == 'center'
             
             if @customCenter

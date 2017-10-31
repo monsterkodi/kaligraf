@@ -52,8 +52,23 @@ class Padding extends Tool
         
     setPercent: (@percent) =>
 
+        @stage.do 'padding'
         if _.isNaN @percent then @percent = 0
         prefs.set 'padding:percent', @percent
+        @update()
+        @stage.done()
+       
+    state: ->
+        
+        visible: @visible
+        percent: @percent
+        
+    restore: (state) -> 
+
+        @percent = state.percent
+        @visible = state.visible
+        @setSpinValue 'percent', @percent
+        @setToggle 'show', @visible
         @update()
         
     #  0000000  000   000   0000000   000   000  
@@ -108,7 +123,9 @@ class Padding extends Tool
     # 0000000      000     000   000   0000000   00000000  
     
     onStage: (action, info) =>
+        
         switch action
+            
             when 'viewbox' then @update()
             when 'load' 
                 if info.viewbox?

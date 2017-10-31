@@ -81,6 +81,8 @@ class Stage
         color:     @color.toHex()
         layers:    @storeLayers()
         alpha:     @alpha
+        aspect:    @kali.tool('aspect').state() 
+        padding:   @kali.tool('padding').state() 
         svg:       @getSVG()
         
     restore: (state) ->
@@ -88,6 +90,8 @@ class Stage
         @setSVG state.svg
         @setColor state.color, state.alpha
         @restoreLayers state.layers
+        @kali.tool('aspect').restore state.aspect
+        @kali.tool('padding').restore state.padding
         post.emit 'stage', 'restore'
         @selection.restore state.selection
         @shapes.restore state.shapes

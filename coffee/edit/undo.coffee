@@ -46,7 +46,7 @@ class Undo
     # 0000000     0000000   
     
     do: (object, action) ->
-        
+
         @futures = []
         
         state = @state 'start', object
@@ -57,10 +57,14 @@ class Undo
 
         if noSavePoint and @sameState(state, prev) and prev.type != 'start'
             @log 'sameState!'
-        else   
+        else  
             if action? and prev? and noSavePoint and action == prev.action and prev.type != 'start'
+                state.type = 'end'
                 @history.splice @history.length-1, 1, state
-            @history.push state
+                @log 'splice'
+            else
+                @log 'push'
+                @history.push state
             
         @post 'do'
             
@@ -229,6 +233,6 @@ class Undo
         
         # log msg
         # log @history.map((i) -> i.class + ' ' + i.action + ' ' + i.type).join '\n'
-        # log @futures.map((i) -> i.class + ' ' + i.action + ' ' + i.type).join '\n'
+        #   log @futures.map((i) -> i.class + ' ' + i.action + ' ' + i.type).join '\n'
         
 module.exports = Undo

@@ -32,7 +32,7 @@ class Aspect extends Tool
             reset:  1
             speed:  0.01
             step:   [0.01,0.05,0.1,0.5]
-            action: @update
+            action: @onRatio
             value:  @ratio
             str: (value) -> value.toFixed 2
             
@@ -43,10 +43,30 @@ class Aspect extends Tool
             action: @onLock
         ]
         
-    onLock: => 
+    onLock: =>
         
+        @stage.do 'aspect'
         @locked = @button('lock').toggle
         @update()
+        @stage.done()
+      
+    onRatio: =>
+        
+        @stage.do 'aspect'
+        @update()
+        @stage.done()
+
+    state: ->
+        
+        locked: @locked
+        ratio:  @ratio
+        
+    restore: (state) -> 
+
+        @locked = state.locked
+        @ratio  = state.ratio
+        @setSpinValue 'ratio', @ratio
+        @setToggle    'lock',  @locked
         
     # 00000000    0000000   000000000  000   0000000   
     # 000   000  000   000     000     000  000   000  
@@ -90,7 +110,7 @@ class Aspect extends Tool
             diffX = Math.abs(info.viewbox.width  - box.width)/box.width
             diffY = Math.abs(info.viewbox.height - box.height)/box.height
             @locked = diffX > 0.02 or diffY > 0.02
-            # log 'aspect.load', @locked, diffX, diffY
+
             @setToggle 'lock', @locked
             @setRatio info.viewbox.width / info.viewbox.height
                 

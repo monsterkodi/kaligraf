@@ -82,7 +82,7 @@ class DotRes extends Res
         @done()
 
     setRotationCenter: (@rotationCenter, custom) ->
-        log 'setRotationCenter', @rotationCenter, custom
+
         super @rotationCenter, custom
         @customCenter = @rotationCenter
                 
@@ -150,12 +150,7 @@ class DotRes extends Res
         sy = (box.h + dy) / box.h
             
         resizeCenter = @rotationCenter
-        
-        if true
-            @kali.stage.debug.clear()
-            l = @kali.stage.debug.line()
-            l.plot resizeCenter.x, resizeCenter.y, box.x, box.y
-        
+                
         transmat = new SVG.Matrix().around resizeCenter.x, resizeCenter.y, new SVG.Matrix().scale sx, sy
 
         @do 'resize'
@@ -193,7 +188,6 @@ class DotRes extends Res
         super drag, event
         
         delete @dotInfo
-        delete @customCenter
         @setRotationCorner 'center'
 
     onStart: =>
@@ -249,17 +243,17 @@ class DotRes extends Res
     # 000   000  000   000     000          000  
     # 0000000     0000000      000     0000000   
 
-    setDots: (dots) -> @update()
+    setDots: (dots) -> @reset()
 
     addDot: (dots, dot) ->
 
         if not @validSelection()
             return
             
-        @update()
+        @reset()
 
-    delDot: (dots, dot) -> @update()
-
+    delDot: (dots, dot) -> @reset()
+            
     validSelection: ->
         
         bb = @bbox()

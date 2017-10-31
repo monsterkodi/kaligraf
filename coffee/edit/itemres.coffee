@@ -211,7 +211,7 @@ class ItemRes extends Res
             when 'del'   then @delItem  items, item
             when 'clear' then @clear()
 
-    bbox: -> @selection.bbox()
+    bbox:  -> @selection.bbox()
     empty: -> @selection.empty()
     
     # 000  000000000  00000000  00     00   0000000
@@ -220,8 +220,8 @@ class ItemRes extends Res
     # 000     000     000       000 0 000       000
     # 000     000     00000000  000   000  0000000
 
-    setItems: (items)       -> @update()
-    addItem:  (items, item) -> @update()
-    delItem:  (items, item) -> @update()
-
+    setItems: (items)       -> @reset()
+    addItem:  (items, item) -> @reset()
+    delItem:  (items, item) -> @reset()
+    
 module.exports = ItemRes

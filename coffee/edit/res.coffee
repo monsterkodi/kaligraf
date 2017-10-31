@@ -15,8 +15,6 @@ class Res
 
     constructor: (@kali) ->
 
-        log 'Res', @name
-        
         @trans = @kali.trans
         @stage = @kali.stage
         @selection = @stage.selection
@@ -52,7 +50,6 @@ class Res
     
     del: ->
         
-        log 'Res.del', @name
         @svg.clear()
         @svg.remove()
         @element.remove()
@@ -209,6 +206,7 @@ class Res
                     
     setRotationCorner: (@rotationCorner) ->
             
+        log 'setRotationCorner', @name, @rotationCorner, @customCenter
         if @rotationCorner == 'center'
             
             if @customCenter
@@ -224,6 +222,7 @@ class Res
         
     setRotationCenter: (@rotationCenter, custom) ->
         
+        return if not @rotKnob?
         if custom
             @customCenter = @rotationCenter
             @rotKnob.addClass 'custom'
@@ -240,7 +239,7 @@ class Res
         @setRotationCenter @stage.stageForEvent(pos event), true        
 
     didTransform: (transmat) -> 
-        log 'didTransform'
+        
         @gg.transform transmat
             
     onRotKnobStop: (drag, event) =>
@@ -294,6 +293,12 @@ class Res
         else
             @freshBox()
     
+    reset: -> 
+        
+        @update()
+        delete @customCenter
+        @setRotationCorner 'center'
+            
     freshBox: ->
 
         @clear()

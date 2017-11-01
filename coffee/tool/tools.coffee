@@ -39,8 +39,9 @@ class Tools extends Tool
     onAction: (action, tool, button) =>
         
         if @stage.shapes?.text?
-            if tool not in ['zoom'] and action not in ['center']
-                log 'Tools.onAction -- text tool active?'
+            if tool in ['wire', 'padding', 'align', 'space']
+                return
+            if action in ['import', 'wire', 'spaceRadial', 'averageRadius'] 
                 return
                 
         if Window.getFocusedWindow()?.getTitle() != 'kaligraf'

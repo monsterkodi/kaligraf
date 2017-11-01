@@ -89,7 +89,6 @@ class Kali
         @element.appendChild child
         child.style.zIndex = 1000
         
-
     shapeTool: -> @tools.getActive('shape')?.name
     tool: (name) -> @tools.getTool name 
         

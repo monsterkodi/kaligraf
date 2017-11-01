@@ -8,12 +8,13 @@
 {   resolve, elem, post, drag, prefs, stopEvent, fileName,
     first, last, empty, clamp, pos, fs, log, _ } = require 'kxk'
 
-{   contrastColor, normRect, bboxForItems, itemIDs, insideBox, itemBox, 
+{   contrastColor, normRect, bboxForItems, itemIDs, insideBox, itemBox, boxPos,
     growBox, rboxForItems, boxOffset, boxCenter, itemGradient, itemMatrix } = require './utils'
 
 electron  = require 'electron'
 clipboard = electron.clipboard
 dialog    = electron.remote.dialog
+screen    = electron.screen
 
 SVG       = require 'svg.js'
 flt       = require 'svg.filter.js'
@@ -475,7 +476,10 @@ class Stage
                             @selection.addItem item
                       
                     @done() if not opt?.nodo
-                    return viewbox:svg.viewbox()
+                    return viewbox:svg.viewbox(), items:items
+                else
+                    log 'dafuk? empty?', svg?
+                    
 
     # 000       0000000    0000000   0000000    
     # 000      000   000  000   000  000   000  
@@ -621,7 +625,24 @@ class Stage
     paste: ->
 
         @do()
-        @addSVG clipboard.readText(), color:false
+        info = @addSVG clipboard.readText(), color:false
+        viewbox = info.viewbox
+        mousePos = pos screen.getCursorScreenPoint()
+        log 'CursorScreenPoint', mousePos
+        # log 'items', info.items.length
+        itemBox = bboxForItems info.items
+        # log 'itemBox', itemBox
+        boxCenter = boxPos itemBox, 'center'
+        # log 'boxCenter', boxCenter        
+        log 'window', window.screenX, window.screenY
+        mousePos.sub pos window.screenX, window.screenY
+        log 'mousePos', mousePos
+        stagePos = @stageForView mousePos
+        log 'stagePos', stagePos
+        delta = stagePos.minus boxCenter 
+        log 'delta', delta
+        @moveItemsBy info.items, delta
+        @selection.setItems info.items
         @done()
 
     cut: ->

@@ -4,21 +4,11 @@
   xmlns:svgjs="http://svgjs.com/svgjs" 
 style="stroke-linecap: round; stroke-linejoin: round; stroke-miterlimit: 20; background: rgba(40, 40, 40, 0.95);"
 viewBox="-765.5660516357422 -29.75615417480469 1529.726280517578 1072.6522619628906">
-  <defs id="SvgjsDefs15532">
+  <defs id="SvgjsDefs2002">
     <filter id="SvgjsFilter22641" width="300%" height="300%" x="-100%" y="-100%">
       <feColorMatrix id="SvgjsFeColorMatrix22642" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0" result="SvgjsFeColorMatrix22642Out" in="SourceGraphic"></feColorMatrix>
       <feGaussianBlur id="SvgjsFeGaussianBlur22643" stdDeviation="10 10" result="SvgjsFeGaussianBlur22643Out" in="SvgjsFeColorMatrix22642Out"></feGaussianBlur>
       <feBlend id="SvgjsFeBlend22644" in="SourceGraphic" in2="SvgjsFeGaussianBlur22643Out" mode="normal" result="SvgjsFeBlend22644Out"></feBlend>
-    </filter>
-    <filter id="SvgjsFilter86585" width="300%" height="300%" x="-100%" y="-100%">
-      <feColorMatrix id="SvgjsFeColorMatrix86586" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0" result="SvgjsFeColorMatrix86586Out" in="SourceGraphic"></feColorMatrix>
-      <feGaussianBlur id="SvgjsFeGaussianBlur86587" stdDeviation="10 10" result="SvgjsFeGaussianBlur86587Out" in="SvgjsFeColorMatrix86586Out"></feGaussianBlur>
-      <feBlend id="SvgjsFeBlend86588" in="SourceGraphic" in2="SvgjsFeGaussianBlur86587Out" mode="normal" result="SvgjsFeBlend86588Out"></feBlend>
-    </filter>
-    <filter id="SvgjsFilter91226" width="300%" height="300%" x="-100%" y="-100%">
-      <feColorMatrix id="SvgjsFeColorMatrix91227" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0" result="SvgjsFeColorMatrix91227Out" in="SourceGraphic"></feColorMatrix>
-      <feGaussianBlur id="SvgjsFeGaussianBlur91228" stdDeviation="2 2" result="SvgjsFeGaussianBlur91228Out" in="SvgjsFeColorMatrix91227Out"></feGaussianBlur>
-      <feBlend id="SvgjsFeBlend91229" in="SourceGraphic" in2="SvgjsFeGaussianBlur91228Out" mode="normal" result="SvgjsFeBlend91229Out"></feBlend>
     </filter>
     <filter id="SvgjsFilter91377" width="300%" height="300%" x="-100%" y="-100%">
       <feColorMatrix id="SvgjsFeColorMatrix91378" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0" result="SvgjsFeColorMatrix91378Out" in="SourceGraphic"></feColorMatrix>
@@ -121,24 +111,10 @@ viewBox="-765.5660516357422 -29.75615417480469 1529.726280517578 1072.6522619628
     <text id="T-6e-1877b1" font-family="Noteworthy" font-size="26.186921002009335" font-weight="bold" font-style="normal" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 0; fill: rgb(0, 0, 0); fill-opacity: 1;" text-anchor="middle" class="" transform="matrix(1,0,0,1,384.61448083251526,333.0796203613281)" svgjs:data="{&quot;leading&quot;:&quot;1.15&quot;}">
       <tspan id="SvgjsTspan10401" dy="30.114959152310732" x="0" svgjs:data="{&quot;newLined&quot;:true}">layerlist</tspan>
     </text>
-    <g id="G-dd-5fecae" transform="matrix(1,0,0,1,0.0185699462890625,-0.102325439453125)">
-      <g id="G-cf-bcf7b0" transform="matrix(1,0,0,1,-120.06856918334961,47.93244934082031)">
-        <path id="P-ff-c92367" d="M-98.17999683273487 -101.45552877594098L-56.842619915272635 -101.31905558864224Q-45.95054990105774 -101.42667492487304 -46.038633648670626 -90.31313401093841Q-46.10179556509229 -79.52517281934809 -56.63731774231887 -79.52519459553038L-98.22963290219542 -79.6616677828291L-119.01534030703885 -79.93048135307953Q-129.26760462214497 -79.8853707004722 -129.3672524973911 -90.65818593174244Q-129.4511181116888 -101.63820311885715 -118.7843892357186 -101.7243423461914L-98.17999683273487 -101.45552877594098 " style="stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 2; fill: rgb(109, 126, 0); fill-opacity: 1;" class="" transform="matrix(0.9999999999999999,-1.9428904254429217e-16,1.9428904254429217e-16,0.9999999999999999,-60.4543514251709,427.36982345581055)" filter="url(#SvgjsFilter86585)"></path>
-        <text id="T-43-a97b26" font-family="Noteworthy" font-size="16.8209990638076" font-weight="bold" font-style="normal" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 0; fill: rgb(252, 255, 47); fill-opacity: 1;" text-anchor="middle" class="" transform="matrix(0.9999999999999999,-1.9428904254429217e-16,1.9428904254429217e-16,0.9999999999999999,-148.15727043151855,322.5989990234375)" filter="url(#SvgjsFilter91226)" svgjs:data="{&quot;leading&quot;:&quot;1.15&quot;}">
-          <tspan id="SvgjsTspan166852" dy="19.34414892337874" x="0" svgjs:data="{&quot;newLined&quot;:true}">resize</tspan>
-        </text>
-      </g>
-      <g id="G-b7-9e9030" transform="matrix(1,0,0,1,-118.15325546264648,47.932952880859375)">
-        <path id="P-aa-3b2c49" d="M-98.17999683273487 -101.45552877594098L-56.842619915272635 -101.31905558864224Q-45.95054990105774 -101.42667492487304 -46.038633648670626 -90.31313401093841Q-46.10179556509229 -79.52517281934809 -56.63731774231887 -79.52519459553038L-98.22963290219542 -79.6616677828291L-119.01534030703885 -79.93048135307953Q-129.26760462214497 -79.8853707004722 -129.3672524973911 -90.65818593174244Q-129.4511181116888 -101.63820311885715 -118.7843892357186 -101.7243423461914L-98.17999683273487 -101.45552877594098 " style="stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 2; fill: rgb(109, 126, 0); fill-opacity: 1;" class="" filter="url(#SvgjsFilter22641)" transform="matrix(0.9999999999999999,-1.9428904254429217e-16,1.9428904254429217e-16,0.9999999999999999,-62.36966896057129,448.86848068237305)"></path>
-        <text id="T-e4-3bd81d" font-family="Noteworthy" font-size="16.8209990638076" font-weight="bold" font-style="normal" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 0; fill: rgb(255, 255, 47); fill-opacity: 1;" text-anchor="middle" class="" filter="url(#SvgjsFilter91377)" transform="matrix(0.9999999999999999,-1.9428904254429217e-16,1.9428904254429217e-16,0.9999999999999999,-150.07258796691895,344.0982971191406)" svgjs:data="{&quot;leading&quot;:&quot;1.15&quot;}">
-          <tspan id="SvgjsTspan5931" dy="19.34414892337874" x="0" svgjs:data="{&quot;newLined&quot;:true}">dots</tspan>
-        </text>
-      </g>
-    </g>
-    <g id="G-1e-9e5938" transform="matrix(1,0,0,1,0.00341033935546875,-3.0194091796875)">
-      <path id="P-e8-35f1d4" d="M-98.17999683273487 -101.45552877594098L-56.842619915272635 -101.31905558864224Q-45.95054990105774 -101.42667492487304 -46.038633648670626 -90.31313401093841Q-46.10179556509229 -79.52517281934809 -56.63731774231887 -79.52519459553038L-98.22963290219542 -79.6616677828291L-119.01534030703885 -79.93048135307953Q-129.26760462214497 -79.8853707004722 -129.3672524973911 -90.65818593174244Q-129.4511181116888 -101.63820311885715 -118.7843892357186 -101.7243423461914L-98.17999683273487 -101.45552877594098 " style="stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 2; fill: rgb(41, 41, 41); fill-opacity: 1;" class="" transform="matrix(0.9999999999999999,-1.9428904254429217e-16,1.9428904254429217e-16,0.9999999999999999,-180.50799179077143,521.4782104492186)"></path>
-      <text id="T-4e-845b3a" font-family="Noteworthy" font-size="16.8209990638076" font-weight="bold" font-style="normal" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 0; fill: rgb(151, 151, 151); fill-opacity: 1;" text-anchor="middle" class="" transform="matrix(0.9999999999999999,-1.9428904254429217e-16,1.9428904254429217e-16,0.9999999999999999,-268.2109336853027,417.9570007324219)" svgjs:data="{&quot;leading&quot;:&quot;1.15&quot;}">
-        <tspan id="SvgjsTspan168054" dy="19.34414892337874" x="0" svgjs:data="{&quot;newLined&quot;:true}">grid</tspan>
+    <g id="G-b7-9e9030" transform="matrix(1,0,0,1,-118.13470077514648,26.134185791015625)">
+      <path id="P-aa-3b2c49" d="M-98.17999683273487 -101.45552877594098L-56.842619915272635 -101.31905558864224Q-45.95054990105774 -101.42667492487304 -46.038633648670626 -90.31313401093841Q-46.10179556509229 -79.52517281934809 -56.63731774231887 -79.52519459553038L-98.22963290219542 -79.6616677828291L-119.01534030703885 -79.93048135307953Q-129.26760462214497 -79.8853707004722 -129.3672524973911 -90.65818593174244Q-129.4511181116888 -101.63820311885715 -118.7843892357186 -101.7243423461914L-98.17999683273487 -101.45552877594098 " style="stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 2; fill: rgb(109, 126, 0); fill-opacity: 1;" class="" filter="url(#SvgjsFilter22641)" transform="matrix(0.9999999999999999,-1.9428904254429217e-16,1.9428904254429217e-16,0.9999999999999999,-62.36966896057129,448.86848068237305)"></path>
+      <text id="T-e4-3bd81d" font-family="Noteworthy" font-size="16.8209990638076" font-weight="bold" font-style="normal" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 0; fill: rgb(255, 255, 47); fill-opacity: 1;" text-anchor="middle" class="" filter="url(#SvgjsFilter91377)" transform="matrix(0.9999999999999999,-1.9428904254429217e-16,1.9428904254429217e-16,0.9999999999999999,-150.07258796691895,344.0982971191406)" svgjs:data="{&quot;leading&quot;:&quot;1.15&quot;}">
+        <tspan id="SvgjsTspan5931" dy="19.34414892337874" x="0" svgjs:data="{&quot;newLined&quot;:true}">dots</tspan>
       </text>
     </g>
     <g id="G-a2-92b8d7" transform="matrix(1,0,0,1,354.1168680328918,-116.39277648925781)">

@@ -21,7 +21,6 @@ class Convert
         # log "convert #{type} item.type #{@item.type}"
         
         newDots = []
-        
         if type != 'P' and @item.type != 'path'
             @toPath()
         else if type == 'P' 
@@ -123,13 +122,18 @@ class Convert
     
     toPath: ->
 
-        newPoints = []
         oldPoints = @points()
-        for index in [0...oldPoints.length]
-            oldPoint = oldPoints[index]
-            newPoint = [index==0 and 'M' or 'L', oldPoint[0], oldPoint[1]]
-            newPoints.push newPoint
-        newPoints.push ['L', first(oldPoints)[0], first(oldPoints)[1]]
+        if @item.type == 'rect' then oldPoints.pop()
+        
+        if @item.type in ['ellipse', 'circle']
+            newPoints = @ellipseToPath()
+        else
+            newPoints = []
+            for index in [0...oldPoints.length]
+                oldPoint = oldPoints[index]
+                newPoint = [index==0 and 'M' or 'L', oldPoint[0], oldPoint[1]]
+                newPoints.push newPoint
+            newPoints.push ['L', first(oldPoints)[0], first(oldPoints)[1]]
         
         newItem = @item.parent().path()
         @item.after newItem
@@ -142,7 +146,42 @@ class Convert
         @item.remove()
         @item = newItem
         @initItem()
-            
+
+    ellipseToPath: ->
+        
+        newPoints = []
+        
+        switch @item.type
+            when 'ellipse'
+                r = pos @item.attr().rx, @item.attr().ry
+            else
+                r = pos @item.attr().r, @item.attr().r
+                
+        c = pos @item.cx(), @item.cy()
+        
+        log 'ellipseToPath', @item.type, c, r, @trans.getCenter @item
+        f = 0.551915
+        p1 = c.plus pos r.x, 0
+        newPoints.push ['M', p1.x, p1.y]
+        p2 = c.plus pos 0, r.y
+        c1 = p1.plus pos 0, r.y*f
+        c2 = p2.plus pos r.x*f, 0
+        newPoints.push ['C', c1.x, c1.y, c2.x, c2.y, p2.x, p2.y]
+        p3 = c.plus pos -r.x, 0
+        c1 = p2.plus pos -r.x*f, 0
+        c2 = p3.plus pos 0, r.y*f
+        newPoints.push ['C', c1.x, c1.y, c2.x, c2.y, p3.x, p3.y]
+        p4 = c.plus pos 0, -r.y
+        c1 = p3.plus pos 0, -r.y*f
+        c2 = p4.plus pos -r.x*f, 0
+        newPoints.push ['C', c1.x, c1.y, c2.x, c2.y, p4.x, p4.y]
+        # p4 = c.plus pos 0, -r.y
+        c1 = p4.plus pos r.x*f, 0
+        c2 = p1.plus pos 0, -r.y*f
+        newPoints.push ['C', c1.x, c1.y, c2.x, c2.y, p1.x, p1.y]
+        
+        newPoints
+        
     # 000000000   0000000         00000000    0000000   000      000   000  
     #    000     000   000        000   000  000   000  000       000 000   
     #    000     000   000        00000000   000   000  000        00000    

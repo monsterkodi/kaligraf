@@ -132,7 +132,7 @@ class Padding extends Tool
                     bb = bboxForItems @stage.items()
                     percentX = (info.viewbox.width  / bb.width  - 1) * 50
                     percentY = (info.viewbox.height / bb.height - 1) * 50
-                    @setPercent parseInt Math.min percentX, percentY
+                    @percent = parseInt Math.min percentX, percentY
                     @setSpinValue 'percent', @percent
                 else
                     @update()

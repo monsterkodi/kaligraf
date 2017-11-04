@@ -628,19 +628,11 @@ class Stage
         info = @addSVG clipboard.readText(), color:false
         viewbox = info.viewbox
         mousePos = pos screen.getCursorScreenPoint()
-        log 'CursorScreenPoint', mousePos
-        # log 'items', info.items.length
         itemBox = bboxForItems info.items
-        # log 'itemBox', itemBox
         boxCenter = boxPos itemBox, 'center'
-        # log 'boxCenter', boxCenter        
-        log 'window', window.screenX, window.screenY
         mousePos.sub pos window.screenX, window.screenY
-        log 'mousePos', mousePos
         stagePos = @stageForView mousePos
-        log 'stagePos', stagePos
         delta = stagePos.minus boxCenter 
-        log 'delta', delta
         @moveItemsBy info.items, delta
         @selection.setItems info.items
         @done()

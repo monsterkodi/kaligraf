@@ -155,7 +155,6 @@ class Tools extends Tool
                 { class: 'mask'    }
                 { class: 'clip'    }
                 { class: 'lock'    }
-                # { class: 'pattern' }
             ]
             [
                 { class: 'order' }
@@ -315,6 +314,11 @@ class Tools extends Tool
             if hide then tool.hideChildren()
             else         tool.showChildren()
 
+    hideChildren: ->
+        for tool in @children
+            tool.hideChildren()
+        super
+            
     toggleProperties: ->
         
         tool = @getTool 'font'

@@ -1,6 +1,6 @@
 name            kaligraf
 productName     kaligraf
-version         0.4.1
+version         0.4.2
 description     svg editor
 main            js/app.js
 author          monsterkodi

@@ -1,3 +1,2 @@
-coffee  . map file 
 pug     . ext html . replace .. /bin/ /js/
 styl    . ext css  . replace .. /bin/ /js/css/

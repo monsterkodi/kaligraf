@@ -13,7 +13,7 @@ Cursor = require '../cursor'
     
 class Res
 
-    constructor: (@kali) ->
+    constructor: (@kali, @name) ->
 
         @trans = @kali.trans
         @stage = @kali.stage

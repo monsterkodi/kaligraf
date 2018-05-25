@@ -15,20 +15,21 @@ GradientItem = require './gradientitem'
 
 class GradientEdit extends Tool
 
-    constructor: (@kali, cfg) ->
+    constructor: (kali, cfg) ->
 
         cfg       ?= {}
         cfg.name  ?= 'GradientEdit'
         cfg.class ?= 'GradientEdit'
         
-        @width = cfg.width ? @kali.paletteWidth
+        width = cfg.width ? kali.paletteWidth
         
         cfg.halo        ?= {}
         cfg.halo.x      ?= 0
-        cfg.halo.width  ?= @width+@kali.toolSize
+        cfg.halo.width  ?= width+kali.toolSize
         
-        super @kali, cfg
+        super kali, cfg
 
+        @width = width
         @gradientItem = new GradientItem @kali
         @gradientItem.name = cfg.name
         @element.style.width = "#{@width}px"

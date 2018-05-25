@@ -12,9 +12,9 @@ FontList = require './fontlist'
 
 class Font extends Tool
 
-    constructor: (@kali, cfg) ->
+    constructor: (kali, cfg) ->
         
-        super @kali, cfg
+        super kali, cfg
 
         @bindStage 'setFontProp'
         

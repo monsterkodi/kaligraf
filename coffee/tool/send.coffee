@@ -11,9 +11,9 @@ Tool = require './tool'
 
 class Send extends Tool
 
-    constructor: (@kali, cfg) ->
+    constructor: (kali, cfg) ->
         
-        super @kali, cfg
+        super kali, cfg
         
         @initTitle()
         @initButtons [

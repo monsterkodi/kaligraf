@@ -6,7 +6,7 @@
 0000000   000   000  000   000  000        00000000  0000000 
 ###
 
-{ post, drag, last, resolve, pos, log, _ } = require 'kxk'
+{ post, drag, last, pos, log, _ } = require 'kxk'
 
 { uuid } = require '../utils'
 
@@ -124,7 +124,7 @@ class Shapes
                 
             when 'image'
                 
-                e = root.image 'file://' + resolve '~/Desktop/kaligraf.png'
+                e = root.image 'file://' + slash.resolve '~/Desktop/kaligraf.png'
                 stage = @kali.stage
                 e.loaded (loader) ->
                     @size loader.width, loader.height

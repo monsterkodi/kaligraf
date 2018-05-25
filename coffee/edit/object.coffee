@@ -16,11 +16,12 @@ Points = require './points'
 
 class Object extends Points
 
-    constructor: (@edit, @item) ->
+    constructor: (edit, item) ->
 
-        super @edit.kali, @item
-        
-        @name  = "Object-#{@item.id()}" 
+        super edit.kali, "Object-#{item.id()}" 
+
+        @edit  = edit
+        @item  = item
         @svg   = @edit.svg
         @kali  = @edit.kali
         @trans = @kali.trans

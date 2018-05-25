@@ -1,27 +1,27 @@
 name            kaligraf
 productName     kaligraf
-version         0.4.2
+version         0.5.0
 description     svg editor
 main            js/app.js
 author          monsterkodi
 license         Unlicense
 scripts
-                build  ./bin/build.sh
+                mac   ./bin/buildmac.sh
+                win   ./bin/buildwin.sh
 repository
                 type  git
                 url   git+https://github.com/monsterkodi/kaligraf.git
 dependencies
-                chroma-js       ^1.3.4
-                colors          ^1.1.2
+                chroma-js       ^1.3.7
+                colors          ^1.3.0
                 font-manager    ^0.2.2
                 heterarchy      ^1.0.7
-                kxk             ^0.19.1
+                kxk             ^0.76.0
                 pretty-data     ^0.40.0
                 svg.filter.js   ^2.0.2
-                svg.js          ^2.6.3
-                uuid            ^3.1.0
+                svg.js          ^2.6.4
+                uuid            ^3.2.1
 devDependencies
-                appdmg          ^0.4.5
-                electron        ^1.8.0
-                electron-packager  ^9.0.1
-                electron-rebuild  ^1.6.0
+                electron        ^2.0.2
+                electron-packager  ^12.1.0
+                electron-rebuild  ^1.7.3

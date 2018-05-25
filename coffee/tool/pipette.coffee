@@ -12,9 +12,9 @@ Tool     = require './tool'
  
 class Pipette extends Tool
 
-    constructor: (@kali, cfg) ->
+    constructor: (kali, cfg) ->
 
-        super @kali, cfg
+        super kali, cfg
         
         @tools = @kali.tools
 

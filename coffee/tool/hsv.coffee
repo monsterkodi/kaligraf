@@ -15,9 +15,9 @@ Tool   = require './tool'
 
 class HSV extends Tool
 
-    constructor: (@kali, cfg) ->
+    constructor: (kali, cfg) ->
         
-        super @kali, cfg
+        super kali, cfg
         
         @initSpin
             triple: 'H'

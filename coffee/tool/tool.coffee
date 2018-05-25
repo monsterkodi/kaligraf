@@ -5,22 +5,22 @@
 #    000     000   000  000   000  000    
 #    000      0000000    0000000   0000000
 
-{ fileExists, upElem, downElem, stopEvent, elem, drag, post, first, last, fs, pos, log, $, _ } = require 'kxk'
+{ fileExists, stopEvent, elem, drag, post, empty, first, last, fs, pos, log, $, _ } = require 'kxk'
 
 { boundingBox } = require '../utils'
 
 { multi } = require 'heterarchy'
 
 Spin     = require './spin'
-Button   = require './button'
 Exporter = require '../exporter'
 
-class Tool extends multi Spin, Button
+class Tool extends Spin
 
-    constructor: (@kali, @cfg) ->
+    constructor: (kali, cfg) ->
 
-        super @kali
-        
+        super()
+        @kali   = kali
+        @cfg    = cfg
         @height = @kali.toolSize
         @name   = @cfg.name ? @cfg.class
         @stage  = @kali.stage 
@@ -86,7 +86,7 @@ class Tool extends multi Spin, Button
 
     onMouseEnter: (event) =>
 
-        return if event.buttons
+        return if event?.buttons
         
         return if $(@element, '.toolHalo')?
                 

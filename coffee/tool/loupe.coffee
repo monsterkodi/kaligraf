@@ -11,9 +11,9 @@ Tool = require './tool'
  
 class Loupe extends Tool
 
-    constructor: (@kali, cfg) ->
+    constructor: (kali, cfg) ->
 
-        super @kali, cfg
+        super kali, cfg
         
         @tools     = @kali.tools
         @selection = @stage.selection

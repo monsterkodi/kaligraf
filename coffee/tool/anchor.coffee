@@ -13,9 +13,9 @@ Tool = require './tool'
 
 class Anchor extends Tool
         
-    constructor: (@kali, cfg) ->
+    constructor: (kali, cfg) ->
         
-        super @kali, cfg
+        super kali, cfg
                 
         @anchor  = prefs.get 'text:anchor', 'middle'
         @leading = prefs.get 'text:leading', 1.2

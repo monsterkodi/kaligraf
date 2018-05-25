@@ -11,9 +11,9 @@ Tool = require './tool'
 
 class Order extends Tool
 
-    constructor: (@kali, cfg) ->
+    constructor: (kali, cfg) ->
         
-        super @kali, cfg
+        super kali, cfg
         
         @stage.order = Order.order    
 

@@ -5,7 +5,7 @@
 # 000       000   000  000  0000     000     000      000       000     000   
 # 000        0000000   000   000     000     0000000  000  0000000      000   
 
-{ stopEvent, childIndex, prefs, keyinfo, elem, drag, clamp, last, post, log, _ } = require 'kxk'
+{ stopEvent, prefs, keyinfo, elem, drag, clamp, last, post, log, _ } = require 'kxk'
 
 { winTitle, ensureInSize } = require '../utils'
 
@@ -241,7 +241,7 @@ class FontList
     # 000   000   0000000     000     000      0      00000000  
     
     active: (group=@activeGroup) -> @scrolls[group].querySelector '.active'
-    activeIndex: -> not @active() and -1 or childIndex @active()
+    activeIndex: -> not @active() and -1 or elem.childIndex @active()
         
     # 000   000   0000000   000   000  000   0000000    0000000   000000000  00000000  
     # 0000  000  000   000  000   000  000  000        000   000     000     000       
@@ -273,7 +273,7 @@ class FontList
             post.emit 'font', 'family', @active(group).innerHTML
         prefs.set "fontlist:selected:#{group}", index
 
-    onClick: (event) => @select childIndex event.target
+    onClick: (event) => @select elem.childIndex event.target
     
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   

@@ -13,9 +13,9 @@ Tool = require './tool'
 
 class Alpha extends Tool
 
-    constructor: (@kali, cfg) ->
+    constructor: (kali, cfg) ->
         
-        super @kali, cfg
+        super kali, cfg
         
         @initTitle()
         

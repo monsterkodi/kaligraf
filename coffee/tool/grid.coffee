@@ -13,9 +13,9 @@ Tool = require './tool'
 
 class Grid extends Tool
 
-    constructor: (@kali, cfg) ->
+    constructor: (kali, cfg) ->
 
-        super @kali, cfg
+        super kali, cfg
 
         @div = elem 'div', id: 'grid'
         @kali.element.insertBefore @div, @kali.stage.element

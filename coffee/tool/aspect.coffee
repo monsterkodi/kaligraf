@@ -13,9 +13,9 @@ Tool = require './tool'
 
 class Aspect extends Tool
 
-    constructor: (@kali, cfg) ->
+    constructor: (kali, cfg) ->
         
-        super @kali, cfg
+        super kali, cfg
         
         @ratio  = 1
         @locked = false

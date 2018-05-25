@@ -13,9 +13,9 @@ Tool = require './tool'
 
 class Clip extends Tool
         
-    constructor: (@kali, cfg) ->
+    constructor: (kali, cfg) ->
         
-        super @kali, cfg
+        super kali, cfg
         
         @bindStage ['clip', 'unclip']
         

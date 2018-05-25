@@ -13,16 +13,15 @@ Res = require './res'
     
 class ItemRes extends Res
 
-    constructor: (@kali) ->
+    constructor: (kali) ->
 
-        @name = 'ItemRes'
-        
-        super @kali
+        super kali, 'ItemRes'
         
         post.on 'selection', @onSelection
 
     del: ->
-        super
+        
+        super()
         post.removeListener 'selection', @onSelection
         
     # 00000000    0000000   000000000   0000000   000000000  000   0000000   000   000  

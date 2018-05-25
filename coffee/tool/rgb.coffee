@@ -14,9 +14,9 @@ Tool = require './tool'
 
 class RGB extends Tool
 
-    constructor: (@kali, cfg) ->
+    constructor: (kali, cfg) ->
         
-        super @kali, cfg
+        super kali, cfg
         
         @initSpin
             triple: 'R'

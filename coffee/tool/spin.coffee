@@ -5,9 +5,11 @@
 #      000  000        000  000  0000
 # 0000000   000        000  000   000
 
-{ stopEvent, downElem, upElem, elem, first, last, log, _ } = require 'kxk'
+{ stopEvent, elem, first, last, log, _ } = require 'kxk'
 
-class Spin
+Button   = require './button'
+
+class Spin extends Button
         
     initSpin: (spin) ->
         
@@ -55,7 +57,7 @@ class Spin
         else
             delta = -event.deltaY
         
-        button = upElem event.target, prop:'spin'
+        button = elem.upElem event.target, prop:'spin'
         spin = button.spin
         step = spin.step[0]
         
@@ -80,7 +82,7 @@ class Spin
     onSpin: (event) => 
         
         stopEvent event
-        button = upElem event.target, prop:'spin'
+        button = elem.upElem event.target, prop:'spin'
         
         spin = button.spin
         name = button.name
@@ -119,7 +121,7 @@ class Spin
         
         spin.action spin.value
     
-    getSpin: (name) -> downElem(@element, prop:'name', value:name+' reset')?.spin
+    getSpin: (name) -> elem.downElem(@element, prop:'name', value:name+' reset')?.spin
         
     # 000   000   0000000   000      000   000  00000000  
     # 000   000  000   000  000      000   000  000       

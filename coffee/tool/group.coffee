@@ -13,9 +13,9 @@ Tool = require './tool'
 
 class Group extends Tool
         
-    constructor: (@kali, cfg) ->
+    constructor: (kali, cfg) ->
         
-        super @kali, cfg
+        super kali, cfg
         
         @bindStage ['group', 'ungroup']
         

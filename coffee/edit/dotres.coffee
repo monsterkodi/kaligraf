@@ -14,12 +14,10 @@ Res = require './res'
     
 class DotRes extends Res
 
-    constructor: (@dotsel) ->
+    constructor: (dotsel) ->
         
-        @name = 'DotRes' 
-
-        super @dotsel.kali
-        
+        super dotsel.kali, 'DotRes'
+        @dotsel = dotsel
         post.on 'dotsel', @onDotSel
 
     # 0000000    00000000  000      
@@ -30,7 +28,7 @@ class DotRes extends Res
     
     del: ->
         
-        super
+        super()
         
         post.removeListener 'dotsel', @onDotSel
         

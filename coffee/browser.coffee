@@ -5,9 +5,7 @@
 # 000   000  000   000  000   000  000   000       000  000       000   000
 # 0000000    000   000   0000000   00     00  0000000   00000000  000   000
 
-{   childIndex, upAttr, upElem, stopEvent, setStyle, keyinfo, drag, elem, 
-    fileName, dirExists, post, first, prefs, resolve, childp, 
-    fs, os, path, empty, clamp, pos, log, $, _ } = require 'kxk'
+{ stopEvent, setStyle, keyinfo, drag, elem, post, first, prefs, childp, fs, os, slash, empty, clamp, pos, log, $, _ } = require 'kxk'
 
 { winTitle, boundingBox } = require './utils'
 
@@ -35,9 +33,9 @@ class Browser
             
         dirs = prefs.get 'browser:dirs', []
         for dir in dirs
-            if dirExists dir
+            if slash.dirExists dir
                 buttons.push
-                    text:   path.basename dir
+                    text:   slash.basename dir
                     data:   dir: dir
                     action: @onDirButton
             
@@ -89,11 +87,11 @@ class Browser
             
             return if err? or empty files
 
-            files = files.filter (file) -> path.extname(file) == '.svg'
+            files = files.filter (file) -> slash.extname(file) == '.svg'
             return if empty files 
             
             for file in files
-                @addFile path.join dir, file
+                @addFile slash.join dir, file
 
             @calcColumns()
             @selectIndex 0
@@ -164,7 +162,7 @@ class Browser
         @delRecent file
         
         if item == @selectedItem() and @items.children.length > 1
-            index = clamp 0, @items.children.length-2, childIndex item
+            index = clamp 0, @items.children.length-2, elem.childIndex item
             item.remove()
             @selectIndex index
         else
@@ -181,7 +179,7 @@ class Browser
     addFile: (file) ->
 
         try
-            svg = fs.readFileSync resolve(file), encoding: 'utf8'
+            svg = fs.readFileSync slash.resolve(file), encoding: 'utf8'
         catch e
             log "error adding file #{file}", e
             return
@@ -189,7 +187,7 @@ class Browser
         item = elem 'span', class: 'browserItem'
 
         text = winTitle class: 'browserItemTitle', close:@onDelFile, buttons: [
-            text: fileName file
+            text: slash.base file
             action: @onFinderFile
         ]
         view = elem class: 'browserItemView'
@@ -381,7 +379,7 @@ class Browser
     navigate: (dir) ->
         
         current = @selectedItem()
-        oldIndex = childIndex current
+        oldIndex = elem.childIndex current
         newIndex = clamp 0, current.parentNode.children.length-1, oldIndex+dir
         if oldIndex != newIndex
             @selectIndex newIndex
@@ -415,8 +413,8 @@ class Browser
     
     onStart: (drag, event) =>
         
-        if upAttr event.target, 'file'
-            @selectIndex childIndex upElem event.target, attr: 'file'
+        if elem.upAttr event.target, 'file'
+            @selectIndex elem.childIndex elem.upElem event.target, attr: 'file'
         
     #  0000000  000000000   0000000   00000000   
     # 000          000     000   000  000   000  
@@ -427,7 +425,7 @@ class Browser
     onStop: (drag, event) =>
         
         if drag.startPos == drag.lastPos
-            if file = upAttr event.target, 'file'
+            if file = elem.upAttr event.target, 'file'
                 @openFile file
                 
     openFile: (file) ->

@@ -14,8 +14,10 @@ Convert = require './convert'
 
 class Points extends Convert
 
-    constructor: (@kali, @item) ->
-
+    constructor: (kali, item) ->
+        super()
+        @kali  = kali
+        @item  = item
         @trans = @kali.trans
         
     # 00     00   0000000   000   000  00000000     0000000     0000000   000000000   0000000  

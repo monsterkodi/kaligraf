@@ -16,9 +16,9 @@ GradientEdit = require './gradientedit'
 
 class Color extends Tool
 
-    constructor: (@kali, cfg) ->
+    constructor: (kali, cfg) ->
 
-        super @kali, cfg
+        super kali, cfg
                 
         @svg = SVG(@element).size '100%', '100%'
 
@@ -180,7 +180,7 @@ class Color extends Tool
     
     initChildren: ->
 
-        super
+        super()
 
         if @name == 'stroke'
 
@@ -259,7 +259,7 @@ class Color extends Tool
             delete @kali.tools.temp
             tempStroke = true
 
-        super
+        super()
 
         if @name == 'fill'
             if tempStroke

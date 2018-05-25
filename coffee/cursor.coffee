@@ -5,7 +5,7 @@
 # 000       000   000  000   000       000  000   000  000   000
 #  0000000   0000000   000   000  0000000    0000000   000   000
 
-{ elem, clamp, fileExists, fileName, path, fs, log, _ } = require 'kxk' 
+{ elem, clamp, slash, fs, log, _ } = require 'kxk' 
 
 { svgItems, growBox } = require './utils'
 
@@ -20,7 +20,7 @@ class Cursor
         name = 'text-cursor' if name == 'text'
         
         svgFile = "#{__dirname}/../svg/#{name}.svg"
-        if not fileExists svgFile 
+        if not slash.fileExists svgFile 
             log "no cursor file #{svgFile}"
             return 'default'
         
@@ -57,15 +57,15 @@ class Cursor
         
         tip = @calcTip svg, name
             
-        cursorDir = path.join path.dirname(svgFile), 'cursor'
+        cursorDir = slash.join slash.dirname(svgFile), 'cursor'
         fs.ensureDirSync cursorDir 
                         
         if opt?.fill or opt?.stroke
             svg.attr width: 32, height:32
             "url(data:image/svg+xml;base64,#{btoa svg.svg()}) #{tip.x} #{tip.y}, auto"
         else
-            svgFileX1 = path.join cursorDir, tip.name + " x1.svg"
-            svgFileX2 = path.join cursorDir, tip.name + " x2.svg"
+            svgFileX1 = slash.join cursorDir, tip.name + " x1.svg"
+            svgFileX2 = slash.join cursorDir, tip.name + " x2.svg"
             
             svg.attr width: tip.s, height:tip.s
             fs.writeFileSync svgFileX1, svg.svg(), encoding: 'utf8'

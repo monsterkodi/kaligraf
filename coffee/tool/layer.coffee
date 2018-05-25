@@ -16,9 +16,9 @@ class Layer extends Tool
 
     log: -> #log.apply log, [].slice.call arguments, 0
 
-    constructor: (@kali, cfg) ->
+    constructor: (kali, cfg) ->
 
-        super @kali, cfg
+        super kali, cfg
 
         @bindStage ['numLayers', 'layerAt', 'activeLayer', 'clampLayer',
             'activateLayer', 'selectLayer', 'lowerLayer', 'raiseLayer',

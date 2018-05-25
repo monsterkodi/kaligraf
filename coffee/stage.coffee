@@ -5,8 +5,7 @@
 #      000     000     000   000  000   000  000
 # 0000000      000     000   000   0000000   00000000
 
-{   resolve, elem, post, drag, prefs, stopEvent, fileName,
-    first, last, empty, clamp, pos, fs, log, _ } = require 'kxk'
+{   elem, post, drag, prefs, stopEvent, first, last, empty, clamp, pos, fs, log, _ } = require 'kxk'
 
 {   contrastColor, normRect, bboxForItems, itemIDs, insideBox, itemBox, boxPos,
     growBox, rboxForItems, boxOffset, boxCenter, itemGradient, itemMatrix } = require './utils'
@@ -494,7 +493,7 @@ class Stage
         @currentFile = file
         
         try
-            svg = fs.readFileSync resolve(file), encoding: 'utf8'
+            svg = fs.readFileSync slash.resolve(file), encoding: 'utf8'
         catch e
             log "error:", e
             return
@@ -542,7 +541,7 @@ class Stage
                     svg = fs.readFileSync file, encoding: 'utf8'
                     @addSVG svg, 
                         color:  false
-                        id:     fileName file
+                        id:     slash.base file
                         parent: @activeLayer()
                 @done()
                 

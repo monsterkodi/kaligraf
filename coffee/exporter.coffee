@@ -5,7 +5,7 @@
 # 000        000 000   000        000   000  000   000     000     000       000   000
 # 00000000  000   000  000         0000000   000   000     000     00000000  000   000
 
-{ elem, empty, resolve, path, fs, fileExists, log, _ } = require 'kxk'
+{ elem, empty, slash, fs, log, _ } = require 'kxk'
 
 { bboxForItems, growBox, uuid, itemGradient, itemFilter, itemIDs } = require './utils'
 
@@ -74,7 +74,7 @@ class Exporter
         
         @cleanGradients svg
         @cleanFilters   svg
-        fs.writeFileSync resolve(opt.file), @svg(svg, opt), encoding: 'utf8'
+        fs.writeFileSync slash.resolve(opt.file), @svg(svg, opt), encoding: 'utf8'
 
     @saveSVG: (name, svg) ->
         
@@ -82,7 +82,7 @@ class Exporter
         @cleanFilters   svg
         fs.writeFileSync @svgFile(name), @svg(svg), encoding: 'utf8'
 
-    @hasSVG: (name) -> fileExists @svgFile name
+    @hasSVG: (name) -> slash.fileExists @svgFile name
                 
     @loadSVG: (name) ->
         
@@ -92,13 +92,13 @@ class Exporter
             log 'no such icon file', @svgFile(name)
         null
 
-    @svgFile: (name) -> "#{__dirname}/../svg/#{name}.svg"
+    @svgFile: (name) -> slash.join __dirname, "../svg/#{name}.svg"
     
     @export: (root, file, opt) ->
         
         svg = @svg root
 
-        if path.extname(file) == '.svg'
+        if slash.extname(file) == '.svg'
             fs.writeFileSync file, svg, encoding: 'utf8'
         else
             padding = not opt?.padding? and 10 or opt.padding

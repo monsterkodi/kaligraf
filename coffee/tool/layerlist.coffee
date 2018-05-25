@@ -6,7 +6,7 @@
 0000000  000   000     000     00000000  000   000  0000000  000  0000000      000   
 ###
 
-{ stopEvent, drag, empty, setStyle, childIndex, prefs, keyinfo, elem, clamp, last, post, log, $, _ } = require 'kxk'
+{ stopEvent, drag, empty, setStyle, prefs, keyinfo, elem, clamp, last, post, log, $, _ } = require 'kxk'
 
 { boundingBox, winTitle, highlightColor } = require '../utils'
 
@@ -277,7 +277,7 @@ class LayerList
     # 000   000   0000000     000     000      0      00000000  
     
     activeLayer: -> $ @scroll, '.layerListLayer.active'
-    activeIndex: -> not @activeLayer() and -1 or @swapIndex childIndex @activeLayer()
+    activeIndex: -> not @activeLayer() and -1 or @swapIndex elem.childIndex @activeLayer()
     
     layerAt:   (index) -> @scroll.children[@swapIndex index]
     layerAtY: (y) => 
@@ -368,7 +368,7 @@ class LayerList
     onClick: (event) =>
         
         @element.focus()        
-        @activate @scroll.children.length - 1 - childIndex event.target
+        @activate @scroll.children.length - 1 - elem.childIndex event.target
         stopEvent event
     
     # 000   000  00000000  000   000  

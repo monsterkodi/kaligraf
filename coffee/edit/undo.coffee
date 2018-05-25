@@ -6,7 +6,7 @@
  0000000   000   000  0000000     0000000 
 ###
 
-{ post, first, last, empty, resolve, fs, str, log, _ } = require 'kxk'
+{ post, first, last, empty, slash, fs, str, log, _ } = require 'kxk'
 
 Object = require './object'
 
@@ -227,7 +227,7 @@ class Undo
         svg  = str(@history.filter (h) -> h.class != 'Object') 
         svg += str(@futures.filter (h) -> h.class != 'Object')
         
-        fs.writeFile resolve('~/Desktop/history.html'), svg, ->
+        fs.writeFile slash.resolve('~/Desktop/history.html'), svg, ->
             
     log: (msg) ->
         

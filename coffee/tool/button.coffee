@@ -5,7 +5,7 @@
 # 000   000  000   000     000        000     000   000  000  0000
 # 0000000     0000000      000        000      0000000   000   000
 
-{ elem, upProp, stopEvent, log, $, _ } = require 'kxk'
+{ elem, stopEvent, log, $, _ } = require 'kxk'
 
 Exporter = require '../exporter'
 
@@ -142,7 +142,7 @@ class Button
         button = event.target.name
         
         if not button?
-            button = upProp event.target, 'name'
+            button = elem.upProp event.target, 'name'
         
         if button?
             @clickButton button, event 

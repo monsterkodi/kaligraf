@@ -14,9 +14,9 @@ Points = require '../edit/points'
 
 class Angle extends Tool
 
-    constructor: (@kali, cfg) ->
+    constructor: (kali, cfg) ->
         
-        super @kali, cfg
+        super kali, cfg
         
         @trans = @kali.trans
         

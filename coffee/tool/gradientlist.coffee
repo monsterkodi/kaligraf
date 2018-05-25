@@ -5,8 +5,7 @@
 # 000   000  000   000  000   000  000   000  000  000       000  0000     000     000      000       000     000   
 #  0000000   000   000  000   000  0000000    000  00000000  000   000     000     0000000  000  0000000      000   
 
-{   stopEvent, setStyle, childIndex, upElem, drag, childIndex, 
-    prefs, keyinfo, elem, empty, clamp, post, pos, log, $, _ } = require 'kxk'
+{   stopEvent, setStyle, drag, prefs, keyinfo, elem, empty, clamp, post, pos, log, $, _ } = require 'kxk'
 
 {   gradientStops, gradientState, gradientType,
     ensureInSize, winTitle, boundingBox, boxPos, highlightColor, invertColor } = require '../utils'
@@ -84,11 +83,11 @@ class GradientList
     
     onDragStart: (drag, event) => 
 
-        @dragGradient = upElem event.target, prop: 'gradient'
+        @dragGradient = elem.upElem event.target, prop: 'gradient'
 
         return 'skip' if not @dragGradient?
         
-        index = childIndex @dragGradient
+        index = elem.childIndex @dragGradient
         
         br = @dragGradient.getBoundingClientRect()
         
@@ -109,8 +108,8 @@ class GradientList
         
         @dragDiv.style.transform = "translateY(#{drag.deltaSum.y}px)"
         if gradient = @gradientAtY drag.pos.y
-            if childIndex(gradient) != childIndex(@dragGradient)
-                @dragDiv.stopIndex = childIndex gradient
+            if elem.childIndex(gradient) != elem.childIndex(@dragGradient)
+                @dragDiv.stopIndex = elem.childIndex gradient
                 @swapGradients gradient, @dragGradient
                         
     onDragStop: (drag,event) =>
@@ -240,7 +239,7 @@ class GradientList
     # 000   000   0000000     000     000      0      00000000  
     
     activeGradient: -> $ @scroll, '.gradientItem.active'
-    activeIndex: -> not @activeGradient() and -1 or childIndex @activeGradient()
+    activeIndex: -> not @activeGradient() and -1 or elem.childIndex @activeGradient()
 
     activeItem: -> @itemAt @activeIndex()
     itemAt: (index) -> @gradientAt(index)?.gradient
@@ -262,12 +261,12 @@ class GradientList
         
         return if not gradientA? or not gradientB?
         return if gradientA == gradientB
-        if childIndex(gradientA) > childIndex(gradientB)
+        if elem.childIndex(gradientA) > elem.childIndex(gradientB)
             @scroll.insertBefore gradientB, gradientA
-            @scroll.insertBefore gradientA, @scroll.children[childIndex(gradientB)]
+            @scroll.insertBefore gradientA, @scroll.children[elem.childIndex(gradientB)]
         else
             @scroll.insertBefore gradientA, gradientB
-            @scroll.insertBefore gradientB, @scroll.children[childIndex(gradientA)]
+            @scroll.insertBefore gradientB, @scroll.children[elem.childIndex(gradientA)]
                   
     # 00000000   00000000   0000000  000  0000000  00000000  
     # 000   000  000       000       000     000   000       
@@ -346,7 +345,7 @@ class GradientList
     onClick: (event) => 
         
         @element.focus()
-        @activate childIndex event.target
+        @activate elem.childIndex event.target
         stopEvent event
     
     scrollToActive: ->

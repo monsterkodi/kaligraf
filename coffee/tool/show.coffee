@@ -14,9 +14,9 @@ Tool = require './tool'
 
 class Show extends Tool
         
-    constructor: (@kali, cfg) ->
+    constructor: (kali, cfg) ->
         
-        super @kali, cfg
+        super kali, cfg
         
         @trans = @kali.trans
         @selection = @stage.selection

@@ -5,7 +5,7 @@
 #    000     000   000  000   000  000           000
 #    000      0000000    0000000   0000000  0000000 
 
-{ elem, stopEvent, post, prefs, first, last, empty, fs, path, pos, log, _ } = require 'kxk'
+{ elem, stopEvent, post, prefs, first, last, empty, fs, pos, log, _ } = require 'kxk'
 
 Exporter = require '../exporter'
 Tool     = require './tool'
@@ -15,9 +15,9 @@ Window   = electron.remote.BrowserWindow
 
 class Tools extends Tool
 
-    constructor: (@kali, cfg) ->
+    constructor: (kali, cfg) ->
                 
-        super @kali, cfg
+        super kali, cfg
                 
         @element.style.zIndex = 9999
         
@@ -315,9 +315,10 @@ class Tools extends Tool
             else         tool.showChildren()
 
     hideChildren: ->
+        
         for tool in @children
             tool.hideChildren()
-        super
+        super()
             
     toggleProperties: ->
         

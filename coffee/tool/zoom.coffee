@@ -13,9 +13,9 @@ Tool = require './tool'
 
 class Zoom extends Tool
 
-    constructor: (@kali, cfg) ->
+    constructor: (kali, cfg) ->
         
-        super @kali, cfg
+        super kali, cfg
         
         @bindStage ['centerSelection', 'resetZoom', 'zoomAtPos', 'setZoom', 'toolCenter']
         

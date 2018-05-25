@@ -1,4 +1,5 @@
 
+
 # 00000000    0000000   000      00000000  000000000  000000000  00000000
 # 000   000  000   000  000      000          000        000     000
 # 00000000   000000000  000      0000000      000        000     0000000
@@ -15,21 +16,24 @@ chroma = require 'chroma-js'
 
 class Palette extends Tool
 
-    constructor: (@kali, cfg) ->
+    constructor: (kali, cfg) ->
         
         cfg       ?= {}
         cfg.name  ?= 'palette'
         cfg.class ?= 'palette'
 
-        @width  = cfg.width  ? @kali.paletteWidth
-        @height = cfg.height ? @kali.toolSize
+        width  = cfg.width  ? kali.paletteWidth
+        height = cfg.height ? kali.toolSize
         
         cfg.halo        ?= {}
         cfg.halo.x      ?= 0
-        cfg.halo.width  ?= @width+@height
+        cfg.halo.width  ?= width+height
         
-        super @kali, cfg
+        super kali, cfg
 
+        @width  = width
+        @height = height
+        
         @element.style.zIndex = 1000
         @element.addEventListener 'mouseleave', @onMouseLeave
         

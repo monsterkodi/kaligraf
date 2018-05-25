@@ -13,9 +13,9 @@ Tool = require './tool'
 
 class Padding extends Tool
 
-    constructor: (@kali, cfg) ->
+    constructor: (kali, cfg) ->
         
-        super @kali, cfg
+        super kali, cfg
         
         @selection = @stage.selection
         

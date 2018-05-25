@@ -1,9 +1,10 @@
-
-# 000000000   0000000    0000000   000       0000000
-#    000     000   000  000   000  000      000     
-#    000     000   000  000   000  000      0000000 
-#    000     000   000  000   000  000           000
-#    000      0000000    0000000   0000000  0000000 
+###
+000000000   0000000    0000000   000       0000000
+   000     000   000  000   000  000      000     
+   000     000   000  000   000  000      0000000 
+   000     000   000  000   000  000           000
+   000      0000000    0000000   0000000  0000000 
+###
 
 { elem, stopEvent, post, prefs, first, last, empty, fs, pos, log, _ } = require 'kxk'
 
@@ -141,8 +142,6 @@ class Tools extends Tool
                 { name: 'circle',           group: 'shape', popup: 'temp' }
                 { name: 'ellipse',          group: 'shape', popup: 'temp' }
                 { name: 'image',            group: 'shape', popup: 'temp' }
-                # { name: 'pie', draw: true,  group: 'shape', popup: 'temp' }
-                # { name: 'arc', draw: true,  group: 'shape', popup: 'temp' }                
             ]
             [
                 { class: 'undo'   }

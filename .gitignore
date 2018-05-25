@@ -2,7 +2,7 @@
 /package.json
 /package-lock.json
 /node_modules
-/kaligraf-darwin-x64
+*-x64
 /svg/test/blank.svg
 /bin/*.json
 /Icon

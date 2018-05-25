@@ -181,7 +181,7 @@ class KaliApp
         process.exit 0
         
     showAbout: => about
-        img: "#{__dirname}/../bin/about.svg"
+        img: slash.join __dirname "../bin/about.svg"
         pkg: pkg
         imageWidth:    '250px'
         imageHeight:   '250px'

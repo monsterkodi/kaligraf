@@ -27,11 +27,11 @@ class LayerList
         @title = winTitle 
             close:  @onClose 
             buttons: [
-                text: 'new',  action: => @stage.createLayer selection:'keep'
+                text: 'new',  action: => @createLayer 'keep'
             ,
-                text: 'move', action: => @stage.createLayer selection:'move'
+                text: 'move', action: => @createLayer 'move'
             ,
-                text: 'copy', action: => @stage.createLayer selection:'copy'
+                text: 'copy', action: => @createLayer 'copy'
             ]
             
         @element.appendChild @title 
@@ -173,6 +173,8 @@ class LayerList
     # 000      000000000    00000    0000000   0000000    
     # 000      000   000     000     000       000   000  
     # 0000000  000   000     000     00000000  000   000  
+    
+    createLayer: (selection) -> @stage.createLayer selection:selection
     
     layerDiv: (index) ->
         

@@ -1,9 +1,10 @@
-
-# 000   000   0000000   000      000  
-# 000  000   000   000  000      000  
-# 0000000    000000000  000      000  
-# 000  000   000   000  000      000  
-# 000   000  000   000  0000000  000  
+###
+000   000   0000000   000      000  
+000  000   000   000  000      000  
+0000000    000000000  000      000  
+000  000   000   000  000      000  
+000   000  000   000  0000000  000  
+###
 
 { setStyle, keyinfo, stopEvent, empty, first, post, prefs, elem, sw, sh, pos, log, $, _ } = require 'kxk'
 
@@ -18,7 +19,6 @@ class Kali
 
     constructor: (element) ->
 
-        # post.debug ['emit']
         post.setMaxListeners 30
         
         @setStyle 'style'

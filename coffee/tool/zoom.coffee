@@ -17,14 +17,14 @@ class Zoom extends Tool
         
         super kali, cfg
         
-        @bindStage ['centerSelection', 'resetZoom', 'zoomAtPos', 'setZoom', 'toolCenter']
+        @bindStage ['centerSelection', 'zoomAtPos', 'setZoom', 'toolCenter', 'resetZoom']
         
         @initTitle()
         
         @initButtons [
             text:   'x1'
             name:   'reset'
-            action: @stage.resetZoom
+            action: @zoomReset
         ]
         @initButtons [
             text:   '-'
@@ -42,12 +42,12 @@ class Zoom extends Tool
         
         post.on 'stage', @onStage
     
-    # 000      00000000  000   000  00000000  000       0000000  
-    # 000      000       000   000  000       000      000       
-    # 000      0000000    000 000   0000000   000      0000000   
-    # 000      000          000     000       000           000  
-    # 0000000  00000000      0      00000000  0000000  0000000   
-    
+    # 0000000   0000000    0000000   00     00  
+    #    000   000   000  000   000  000   000  
+    #   000    000   000  000   000  000000000  
+    #  000     000   000  000   000  000 0 000  
+    # 0000000   0000000    0000000   000   000  
+
     @levels = [
         0.01, 0.02, 0.05,
         0.10, 0.15, 0.20, 0.25, 0.33, 0.50, 0.75,
@@ -56,25 +56,15 @@ class Zoom extends Tool
         100, 150, 200, 400, 800,
         1000
     ]
-        
-    # 000  000   000  
-    # 000  0000  000  
-    # 000  000 0 000  
-    # 000  000  0000  
-    # 000  000   000  
     
+    zoomReset: => @stage.setZoom 1, @stage.toolCenter 1
+
     zoomIn: (event) => 
         
         for i in [0...Zoom.levels.length]
             if @stage.zoom < Zoom.levels[i]
                 @stage.setZoom Zoom.levels[i], @stage.stageCenter()
                 return
-
-    #  0000000   000   000  000000000  
-    # 000   000  000   000     000     
-    # 000   000  000   000     000     
-    # 000   000  000   000     000     
-    #  0000000    0000000      000     
     
     zoomOut: (event) =>
         

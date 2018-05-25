@@ -9,8 +9,6 @@
 
 { boundingBox } = require '../utils'
 
-{ multi } = require 'heterarchy'
-
 Spin     = require './spin'
 Exporter = require '../exporter'
 
@@ -19,6 +17,7 @@ class Tool extends Spin
     constructor: (kali, cfg) ->
 
         super()
+        
         @kali   = kali
         @cfg    = cfg
         @height = @kali.toolSize
@@ -53,6 +52,7 @@ class Tool extends Spin
         mthds = [mthds] if not _.isArray mthds
         for mthd in mthds
             @stage[mthd] = @constructor.prototype[mthd].bind @stage
+            # @stage[mthd] = @[mthd]
                      
     # 000000000  000  000000000  000      00000000  
     #    000     000     000     000      000       

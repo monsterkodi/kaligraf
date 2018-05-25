@@ -7,7 +7,7 @@ author          monsterkodi
 license         Unlicense
 scripts
                 mac   ./bin/buildmac.sh
-                win   ./bin/buildwin.sh
+                win   bash ./bin/buildwin.sh
 repository
                 type  git
                 url   git+https://github.com/monsterkodi/kaligraf.git

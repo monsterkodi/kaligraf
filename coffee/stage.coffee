@@ -5,10 +5,10 @@
 #      000     000     000   000  000   000  000
 # 0000000      000     000   000   0000000   00000000
 
-{   elem, post, drag, prefs, stopEvent, first, last, empty, clamp, pos, fs, log, _ } = require 'kxk'
+{ elem, post, drag, prefs, stopEvent, first, last, empty, clamp, pos, slash, fs, log, _ } = require 'kxk'
 
-{   contrastColor, normRect, bboxForItems, itemIDs, insideBox, itemBox, boxPos,
-    growBox, rboxForItems, boxOffset, boxCenter, itemGradient, itemMatrix } = require './utils'
+{ contrastColor, normRect, bboxForItems, itemIDs, insideBox, itemBox, boxPos,
+  growBox, rboxForItems, boxOffset, boxCenter, itemGradient, itemMatrix } = require './utils'
 
 electron  = require 'electron'
 clipboard = electron.clipboard
@@ -104,7 +104,7 @@ class Stage
                 @do 'stage color'
                 @setColor color, alpha
                 @done()
-        
+                
     foregroundColor: -> contrastColor @color
 
     # 000       0000000   000   000  00000000  00000000    0000000  

@@ -8,7 +8,7 @@
 
 { elem, post, drag, prefs, stopEvent, first, last, empty, clamp, pos, slash, fs, log, _ } = require 'kxk'
 
-{ contrastColor, normRect, bboxForItems, itemIDs, insideBox, itemBox, boxPos,
+{ contrastColor, normRect, bboxForItems, itemIDs, insideBox, itemBox, boxPos, uuid, 
   growBox, rboxForItems, boxOffset, boxCenter, itemGradient, itemMatrix } = require './utils'
 
 electron  = require 'electron'

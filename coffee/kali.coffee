@@ -6,7 +6,7 @@
 000   000  000   000  0000000  000  
 ###
 
-{ keyinfo, stopEvent, empty, first, post, prefs, elem, sw, sh, pos, log, $, _ } = require 'kxk'
+{ keyinfo, stopEvent, empty, first, post, prefs, popup, elem, sw, sh, pos, log, $, _ } = require 'kxk'
 
 Tools    = require './tool/tools'
 Cursor   = require './cursor'
@@ -61,6 +61,8 @@ class Kali
         window.menu  = new Menu
         
         post.on 'menuAction', @onMenuAction
+        
+        @initContextMenu()
         
     onResize: => 
 
@@ -127,7 +129,36 @@ class Kali
         log "unhandled menu action! ------------ posting to main '#{name}' args: #{args}"
         
         post.toMain 'menuAction', name, args
+
+    #  0000000   0000000   000   000  000000000  00000000  000   000  000000000  
+    # 000       000   000  0000  000     000     000        000 000      000     
+    # 000       000   000  000 0 000     000     0000000     00000       000     
+    # 000       000   000  000  0000     000     000        000 000      000     
+    #  0000000   0000000   000   000     000     00000000  000   000     000     
+
+    initContextMenu: ->
         
+        $("#kali").addEventListener "contextmenu", (event) ->
+            
+            absPos = pos event
+            if not absPos?
+                absPos = pos $("#kali").getBoundingClientRect().left, $("#kali").getBoundingClientRect().top
+                
+            opt = items: [
+                text:   'Clear'
+                combo:  'ctrl+k'
+                cb:     -> post.emit 'menuAction', 'Clear'
+            ,
+                text:   'Toggle Menu'
+                combo:  'alt+m'
+                cb:     -> post.emit 'menuAction', 'Toggle Menu'
+            ]
+            
+            opt.x = absPos.x
+            opt.y = absPos.y
+        
+            popup.menu opt
+                
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
     # 0000000    0000000     00000    

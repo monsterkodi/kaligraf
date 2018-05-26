@@ -981,16 +981,38 @@ button
 // 000         0000000   000         0000000   000
 
 .popup
+    z-index             9999
     background-color    frameColor
-
+    position            absolute
+    border-radius       3px
+    font-size           titlebarFontSize
+    font-family         titlebarFont
+    font-weight         bold
+    
 .popupItem
+    padding             2px
+    padding-left        2 * frameWidth
+    padding-right       2 * frameWidth + 70px
+    cursor              pointer
     color               #888
+    &.separator
+        padding             0
+        cursor              default
+        border              0
+        height              0
+        margin-top          2px
+        margin-bottom       2px
+        border-top          1px solid #333
     &:not(:last-child)
         border-bottom       1px solid #222
     &.selected
         color           #fff
         & .popupCombo
             color       #888
+    &:last-child
+        padding-bottom  frameWidth
+    &:first-child
+        padding-top     frameWidth
 
 .menuItem:active
 .popupItem:active
@@ -998,35 +1020,8 @@ button
 
 .popupCombo
     color               #333
-    
-.popupItem.separator
-    border-top          1px solid #333
-
-.popup
-    position            absolute
-    border-radius       3px
-
-.popupItem
-    padding             2px
-    padding-left        2 * frameWidth
-    padding-right       2 * frameWidth + 70px
-    cursor              pointer
-    &:last-child
-        padding-bottom  frameWidth
-    &:first-child
-        padding-top     frameWidth
-
-.popupCombo
     position            absolute
     right               2 * frameWidth
-
-.popupItem.separator
-    padding             0
-    cursor              default
-    border              0
-    height              0
-    margin-top          2px
-    margin-bottom       2px
 
 .popupCombo
     pointer-events      none

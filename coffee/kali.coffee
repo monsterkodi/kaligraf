@@ -145,10 +145,6 @@ class Kali
                 absPos = pos $("#kali").getBoundingClientRect().left, $("#kali").getBoundingClientRect().top
                 
             opt = items: [
-                text:   'Clear'
-                combo:  'ctrl+k'
-                cb:     -> post.emit 'menuAction', 'Clear'
-            ,
                 text:   'Toggle Menu'
                 combo:  'alt+m'
                 cb:     -> post.emit 'menuAction', 'Toggle Menu'
@@ -171,6 +167,9 @@ class Kali
         
         {mod, key, combo, char} = keyinfo.forEvent event
 
+        if combo
+            return stopEvent(event) if 'unhandled' != window.menu.globalModKeyComboEvent mod, key, combo, event
+            
         return stopEvent(event) if 'unhandled' != @tools.handleKey mod, key, combo, char, event, true
         return stopEvent(event) if 'unhandled' != @stage.handleKey mod, key, combo, char, event, true
 

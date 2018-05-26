@@ -877,11 +877,9 @@ button
     white-space         nowrap
     pointer-events      auto
     cursor              pointer
-    -webkit-app-region  no-drag
-
-#titlebar
     background          #222
     color               #aaa
+    -webkit-app-region  drag
 
 .titlebar-dot
     color               #444
@@ -909,12 +907,14 @@ button
     margin-top          -1px
 
 #titlebar .winicon img
+    -webkit-app-region  no-drag
     padding-left        6px
     padding-right       2px
     width               titlebarHeight
     height              titlebarHeight
     
 #titlebar .winclose
+    -webkit-app-region  no-drag
     flex                0 0 45px
     float               right
     display             inline-block
@@ -944,6 +944,7 @@ button
 // 000   000  00000000  000   000   0000000   
             
 .menuItem
+    -webkit-app-region  no-drag
     color               #888
     background-color    titleColor
     
@@ -958,7 +959,7 @@ button
 .menu
     height              titlebarHeight
     pointer-events      auto
-    -webkit-app-region  no-drag
+    -webkit-app-region  drag
     flex                1 1 0
     display             flex
     flex-direction      row

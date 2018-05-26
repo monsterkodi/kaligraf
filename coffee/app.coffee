@@ -70,6 +70,7 @@ winWithID   = (winID) -> Window.fromId winID
 
 post.on 'toggleDevTools', => win.browserWindow.toggleDevTools()
 post.on 'maximizeWindow', => kaliapp.maximizeWindow()
+post.on 'menuAction', (action, arg) -> kaliapp.onMenuAction action, arg
                         
 # 000   000   0000000   000      000   0000000   00000000   00000000     
 # 000  000   000   000  000      000  000   000  000   000  000   000    
@@ -201,6 +202,12 @@ class KaliApp
             versionOffset: '15px'
             highlight:     '#88f'
 
+    onMenuAction: (action, arg) ->
+    
+        switch action
+            when 'Quit'     then quitApp()
+            when 'About'    then @showAbout()
+            
 # 000   000   0000000   000000000   0000000  000   000  00000000  00000000     
 # 000 0 000  000   000     000     000       000   000  000       000   000    
 # 000000000  000000000     000     000       000000000  0000000   0000000      

@@ -22,11 +22,11 @@ class Menu
 
             text: pkg.name
             menu: [
-                text: "About #{pkg.name}",   accel: 'command+,'
+                text: "About",  accel: 'ctrl+,'
             ,
                 text: ''
             ,
-                text: 'Quit',                accel: 'command+q'
+                text: 'Quit',   accel: 'ctrl+q'
             ]
         ,
             # 00000000  000  000      00000000
@@ -37,29 +37,29 @@ class Menu
 
             text: 'File'
             menu: [
-                text: 'New',             accel: 'command+n'
+                text: 'New',             accel: 'ctrl+n'
             ,
-                text: 'Clear',           accel: 'command+k'
+                text: 'Clear',           accel: 'ctrl+k'
             ,
-                text: 'Reload',          accel: 'command+r'
-            ,
-                text:  ''
-            ,
-                text: 'Open Recent...',  accel: 'command+.'
-            ,
-                text: 'Open...',         accel: 'command+o'
+                text: 'Reload',          accel: 'ctrl+r'
             ,
                 text:  ''
             ,
-                text: 'Save',            accel: 'command+s'
+                text: 'Open Recent...',  accel: 'ctrl+.'
             ,
-                text: 'Save As...',      accel: 'command+shift+s'
+                text: 'Open...',         accel: 'ctrl+o'
+            ,
+                text:  ''
+            ,
+                text: 'Save',            accel: 'ctrl+s'
+            ,
+                text: 'Save As...',      accel: 'ctrl+shift+s'
             ,
                 text:  ''
             ,
                 text: 'Import...',       accel: 'o'
             ,
-                text: 'Export...',       accel: 'command+alt+s'
+                text: 'Export...',       accel: 'ctrl+alt+s'
             ,
                 text:  ''
             ]
@@ -76,7 +76,7 @@ class Menu
                 menu: [
                     text: 'Left',    accel: '1'
                 ,
-                    text: 'Right',   accel: 'command+1'
+                    text: 'Right',   accel: 'ctrl+1'
                 ,
                     text:  ''
                 ,
@@ -90,19 +90,19 @@ class Menu
                 ,
                     text: 'Top',     accel: '4'
                 ,
-                    text: 'Bottom',  accel: 'command+4'
+                    text: 'Bottom',  accel: 'ctrl+4'
                 ,
                     text:  ''
                 ,
                     text: 'Space Horizontal', accel: '5'
                 ,
-                    text: 'Space Vertical',   accel: 'command+5'
+                    text: 'Space Vertical',   accel: 'ctrl+5'
                 ,
                     text:  ''
                 ,
                     text: 'Space Radial',     accel: '6'
                 ,
-                    text: 'Average Radius',   accel: 'command+6'
+                    text: 'Average Radius',   accel: 'ctrl+6'
                 ]
             ,
                 text: 'Bezier'
@@ -124,39 +124,39 @@ class Menu
             ,
                 text: 'Order'
                 menu: [
-                    text: 'Front',       accel: 'command+alt+up'
+                    text: 'Front',       accel: 'ctrl+alt+up'
                 ,
-                    text: 'Raise',       accel: 'command+up'
+                    text: 'Raise',       accel: 'ctrl+up'
                 ,
-                    text: 'Lower',       accel: 'command+down'
+                    text: 'Lower',       accel: 'ctrl+down'
                 ,
-                    text: 'Back',        accel: 'command+alt+down'
+                    text: 'Back',        accel: 'ctrl+alt+down'
                 ]
             ,
                 text: 'Select'
                 menu: [
-                    text: 'All',         accel: 'command+a'
+                    text: 'All',         accel: 'ctrl+a'
                 ,
-                    text: 'None',        accel: 'command+d'
+                    text: 'None',        accel: 'ctrl+d'
                 ,
-                    text: 'Invert',      accel: 'command+i'
+                    text: 'Invert',      accel: 'ctrl+i'
                 ,
                     text:  ''
                 ,
-                    text: 'More',        accel: 'command+m'
+                    text: 'More',        accel: 'ctrl+m'
                 ,
-                    text: 'Less',        accel: 'command+shift+m'
+                    text: 'Less',        accel: 'ctrl+shift+m'
                 ,
-                    text: 'Prev',        accel: 'command+['
+                    text: 'Prev',        accel: 'ctrl+['
                 ,
-                    text: 'Next',        accel: 'command+]'
+                    text: 'Next',        accel: 'ctrl+]'
                 ]
             ,
                 text: 'Flip'
                 menu: [
                     text: 'Horizontal',  accel: '6'
                 ,
-                    text: 'Vertical',    accel: 'command+6'
+                    text: 'Vertical',    accel: 'ctrl+6'
                 ]
             ,
                 text:  ''
@@ -167,23 +167,23 @@ class Menu
             ,
                 text:  ''
             ,
-                text: 'Group',       accel: 'command+g'
+                text: 'Group',       accel: 'ctrl+g'
             ,
-                text: 'Ungroup',     accel: 'command+u'
-            ,
-                text:  ''
-            ,
-                text: 'Cut',         accel: 'command+x'
-            ,
-                text: 'Copy',        accel: 'command+c'
-            ,
-                text: 'Paste',       accel: 'command+v'
+                text: 'Ungroup',     accel: 'ctrl+u'
             ,
                 text:  ''
             ,
-                text: 'Undo',        accel: 'command+z'
+                text: 'Cut',         accel: 'ctrl+x'
             ,
-                text: 'Redo',        accel: 'command+shift+z'
+                text: 'Copy',        accel: 'ctrl+c'
+            ,
+                text: 'Paste',       accel: 'ctrl+v'
+            ,
+                text:  ''
+            ,
+                text: 'Undo',        accel: 'ctrl+z'
+            ,
+                text: 'Redo',        accel: 'ctrl+shift+z'
             ]
         ,
             # 000000000   0000000    0000000   000
@@ -197,47 +197,47 @@ class Menu
 
                 text: 'Zoom'
                 menu: [
-                    text:'Reset',    accel: 'command+0'
+                    text:'Reset',    accel: 'ctrl+0'
                 ,
-                    text:'Out',      accel: 'command+-'
+                    text:'Out',      accel: 'ctrl+-'
                 ,
-                    text:'In',       accel: 'command+='
+                    text:'In',       accel: 'ctrl+='
                 ]
             ,
                 text: 'Toggle'
                 menu: [
                     text: 'Padding',     accel: 'p'
                 ,
-                    text: 'Fill/Stroke', accel: 'command+7'
+                    text: 'Fill/Stroke', accel: 'ctrl+7'
                 ,
-                    text: 'Properties',  accel: 'command+t'
+                    text: 'Properties',  accel: 'ctrl+t'
                 ,
-                    text: 'Tools',       accel: 'command+shift+t'
+                    text: 'Tools',       accel: 'ctrl+shift+t'
                 ,
-                    text: 'Groups',      accel: 'command+shift+g'
+                    text: 'Groups',      accel: 'ctrl+shift+g'
                 ,
-                    text: 'IDs',         accel: 'command+shift+i'
+                    text: 'IDs',         accel: 'ctrl+shift+i'
                 ,
                     text: 'Wire',        accel: 'w'
                 ,
-                    text: 'Unwire',      accel: 'command+w'
+                    text: 'Unwire',      accel: 'ctrl+w'
                 ]
             ,
                 text:  ''
             ,
-                text: 'Bezier',      accel: 'command+b'
+                text: 'Bezier',      accel: 'ctrl+b'
             ,
-                text: 'Polygon',     accel: 'command+p'
+                text: 'Polygon',     accel: 'ctrl+p'
             ,
-                text: 'Line',        accel: 'command+/'
+                text: 'Line',        accel: 'ctrl+/'
             ,
-                text: 'Text',        accel: 'command+t'
+                text: 'Text',        accel: 'ctrl+t'
             ,
                 text:  ''
             ,
-                text: 'Grid',        accel: 'command+9'
+                text: 'Grid',        accel: 'ctrl+9'
             ,
-                text: 'Center',      accel: 'command+e'
+                text: 'Center',      accel: 'ctrl+e'
             ]
         ,
             # 000   000  000  00000000  000   000
@@ -248,11 +248,11 @@ class Menu
 
             text: 'View'
             menu: [
-                text: 'Layers',      accel: 'command+l'
+                text: 'Layers',      accel: 'ctrl+l'
             ,
-                text: 'Fonts',       accel: 'command+f'
+                text: 'Fonts',       accel: 'ctrl+f'
             ,
-                text: 'Gradients',   accel: 'command+j'
+                text: 'Gradients',   accel: 'ctrl+j'
             ]
         ,
             # 000   000  000  000   000  0000000     0000000   000   000
@@ -263,9 +263,9 @@ class Menu
 
             text: 'Window'
             menu: [
-                text: 'Minimize',   accel: 'command+alt+shift+m'
+                text: 'Minimize',   accel: 'ctrl+alt+shift+m'
             ,
-                text: 'Maximize',   accel: 'command+alt+m'
+                text: 'Maximize',   accel: 'ctrl+alt+m'
             ,
                 text:  ''
             ,
@@ -295,6 +295,8 @@ class Menu
 
     globalModKeyComboEvent: (mod, key, combo, event) ->
 
+        log 'globalModKeyComboEvent', mod, key, combo
+        
         if not @mainMenu
             @mainMenu = Menu.template()
 
@@ -302,6 +304,7 @@ class Menu
             if combo == sds.get @mainMenu, keypath
                 keypath.pop()
                 item = sds.get @mainMenu, keypath
+                log 'key action!', item.action ? item.text, item.actarg
                 post.emit 'menuAction', item.action ? item.text, item.actarg
                 return item
 

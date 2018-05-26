@@ -63,7 +63,8 @@ class GradientList
         @titleDrag = new drag
             target: @title
             onMove: (drag) => 
-                newPos = boxPos(boundingBox @element).plus drag.delta
+                elemPos = pos parseInt(@element.style.left), parseInt(@element.style.top) 
+                newPos  = elemPos.plus drag.delta
                 prefs.set 'gradientlist:pos', newPos
                 @setPos newPos
                 @shadow.update()
@@ -291,7 +292,10 @@ class GradientList
         @setPos newPos
         @shadow.update()
 
-    setPos: (p) -> @element.style.transform = "translate(#{p.x}px, #{p.y}px)"
+    setPos: (p) -> 
+        
+        @element.style.left = "#{p.x}px"
+        @element.style.top  = "#{p.y}px"
     
     #  0000000  000   000   0000000   000   000
     # 000       000   000  000   000  000 0 000

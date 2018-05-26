@@ -193,8 +193,8 @@ class FontList
     groupForFamily: (family) ->
         
         for group,groupFonts of fontGroups
-            for elem in @scrolls[group].children
-                if elem.innerHTML == family
+            for child in @scrolls[group].children
+                if child.innerHTML == family
                     return group
     
     #  0000000  000   000   0000000   000   000

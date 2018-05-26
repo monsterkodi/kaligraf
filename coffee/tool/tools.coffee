@@ -400,8 +400,8 @@ class Tools extends Tool
                 when 'x' then return @onAction 'cut'
                 when 'c' then return @onAction 'copy'
                 when 'v' then return @onAction 'paste'
-                when 'z' then return @onAction 'undo'
                 when 'f' then return @onAction 'font'
+                when 'z' then return @onAction 'undo'
                 when 'y' then return @onAction 'redo'
         else
             if combo == 'space'

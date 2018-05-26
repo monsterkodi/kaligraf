@@ -41,7 +41,7 @@ class Menu
             ,
                 text: 'Clear',           accel: 'ctrl+k'
             ,
-                text: 'Reload',          accel: 'ctrl+r'
+                text: 'Revert',          accel: 'ctrl+r'
             ,
                 text:  ''
             ,
@@ -59,9 +59,7 @@ class Menu
             ,
                 text: 'Import...',       accel: 'o'
             ,
-                text: 'Export...',       accel: 'ctrl+alt+s'
-            ,
-                text:  ''
+                text: 'Export...',       accel: 'alt+ctrl+s'
             ]
         ,
             # 00000000  0000000    000  000000000
@@ -107,30 +105,30 @@ class Menu
             ,
                 text: 'Bezier'
                 menu: [
-                    text: 'Polygon', accel: 'ctrl+p'
+                    text: 'Convert Polygon', accel: 'alt+p'
                 ,
-                    text: 'Line',    accel: 'ctrl+l'
+                    text: 'Convert Line',    accel: 'alt+l'
                 ,
-                    text: 'Move',    accel: 'ctrl+m'
+                    text: 'Convert Move',    accel: 'alt+m'
                 ,
-                    text: 'Quad',    accel: 'ctrl+q'
+                    text: 'Convert Quad',    accel: 'alt+q'
                 ,
-                    text: 'Cubic',   accel: 'ctrl+c'
+                    text: 'Convert Cubic',   accel: 'alt+c'
                 ,
-                    text: 'Smooth',  accel: 'ctrl+s'
+                    text: 'Convert Smooth',  accel: 'alt+s'
                 ,
-                    text: 'Divide',  accel: 'ctrl+d'
+                    text: 'Convert Divide',  accel: 'alt+d'
                 ]
             ,
                 text: 'Order'
                 menu: [
-                    text: 'Front',       accel: 'ctrl+alt+up'
+                    text: 'Front',       accel: 'alt+ctrl+up'
                 ,
                     text: 'Raise',       accel: 'ctrl+up'
                 ,
                     text: 'Lower',       accel: 'ctrl+down'
                 ,
-                    text: 'Back',        accel: 'ctrl+alt+down'
+                    text: 'Back',        accel: 'alt+ctrl+down'
                 ]
             ,
                 text: 'Select'
@@ -210,7 +208,7 @@ class Menu
                 ,
                     text: 'Fill/Stroke', accel: 'ctrl+7'
                 ,
-                    text: 'Properties',  accel: 'ctrl+t'
+                    text: 'Properties',  accel: 'ctrl+;'
                 ,
                     text: 'Tools',       accel: 'ctrl+shift+t'
                 ,
@@ -263,15 +261,19 @@ class Menu
 
             text: 'Window'
             menu: [
-                text: 'Minimize',   accel: 'ctrl+alt+shift+m'
+                text: 'Minimize',   accel: 'alt+ctrl+shift+m'
             ,
-                text: 'Maximize',   accel: 'ctrl+alt+m'
+                text: 'Maximize',   accel: 'alt+ctrl+m'
             ,
-                text:  ''
+                text: ''
             ,
-                text: 'Reload',     accel: 'Ctrl+Alt+L'
+                text: 'Toggle Menu', accel:  'alt+m' 
             ,
-                text: 'DevTools',   accel: 'Ctrl+Alt+I'
+                text: ''
+            ,
+                text: 'Reload',     accel: 'alt+ctrl+l'
+            ,
+                text: 'DevTools',   accel: 'alt+ctrl+i'
             ]
         ]
 
@@ -295,7 +297,7 @@ class Menu
 
     globalModKeyComboEvent: (mod, key, combo, event) ->
 
-        log 'globalModKeyComboEvent', mod, key, combo
+        # log 'globalModKeyComboEvent', mod, key, combo
         
         if not @mainMenu
             @mainMenu = Menu.template()
@@ -304,7 +306,7 @@ class Menu
             if combo == sds.get @mainMenu, keypath
                 keypath.pop()
                 item = sds.get @mainMenu, keypath
-                log 'key action!', item.action ? item.text, item.actarg
+                # log 'key action!', item.action ? item.text, item.actarg
                 post.emit 'menuAction', item.action ? item.text, item.actarg
                 return item
 

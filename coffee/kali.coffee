@@ -50,8 +50,8 @@ class Kali
         @fileInfo = new FileInfo @
         
         @focus()
-        @element.addEventListener 'keydown', @onKeyDown
-        @element.addEventListener 'keyup',   @onKeyUp
+        document.addEventListener 'keydown', @onKeyDown
+        document.addEventListener 'keyup',   @onKeyUp
                 
         window.onresize = @onResize
         
@@ -114,9 +114,97 @@ class Kali
     
     onMenuAction: (name, args) =>
     
-        log name, args
+        log "onMenuAction '#{name}'"
+        
         switch name
     
+            when 'Gradients'        then return post.emit 'tool', 'gradient'
+            when 'Fonts'            then return post.emit 'tool', 'font'
+            when 'Layers'           then return post.emit 'tool', 'layer'
+            
+            when 'Open Recent...'   then return post.emit 'tool', 'browse'
+            when 'Open...'          then return post.emit 'tool', 'open'
+            
+            when 'Save As...'       then return post.emit 'tool', 'saveAs'
+            when 'Save'             then return post.emit 'tool', 'save'
+            
+            when 'Import...'        then return post.emit 'tool', 'import'
+            when 'Export...'        then return post.emit 'tool', 'export'
+            
+            when 'Revert'           then return post.emit 'tool', 'load'
+            when 'New'              then return post.emit 'tool', 'new'
+            when 'Clear'            then return post.emit 'tool', 'clear'
+            
+            when 'Left'             then return post.emit 'tool', 'button', 'align', 'left'
+            when 'Right'            then return post.emit 'tool', 'button', 'align', 'right'
+            when 'Center'           then return post.emit 'tool', 'button', 'align', 'center'
+            when 'Middle'           then return post.emit 'tool', 'button', 'align', 'mid'
+            when 'Top'              then return post.emit 'tool', 'button', 'align', 'top'
+            when 'Bottom'           then return post.emit 'tool', 'button', 'align', 'bot'
+            
+            when 'Convert Polygon'  then return post.emit 'convert', 'P'
+            when 'Convert Line'     then return post.emit 'convert', 'L'
+            when 'Convert Move'     then return post.emit 'convert', 'M'
+            when 'Convert Quad'     then return post.emit 'convert', 'Q'
+            when 'Convert Cubic'    then return post.emit 'convert', 'C'
+            when 'Convert Smooth'   then return post.emit 'convert', 'S'
+            when 'Convert Divide'   then return post.emit 'convert', 'D'
+            
+            when 'Front'            then return post.emit 'tool', 'button', 'send',  'front'
+            when 'Raise'            then return post.emit 'tool', 'button', 'order', 'forward'
+            when 'Lower'            then return post.emit 'tool', 'button', 'order', 'backward'
+            when 'Back'             then return post.emit 'tool', 'button', 'send',  'back'
+            
+            when 'All'              then return post.emit 'tool', 'selectAll'
+            when 'None'             then return post.emit 'tool', 'deselect'
+            when 'Invert'           then return post.emit 'tool', 'invert'
+            
+            when 'Horizontal'       then return post.emit 'tool', 'button', 'flip', 'horizontal'
+            when 'Vertical'         then return post.emit 'tool', 'button', 'flip', 'vertical'
+            
+            when 'Lock'             then return post.emit 'tool', 'button', 'lock', 'lock'
+            when 'Unlock'           then return post.emit 'tool', 'button', 'lock', 'unlock'
+            
+            when 'Group'            then return post.emit 'tool', 'group'
+            when 'Ungroup'          then return post.emit 'tool', 'ungroup'
+            
+            when 'Cut'              then return post.emit 'tool', 'cut'
+            when 'Copy'             then return post.emit 'tool', 'copy'
+            when 'Paste'            then return post.emit 'tool', 'paste'
+            
+            when 'Undo'             then return post.emit 'tool', 'undo'
+            when 'Redo'             then return post.emit 'tool', 'redo'
+            
+            when 'More'             then return post.emit 'tool', 'selectMore'
+            when 'Less'             then return post.emit 'tool', 'selectLess'
+            when 'Prev'             then return post.emit 'tool', 'selectPrev'
+            when 'Next'             then return post.emit 'tool', 'selectNext'
+            
+            when 'Space Horizontal' then return post.emit 'tool', 'button', 'space', 'horizontal'
+            when 'Space Vertical'   then return post.emit 'tool', 'button', 'space', 'vertical'
+            when 'Space Radial'     then return post.emit 'tool', 'spaceRadial'
+            when 'Average Radius'   then return post.emit 'tool', 'averageRadius'
+            
+            when 'Bezier'           then return post.emit 'tool', 'click', 'bezier_smooth'
+            when 'Polygon'          then return post.emit 'tool', 'click', 'polygon'
+            when 'Line'             then return post.emit 'tool', 'click', 'line'
+            when 'Text'             then return post.emit 'tool', 'click', 'text'
+            when 'Center'           then return post.emit 'tool', 'center'
+            
+            when 'Reset'            then return post.emit 'tool', 'button', 'zoom', 'reset'
+            when 'Out'              then return post.emit 'tool', 'button', 'zoom', 'out'
+            when 'In'               then return post.emit 'tool', 'button', 'zoom', 'in'
+            when 'Grid'             then return post.emit 'tool', 'button', 'grid', 'grid'
+            
+            when 'Padding'          then return post.emit 'tool', 'button', 'padding', 'show'
+            when 'Fill/Stroke'      then return post.emit 'tool', 'swapColor'
+            when 'Properties'       then return post.emit 'tool', 'toggleProperties'
+            when 'Tools'            then return post.emit 'tool', 'toggleTools'
+            when 'Groups'           then return post.emit 'tool', 'button', 'show', 'groups'
+            when 'IDs'              then return post.emit 'tool', 'button', 'show', 'ids'
+            when 'Wire'             then return post.emit 'tool', 'button', 'wire', 'wire'
+            when 'Unwire'           then return post.emit 'tool', 'button', 'wire', 'unwire'
+            
             when 'Toggle Menu'      then return window.menu.toggle()
             when 'Show Menu'        then return window.menu.show()
             when 'Hide Menu'        then return window.menu.hide()
@@ -124,7 +212,9 @@ class Kali
             when 'Reload'           then return win.webContents.reloadIgnoringCache()
             when 'Close Window'     then return win.close()
             when 'Minimize'         then return win.minimize()
-            when 'Maximize'         then return if win.isMaximized() then win.unmaximize() else win.maximize()  
+            when 'Maximize'         
+                if win.isMaximized() then win.unmaximize() else win.maximize()  
+                return 
             
         log "unhandled menu action! ------------ posting to main '#{name}' args: #{args}"
         

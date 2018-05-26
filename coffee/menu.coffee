@@ -12,7 +12,12 @@ pkg = require '../package'
 
 class Menu
 
-    @template: -> Menu.makeTemplate noon.load './coffee/menu.noon'
+    @template: ->
+        
+        if empty Menu.templateCache
+            Menu.templateCache = Menu.makeTemplate noon.load './coffee/menu.noon'
+        Menu.templateCache
+        
     @makeTemplate: (obj) ->
         
         tmpl = []
@@ -32,7 +37,7 @@ class Menu
         tmpl
 
     constructor: ->
-        log Menu.template()
+
         @menu = new menu items:Menu.template()
         @elem = @menu.elem
         window.title.elem.insertBefore @elem, window.title.elem.firstChild.nextSibling

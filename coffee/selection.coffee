@@ -298,8 +298,11 @@ class Selection
 
     stageStart: (drag, event) ->
         
-        eventPos = pos event
+        if event.button != 0
+            log 'stageSkip'
+            return 'skip'
         
+        eventPos = pos event
         if item = @stage.itemAtPos eventPos
             # log 'Selection.stageStart', item?.id()
             if not @contains item

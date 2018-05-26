@@ -5,7 +5,7 @@
 # 000  000   000   000  000      000
 # 000   000  000   000  0000000  000
 
-kali
+kaligraf
     About                   ctrl+,
     -
     Quit                    ctrl+q
@@ -92,6 +92,25 @@ Edit
     Undo                    ctrl+z
     Redo                    ctrl+shift+z
 
+#  0000000  000   000   0000000   000   000  
+# 000       000   000  000   000  000 0 000  
+# 0000000   000000000  000   000  000000000  
+#      000  000   000  000   000  000   000  
+# 0000000   000   000   0000000   00     00  
+
+Show
+    Padding             p
+    Grid                ctrl+9
+    -
+    Tools               ctrl+shift+t
+    Properties          ctrl+;
+    --
+    Groups              ctrl+shift+g
+    IDs                 ctrl+shift+i
+    ---
+    Wire                w
+    Unwire              ctrl+w
+    
 # 000000000   0000000    0000000   000
 #    000     000   000  000   000  000
 #    000     000   000  000   000  000
@@ -99,27 +118,14 @@ Edit
 #    000      0000000    0000000   0000000
 
 Tool
-    Zoom
-        Center Selection    ctrl+e
-        Reset               ctrl+0
-        Out                 ctrl+-
-        In                  ctrl+=
-    Toggle
-        Padding             p
-        Fill/Stroke         ctrl+7
-        Grid                ctrl+9
-        Properties          ctrl+;
-        Tools               ctrl+shift+t
-        Groups              ctrl+shift+g
-        IDs                 ctrl+shift+i
-        Wire                w
-        Unwire              ctrl+w
+    Swap Fill/Stroke        ctrl+7
     -
     Bezier                  ctrl+b
     Polygon                 ctrl+p
     Line                    ctrl+/
     Text                    ctrl+t
 
+    
 # 000   000  000  00000000  000   000
 # 000   000  000  000       000 0 000
 #  000 000   000  0000000   000000000
@@ -146,4 +152,15 @@ Window
     Reload                  alt+ctrl+l
     DevTools                alt+ctrl+i
     
+# 0000000   0000000    0000000   00     00  
+#    000   000   000  000   000  000   000  
+#   000    000   000  000   000  000000000  
+#  000     000   000  000   000  000 0 000  
+# 0000000   0000000    0000000   000   000  
+
+Zoom
+    Center Selection    ctrl+e
+    Reset               ctrl+0
+    Out                 ctrl+-
+    In                  ctrl+=
     

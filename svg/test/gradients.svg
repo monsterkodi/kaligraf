@@ -3,8 +3,8 @@
   xmlns:xlink="http://www.w3.org/1999/xlink" 
   xmlns:svgjs="http://svgjs.com/svgjs" 
 style="stroke-linecap: round; stroke-linejoin: round; stroke-miterlimit: 20; "
-viewBox="140.80548782348632 701.9211639404297 859.9163223266602 707.0973083496094">
-  <defs id="SvgjsDefs18687">
+viewBox="148.62290649414064 708.3493212890625 844.2815460205078 694.2409936523437">
+  <defs id="SvgjsDefs1235">
     <radialGradient id="SvgjsRadialGradient3561" fx="0.5035346726327864" fy="0.5013116741138741" cx="0.5035346726327864" cy="0.5013116741138741" r="0.4862011039580114">
       <stop id="SvgjsStop3562" stop-opacity="1" stop-color="#ffffff" offset="0"></stop>
       <stop id="SvgjsStop3563" stop-opacity="1" stop-color="#0005f4" offset="0.4549019607843137"></stop>
@@ -39,10 +39,6 @@ viewBox="140.80548782348632 701.9211639404297 859.9163223266602 707.097308349609
       <stop id="SvgjsStop1788" stop-opacity="1" stop-color="#fff726" offset="0"></stop>
       <stop id="SvgjsStop1789" stop-opacity="1" stop-color="#000000" offset="1"></stop>
     </radialGradient>
-    <radialGradient id="SvgjsRadialGradient1763" spreadMethod="repeat" r="0.538516463932537" fx="0.49999999999999994" fy="0.49999990789463905" cx="0.2386297927561835" cy="0.11015942394114295">
-      <stop id="SvgjsStop1790" stop-opacity="1" stop-color="#fff726" offset="0"></stop>
-      <stop id="SvgjsStop1791" stop-opacity="1" stop-color="#000000" offset="1"></stop>
-    </radialGradient>
     <radialGradient id="SvgjsRadialGradient1766" spreadMethod="repeat" r="0.12040931979681802" fx="0.49999999999999994" fy="0.49999990789463905" cx="0.49999999999999994" cy="0.49999990789463905">
       <stop id="SvgjsStop1792" stop-opacity="1" stop-color="#fff726" offset="0"></stop>
       <stop id="SvgjsStop1793" stop-opacity="1" stop-color="#000000" offset="1"></stop>
@@ -54,10 +50,6 @@ viewBox="140.80548782348632 701.9211639404297 859.9163223266602 707.097308349609
     <radialGradient id="SvgjsRadialGradient1772" spreadMethod="reflect" r="0.3" fx="0.5" fy="0.5" cx="0.5" cy="0.5">
       <stop id="SvgjsStop1796" stop-opacity="1" stop-color="#fff726" offset="0"></stop>
       <stop id="SvgjsStop1797" stop-opacity="1" stop-color="#000000" offset="1"></stop>
-    </radialGradient>
-    <radialGradient id="SvgjsRadialGradient1775" spreadMethod="reflect" r="0.5343861747447302" fx="0.49999999999999994" fy="0.49999990789463905" cx="0.8104967813167591" cy="0.09675772550600689">
-      <stop id="SvgjsStop1798" stop-opacity="1" stop-color="#fff726" offset="0"></stop>
-      <stop id="SvgjsStop1799" stop-opacity="1" stop-color="#000000" offset="1"></stop>
     </radialGradient>
     <linearGradient id="SvgjsLinearGradient1933" spreadMethod="repeat" x1="2.1140976061952002e-7" y1="4.530215723436491e-7" x2="0.30377501724952644" y2="0.2579395805732994">
       <stop id="SvgjsStop14944" stop-opacity="1" stop-color="#000000" offset="0"></stop>

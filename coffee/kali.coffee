@@ -198,7 +198,7 @@ class Kali
             when 'Grid'             then return post.emit 'tool', 'button', 'grid', 'grid'
             
             when 'Padding'          then return post.emit 'tool', 'button', 'padding', 'show'
-            when 'Fill/Stroke'      then return post.emit 'tool', 'swapColor'
+            when 'Swap Fill/Stroke' then return post.emit 'tool', 'swapColor'
             when 'Properties'       then return post.emit 'tool', 'toggleProperties'
             when 'Tools'            then return post.emit 'tool', 'toggleTools'
             when 'Groups'           then return post.emit 'tool', 'button', 'show', 'groups'

@@ -220,6 +220,7 @@ startWatcher = ->
     
     watcher = watch.watch __dirname
     watcher.add slash.join __dirname, '../package.json'
+    watcher.add slash.join __dirname, '../coffee/menu.noon'
     watcher.on 'change', onSrcChange
     watcher.on 'error', (err) -> error err
 

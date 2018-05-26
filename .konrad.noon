@@ -1,2 +1,3 @@
 ignore  
     /.*-x64/
+    /noon\.menu/

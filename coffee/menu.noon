@@ -1,0 +1,149 @@
+
+# 000   000   0000000   000      000
+# 000  000   000   000  000      000
+# 0000000    000000000  000      000
+# 000  000   000   000  000      000
+# 000   000  000   000  0000000  000
+
+kali
+    About                   ctrl+,
+    -
+    Quit                    ctrl+q
+    
+# 00000000  000  000      00000000
+# 000       000  000      000
+# 000000    000  000      0000000
+# 000       000  000      000
+# 000       000  0000000  00000000
+
+File
+    New                     ctrl+n
+    Clear                   ctrl+k
+    Revert                  ctrl+r
+    -        
+    Open Recent...          ctrl+.
+    Open...                 ctrl+o
+    --            
+    Save                    ctrl+s
+    Save As...              ctrl+shift+s
+    ---        
+    Import...               o
+    Export...               alt+ctrl+s
+
+# 00000000  0000000    000  000000000
+# 000       000   000  000     000
+# 0000000   000   000  000     000
+# 000       000   000  000     000
+# 00000000  0000000    000     000
+
+Edit
+    Align
+        Left                1
+        Right               ctrl+1
+        -              
+        Center              2
+        Middle              3
+        Join                j
+        --              
+        Top                 4
+        Bottom              ctrl+4
+        ---
+        Space Horizontal    5
+        Space Vertical      ctrl+5
+        ---- 
+        Space Radial        alt+6
+        Average Radius      alt+ctrl+6
+    Bezier
+        Convert Polygon     alt+p
+        Convert Line        alt+l
+        Convert Move        alt+m
+        Convert Quad        alt+q
+        Convert Cubic       alt+c
+        Convert Smooth      alt+s
+        Convert Divide      alt+d
+    Order
+        Front               alt+ctrl+up
+        Raise               ctrl+up
+        Lower               ctrl+down
+        Back                alt+ctrl+down
+    Select      
+        All                 ctrl+a
+        None                ctrl+d
+        Invert              ctrl+i
+        -      
+        More                ctrl+m
+        Less                ctrl+shift+m
+        Prev                ctrl+[
+        Next                ctrl+]
+    Flip      
+        Horizontal          6
+        Vertical            ctrl+6
+    -
+    Lock                    k
+    Unlock                  ;
+    --          
+    Group                   ctrl+g
+    Ungroup                 ctrl+u
+    ---          
+    Cut                     ctrl+x
+    Copy                    ctrl+c
+    Paste                   ctrl+v
+    ----          
+    Undo                    ctrl+z
+    Redo                    ctrl+shift+z
+
+# 000000000   0000000    0000000   000
+#    000     000   000  000   000  000
+#    000     000   000  000   000  000
+#    000     000   000  000   000  000
+#    000      0000000    0000000   0000000
+
+Tool
+    Zoom
+        Center Selection    ctrl+e
+        Reset               ctrl+0
+        Out                 ctrl+-
+        In                  ctrl+=
+    Toggle
+        Padding             p
+        Fill/Stroke         ctrl+7
+        Grid                ctrl+9
+        Properties          ctrl+;
+        Tools               ctrl+shift+t
+        Groups              ctrl+shift+g
+        IDs                 ctrl+shift+i
+        Wire                w
+        Unwire              ctrl+w
+    -
+    Bezier                  ctrl+b
+    Polygon                 ctrl+p
+    Line                    ctrl+/
+    Text                    ctrl+t
+
+# 000   000  000  00000000  000   000
+# 000   000  000  000       000 0 000
+#  000 000   000  0000000   000000000
+#    000     000  000       000   000
+#     0      000  00000000  00     00
+
+View
+    Layers                  ctrl+l
+    Fonts                   ctrl+f
+    Gradients               ctrl+j
+
+# 000   000  000  000   000  0000000     0000000   000   000
+# 000 0 000  000  0000  000  000   000  000   000  000 0 000
+# 000000000  000  000 0 000  000   000  000   000  000000000
+# 000   000  000  000  0000  000   000  000   000  000   000
+# 00     00  000  000   000  0000000     0000000   00     00
+
+Window
+    Minimize                alt+ctrl+shift+m
+    Maximize                alt+ctrl+m
+    -
+    Toggle Menu             alt+m
+    --
+    Reload                  alt+ctrl+l
+    DevTools                alt+ctrl+i
+    
+    

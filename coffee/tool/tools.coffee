@@ -82,9 +82,9 @@ class Tools extends Tool
             when 'selectPrev'    then @stage.shapes.select 'prev'
             when 'deselect'      then @stage.shapes.select 'none'
             when 'invert'        then @stage.shapes.select 'invert'
-            when 'center'        then @stage.centerSelection()
             when 'swapColor'     then @stroke.swapColor()
             when 'toggleTools'   then @toggleTools()
+            when 'centerSelection' then @stage.centerSelection()
             when 'toggleProperties' then @toggleProperties()
             else log "unhandled tool action #{action} #{tool}"
         
@@ -388,7 +388,7 @@ class Tools extends Tool
                 return 
             
             switch combo
-                when 'e' then return @onAction 'center'
+                when 'e' then return @onAction 'centerSelection'
                 when '.' then return @onAction 'browse'
                 when 'g' then return @onAction 'group'
                 when 'l' then return @onAction 'layer'

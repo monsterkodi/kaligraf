@@ -98,9 +98,9 @@ class Menu
                 ,
                     text:  ''
                 ,
-                    text: 'Space Radial',     accel: '6'
+                    text: 'Space Radial',     accel: 'alt+6'
                 ,
-                    text: 'Average Radius',   accel: 'ctrl+6'
+                    text: 'Average Radius',   accel: 'alt+ctrl+6'
                 ]
             ,
                 text: 'Bezier'
@@ -195,6 +195,8 @@ class Menu
 
                 text: 'Zoom'
                 menu: [
+                    text: 'Center Selection', accel: 'ctrl+e'
+                ,
                     text:'Reset',    accel: 'ctrl+0'
                 ,
                     text:'Out',      accel: 'ctrl+-'
@@ -207,6 +209,8 @@ class Menu
                     text: 'Padding',     accel: 'p'
                 ,
                     text: 'Fill/Stroke', accel: 'ctrl+7'
+                ,
+                    text: 'Grid',        accel: 'ctrl+9'
                 ,
                     text: 'Properties',  accel: 'ctrl+;'
                 ,
@@ -230,12 +234,6 @@ class Menu
                 text: 'Line',        accel: 'ctrl+/'
             ,
                 text: 'Text',        accel: 'ctrl+t'
-            ,
-                text:  ''
-            ,
-                text: 'Grid',        accel: 'ctrl+9'
-            ,
-                text: 'Center',      accel: 'ctrl+e'
             ]
         ,
             # 000   000  000  00000000  000   000

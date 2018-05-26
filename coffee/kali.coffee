@@ -189,7 +189,8 @@ class Kali
             when 'Polygon'          then return post.emit 'tool', 'click', 'polygon'
             when 'Line'             then return post.emit 'tool', 'click', 'line'
             when 'Text'             then return post.emit 'tool', 'click', 'text'
-            when 'Center'           then return post.emit 'tool', 'center'
+            
+            when 'Center Selection' then return post.emit 'tool', 'centerSelection'
             
             when 'Reset'            then return post.emit 'tool', 'button', 'zoom', 'reset'
             when 'Out'              then return post.emit 'tool', 'button', 'zoom', 'out'
@@ -234,14 +235,14 @@ class Kali
             if not absPos?
                 absPos = pos $("#kali").getBoundingClientRect().left, $("#kali").getBoundingClientRect().top
                 
-            opt = items: [
-                text:   'Toggle Menu'
-                combo:  'alt+m'
-                cb:     -> post.emit 'menuAction', 'Toggle Menu'
-            ]
-            
-            opt.x = absPos.x
-            opt.y = absPos.y
+            items = _.cloneDeep Menu.template()
+            items.shift()
+            items.splice 1, 0, items.shift()
+                
+            opt = 
+                items:  items
+                x:      absPos.x
+                y:      absPos.y
         
             popup.menu opt
                 

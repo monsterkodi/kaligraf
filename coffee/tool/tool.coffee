@@ -217,7 +217,7 @@ class Tool extends Spin
     updateDepth: ->
         
         return if @name == 'tools'
-        
+        return if not @hasChildren()
         zIndex = parseInt @element.style.zIndex
         for child in @children
             child.element.style.zIndex = parseInt zIndex + 1 + @children.indexOf child

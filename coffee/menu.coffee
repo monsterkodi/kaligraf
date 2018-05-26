@@ -188,8 +188,8 @@ class Menu
                     else win?.maximize()
                 }
                 { type:  'separator'}
-                { label: 'Reload Window',      accelerator: 'Ctrl+Alt+Cmd+L',   click: (i,win) -> app.reloadWin win}
-                { label: 'Toggle DevTools',    accelerator: 'Cmd+Alt+I',        click: (i,win) -> win?.webContents.toggleDevTools()}
+                { label: 'Reload Window',      accelerator: 'Ctrl+Alt+L',   click: (i,win) -> app.reloadWin win}
+                { label: 'Toggle DevTools',    accelerator: 'Ctrl+Alt+I',   click: (i,win) -> win?.webContents.toggleDevTools()}
             ]
         ,        
             # 000   000  00000000  000      00000000 

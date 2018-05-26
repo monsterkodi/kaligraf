@@ -6,7 +6,7 @@
 000   000  000        000
 ###
 
-{ about, prefs, post, noon, fs, log } = require 'kxk'
+{ about, prefs, post, noon, watch, childp, slash, fs, log } = require 'kxk'
 
 pkg      = require '../package.json'
 Menu     = require './menu'
@@ -29,11 +29,12 @@ args  = require('karg') """
 
 #{pkg.productName}
     
-    filelist  . ? files to open           . **
-    noprefs   . ? don't load preferences  . = false
-    verbose   . ? log more                . = false
-    DevTools  . ? open developer tools    . = false
-    debug     .                             = false
+    filelist  . ? files to open              . **
+    noprefs   . ? don't load preferences     . = false
+    verbose   . ? log more                   . = false
+    watch     . ? watch sources for changes  . = false
+    DevTools  . ? open developer tools       . = false
+    debug     .                                = false
      
 version  #{pkg.version}
 
@@ -88,6 +89,9 @@ class KaliApp
         @createWindow()
 
         Menu.init @
+        
+        if args.watch
+            startWatcher()
 
     # 000   000  000  000   000  0000000     0000000   000   000   0000000
     # 000 0 000  000  0000  000  000   000  000   000  000 0 000  000     
@@ -175,20 +179,67 @@ class KaliApp
     saveBounds: (event) -> prefs.set 'bounds', event.sender.getBounds()
         
     quit: => 
+        
+        stopWatcher()
         prefs.save()
-        w.close() for w in wins()
+        w.close() for w in visibleWins()
         app.exit 0
         process.exit 0
         
-    showAbout: => about
-        img: slash.join __dirname "../bin/about.svg"
-        pkg: pkg
-        imageWidth:    '250px'
-        imageHeight:   '250px'
-        imageOffset:   '10px'
-        versionOffset: '15px'
-        highlight:     '#88f'
+    showAbout: => 
+        
+        about
+            img: slash.join __dirname, "../bin/about.svg"
+            pkg: pkg
+            imageWidth:    '250px'
+            imageHeight:   '250px'
+            imageOffset:   '10px'
+            versionOffset: '15px'
+            highlight:     '#88f'
 
+# 000   000   0000000   000000000   0000000  000   000  00000000  00000000     
+# 000 0 000  000   000     000     000       000   000  000       000   000    
+# 000000000  000000000     000     000       000000000  0000000   0000000      
+# 000   000  000   000     000     000       000   000  000       000   000    
+# 00     00  000   000     000      0000000  000   000  00000000  000   000    
+
+watcher = null
+
+startWatcher = ->
+    
+    watcher = watch.watch __dirname
+    watcher.add slash.join __dirname, '../package.json'
+    watcher.on 'change', onSrcChange
+    watcher.on 'error', (err) -> error err
+
+stopWatcher = ->
+    
+    if watcher?
+        watcher.close()
+        watcher = null
+
+onSrcChange = (path) ->
+    
+    log 'srcChange', path
+    
+    if path == __filename or slash.samePath path, slash.join __dirname, '../package.json'
+        stopWatcher()
+        app.exit 0
+        # childp.execSync "#{__dirname}/../node_modules/.bin/electron . -w",
+            # cwd:      "#{__dirname}/.."
+            # encoding: 'utf8'
+            # stdio:    'inherit'
+            # shell:    true
+        childp.spawn "#{__dirname}/../node_modules/.bin/electron", [".", "-w"],
+            cwd:         "#{__dirname}/.."
+            encoding:    'utf8'
+            detached:    true
+            shell:       true
+            windowsHide: true
+        process.exit 0
+    else
+        post.toWins 'reload'
+            
 #  0000000   00000000   00000000         0000000   000   000
 # 000   000  000   000  000   000       000   000  0000  000
 # 000000000  00000000   00000000        000   000  000 0 000
@@ -197,8 +248,8 @@ class KaliApp
 
 app.on 'ready', -> kaliapp = new KaliApp
 app.on 'activate', -> kaliapp.showWindows()
-app.on 'window-all-closed', -> kaliapp.quit()
 app.on 'open-file', (event, file) -> log "open file #{file}"
+app.on 'window-all-closed', -> kaliapp.quit()
         
 app.setName pkg.productName
 

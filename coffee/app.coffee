@@ -225,11 +225,6 @@ onSrcChange = (path) ->
     if path == __filename or slash.samePath path, slash.join __dirname, '../package.json'
         stopWatcher()
         app.exit 0
-        # childp.execSync "#{__dirname}/../node_modules/.bin/electron . -w",
-            # cwd:      "#{__dirname}/.."
-            # encoding: 'utf8'
-            # stdio:    'inherit'
-            # shell:    true
         childp.spawn "#{__dirname}/../node_modules/.bin/electron", [".", "-w"],
             cwd:         "#{__dirname}/.."
             encoding:    'utf8'
@@ -238,7 +233,7 @@ onSrcChange = (path) ->
             windowsHide: true
         process.exit 0
     else
-        post.toWins 'reload'
+        win?.webContents.reloadIgnoringCache()
             
 #  0000000   00000000   00000000         0000000   000   000
 # 000   000  000   000  000   000       000   000  0000  000

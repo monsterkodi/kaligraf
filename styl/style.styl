@@ -7,6 +7,12 @@
 
 scrollhandleWidth = 6px
 
+titlebarHeight    = 30px
+titlebarFontSize  = 15px
+titlebarFont      = Varela Round, Arial Rounded MT Bold, Helvetica, Arial
+frameWidth        = 6px
+frameColor        = #222
+frameBorder       = frameWidth solid frameColor
 toolSize          = 75px
 paletteWidth      = 375px
 
@@ -47,6 +53,12 @@ body
     fill-abs()
     overflow                hidden
 
+#kali 
+    top                     titlebarHeight
+    border-left         frameBorder
+    border-right        frameBorder
+    border-bottom       frameBorder
+    
 #selection
 #DotRes
 #ItemRes
@@ -849,6 +861,178 @@ button
 .trans
     pointer-events          none
 
+// 000000000  000  000000000  000      00000000  0000000     0000000   00000000 
+//    000     000     000     000      000       000   000  000   000  000   000
+//    000     000     000     000      0000000   0000000    000000000  0000000  
+//    000     000     000     000      000       000   000  000   000  000   000
+//    000     000     000     0000000  00000000  0000000    000   000  000   000
+
+#titlebar
+    display             flex
+    flex-direction      row
+    height              titlebarHeight
+    box-sizing          border-box
+    font-size           titlebarFontSize
+    font-family         titlebarFont
+    white-space         nowrap
+    pointer-events      auto
+    cursor              pointer
+    -webkit-app-region  no-drag
+
+#titlebar
+    background          #222
+    color               #aaa
+
+.titlebar-dot
+    color               #444
+
+.titlebar-version
+    color               #555
+    
+.titlebar-title
+    flex                1 1 0
+    display             flex
+    flex-direction      row
+    overflow-x          auto
+    overflow-y          hidden
+    padding-top         6px
+    padding-left        10px
+    -webkit-app-region  drag
+    font-weight         bold
+    font                titlebarFont
+    
+.titlebar-dot
+    display             inline-block
+    vertical-align      top
+    padding-left        6px
+    padding-right       9px
+    margin-top          -1px
+
+#titlebar .winicon img
+    padding-left        6px
+    padding-right       2px
+    width               titlebarHeight
+    height              titlebarHeight
+    
+#titlebar .winclose
+    flex                0 0 45px
+    float               right
+    display             inline-block
+    vertical-align      top
+    padding-top         frameWidth
+    
+    & img
+        padding-left    18px
+        width           11px
+        height          11px
+        opacity         0.2
+
+    &:hover
+        & img
+            opacity     1
+    &:active
+        background-color #f00
+        &.gray
+            background-color #888
+        & img
+            opacity     1
+    
+// 00     00  00000000  000   000  000   000  
+// 000   000  000       0000  000  000   000  
+// 000000000  0000000   000 0 000  000   000  
+// 000 0 000  000       000  0000  000   000  
+// 000   000  00000000  000   000   0000000   
+            
+.menuItem
+    color               #888
+    background-color    titleColor
+    
+.menuItem.selected
+    color               #aaa
+    
+.menu:focus .menuItem
+    color               #888
+.menu:focus .menuItem.selected
+    color               #fff
+        
+.menu
+    height              titlebarHeight
+    pointer-events      auto
+    -webkit-app-region  no-drag
+    flex                1 1 0
+    display             flex
+    flex-direction      row
+    
+.menuItem
+    -webkit-app-region  no-drag
+    cursor              pointer
+    padding-left        10px
+    padding-right       10px
+    padding-top         6px
+    font-weight         bold
+    display             inline-block
+    height              titlebarHeight
+    overflow            visible
+            
+// 00000000    0000000   00000000   000   000  00000000
+// 000   000  000   000  000   000  000   000  000   000
+// 00000000   000   000  00000000   000   000  00000000
+// 000        000   000  000        000   000  000
+// 000         0000000   000         0000000   000
+
+.popup
+    background-color    frameColor
+
+.popupItem
+    color               #888
+    &:not(:last-child)
+        border-bottom       1px solid #222
+    &.selected
+        color           #fff
+        & .popupCombo
+            color       #888
+
+.menuItem:active
+.popupItem:active
+    color               #ff0
+
+.popupCombo
+    color               #333
+    
+.popupItem.separator
+    border-top          1px solid #333
+
+.popup
+    position            absolute
+    border-radius       3px
+
+.popupItem
+    padding             2px
+    padding-left        2 * frameWidth
+    padding-right       2 * frameWidth + 70px
+    cursor              pointer
+    &:last-child
+        padding-bottom  frameWidth
+    &:first-child
+        padding-top     frameWidth
+
+.popupCombo
+    position            absolute
+    right               2 * frameWidth
+
+.popupItem.separator
+    padding             0
+    cursor              default
+    border              0
+    height              0
+    margin-top          2px
+    margin-bottom       2px
+
+.popupCombo
+    pointer-events      none
+    position            absolute
+    right               2 * frameWidth
+    
 //  0000000   0000000  00000000    0000000   000      000      0000000     0000000   00000000
 // 000       000       000   000  000   000  000      000      000   000  000   000  000   000
 // 0000000   000       0000000    000   000  000      000      0000000    000000000  0000000

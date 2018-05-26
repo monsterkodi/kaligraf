@@ -9,7 +9,6 @@
 { about, prefs, post, noon, watch, childp, slash, fs, log } = require 'kxk'
 
 pkg      = require '../package.json'
-Menu     = require './menu'
 electron = require 'electron'
 colors   = require 'colors'
 
@@ -88,8 +87,6 @@ class KaliApp
                                 
         @createWindow()
 
-        Menu.init @
-        
         if args.watch
             startWatcher()
 
@@ -162,7 +159,14 @@ class KaliApp
             backgroundColor: '#111'
             titleBarStyle:   'hidden'
 
-        win.loadURL "file://#{__dirname}/index.html"
+            resizable:       true
+            maximizable:     true
+            minimizable:     true
+            autoHideMenuBar: true
+            frame:           false
+            icon:            slash.path __dirname + '/../img/uniko.ico'
+            
+        win.loadURL slash.fileUrl __dirname + '/index.html'
         
         win.on 'move',   @saveBounds
         win.on 'resize', @saveBounds     
@@ -222,11 +226,21 @@ onSrcChange = (path) ->
     
     log 'srcChange', path
     
-    if path == __filename or slash.samePath path, slash.join __dirname, '../package.json'
+    mainFiles = [
+        __filename
+        slash.join __dirname, '../package.json'
+        slash.join __dirname, 'cs/style.css'
+    ]
+    
+    isMainFile = (path) -> 
+        for p in mainFiles
+            return true if slash.samePath path, p
+    
+    if isMainFile path
         stopWatcher()
         app.exit 0
-        childp.spawn "#{__dirname}/../node_modules/.bin/electron", [".", "-w"],
-            cwd:         "#{__dirname}/.."
+        childp.spawn slash.join(__dirname, "../node_modules/.bin/electron"), [".", "-w"],
+            cwd:         slash.dir __dirname
             encoding:    'utf8'
             detached:    true
             shell:       true

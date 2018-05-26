@@ -6,33 +6,24 @@
 000   000  00000000  000   000   0000000 
 ###
 
-{ post, log }  = require 'kxk'
+{ post, elem, sds, menu, log, $, _ } = require 'kxk'
 
-pkg      = require '../package.json'
-electron = require 'electron'
-
-action = (action, arg)  -> post.toWins 'tool', action, arg
-button = (tool, button) -> post.toWins 'tool', 'button', tool, button
+pkg = require '../package'
 
 class Menu
-    
-    @init: (app) -> 
-        
-        electron.Menu.setApplicationMenu electron.Menu.buildFromTemplate [
-            
+
+    @template: -> [
+             
             # 000   000   0000000   000      000  
             # 000  000   000   000  000      000  
             # 0000000    000000000  000      000  
             # 000  000   000   000  000      000  
             # 000   000  000   000  0000000  000  
-            
-            label: pkg.name, submenu: [     
-                { label: "About #{pkg.name}",   accelerator: 'command+,',       click: app.showAbout}
-                { type:  'separator'}
-                { label: "Hide #{pkg.name}",    accelerator: 'command+h',       role: 'hide'}
-                { label: 'Hide Others',         accelerator: 'command+alt+h',   role: 'hideothers'}
-                { type:  'separator'}
-                { label: 'Quit',                accelerator: 'command+q',       click: app.quit}
+             
+            text: pkg.name, menu: [     
+                text: "About #{pkg.name}",   accel: 'command+,'
+                text: ''
+                text: 'Quit',                accel: 'command+q'
             ]
         ,
             # 00000000  000  000      00000000  
@@ -40,21 +31,21 @@ class Menu
             # 000000    000  000      0000000   
             # 000       000  000      000       
             # 000       000  0000000  00000000  
-            
-            label: 'File', submenu: [
-                { label: 'New',             accelerator: 'command+n',       click: -> action 'new'}
-                { label: 'Clear',           accelerator: 'command+k',       click: -> action 'clear'}
-                { label: 'Reload',          accelerator: 'command+r',       click: -> action 'load'}
-                { type:  'separator'}
-                { label: 'Open Recent...',  accelerator: 'command+.',       click: -> action 'browse'}
-                { label: 'Open...',         accelerator: 'command+o',       click: -> action 'open'}
-                { type:  'separator'}
-                { label: 'Save',            accelerator: 'command+s',       click: -> action 'save'}
-                { label: 'Save As...',      accelerator: 'command+shift+s', click: -> action 'saveAs'}
-                { type:  'separator'}
-                { label: 'Import...',       accelerator: 'o',               click: -> action 'import'}
-                { label: 'Export...',       accelerator: 'command+alt+s',   click: -> action 'export'}
-                { type:  'separator'}    
+             
+            text: 'File', menu: [
+                text: 'New',             accel: 'command+n'       
+                text: 'Clear',           accel: 'command+k'       
+                text: 'Reload',          accel: 'command+r'       
+                text:  ''
+                text: 'Open Recent...',  accel: 'command+.'       
+                text: 'Open...',         accel: 'command+o'       
+                text:  ''
+                text: 'Save',            accel: 'command+s'       
+                text: 'Save As...',      accel: 'command+shift+s' 
+                text:  ''
+                text: 'Import...',       accel: 'o'               
+                text: 'Export...',       accel: 'command+alt+s'   
+                text:  ''    
             ]
         ,
             # 00000000  0000000    000  000000000  
@@ -62,70 +53,67 @@ class Menu
             # 0000000   000   000  000     000     
             # 000       000   000  000     000     
             # 00000000  0000000    000     000     
-            
-            label: 'Edit', submenu: [
-                { label: 'Align', submenu: [
-                    { label: 'Left',    accelerator: '1',           click: -> button 'align', 'left'}
-                    { label: 'Right',   accelerator: 'command+1',   click: -> button 'align', 'right'}
-                    { type:  'separator'}                                             
-                    { label: 'Center',  accelerator: '2',           click: -> button 'align', 'center'}
-                    { label: 'Middle',  accelerator: '3',           click: -> button 'align', 'mid'}
-                    { label: 'Join',    accelerator: 'j',           click: -> button 'align', 'mid'; button 'align', 'center'}
-                    { type:  'separator'}                                             
-                    { label: 'Top',     accelerator: '4',           click: -> button 'align', 'top'}
-                    { label: 'Bottom',  accelerator: 'command+4',   click: -> button 'align', 'bot'}
-                    { type:  'separator'}
-                    { label: 'Space Horizontal', accelerator: '5',         click: -> button 'space', 'horizontal'}
-                    { label: 'Space Vertical',   accelerator: 'command+5', click: -> button 'space', 'vertical'}
-                    { type:  'separator'}
-                    { label: 'Space Radial',     accelerator: '6',         click: -> action 'spaceRadial'}
-                    { label: 'Average Radius',   accelerator: 'command+6', click: -> action 'averageRadius'}
-                ]}
-                { label: 'Bezier',      submenu: [
-                    { label: 'Polygon', accelerator: 'ctrl+p',              click: -> post.toWins 'convert', 'P'}
-                    { label: 'Line',    accelerator: 'ctrl+l',              click: -> post.toWins 'convert', 'L'}
-                    { label: 'Move',    accelerator: 'ctrl+m',              click: -> post.toWins 'convert', 'M'}
-                    { label: 'Quad',    accelerator: 'ctrl+q',              click: -> post.toWins 'convert', 'Q'}
-                    { label: 'Cubic',   accelerator: 'ctrl+c',              click: -> post.toWins 'convert', 'C'}
-                    { label: 'Smooth',  accelerator: 'ctrl+s',              click: -> post.toWins 'convert', 'S'}
-                    { label: 'Divide',  accelerator: 'ctrl+d',              click: -> post.toWins 'convert', 'D'}
-                ]}
-                { label: 'Order', submenu: [
-                    { label: 'Front',       accelerator: 'command+alt+up',  click: -> button 'send',  'front'}
-                    { label: 'Raise',       accelerator: 'command+up',      click: -> button 'order', 'forward'}
-                    { label: 'Lower',       accelerator: 'command+down',    click: -> button 'order', 'backward'}
-                    { label: 'Back',        accelerator: 'command+alt+down',click: -> button 'send',  'back' }
-                ]}
-                { label: 'Select', submenu: [
-                    { label: 'All',         accelerator: 'command+a',       click: -> action 'selectAll'}
-                    { label: 'None',        accelerator: 'command+d',       click: -> action 'deselect'}
-                    { label: 'Invert',      accelerator: 'command+i',       click: -> action 'invert'}        
-                    { type:  'separator'}  
-                    { label: 'More',        accelerator: 'command+m',       click: -> action 'selectMore'}        
-                    { label: 'Less',        accelerator: 'command+shift+m', click: -> action 'selectLess'}        
-                    { label: 'Prev',        accelerator: 'command+[',       click: -> action 'selectPrev'}        
-                    { label: 'Next',        accelerator: 'command+]',       click: -> action 'selectNext'}        
-                ]}
-                { label: 'Flip', submenu: [
-                    { label: 'Horizontal',  accelerator: '6',               click: -> button 'flip', 'horizontal'}
-                    { label: 'Vertical',    accelerator: 'command+6',       click: -> button 'flip', 'vertical'}
-                ]}
-                { type:  'separator'}                
-                { label: 'Lock',        accelerator: 'k',                   click: -> button 'lock', 'lock'}
-                { label: 'Unlock',      accelerator: ';',                   click: -> button 'lock', 'unlock'}
-                { type:  'separator'}
-                { label: 'Group',       accelerator: 'command+g',           click: -> action 'group'}
-                { label: 'Ungroup',     accelerator: 'command+u',           click: -> action 'ungroup'}
-                # { type:  'separator'}
-                # { label: 'Mask',        accelerator: 'm',                   click: -> button 'mask', 'mask'}
-                # { label: 'Unmask',      accelerator: 'command+m',           click: -> button 'mask', 'unmask'}
-                { type:  'separator'}
-                { label: 'Cut',         accelerator: 'command+x',           click: -> action 'cut'}
-                { label: 'Copy',        accelerator: 'command+c',           click: -> action 'copy'}
-                { label: 'Paste',       accelerator: 'command+v',           click: -> action 'paste'}
-                { type:  'separator'}
-                { label: 'Undo',        accelerator: 'command+z',           click: -> action 'undo'}
-                { label: 'Redo',        accelerator: 'command+shift+z',     click: -> action 'redo'}
+             
+            text: 'Edit', menu: [
+                text: 'Align', menu: [
+                    text: 'Left',    accel: '1'
+                    text: 'Right',   accel: 'command+1'
+                    text:  ''                                            
+                    text: 'Center',  accel: '2'
+                    text: 'Middle',  accel: '3'
+                    text: 'Join',    accel: 'j'
+                    text:  ''                                            
+                    text: 'Top',     accel: '4'
+                    text: 'Bottom',  accel: 'command+4'
+                    text:  ''                    
+                    text: 'Space Horizontal', accel: '5'
+                    text: 'Space Vertical',   accel: 'command+5'
+                    text:  ''
+                    text: 'Space Radial',     accel: '6'
+                    text: 'Average Radius',   accel: 'command+6'
+                ]
+                text: 'Bezier',      menu: [
+                    text: 'Polygon', accel: 'ctrl+p'
+                    text: 'Line',    accel: 'ctrl+l'
+                    text: 'Move',    accel: 'ctrl+m'
+                    text: 'Quad',    accel: 'ctrl+q'
+                    text: 'Cubic',   accel: 'ctrl+c'
+                    text: 'Smooth',  accel: 'ctrl+s'
+                    text: 'Divide',  accel: 'ctrl+d'
+                ]
+                text: 'Order', menu: [
+                    text: 'Front',       accel: 'command+alt+up'
+                    text: 'Raise',       accel: 'command+up'
+                    text: 'Lower',       accel: 'command+down'
+                    text: 'Back',        accel: 'command+alt+down'
+                ]
+                text: 'Select', menu: [
+                    text: 'All',         accel: 'command+a'
+                    text: 'None',        accel: 'command+d'
+                    text: 'Invert',      accel: 'command+i'
+                    text:  ''  
+                    text: 'More',        accel: 'command+m'
+                    text: 'Less',        accel: 'command+shift+m'
+                    text: 'Prev',        accel: 'command+['
+                    text: 'Next',        accel: 'command+]'
+                ]
+                text: 'Flip', menu: [
+                    text: 'Horizontal',  accel: '6'
+                    text: 'Vertical',    accel: 'command+6'
+                ]
+                text:  ''                
+                text: 'Lock',        accel: 'k'
+                text: 'Unlock',      accel: ';'
+                text:  ''
+                text: 'Group',       accel: 'command+g'
+                text: 'Ungroup',     accel: 'command+u'
+                text:  ''
+                text: 'Cut',         accel: 'command+x'
+                text: 'Copy',        accel: 'command+c'
+                text: 'Paste',       accel: 'command+v'
+                text:  ''
+                text: 'Undo',        accel: 'command+z'
+                text: 'Redo',        accel: 'command+shift+z'
             ]
         ,
             # 000000000   0000000    0000000   000      
@@ -133,34 +121,32 @@ class Menu
             #    000     000   000  000   000  000      
             #    000     000   000  000   000  000      
             #    000      0000000    0000000   0000000  
-            
-            label: 'Tool', submenu: [
-                
-                { type:  'separator'}
-                { label: 'Zoom',        submenu: [
-                    { label:'Reset',    accelerator: 'command+0',   click: -> button 'zoom', 'reset' }
-                    { label:'Out',      accelerator: 'command+-',   click: -> button 'zoom', 'out'  }
-                    { label:'In',       accelerator: 'command+=',   click: -> button 'zoom', 'in'  }
-                ] }
-                { label: 'Toggle',      submenu: [
-                    { label: 'Padding',     accelerator: 'p',               click: -> button 'padding', 'show'}
-                    { label: 'Fill/Stroke', accelerator: 'command+7',       click: -> action 'swapColor'}
-                    { label: 'Properties',  accelerator: 'command+t',       click: -> action 'toggleProperties'}
-                    { label: 'Tools',       accelerator: 'command+shift+t', click: -> action 'toggleTools'}
-                    { label: 'Groups',      accelerator: 'command+shift+g', click: -> button 'show', 'groups'}
-                    { label: 'IDs',         accelerator: 'command+shift+i', click: -> button 'show', 'ids'}
-                    { label: 'Wire',        accelerator: 'w',               click: -> button 'wire', 'wire'}
-                    { label: 'Unwire',      accelerator: 'command+w',       click: -> button 'wire', 'unwire'}
+             
+            text: 'Tool', menu: [
+                 
+                text: 'Zoom',        menu: [
+                    text:'Reset',    accel: 'command+0'
+                    text:'Out',      accel: 'command+-'
+                    text:'In',       accel: 'command+='
+                ] 
+                text: 'Toggle',      menu: [
+                    text: 'Padding',     accel: 'p'
+                    text: 'Fill/Stroke', accel: 'command+7'
+                    text: 'Properties',  accel: 'command+t'
+                    text: 'Tools',       accel: 'command+shift+t'
+                    text: 'Groups',      accel: 'command+shift+g'
+                    text: 'IDs',         accel: 'command+shift+i'
+                    text: 'Wire',        accel: 'w'
+                    text: 'Unwire',      accel: 'command+w'
                 ]
-                }
-                { type:  'separator'}
-                { label: 'Bezier',      accelerator: 'command+b',   click: -> action 'click', 'bezier_smooth'}
-                { label: 'Polygon',     accelerator: 'command+p',   click: -> action 'click', 'polygon'}
-                { label: 'Line',        accelerator: 'command+/',   click: -> action 'click', 'line'}
-                { label: 'Text',        accelerator: 'command+t',   click: -> action 'click', 'text'}                
-                { type:  'separator'}
-                { label: 'Grid',        accelerator: 'command+9',   click: -> button 'grid', 'grid'}
-                { label: 'Center',      accelerator: 'command+e',   click: -> action 'center'}
+                text:  ''
+                text: 'Bezier',      accel: 'command+b'
+                text: 'Polygon',     accel: 'command+p'
+                text: 'Line',        accel: 'command+/'
+                text: 'Text',        accel: 'command+t'
+                text:  ''
+                text: 'Grid',        accel: 'command+9'
+                text: 'Center',      accel: 'command+e'
             ]
         ,
             # 000   000  000  00000000  000   000  
@@ -168,11 +154,11 @@ class Menu
             #  000 000   000  0000000   000000000  
             #    000     000  000       000   000  
             #     0      000  00000000  00     00  
-            
-            label: 'View', submenu: [
-                { label: 'Layers',      accelerator: 'command+l',   click: -> action 'layer'}
-                { label: 'Fonts',       accelerator: 'command+f',   click: -> action 'font'}
-                { label: 'Gradients',   accelerator: 'command+j',   click: -> action 'gradient'}
+             
+            text: 'View', menu: [
+                text: 'Layers',      accel: 'command+l'
+                text: 'Fonts',       accel: 'command+f'
+                text: 'Gradients',   accel: 'command+j'
             ]
         ,
             # 000   000  000  000   000  0000000     0000000   000   000
@@ -180,25 +166,46 @@ class Menu
             # 000000000  000  000 0 000  000   000  000   000  000000000
             # 000   000  000  000  0000  000   000  000   000  000   000
             # 00     00  000  000   000  0000000     0000000   00     00
-            
-            label: 'Window', submenu: [
-                { label: 'Minimize Window',    accelerator: 'command+alt+shift+m', click: (i,win) -> win?.minimize()}
-                { label: 'Maximize Window',    accelerator: 'command+alt+m',       click: (i,win) -> 
-                    if win?.isMaximized() then win?.unmaximize() 
-                    else win?.maximize()
-                }
-                { type:  'separator'}
-                { label: 'Reload Window',      accelerator: 'Ctrl+Alt+L',   click: (i,win) -> app.reloadWin win}
-                { label: 'Toggle DevTools',    accelerator: 'Ctrl+Alt+I',   click: (i,win) -> win?.webContents.toggleDevTools()}
+             
+            text: 'Window', menu: [
+                text: 'Minimize Window',    accel: 'command+alt+shift+m'
+                text: 'Maximize Window',    accel: 'command+alt+m'
+                text:  ''
+                text: 'Reload Window',      accel: 'Ctrl+Alt+L'
+                text: 'Toggle DevTools',    accel: 'Ctrl+Alt+I'
             ]
-        ,        
-            # 000   000  00000000  000      00000000 
-            # 000   000  000       000      000   000
-            # 000000000  0000000   000      00000000 
-            # 000   000  000       000      000      
-            # 000   000  00000000  0000000  000      
-            
-            label: 'Help', role: 'help', submenu: []            
         ]
+        
+    constructor: ->
+        
+        @menu = new menu items:Menu.template()
+        @elem = @menu.elem
+        window.title.elem.insertBefore @elem, window.title.elem.firstChild.nextSibling
+        @hide()
+        
+    visible: => @elem.style.display != 'none'
+    show:    => @elem.style.display = 'inline-block'; @menu?.focus?(); post.emit 'titlebar', 'hideTitle'
+    hide:    => @menu?.close(); @elem.style.display = 'none'; post.emit 'titlebar', 'showTitle'
+    toggle:  => if @visible() then @hide() else @show()
 
+    # 000   000  00000000  000   000
+    # 000  000   000        000 000 
+    # 0000000    0000000     00000  
+    # 000  000   000          000   
+    # 000   000  00000000     000   
+    
+    globalModKeyComboEvent: (mod, key, combo, event) ->
+
+        if not @mainMenu
+            @mainMenu = Menu.template()
+
+        for keypath in sds.find.key @mainMenu, 'accel'
+            if combo == sds.get @mainMenu, keypath
+                keypath.pop()
+                item = sds.get @mainMenu, keypath
+                post.emit 'menuAction', item.action ? item.text, item.actarg
+                return item
+                
+        'unhandled'
+        
 module.exports = Menu

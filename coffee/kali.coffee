@@ -6,7 +6,7 @@
 000   000  000   000  0000000  000  
 ###
 
-{ setStyle, keyinfo, stopEvent, empty, first, post, prefs, elem, sw, sh, pos, log, $, _ } = require 'kxk'
+{ keyinfo, stopEvent, empty, first, post, prefs, elem, sw, sh, pos, log, $, _ } = require 'kxk'
 
 Tools    = require './tool/tools'
 Cursor   = require './cursor'
@@ -14,6 +14,13 @@ Stage    = require './stage'
 Trans    = require './trans'
 Browser  = require './browser'
 FileInfo = require './fileinfo'
+Title    = require './title'
+Menu     = require './menu'
+
+electron = require 'electron'
+
+remote   = electron.remote
+win      = window.win = remote.getCurrentWindow()
 
 class Kali
 
@@ -49,6 +56,11 @@ class Kali
         window.onresize = @onResize
         
         @tools.loadPrefs()
+
+        window.title = new Title
+        window.menu  = new Menu
+        
+        post.on 'menuAction', @onMenuAction
         
     onResize: => 
 
@@ -91,6 +103,30 @@ class Kali
         
     shapeTool: -> @tools.getActive('shape')?.name
     tool: (name) -> @tools.getTool name 
+    
+    # 00     00  00000000  000   000  000   000      0000000    0000000  000000000  000   0000000   000   000
+    # 000   000  000       0000  000  000   000     000   000  000          000     000  000   000  0000  000
+    # 000000000  0000000   000 0 000  000   000     000000000  000          000     000  000   000  000 0 000
+    # 000 0 000  000       000  0000  000   000     000   000  000          000     000  000   000  000  0000
+    # 000   000  00000000  000   000   0000000      000   000   0000000     000     000   0000000   000   000
+    
+    onMenuAction: (name, args) =>
+    
+        log name, args
+        switch name
+    
+            when 'Toggle Menu'      then return window.menu.toggle()
+            when 'Show Menu'        then return window.menu.show()
+            when 'Hide Menu'        then return window.menu.hide()
+            when 'DevTools'         then return win.webContents.toggleDevTools()
+            when 'Reload'           then return win.webContents.reloadIgnoringCache()
+            when 'Close Window'     then return win.close()
+            when 'Minimize'         then return win.minimize()
+            when 'Maximize'         then return if win.isMaximized() then win.unmaximize() else win.maximize()  
+            
+        log "unhandled menu action! ------------ posting to main '#{name}' args: #{args}"
+        
+        post.toMain 'menuAction', name, args
         
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
@@ -122,7 +158,7 @@ class Kali
     setStyle: (name) ->
         
         if not $('kali-style')
-            log 'setStyle'
+            # log 'setStyle'
             link = document.createElement 'link'
             link.rel  ='stylesheet'
             link.id   = 'kali-style'

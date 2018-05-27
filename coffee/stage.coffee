@@ -116,6 +116,9 @@ class Stage
                         post.emit 'browser', 'browseRecent'
                     else
                         post.emit 'browser', 'browseDir', arg1
+                        
+            when 'saveFile'
+                @save()
                 
     foregroundColor: -> contrastColor @color
 

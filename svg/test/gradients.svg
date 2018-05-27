@@ -3,8 +3,8 @@
   xmlns:xlink="http://www.w3.org/1999/xlink" 
   xmlns:svgjs="http://svgjs.com/svgjs" 
 style="stroke-linecap: round; stroke-linejoin: round; stroke-miterlimit: 20; "
-viewBox="148.62290649414064 708.3493212890625 844.2815460205078 694.2409936523437">
-  <defs id="SvgjsDefs1235">
+viewBox="163.2651580810547 719.738544921875 814.0239135742188 671.936484375">
+  <defs id="SvgjsDefs29186">
     <radialGradient id="SvgjsRadialGradient3561" fx="0.5035346726327864" fy="0.5013116741138741" cx="0.5035346726327864" cy="0.5013116741138741" r="0.4862011039580114">
       <stop id="SvgjsStop3562" stop-opacity="1" stop-color="#ffffff" offset="0"></stop>
       <stop id="SvgjsStop3563" stop-opacity="1" stop-color="#0005f4" offset="0.4549019607843137"></stop>
@@ -111,7 +111,7 @@ viewBox="148.62290649414064 708.3493212890625 844.2815460205078 694.240993652343
   <rect id="R-58-716c84" width="126.30864715576172" height="126.30846405029297" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; fill: url(&quot;#SvgjsLinearGradient1639&quot;); fill-opacity: 1; stroke-width: 0;" data-fill="#ffffff" data-fill-opacity="1" transform="matrix(0.9999999999999999,0,0,0.9999999999999999,570.3156127929686,734.0619506835936)"></rect>
   <rect id="R-b9-494d30" width="126.30864715576172" height="126.30846405029297" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; fill: url(&quot;#SvgjsLinearGradient1636&quot;); fill-opacity: 1; stroke-width: 0;" data-fill="#ffffff" data-fill-opacity="1" transform="matrix(0.9999999999999999,0,0,0.9999999999999999,442.7978820800781,734.0619506835936)"></rect>
   <rect id="R-20-02823d" width="126.30864715576172" height="248.3086395263672" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; fill: url(&quot;#SvgjsRadialGradient1766&quot;); fill-opacity: 1; stroke-width: 0;" data-fill="#ffffff" data-fill-opacity="1" transform="matrix(1,0,0,1,829.8632545471191,992.6692886352539)"></rect>
-  <rect id="R-2f-c32983" width="126.30864715576172" height="126.30846405029297" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; fill: url(&quot;#SvgjsRadialGradient2074&quot;); fill-opacity: 1; stroke-width: 0;" data-fill="#ffffff" data-fill-opacity="1" transform="matrix(1,0,0,1,248.63171768188477,1250.569278717041)"></rect>
+  <rect id="R-2f-c32983" width="126.30864715576172" height="126.30846405029297" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; fill: url(&quot;#SvgjsRadialGradient2074&quot;); fill-opacity: 1; stroke-width: 0;" data-fill="#ffffff" data-fill-opacity="1" transform="matrix(1,0,0,1,317.1802292614135,1252.444766998291)"></rect>
   <rect id="R-f4-c5473e" width="126.30864715576172" height="126.30846405029297" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; fill: url(&quot;#SvgjsRadialGradient1769&quot;); fill-opacity: 1; stroke-width: 0;" data-fill="#ffffff" data-fill-opacity="1" transform="matrix(1,0,0,1,700.0358009338379,1119.4505005824942)"></rect>
   <rect id="R-0f-ad4030" width="126.30864715576172" height="126.30846405029297" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; fill: url(&quot;#SvgjsRadialGradient2077&quot;); fill-opacity: 1; stroke-width: 0;" data-fill="#ffffff" data-fill-opacity="1" transform="matrix(1,0,0,1,699.059425840955,1250.567081451416)"></rect>
   <g id="G-c9-07d092" transform="matrix(0.9999999999999999,0,0,0.9999999999999999,223.44493103027344,177.17156982421875)">
@@ -124,7 +124,7 @@ viewBox="148.62290649414064 708.3493212890625 844.2815460205078 694.240993652343
     <polygon id="P-b3-90c458" points="-96.20091247558594,-727.4603881835938 -96.20091247558594,-472.0643310546875 167.3499298095703,-472.0643310546875 167.3499298095703,-727.4603881835938" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; fill: url(&quot;#SvgjsLinearGradient1642&quot;); fill-opacity: 1; stroke-width: 0;" data-fill="#ffffff" data-fill-opacity="1" transform="matrix(1,0,0,1,794.2847747802734,1462.0664825439453)"></polygon>
     <rect id="R-59-43b3bd" width="132.7030029296875" height="132.7030029296875" style="stroke: url(&quot;#SvgjsLinearGradient27437&quot;); stroke-opacity: 1; fill: url(&quot;#SvgjsLinearGradient27430&quot;); fill-opacity: 1; stroke-width: 34;" data-fill="#676767" data-stroke="#00deac" transform="matrix(1.000000067179426,-1.1102230246251565e-16,1.1102230246251565e-16,1.000000067179426,764.5645065307617,792.536979675293)"></rect>
   </g>
-  <g id="G-fb-69d570" transform="matrix(0.9999999999999999,0,0,0.9999999999999999,-2.842170943040401e-14,0)">
+  <g id="G-fb-69d570" transform="matrix(0.9999999999999999,0,0,0.9999999999999999,-0.9731216430664062,-1.945709228515625)">
     <polygon id="P-c4-627f09" points="-95.08525085449219,-727.4603881835938 -95.08525085449219,-472.0643310546875 168.6965789794922,-472.0643310546875 168.6965789794922,-727.4603881835938" style="stroke: rgb(0, 0, 0); stroke-opacity: 1; fill: url(&quot;#SvgjsLinearGradient1633&quot;); fill-opacity: 1; stroke-width: 0;" data-fill="#ffffff" data-fill-opacity="1" transform="matrix(1,0,0,1,274.9778289794922,1462.0664825439453)"></polygon>
     <rect id="R-b6-83dd78" width="134.22036743164062" height="134.22036743164062" style="stroke: url(&quot;#SvgjsLinearGradient3611&quot;); stroke-opacity: 1; fill: url(&quot;#SvgjsRadialGradient3600&quot;); fill-opacity: 1; stroke-width: 35;" data-fill="#676767" data-stroke="#00deac" transform="matrix(1.0000000671794271,-1.0408340855860843e-16,1.0408340855860843e-16,1.0000000671794271,244.87467193603516,791.7782974243164)"></rect>
   </g>

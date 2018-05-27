@@ -125,9 +125,9 @@ class Tabs
         
         return if not tab?
         
-        log 'tabs.closeTab', tab.dirty()
-        # if tab.dirty()
-            # tab.saveChanges()
+        # log 'tabs.closeTab', tab.dirty()
+        # if tab.dirty() and tab == @activeTab()
+            # post.emit 'stage', 'saveFile'
            
         if @tabs.length > 1
             if tab == @activeTab()
@@ -145,9 +145,9 @@ class Tabs
         return if not @activeTab()
         keep = _.pullAt @tabs, @activeTab().index()
         while @numTabs()
-            tab = _.last @tabs
-            if tab.dirty()
-                tab.saveChanges()
+            # tab = _.last @tabs
+            # if tab.dirty()
+                # tab.saveChanges()
             @tabs.pop().close()
         @tabs = keep
         @stash()

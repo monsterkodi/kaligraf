@@ -32,7 +32,7 @@ class Tabs
     onStage: (action, info) =>
         switch action 
             when 'load'
-                log 'tabs.onStage', action, info
+                log 'tabs.onStage', action, info.file
                 @addTab info.file
             when 'save', 'clear'
                 log 'tabs.onStage', action, info
@@ -125,8 +125,11 @@ class Tabs
         log 'tabs.closeTab', tab.dirty()
         # if tab.dirty()
             # tab.saveChanges()
-            
-        tab.nextOrPrev().activate()
+           
+        if @tabs.length > 1
+            tab.nextOrPrev()?.activate()
+        else
+            post.emit 'menuAction', 'Clear'
         tab.close()
         
         _.pull @tabs, tab

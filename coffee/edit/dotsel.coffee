@@ -83,7 +83,8 @@ class DotSel
 
         @stage.do 'move-dots', itemIDs, @edit.objects.map (o) -> o.item
         
-        if not event?.metaKey
+        # if not event?.metaKey
+        if not event?.ctrlKey
             delta = @kali.tool('snap').delta delta, dots:@dots
         else
             @kali.tool('snap').clear()

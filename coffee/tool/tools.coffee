@@ -379,7 +379,8 @@ class Tools extends Tool
     handleKey: (mod, key, combo, char, event, down) ->
 
         if down
-            if mod == 'ctrl' then @ctrlDown = true
+            if mod == 'ctrl'  then @ctrlDown = true
+            if mod == 'shift' then @shiftDown = true
             
             if combo == 'space'
                 shape = @kali.shapeTool()
@@ -411,10 +412,11 @@ class Tools extends Tool
                     delete @spaceTool
                 return 
             
-            @ctrlDown = false
+            @ctrlDown  = false
+            @shiftDown = false
             
         if @kali.shapeTool() == 'loupe'
-            @stage.setToolCursor @ctrlDown and 'zoom-out' or 'zoom-in'
+            @stage.setToolCursor @shiftDown and 'zoom-out' or 'zoom-in'
             
         'unhandled'
         

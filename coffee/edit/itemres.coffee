@@ -119,7 +119,8 @@ class ItemRes extends Res
         if not top  and not bot   then delta.y = 0
 
         box = @bbox()
-        if not event.metaKey
+        # if not event.metaKey
+        if not event.ctrlKey
             sdelta = delta.times 1/@stage.zoom
             sdelta = @kali.tool('snap').delta sdelta, box:box, side:center, items:items
             delta  = sdelta.times @stage.zoom 

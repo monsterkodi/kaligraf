@@ -27,7 +27,7 @@ class Loupe extends Tool
     # 000   000  000   000  000   000  000  0000  
     # 0000000     0000000   00     00  000   000  
     
-    onMove: (event) => @stage.setToolCursor @tools.ctrlDown and 'zoom-out' or 'zoom-in'
+    onMove: (event) => @stage.setToolCursor @tools.shiftDown and 'zoom-out' or 'zoom-in'
     
     onStageDown: (event) =>
         
@@ -44,7 +44,7 @@ class Loupe extends Tool
             @rect.remove()
             delete @rect
         @stage.loupe drag.startPos, drag.pos
-        @stage.setToolCursor @tools.ctrlDown and 'zoom-out' or 'zoom-in'
+        @stage.setToolCursor @tools.shiftDown and 'zoom-out' or 'zoom-in'
 
     #  0000000  000000000   0000000    0000000   00000000  
     # 000          000     000   000  000        000       
@@ -65,7 +65,7 @@ class Loupe extends Tool
         dh = Math.abs sd.y
 
         if dw == 0 or dh == 0
-            out = @kali.tools.ctrlDown
+            out = @kali.tools.shiftDown
             @zoomAtPos viewPos, sc, out and 0.75 or 1.25
             return
         else

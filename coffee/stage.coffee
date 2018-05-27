@@ -885,7 +885,7 @@ class Stage
         
         @undo.clear()
         
-        @currentFile = file
+        @currentFile = slash.resolve file
         
         try
             svg = fs.readFileSync slash.resolve(file), encoding: 'utf8'

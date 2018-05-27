@@ -99,6 +99,8 @@ class Kali
             when 'Fonts'            then return post.emit 'tool', 'font'
             when 'Layers'           then return post.emit 'tool', 'layer'
             
+            when 'Close'            then return window.title.tabs.closeTab()
+            when 'Close Others'     then return window.title.tabs.closeOtherTabs()
             when 'Open Recent...'   then return post.emit 'browser', 'browseRecent'
             when 'Open...'          then return post.emit 'tool',    'open'
             when 'Open Dir...'      then return post.emit 'browser', 'openDir'

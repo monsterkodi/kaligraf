@@ -44,7 +44,6 @@ class Tabs
         # @dirty.style.background = info.dirty and '#f80' or '#222'
             
         # post.on 'newEmptyTab',      @onNewEmptyTab
-        # post.on 'closeOtherTabs',   @onCloseOtherTabs
                 
     #  0000000  000      000   0000000  000   000  
     # 000       000      000  000       000  000   
@@ -137,7 +136,7 @@ class Tabs
         @stash()
         @
   
-    onCloseOtherTabs: => 
+    closeOtherTabs: -> 
         
         keep = _.pullAt @tabs, @activeTab().index()
         while @numTabs()

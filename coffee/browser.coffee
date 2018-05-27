@@ -41,10 +41,10 @@ class Browser
             onMove:  @onDrag
             onStop:  @onStop
         
-        @element.focus()
-        
         post.on 'resize',  @onResize
         post.on 'browser', @onBrowser
+        
+        @hide()
 
     onBrowser: (action, arg) =>
         

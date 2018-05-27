@@ -35,16 +35,13 @@ class Tabs
             when 'load'
                 log 'tabs.onStage', action, info.file
                 @addTab file:info.file
-            when 'save', 'clear'
-                log 'tabs.onStage', action, info
+            # when 'save', 'clear'
+                # log 'tabs.onStage', action, info
         
     onUndo: (info) =>
-        # log 'tabs.onUndo', info
-        # @dirty.style.display    = info.dirty and 'inline-block' or 'none'
-        # @dirty.style.background = info.dirty and '#f80' or '#222'
+        log 'tabs.onUndo', info
+        @activeTab()?.setDirty info.dirty
             
-        # post.on 'newEmptyTab',      @onNewEmptyTab
-                
     #  0000000  000      000   0000000  000   000  
     # 000       000      000  000       000  000   
     # 000       000      000  000       0000000    
@@ -53,7 +50,6 @@ class Tabs
     
     onClick: (event) =>
         
-        log 'tabs.onClick'
         if tab = @tab event.target
             if event.target.classList.contains 'dot'
                 @closeTab tab
@@ -223,7 +219,7 @@ class Tabs
         data = 
             files:  ( t.tabData() for t in @tabs )
             active: @activeTab()?.index() ? 0
-        log 'stash', data
+        # log 'stash', data
         prefs.set 'tabs', data
     
     restore: =>
@@ -231,7 +227,7 @@ class Tabs
         active = prefs.get 'tabs:active', 0
         files  = prefs.get 'tabs:files'
         
-        log 'tabs.restore', active, files
+        # log 'tabs.restore', active, files
         return if _.isEmpty files # happens when first window opens
         
         @closeTabs()

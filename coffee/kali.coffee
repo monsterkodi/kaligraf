@@ -56,8 +56,9 @@ class Kali
                 
         window.onresize = @onResize
         
-        window.title.tabs.restore()
         @tools.loadPrefs()
+        
+        window.title.tabs.restore()
 
         post.on 'menuAction', @onMenuAction
         

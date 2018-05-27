@@ -243,8 +243,8 @@ class Tools extends Tool
         @clickTool    prefs.get 'tool:active', 'pick' 
         @activateTool prefs.get 'tool:active', 'pick' 
         
-        if recent = first prefs.get 'recent', []
-            @stage.load recent
+        # if recent = first prefs.get 'recent', []
+            # @stage.load recent
             
         if prefs.get 'fontlist:visible', false
             @getTool('font').toggleList()

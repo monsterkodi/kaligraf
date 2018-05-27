@@ -40,6 +40,7 @@ class Tab
         oldFile = @info?.file
         
         @info = _.clone info
+        delete @info.dontActivate
                                 
         @div.innerHTML = ''
         @div.classList.toggle 'dirty', @dirty()
@@ -66,6 +67,13 @@ class Tab
         return true if @info?.dirty == true
         false
         
+    setDirty: (dirty) ->
+        if dirty
+            @info.dirty = dirty
+        else
+            delete @info.dirty
+        @div.classList.toggle 'dirty', @dirty()
+        
     close: ->
         
         @div.remove()
@@ -88,15 +96,14 @@ class Tab
         
         activeTab = @tabs.activeTab()
 
-        if activeTab? and activeTab.dirty()
-            activeTab.storeState()
+        # if activeTab? and activeTab.dirty()
+            # activeTab.storeState()
         
         @setActive()
         
         if @state?
             @restoreState()
         else
-            # log 'tab activate', @info
             post.emit 'stage', 'loadFile', @info
             
         @tabs.stash()

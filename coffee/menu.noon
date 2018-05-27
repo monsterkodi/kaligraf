@@ -17,19 +17,20 @@ kali
 # 000       000  0000000  00000000
 
 File
-    New                     ctrl+n
-    Clear                   ctrl+k
-    Revert                  ctrl+r
-    Close                   ctrl+w
-    Close Others            ctrl+shift+w
-    -        
     Open Recent...          ctrl+.
     Open...                 ctrl+o
     Open Dir...             ctrl+shift+o
-    --            
+    -        
+    Close                   ctrl+w
+    Close Others            ctrl+shift+w
+    -- 
+    New                     ctrl+n
+    Clear                   ctrl+k
+    Revert                  ctrl+r
+    ---           
     Save                    ctrl+s
     Save As...              ctrl+shift+s
-    ---        
+    ----        
     Import...               o
     Export...               alt+ctrl+s
 
@@ -105,7 +106,7 @@ Show
     Padding             p
     Grid                ctrl+9
     -
-    Tools               ctrl+shift+t
+    All Tools           ctrl+shift+t
     Properties          ctrl+;
     --
     Groups              ctrl+shift+g
@@ -139,6 +140,7 @@ View
     Layers                  ctrl+l
     Fonts                   ctrl+f
     Gradients               ctrl+j
+    Tools                   alt+ctrl+t
     -
     Previous Tab            shift+tab
     Next Tab                tab

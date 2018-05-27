@@ -179,22 +179,13 @@ class Shapes
     
     autoSwitch: (event) ->
         
-        # toolKeys = 
-            # edit:    not event.ctrlKey and     event.altKey and not event.metaKey
-            # pan:         event.ctrlKey and not event.altKey and not event.metaKey
-            # pick:    not event.ctrlKey and not event.altKey and     event.metaKey
-            # pipette: not event.ctrlKey and     event.altKey and     event.metaKey
-            # loupe:       event.ctrlKey and     event.altKey and not event.metaKey
-            
-        activeTool = @tools.getActive('shape')?.name
-        log 'autoSwitch activeShape', activeTool
+        # activeTool = @tools.getActive('shape')?.name
             
         toolKeys = 
-            pick:    not event.shiftKey and not event.altKey and     event.ctrlKey # and activeTool != 'loupe'
+            pick:    not event.shiftKey and not event.altKey and     event.ctrlKey
             edit:    not event.shiftKey and     event.altKey and not event.ctrlKey
             pan:     not event.shiftKey and     event.altKey and     event.ctrlKey
             pipette:     event.shiftKey and     event.altKey and     event.ctrlKey
-            # loupe:       event.shiftKey and     event.altKey and not event.ctrlKey
             
         shape = @kali.shapeTool()
         for s,k of toolKeys

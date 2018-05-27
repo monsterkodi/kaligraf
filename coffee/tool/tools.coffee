@@ -29,7 +29,11 @@ class Tools extends Tool
         @kali.toolDiv.addEventListener 'mouseleave', @collapseTemp
         
         post.on 'tool',   @onAction
-        post.on 'toggle', (name) => @[name]?.toggleVisible()
+        post.on 'toggle', (name) => 
+            if name == 'tools'
+                @toggleTools()
+            else
+                @[name]?.toggleVisible?()
         
     #  0000000    0000000  000000000  000   0000000   000   000  
     # 000   000  000          000     000  000   000  0000  000  
@@ -330,7 +334,7 @@ class Tools extends Tool
     # 000   000   0000000     000     000      0      000   000     000     00000000  
     
     activateTool: (name) ->
-        
+
         if name == 'tools'
             tool = @
         else
@@ -365,6 +369,18 @@ class Tools extends Tool
         @stage.resizer.activate name == 'pick'
             
         @stage.setToolCursor name
+
+    # 000000000   0000000    0000000    0000000   000      00000000  
+    #    000     000   000  000        000        000      000       
+    #    000     000   000  000  0000  000  0000  000      0000000   
+    #    000     000   000  000   000  000   000  000      000       
+    #    000      0000000    0000000    0000000   0000000  00000000  
+    
+    toggleTools: -> 
+        if empty @kali.toolDiv.style.display 
+            @kali.toolDiv.style.display = 'none'
+        else
+            @kali.toolDiv.style.display = ''
 
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   

@@ -20,7 +20,7 @@ class Cursor
         
         name = 'text-cursor' if name == 'text'
         
-        svgFile = slash.join __dirname, "../svg/#{name}.svg"
+        svgFile = slash.resolve slash.join __dirname, "../svg/#{name}.svg"
         if not slash.fileExists svgFile 
             log "no cursor file #{svgFile}"
             return 'default'

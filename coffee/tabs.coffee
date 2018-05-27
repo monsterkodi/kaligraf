@@ -69,6 +69,10 @@ class Tabs
     
     onDragStart: (d, e) => 
         
+        if e.button == 2
+            @closeTab @tab e.target
+            return 'skip'
+            
         @dragTab = @tab e.target
         @dragDiv = @dragTab.div.cloneNode true
         @dragTab.div.style.opacity = '0'
@@ -122,12 +126,16 @@ class Tabs
     #  0000000  0000000   0000000   0000000   00000000  
     
     closeTab: (tab = @activeTab()) ->
+        
+        return if not tab?
+        
         log 'tabs.closeTab', tab.dirty()
         # if tab.dirty()
             # tab.saveChanges()
            
         if @tabs.length > 1
-            tab.nextOrPrev()?.activate()
+            if tab == @activeTab()
+                tab.nextOrPrev()?.activate()
         else
             post.emit 'menuAction', 'Clear'
         tab.close()
@@ -138,6 +146,7 @@ class Tabs
   
     closeOtherTabs: -> 
         
+        return if not @activeTab()
         keep = _.pullAt @tabs, @activeTab().index()
         while @numTabs()
             tab = _.last @tabs

@@ -98,6 +98,7 @@ class Kali
             when 'Gradients'        then return post.emit 'tool', 'gradient'
             when 'Fonts'            then return post.emit 'tool', 'font'
             when 'Layers'           then return post.emit 'tool', 'layer'
+            when 'Tools'            then return post.emit 'toggle', 'tools'
             
             when 'Close'            then return window.title.tabs.closeTab()
             when 'Close Others'     then return window.title.tabs.closeOtherTabs()
@@ -180,7 +181,7 @@ class Kali
             when 'Padding'          then return post.emit 'tool', 'button', 'padding', 'show'
             when 'Swap Fill/Stroke' then return post.emit 'tool', 'swapColor'
             when 'Properties'       then return post.emit 'tool', 'toggleProperties'
-            when 'Tools'            then return post.emit 'tool', 'toggleTools'
+            when 'All Tools'        then return post.emit 'tool', 'toggleTools'
             when 'Groups'           then return post.emit 'tool', 'button', 'show', 'groups'
             when 'IDs'              then return post.emit 'tool', 'button', 'show', 'ids'
             when 'Wire'             then return post.emit 'tool', 'button', 'wire', 'wire'

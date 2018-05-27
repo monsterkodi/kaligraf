@@ -53,6 +53,14 @@ class Title
     showTitle: -> @title.style.display = 'initial'
     hideTitle: -> @title.style.display = 'none'
         
+    swapForTabs: (swapIn) -> 
+        @tabs.div.parentNode.insertBefore swapIn, @tabs.div
+        @tabs.div.style.display = 'none'
+        
+    restoreTabs: ->
+        @tabs.div.previousSibling.remove()
+        @tabs.div.style.display = ''
+    
     onTitlebar: (action) =>
         
         switch action

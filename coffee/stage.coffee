@@ -101,13 +101,22 @@ class Stage
 
         switch action
 
-            when 'setColor' 
+            when 'setColor'
+                
                 @do 'stage color'
                 @setColor arg1, arg2
                 @done()
                 
             when 'loadFile'
-                @load arg1
+                
+                log 'loadFile', arg1
+                if not arg1.dir
+                    @load arg1.file
+                else
+                    if arg1.file == 'Recent' 
+                        post.emit 'browser', 'browseRecent'
+                    else
+                        post.emit 'browser', 'browseDir', arg1
                 
     foregroundColor: -> contrastColor @color
 
@@ -897,7 +906,7 @@ class Stage
         
         @pushRecent file
         
-        @kali.closeBrowser()
+        kali.browser?.hide()
         
         post.emit 'stage', 'layer', active:-1, num:0
         

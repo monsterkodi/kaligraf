@@ -54,7 +54,6 @@ class Tools extends Tool
             when 'click'         then @clickTool        tool
             when 'button'        then @clickToolButton  tool, button
             when 'activate'      then @activateTool     tool
-            when 'browse'        then @kali.openBrowser()
             when 'font'          then @getTool('font').toggleList()
             when 'layer'         then @getTool('layer').toggleList()
             when 'gradient'      then @getTool('gradient').toggleList()
@@ -257,7 +256,7 @@ class Tools extends Tool
             @stage.setViewBox box
             
         if prefs.get 'browser:open', false
-            setImmediate => @kali.openBrowser()
+            setImmediate -> post.emit 'browser', 'browseRecent'
        
     restore: ->
         

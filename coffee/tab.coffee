@@ -18,6 +18,8 @@ class Tab
         @div = elem class: 'tab', text: 'untitled'
         @tabs.div.appendChild @div
 
+    tabData: -> @info
+        
     #  0000000   0000000   000   000  00000000
     # 000       000   000  000   000  000     
     # 0000000   000000000   000 000   0000000 
@@ -94,14 +96,8 @@ class Tab
         if @state?
             @restoreState()
         else
-            # window.loadFile @info.file, dontSave:true
-            log 'tab activate', @info.file
-            post.emit 'stage', 'loadFile', @info.file
-            
-        if @foreign?.length
-            for changes in @foreign
-                window.editor.do.foreignChanges changes
-            delete @foreign
+            log 'tab activate', @info
+            post.emit 'stage', 'loadFile', @info
             
         @tabs.stash()
 

@@ -33,12 +33,12 @@ class Tabs
         switch action 
             when 'load'
                 log 'tabs.onStage', action, info.file
-                @addTab info.file
+                @addTab file:info.file
             when 'save', 'clear'
                 log 'tabs.onStage', action, info
         
     onUndo: (info) =>
-        log 'tabs.onUndo', info
+        # log 'tabs.onUndo', info
         # @dirty.style.display    = info.dirty and 'inline-block' or 'none'
         # @dirty.style.background = info.dirty and '#f80' or '#222'
             
@@ -147,23 +147,29 @@ class Tabs
         @tabs = keep
         @stash()
     
+    closeTabs: =>
+        
+        while @numTabs()
+            @tabs.pop().close()
+        
     #  0000000   0000000    0000000          000000000   0000000   0000000    
     # 000   000  000   000  000   000           000     000   000  000   000  
     # 000000000  000   000  000   000           000     000000000  0000000    
     # 000   000  000   000  000   000           000     000   000  000   000  
     # 000   000  0000000    0000000             000     000   000  0000000    
     
-    addTab: (file) ->
-
+    addTab: (data) ->
+        
+        file = data.file
         tab = @tab file
         if not tab
             tab = new Tab @
-            tab.update file:file
+            tab.update data
             @tabs.push tab
             @stash()
         tab
 
-    onNewEmptyTab: => @addTab('untitled').activate()
+    onNewEmptyTab: => @addTab(file:'untitled').activate()
         
     # 000   000   0000000   000   000  000   0000000    0000000   000000000  00000000  
     # 0000  000  000   000  000   000  000  000        000   000     000     000       
@@ -203,9 +209,9 @@ class Tabs
     # 000   000  00000000  0000000      000      0000000   000   000  00000000  
 
     stash: => 
-        log 'stash', ( t.file() for t in @tabs ), @activeTab()?.index() ? 0
+        # log 'stash', ( t.tabData() for t in @tabs ), @activeTab()?.index() ? 0
         prefs.set 'tabs', 
-            files:  ( t.file() for t in @tabs )
+            files:  ( t.tabData() for t in @tabs )
             active: @activeTab()?.index() ? 0
     
     restore: =>
@@ -216,8 +222,7 @@ class Tabs
         log 'tabs.restore', active, files
         return if _.isEmpty files # happens when first window opens
         
-        if @tabs[0]?
-            @tabs[0].update file: files.shift()
+        @closeTabs()
         while files.length
             @addTab files.shift()
         

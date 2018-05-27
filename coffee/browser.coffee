@@ -26,22 +26,12 @@ class Browser
         
         @scale  = prefs.get 'browser:scale'
         @offset = pos 0,0
-        
-        buttons = [
-            text:   'Open'
-            action: @onOpen
-        ]
-            
+                
+        window.title.tabs.addTab file:'Recent', dir:true
         dirs = prefs.get 'browser:dirs', []
         for dir in dirs
             if slash.dirExists dir
-                buttons.push
-                    text:   slash.basename dir
-                    data:   dir: dir
-                    action: @onDirButton
-            
-        @title = winTitle close: @close, class: 'browserTitle', buttons: buttons
-        @element.appendChild @title 
+                window.title.tabs.addTab file:dir, dir:true
         
         @scroll = elem class: 'browserScroll'
         @element.appendChild @scroll
@@ -60,8 +50,26 @@ class Browser
             onStop:  @onStop
         
         @element.focus()
-        post.on 'resize', @onResize
-                
+        
+        post.on 'resize',  @onResize
+        post.on 'browser', @onBrowser
+
+    onBrowser: (action, arg) =>
+        
+        switch action
+            when 'browseDir' then @browseDir arg.file
+            when 'browseRecent' 
+                recent = _.clone prefs.get 'recent', []
+                if empty recent
+                    post.emit 'tool', 'open'
+                else
+                    @browseRecent recent
+            when 'close'
+                if @selectedFile()
+                    @openFile @selectedFile()
+                else
+                    @hide()
+        
     #  0000000   00000000   00000000  000   000  
     # 000   000  000   000  000       0000  000  
     # 000   000  00000000   0000000   000 0 000  
@@ -82,7 +90,7 @@ class Browser
                 
     browseDir: (dir) ->
         
-        @items.innerHTML = ''
+        @show()
         
         fs.readdir dir, (err, files) =>
             
@@ -110,7 +118,8 @@ class Browser
     # 000   000  00000000   0000000  00000000  000   000     000     
     
     browseRecent: (files) ->
-            
+         
+        @show()
         for file in files
             if not @addFile file
                 @delRecent file
@@ -394,7 +403,7 @@ class Browser
         @items.children[index]?.classList.add 'selected'
         @centerSelected()
     
-    selectedFile: -> @selectedItem().getAttribute 'file'
+    selectedFile: -> @selectedItem()?.getAttribute 'file'
     selectedItem: -> $ '.selected', @element
         
     updateBorderSize: ->
@@ -432,9 +441,16 @@ class Browser
     openFile: (file) ->
         
         @stage.load file
-        @close()
-                
-    close: => @kali.closeBrowser()
+        @hide()
+            
+    show: => 
+        
+        @items.innerHTML = ''
+        @element.style.display = ''
+        
+    hide: => 
+    
+        @element.style.display = 'none'
 
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
@@ -454,7 +470,7 @@ class Browser
             when 'down'           then @navigate +@columns
             when 'command+='      then return @zoom +1
             when 'command+-'      then @zoom -1
-            when 'esc'            then @close()
+            when 'esc'            then @hide()
             when 'return', 'enter', '.'     then @openFile @selectedFile()
             when 'command+e', 'e' then @zoomSelected()
             when 'command+0'      then @zoomAll()

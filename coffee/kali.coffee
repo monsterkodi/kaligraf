@@ -43,9 +43,10 @@ class Kali
         window.title = new Title
         window.menu  = new Menu
         
-        @trans = new Trans @
-        @tools = new Tools @, name: 'tools', text: 'tools', orient: 'down'
-        @stage = new Stage @
+        @trans   = new Trans @
+        @tools   = new Tools @, name: 'tools', text: 'tools', orient: 'down'
+        @stage   = new Stage @
+        @browser = new Browser @
         
         @tools.init()
         
@@ -65,29 +66,7 @@ class Kali
     onResize: => 
 
         post.emit 'resize', pos sw(), sh()
-                
-    # 0000000    00000000    0000000   000   000   0000000  00000000  00000000   
-    # 000   000  000   000  000   000  000 0 000  000       000       000   000  
-    # 0000000    0000000    000   000  000000000  0000000   0000000   0000000    
-    # 000   000  000   000  000   000  000   000       000  000       000   000  
-    # 0000000    000   000   0000000   00     00  0000000   00000000  000   000  
-    
-    openBrowser: ->
-        
-        recent = _.clone prefs.get 'recent', []
-        if empty recent
-            post.emit 'tool', 'open'
-        else if @browser?
-            @browser.openFile @browser.selectedFile()
-        else
-            @browser = new Browser @
-            @browser.browseRecent recent
-            
-    closeBrowser: ->
-        
-        @browser?.del()
-        delete @browser
-
+                            
     closeStopPalette: ->
         
         if palette = @stopPalette
@@ -120,7 +99,7 @@ class Kali
             when 'Fonts'            then return post.emit 'tool', 'font'
             when 'Layers'           then return post.emit 'tool', 'layer'
             
-            when 'Open Recent...'   then return post.emit 'tool', 'browse'
+            when 'Open Recent...'   then return post.emit 'browser', 'browseRecent'
             when 'Open...'          then return post.emit 'tool', 'open'
             
             when 'Save As...'       then return post.emit 'tool', 'saveAs'

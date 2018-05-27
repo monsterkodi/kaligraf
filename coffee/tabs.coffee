@@ -6,7 +6,7 @@
    000     000   000  0000000    0000000 
 ###
 
-{ post, elem, drag, slash, error, log, _ } = require 'kxk'
+{ post, elem, drag, prefs, slash, error, log, _ } = require 'kxk'
 
 Tab = require './tab'
 
@@ -14,50 +14,39 @@ class Tabs
     
     constructor: (view) ->
         
+        log 'Tabs'
+        
         @tabs = []
         @div = elem class: 'tabs'
         view.appendChild @div
         
-        @div.addEventListener 'click',     @onClick
-        
-        @tabs.push new Tab @
-        @tabs[0].setActive()
+        @div.addEventListener 'click', @onClick
         
         @drag = new drag
             target: @div
             onStart: @onDragStart
             onMove:  @onDragMove
             onStop:  @onDragStop
+
+        post.on 'stage', @onStage
+        post.on 'undo',  @onUndo
         
-        # post.on 'newTabWithFile',   @onNewTabWithFile
-        # post.on 'newEmptyTab',      @onNewEmptyTab
-#         
-        # post.on 'closeTabOrWindow', @onCloseTabOrWindow
-        # post.on 'closeOtherTabs',   @onCloseOtherTabs
-        # post.on 'closeWindow',      @onCloseWindow
-        # post.on 'stash',            @stash
-        # post.on 'restore',          @restore
-        # post.on 'revertFile',       @revertFile
-        # post.on 'sendTabs',         @onSendTabs
-        # post.on 'fileLineChanges',  @onFileLineChanges
-        # post.on 'fileSaved',        @onFileSaved
+    onStage: (action, info) =>
+        switch action 
+            when 'load' 
+                log 'tabs.onStage', action, info
+                @addTab info.file
+            when 'save', 'clear'
+                log 'tabs.onStage', action, info
         
-    onSendTabs: (winID) =>
-        
-        t = ''
-        for tab in @tabs
-            t += tab.div.innerHTML
-        post.toWin winID, 'winTabs', window.winID, t
-        
-    onFileSaved: (file, winID) =>
-        if winID == window.winID
-            error "fileSaved from this window? #{file} #{winID}" 
-            return 
-        tab = @tab file
-        if tab? and tab != @activeTab()
-            log "reverting tab because foreign win saved #{file}", tab.info
-            tab.revert()
+    onUndo: (info) =>
+        log 'tabs.onUndo', info
+        # @dirty.style.display    = info.dirty and 'inline-block' or 'none'
+        # @dirty.style.background = info.dirty and '#f80' or '#222'
             
+        # post.on 'newEmptyTab',      @onNewEmptyTab
+        # post.on 'closeOtherTabs',   @onCloseOtherTabs
+                
     #  0000000  000      000   0000000  000   000  
     # 000       000      000  000       000  000   
     # 000       000      000  000       0000000    
@@ -65,10 +54,11 @@ class Tabs
     #  0000000  0000000  000   0000000  000   000  
     
     onClick: (event) =>
-            
+        
+        log 'tabs.onClick'
         if tab = @tab event.target
             if event.target.classList.contains 'dot'
-                @onCloseTabOrWindow tab
+                @closeTab tab
             else
                 tab.activate()
         true
@@ -134,9 +124,9 @@ class Tabs
     #  0000000  0000000   0000000   0000000   00000000  
     
     closeTab: (tab = @activeTab()) ->
-        
-        if tab.dirty()
-            tab.saveChanges()
+        log 'tabs.closeTab', tab.dirty()
+        # if tab.dirty()
+            # tab.saveChanges()
             
         tab.nextOrPrev().activate()
         tab.close()
@@ -145,14 +135,6 @@ class Tabs
         @update()
         @
   
-    onCloseWindow: -> window.win.close()
-        
-    onCloseTabOrWindow: (tab) =>
-        if @numTabs() == 1
-            window.win.close()
-        else
-            @closeTab tab
-
     onCloseOtherTabs: => 
         
         keep = _.pullAt @tabs, @activeTab().index()
@@ -178,22 +160,8 @@ class Tabs
         @update()
         tab
 
-    onNewEmptyTab: =>
+    onNewEmptyTab: => @addTab('untitled').activate()
         
-        @addTab('untitled').activate()
-        
-    onNewTabWithFile: (file) =>
-        
-        [file, line, col] = slash.splitFileLine file
-        
-        if tab = @tab file
-            tab.activate()
-        else
-            @addTab(file).activate()
-            
-        if line or col
-            post.emit 'singleCursorAtPos', [col, line-1]
-
     # 000   000   0000000   000   000  000   0000000    0000000   000000000  00000000  
     # 0000  000  000   000  000   000  000  000        000   000     000     000       
     # 000 0 000  000000000   000 000   000  000  0000  000000000     000     0000000   
@@ -232,15 +200,15 @@ class Tabs
     # 000   000  00000000  0000000      000      0000000   000   000  00000000  
 
     stash: => 
-
-        window.stash.set 'tabs', 
+        log 'stash', ( t.file() for t in @tabs )
+        prefs.set 'tabs', 
             files:  ( t.file() for t in @tabs )
-            active: @activeTab().index()
+            active: @activeTab()?.index() ? 0
     
     restore: =>
         
-        active = window.stash.get 'tabs:active', 0
-        files  = window.stash.get 'tabs:files'
+        active = prefs.get 'tabs:active', 0
+        files  = prefs.get 'tabs:files'
         return if _.isEmpty files # happens when first window opens
         
         @tabs[0].update file: files.shift()
@@ -260,17 +228,7 @@ class Tabs
     #  0000000   000        0000000    000   000     000     00000000    
     
     update: ->
-
         @stash()
-
-        pkg = @tabs[0].info.pkg
-        @tabs[0].showPkg()
-        for tab in @tabs.slice 1
-            if tab.info.pkg == pkg
-                tab.hidePkg()
-            else
-                pkg = tab.info.pkg
-                tab.showPkg()
         @
         
 module.exports = Tabs

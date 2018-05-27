@@ -34,6 +34,7 @@ class Tab
     
     update: (info) ->
             
+        log 'tab.update', info
         oldFile = @info?.file
         
         @info = _.clone info
@@ -41,18 +42,13 @@ class Tab
         @div.innerHTML = ''
         @div.classList.toggle 'dirty', @dirty()
                 
-        sep = '●'
-        sep = '■' if window.editor.newlineCharacters == '\r\n'
-        @div.appendChild elem 'span', class:'dot', text:sep
+        @div.appendChild elem 'span', class:'dot', text:'●'
         
-        diss = syntax.dissForTextAndSyntax slash.basename(@file()), 'ko' #, join: true 
-        name = elem 'span', class:'name', html:render.line(diss, charWidth:0)
+        name = elem 'span', class:'name', html:slash.basename(@file())
         @div.appendChild name
 
         if @info.file?
-            diss = syntax.dissForTextAndSyntax slash.tilde(@file()), 'ko' #, join: true 
-            html = render.line(diss, charWidth:0)
-            @tooltip = new Tooltip elem:name, html:html, x:0
+            @tooltip = new Tooltip elem:name, html:slash.tilde(@file()), x:0
             
         @div.appendChild elem 'span', class:'dot', text:'●' if @dirty()
         @
@@ -99,7 +95,8 @@ class Tab
         if @state?
             @restoreState()
         else
-            window.loadFile @info.file, dontSave:true
+            # window.loadFile @info.file, dontSave:true
+            log 'tab activate'
             
         if @foreign?.length
             for changes in @foreign

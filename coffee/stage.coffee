@@ -32,6 +32,8 @@ class Stage
     
     constructor: (@kali) ->
 
+        log 'Stage'
+        
         @name = 'Stage'
         @element = elem 'div', id: 'stage'
         @kali.element.insertBefore @element, @kali.element.firstChild
@@ -878,6 +880,8 @@ class Stage
     
     load: (file=@currentFile) ->
 
+        log 'stage.load', file
+        
         @undo.clear()
         
         @currentFile = file

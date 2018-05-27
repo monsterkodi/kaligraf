@@ -41,6 +41,9 @@ class Kali
         @toolSize     = 75
         @paletteWidth = 375
         
+        window.title = new Title
+        window.menu  = new Menu
+        
         @trans = new Trans @
         @tools = new Tools @, name: 'tools', text: 'tools', orient: 'down'
         @stage = new Stage @
@@ -57,9 +60,6 @@ class Kali
         
         @tools.loadPrefs()
 
-        window.title = new Title
-        window.menu  = new Menu
-        
         post.on 'menuAction', @onMenuAction
         
         @initContextMenu()

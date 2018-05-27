@@ -191,7 +191,8 @@ class Tools extends Tool
         if tool.cfg.orient == 'down'
             tool.setPos x:(tail? and tail.pos().x or 0) + @kali.toolSize, y:0
         else
-            tool.setPos x:0, y:(tail? and tail.pos().y or 0) + @kali.toolSize
+            # tool.setPos x:0, y:(tail? and tail.pos().y or 0) + @kali.toolSize
+            tool.setPos x:0, y:@children.length * @kali.toolSize
         
         tool.parent = @
         @children.push tool

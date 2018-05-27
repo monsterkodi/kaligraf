@@ -8,7 +8,8 @@
 
 { elem, slash, post, log, $ } = require 'kxk'
 
-pkg = require '../package.json'
+pkg  = require '../package.json'
+Tabs = require './tabs'
 
 class Title
     
@@ -25,12 +26,14 @@ class Title
         @winicon.addEventListener 'click', -> post.emit 'menuAction', 'Toggle Menu'   
         
         @title = elem class: 'titlebar-title'
-        html  = "<span class='titlebar-name'>#{pkg.name}</span>"
+        html  = "<span class='titlebar-name'>kali</span>"
         html += "<span class='titlebar-dot'> ● </span>"
         html += "<span class='titlebar-version'>#{pkg.version}</span>"
         @title.innerHTML = html
         @title.ondblclick = => post.toMain 'toggleMaximize'
         @elem.appendChild @title
+        
+        @tabs = new Tabs @elem
         
         @minimize = elem class: 'winclose gray'
         @elem.appendChild @minimize

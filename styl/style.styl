@@ -213,7 +213,6 @@ button
     
 .browserTitle
     color                   #888
-    -webkit-app-region      drag
     padding-left            toolSize    
     
 .browserTitleButton
@@ -690,15 +689,16 @@ button
 .winTitle
     font-size               13px
 
-.tools
-    -webkit-app-region      drag
-
 .tool
     position                absolute
     width                   toolSize
     height                  toolSize
     cursor                  pointer
 
+.tools
+    height                  0px
+    overflow                hidden
+    
 .toolTripleSpin .toolButtons
     padding-top             4px
     height                  20px
@@ -936,7 +936,83 @@ button
             background-color #888
         & img
             opacity     1
-    
+            
+// 000000000   0000000    0000000   000      000000000  000  00000000
+//    000     000   000  000   000  000         000     000  000   000
+//    000     000   000  000   000  000         000     000  00000000
+//    000     000   000  000   000  000         000     000  000
+//    000      0000000    0000000   0000000     000     000  000
+
+.tooltip
+    background          frameColor
+    white-space         nowrap
+    padding             3px
+    padding-left        frameWidth
+    padding-right       frameWidth
+    border-bottom-left-radius  frameWidth
+    border-bottom-right-radius frameWidth
+    position            absolute
+    top                 titlebarHeight
+    font-size           titlebarFontSize
+    opacity             0
+    transform           scaleY(0)
+    transition          transform 0.2s ease-in, opacity 0.2s ease-in
+    overflow            hidden
+
+// 000000000   0000000   0000000     0000000
+//    000     000   000  000   000  000
+//    000     000000000  0000000    0000000
+//    000     000   000  000   000       000
+//    000     000   000  0000000    0000000
+
+.tabs
+    background          titleColor
+    color               #aaa
+    flex                1 1 0
+    display             flex
+    flex-direction      row
+    overflow-x          auto
+    overflow-y          hidden
+    -webkit-app-region  no-drag
+
+    &::-webkit-scrollbar
+        height          2px
+
+#titlebar.focus .tabs
+    color               #3c3
+        
+// 000000000   0000000   0000000
+//    000     000   000  000   000
+//    000     000000000  0000000
+//    000     000   000  000   000
+//    000     000   000  0000000
+
+.tab
+    flex                1 1 0
+    border-top-left-radius  6px
+    border-top-right-radius 6px
+    font-size           titlebarFontSize
+    padding-left        6px
+    padding-right       6px
+    padding-top         6px
+    cursor              pointer
+    &:not(.active)
+        opacity         0.5
+
+.tab.dirty
+.tab.dirty .dot
+    color               #aaf
+
+.tab.clean .dot
+    color               #444
+    &.focus
+        color           #060
+
+.tab
+    background          #1a1a1a
+    &.active
+        background      frameColor
+        
 // 00     00  00000000  000   000  000   000  
 // 000   000  000       0000  000  000   000  
 // 000000000  0000000   000 0 000  000   000  

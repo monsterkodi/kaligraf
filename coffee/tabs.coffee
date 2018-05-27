@@ -167,7 +167,8 @@ class Tabs
             tab.update data
             @tabs.push tab
             @stash()
-        tab.setActive()
+        if not data.dontActivate
+            tab.setActive()
         tab
 
     onNewEmptyTab: => @addTab(file:'untitled').activate()

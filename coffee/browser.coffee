@@ -56,6 +56,7 @@ class Browser
                 if empty recent
                     post.emit 'tool', 'open'
                 else
+                    window.title.tabs.addTab file:'Recent', dir:true
                     @browseRecent recent
             when 'close'
                 if @selectedFile()
@@ -427,7 +428,11 @@ class Browser
         
         if drag.startPos == drag.lastPos
             if file = elem.upAttr event.target, 'file'
-                @openFile file
+                if event.button == 1
+                    log 'onStop', event.button
+                    window.title.tabs.addTab file:file, dontActivate:true
+                else
+                    @openFile file
                 
     openFile: (file) ->
         

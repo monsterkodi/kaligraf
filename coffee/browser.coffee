@@ -432,7 +432,6 @@ class Browser
     openFile: (file) ->
         
         @stage.load file
-        @stage.centerSelection()
         @close()
                 
     close: => @kali.closeBrowser()

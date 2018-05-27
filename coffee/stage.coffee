@@ -32,8 +32,6 @@ class Stage
     
     constructor: (@kali) ->
 
-        log 'Stage'
-        
         @name = 'Stage'
         @element = elem 'div', id: 'stage'
         @kali.element.insertBefore @element, @kali.element.firstChild
@@ -99,14 +97,17 @@ class Stage
         @selection.restore state.selection
         @shapes.restore state.shapes
     
-    onStage: (action, color, alpha) =>
+    onStage: (action, arg1, arg2) =>
 
         switch action
 
             when 'setColor' 
                 @do 'stage color'
-                @setColor color, alpha
+                @setColor arg1, arg2
                 @done()
+                
+            when 'loadFile'
+                @load arg1
                 
     foregroundColor: -> contrastColor @color
 
@@ -908,6 +909,7 @@ class Stage
         
         post.emit 'stage', 'load', info
         
+        @centerSelection()
         @kali.focus()
                 
     open: ->

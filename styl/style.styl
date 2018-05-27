@@ -171,35 +171,6 @@ button
     cursor                  pointer
     padding-top             7px
     padding-bottom          7px
-
-// 00000000  000  000      00000000  000  000   000  00000000   0000000   
-// 000       000  000      000       000  0000  000  000       000   000  
-// 000000    000  000      0000000   000  000 0 000  000000    000   000  
-// 000       000  000      000       000  000  0000  000       000   000  
-// 000       000  0000000  00000000  000  000   000  000        0000000   
-
-#fileInfo
-    font()
-    position                absolute
-    left                    toolSize
-    top                     0
-    background              #222
-    border-bottom-right-radius  6px
-
-.fileInfoText
-    display                 inline-block
-    color                   #bbb
-    padding                 6px
-    padding-right           10px
-    font-size               13px
-    
-.fileInfoDirty
-    display                 inline-block
-    width                   8px
-    height                  8px
-    border-radius           4px
-    margin-right            6px
-    background              #222
     
 // 0000000    00000000    0000000   000   000   0000000  00000000  00000000   
 // 000   000  000   000  000   000  000 0 000  000       000       000   000  
@@ -711,7 +682,6 @@ button
         border-bottom-left-radius 4px
         
 .tool
-#fileInfo
     filter                  drop-shadow(8px 8px 4px rgba(0,0,0,0.15))
     
 .fontList
@@ -944,6 +914,7 @@ button
 //    000      0000000    0000000   0000000     000     000  000
 
 .tooltip
+    color               #aaa
     background          frameColor
     white-space         nowrap
     padding             3px
@@ -953,7 +924,8 @@ button
     border-bottom-right-radius frameWidth
     position            absolute
     top                 titlebarHeight
-    font-size           titlebarFontSize
+    font-family         titlebarFont
+    font-size           titlebarFontSize * 0.8
     opacity             0
     transform           scaleY(0)
     transition          transform 0.2s ease-in, opacity 0.2s ease-in
@@ -988,10 +960,12 @@ button
 //    000     000   000  0000000
 
 .tab
+    color               #aaa
     flex                1 1 0
     border-top-left-radius  6px
     border-top-right-radius 6px
     font-size           titlebarFontSize
+    font-family         titlebarFont
     padding-left        6px
     padding-right       6px
     padding-top         6px
@@ -1008,10 +982,17 @@ button
     &.focus
         color           #060
 
+.dot
+    display             inline-block
+    vertical-align      top
+    padding-left        6px
+    padding-right       9px
+    margin-top          -1px
+
 .tab
-    background          #1a1a1a
+    background          frameColor
     &.active
-        background      frameColor
+        background      #333
         
 // 00     00  00000000  000   000  000   000  
 // 000   000  000       0000  000  000   000  

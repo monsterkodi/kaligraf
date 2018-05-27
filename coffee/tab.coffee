@@ -6,7 +6,7 @@
    000     000   000  0000000  
 ###
 
-{ elem, post, atomic, slash, fs, error, log, _ } = require 'kxk'
+{ elem, post, slash, fs, error, log, _ } = require 'kxk'
 
 Tooltip = require './tooltip'
 
@@ -44,7 +44,7 @@ class Tab
                 
         @div.appendChild elem 'span', class:'dot', text:'●'
         
-        name = elem 'span', class:'name', html:slash.basename(@file())
+        name = elem 'span', class:'name', html:slash.base @file()
         @div.appendChild name
 
         if @info.file?
@@ -75,7 +75,6 @@ class Tab
         delete @foreign
         delete @state
         @update @info
-        @tabs.update()
 
     #  0000000    0000000  000000000  000  000   000   0000000   000000000  00000000  
     # 000   000  000          000     000  000   000  000   000     000     000       
@@ -96,14 +95,15 @@ class Tab
             @restoreState()
         else
             # window.loadFile @info.file, dontSave:true
-            log 'tab activate'
+            log 'tab activate', @info.file
+            post.emit 'stage', 'loadFile', @info.file
             
         if @foreign?.length
             for changes in @foreign
                 window.editor.do.foreignChanges changes
             delete @foreign
             
-        @tabs.update()
+        @tabs.stash()
 
     #  0000000    0000000  000000000  000  000   000  00000000  
     # 000   000  000          000     000  000   000  000       

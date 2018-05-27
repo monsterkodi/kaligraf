@@ -14,8 +14,6 @@ class Tabs
     
     constructor: (view) ->
         
-        log 'Tabs'
-        
         @tabs = []
         @div = elem class: 'tabs'
         view.appendChild @div
@@ -33,7 +31,7 @@ class Tabs
         
     onStage: (action, info) =>
         switch action 
-            when 'load' 
+            when 'load'
                 log 'tabs.onStage', action, info
                 @addTab info.file
             when 'save', 'clear'
@@ -132,7 +130,7 @@ class Tabs
         tab.close()
         
         _.pull @tabs, tab
-        @update()
+        @stash()
         @
   
     onCloseOtherTabs: => 
@@ -144,7 +142,7 @@ class Tabs
                 tab.saveChanges()
             @tabs.pop().close()
         @tabs = keep
-        @update()
+        @stash()
     
     #  0000000   0000000    0000000          000000000   0000000   0000000    
     # 000   000  000   000  000   000           000     000   000  000   000  
@@ -154,10 +152,12 @@ class Tabs
     
     addTab: (file) ->
 
-        tab = new Tab @
-        tab.update file:file
-        @tabs.push tab
-        @update()
+        tab = @tab file
+        if not tab
+            tab = new Tab @
+            tab.update file:file
+            @tabs.push tab
+            @stash()
         tab
 
     onNewEmptyTab: => @addTab('untitled').activate()
@@ -184,7 +184,7 @@ class Tabs
         @tabs[ta.index()]   = tb
         @tabs[tb.index()+1] = ta
         @div.insertBefore tb.div, ta.div
-        @update()
+        @stash()
     
     move: (key) ->
         
@@ -200,7 +200,7 @@ class Tabs
     # 000   000  00000000  0000000      000      0000000   000   000  00000000  
 
     stash: => 
-        log 'stash', ( t.file() for t in @tabs )
+        log 'stash', ( t.file() for t in @tabs ), @activeTab()?.index() ? 0
         prefs.set 'tabs', 
             files:  ( t.file() for t in @tabs )
             active: @activeTab()?.index() ? 0
@@ -209,26 +209,17 @@ class Tabs
         
         active = prefs.get 'tabs:active', 0
         files  = prefs.get 'tabs:files'
+        
+        log 'tabs.restore', active, files
         return if _.isEmpty files # happens when first window opens
         
-        @tabs[0].update file: files.shift()
+        if @tabs[0]?
+            @tabs[0].update file: files.shift()
         while files.length
             @addTab files.shift()
         
         @tabs[active].activate()
             
-        @update()
-
     revertFile: (file) => @tab(file)?.revert()
-        
-    # 000   000  00000000   0000000     0000000   000000000  00000000    
-    # 000   000  000   000  000   000  000   000     000     000         
-    # 000   000  00000000   000   000  000000000     000     0000000     
-    # 000   000  000        000   000  000   000     000     000         
-    #  0000000   000        0000000    000   000     000     00000000    
-    
-    update: ->
-        @stash()
-        @
         
 module.exports = Tabs

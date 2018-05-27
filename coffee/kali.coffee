@@ -13,7 +13,6 @@ Cursor   = require './cursor'
 Stage    = require './stage'
 Trans    = require './trans'
 Browser  = require './browser'
-FileInfo = require './fileinfo'
 Title    = require './title'
 Menu     = require './menu'
 
@@ -50,14 +49,13 @@ class Kali
         
         @tools.init()
         
-        @fileInfo = new FileInfo @
-        
         @focus()
         document.addEventListener 'keydown', @onKeyDown
         document.addEventListener 'keyup',   @onKeyUp
                 
         window.onresize = @onResize
         
+        window.title.tabs.restore()
         @tools.loadPrefs()
 
         post.on 'menuAction', @onMenuAction

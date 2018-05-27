@@ -1,5 +1,6 @@
 ![banner](bin/banner.svg)
-![kali](bin/kali.png)
-![browser](bin/browser.png)
+![kali](img/kali.png)
+![browser](img/browser.png)
+![shot](img/shot01.png)
 ![florakali](svg/test/florakali.svg)
 ![objects](svg/docs/objects.svg)

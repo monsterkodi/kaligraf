@@ -109,7 +109,7 @@ class Stage
                 
             when 'loadFile'
                 
-                log 'loadFile', arg1
+                # log 'loadFile', arg1
                 if not arg1.dir
                     @load arg1.file
                 else
@@ -890,7 +890,7 @@ class Stage
     
     load: (file=@currentFile) ->
 
-        log 'stage.load', file
+        # log 'stage.load', file
         
         @undo.clear()
         

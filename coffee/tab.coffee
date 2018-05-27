@@ -36,7 +36,7 @@ class Tab
     
     update: (info) ->
             
-        log 'tab.update', info
+        # log 'tab.update', info
         oldFile = @info?.file
         
         @info = _.clone info
@@ -96,7 +96,7 @@ class Tab
         if @state?
             @restoreState()
         else
-            log 'tab activate', @info
+            # log 'tab activate', @info
             post.emit 'stage', 'loadFile', @info
             
         @tabs.stash()

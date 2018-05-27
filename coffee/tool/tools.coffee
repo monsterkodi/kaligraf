@@ -255,9 +255,6 @@ class Tools extends Tool
             @stage.zoom = box.zoom
             @stage.setViewBox box
             
-        if prefs.get 'browser:open', false
-            setImmediate -> post.emit 'browser', 'browseRecent'
-       
     restore: ->
         
         store = prefs.get 'tool:store'

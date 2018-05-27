@@ -30,6 +30,7 @@ class Tabs
         post.on 'undo',  @onUndo
         
     onStage: (action, info) =>
+        
         switch action 
             when 'load'
                 log 'tabs.onStage', action, info.file
@@ -167,6 +168,7 @@ class Tabs
             tab.update data
             @tabs.push tab
             @stash()
+        tab.setActive()
         tab
 
     onNewEmptyTab: => @addTab(file:'untitled').activate()
@@ -209,10 +211,11 @@ class Tabs
     # 000   000  00000000  0000000      000      0000000   000   000  00000000  
 
     stash: => 
-        # log 'stash', ( t.tabData() for t in @tabs ), @activeTab()?.index() ? 0
-        prefs.set 'tabs', 
+        data = 
             files:  ( t.tabData() for t in @tabs )
             active: @activeTab()?.index() ? 0
+        log 'stash', data
+        prefs.set 'tabs', data
     
     restore: =>
         

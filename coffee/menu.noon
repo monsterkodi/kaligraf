@@ -20,9 +20,11 @@ File
     New                     ctrl+n
     Clear                   ctrl+k
     Revert                  ctrl+r
+    Close                   ctrl+w
     -        
     Open Recent...          ctrl+.
     Open...                 ctrl+o
+    Open Dir...             ctrl+shift+o
     --            
     Save                    ctrl+s
     Save As...              ctrl+shift+s
@@ -73,8 +75,8 @@ Edit
         -      
         More                ctrl+m
         Less                ctrl+shift+m
-        Prev                ctrl+[
-        Next                ctrl+]
+        Prev                ctrl+shift+[
+        Next                ctrl+shift+]
     Flip      
         Horizontal          6
         Vertical            ctrl+6
@@ -109,7 +111,7 @@ Show
     IDs                 ctrl+shift+i
     ---
     Wire                w
-    Unwire              ctrl+w
+    Unwire              shift+w
     
 # 000000000   0000000    0000000   000
 #    000     000   000  000   000  000
@@ -136,6 +138,9 @@ View
     Layers                  ctrl+l
     Fonts                   ctrl+f
     Gradients               ctrl+j
+    -
+    Previous Tab            ctrl+[
+    Next Tab                ctrl+]
 
 # 000   000  000  000   000  0000000     0000000   000   000
 # 000 0 000  000  0000  000  000   000  000   000  000 0 000

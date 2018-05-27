@@ -26,13 +26,7 @@ class Browser
         
         @scale  = prefs.get 'browser:scale'
         @offset = pos 0,0
-                
-        window.title.tabs.addTab file:'Recent', dir:true
-        dirs = prefs.get 'browser:dirs', []
-        for dir in dirs
-            if slash.dirExists dir
-                window.title.tabs.addTab file:dir, dir:true
-        
+                        
         @scroll = elem class: 'browserScroll'
         @element.appendChild @scroll
         
@@ -41,8 +35,6 @@ class Browser
                 
         @kali.insertAboveTools @element
                     
-        prefs.set 'browser:open', true
-            
         @drag = new drag
             target:  @element
             onStart: @onStart
@@ -57,6 +49,7 @@ class Browser
     onBrowser: (action, arg) =>
         
         switch action
+            when 'openDir'   then @openDir()
             when 'browseDir' then @browseDir arg.file
             when 'browseRecent' 
                 recent = _.clone prefs.get 'recent', []
@@ -76,21 +69,24 @@ class Browser
     # 000   000  000        000       000  0000  
     #  0000000   000        00000000  000   000  
     
-    onOpen: =>
+    openDir: =>
         
         opts =         
             title:      'Open'
             properties: ['openDirectory']
         
         dialog.showOpenDialog opts, (dirs) => 
-            if dir = first dirs
-                @browseDir dir
+            while dir = dirs.shift()
+                if slash.dirExists dir
+                    window.title.tabs.addTab file:dir, dir:true
+                    @browseDir dir
+                    # return
         
-    onDirButton: (event) => @browseDir event.target.data.dir
-                
     browseDir: (dir) ->
         
         @show()
+        
+        dir = slash.resolve dir
         
         fs.readdir dir, (err, files) =>
             
@@ -105,10 +101,6 @@ class Browser
             @calcColumns()
             @selectIndex 0
             
-            dirs = prefs.get 'browser:dirs', []
-            dirs.push(dir) if dir not in dirs
-            prefs.set 'browser:dirs', dirs
-
             @zoomAll()
             
     # 00000000   00000000   0000000  00000000  000   000  000000000  
@@ -145,7 +137,6 @@ class Browser
     del: -> 
         
         @drag.deactivate()
-        prefs.set 'browser:open', false
         @element.remove()
 
     onDelFile: (event) => 

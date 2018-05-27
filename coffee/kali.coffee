@@ -100,7 +100,8 @@ class Kali
             when 'Layers'           then return post.emit 'tool', 'layer'
             
             when 'Open Recent...'   then return post.emit 'browser', 'browseRecent'
-            when 'Open...'          then return post.emit 'tool', 'open'
+            when 'Open...'          then return post.emit 'tool',    'open'
+            when 'Open Dir...'      then return post.emit 'browser', 'openDir'
             
             when 'Save As...'       then return post.emit 'tool', 'saveAs'
             when 'Save'             then return post.emit 'tool', 'save'
@@ -182,6 +183,9 @@ class Kali
             when 'IDs'              then return post.emit 'tool', 'button', 'show', 'ids'
             when 'Wire'             then return post.emit 'tool', 'button', 'wire', 'wire'
             when 'Unwire'           then return post.emit 'tool', 'button', 'wire', 'unwire'
+            
+            when 'Previous Tab'     then return window.title.tabs.navigate 'left'
+            when 'Next Tab'         then return window.title.tabs.navigate 'right'
             
             when 'Toggle Menu'      then return window.menu.toggle()
             when 'Show Menu'        then return window.menu.show()

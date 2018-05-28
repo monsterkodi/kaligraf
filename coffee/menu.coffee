@@ -23,7 +23,7 @@ class Menu
         tmpl = []
         for text,menuOrAccel of obj
             tmpl.push switch
-                when empty menuOrAccel
+                when empty(menuOrAccel) and text.startsWith '-'
                     text: ''
                 when _.isNumber menuOrAccel
                     text:text
@@ -31,6 +31,9 @@ class Menu
                 when _.isString menuOrAccel
                     text:text
                     accel:menuOrAccel
+                when empty(menuOrAccel)
+                    text:text
+                    accel: ''
                 else
                     text:text
                     menu:@makeTemplate menuOrAccel

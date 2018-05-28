@@ -6,11 +6,10 @@
 000   000  000        000
 ###
 
-{ about, prefs, post, noon, watch, childp, slash, fs, log } = require 'kxk'
+{ about, prefs, post, noon, watch, childp, colors, slash, fs, log } = require 'kxk'
 
 pkg      = require '../package.json'
 electron = require 'electron'
-colors   = require 'colors'
 
 app      = electron.app
 Window   = electron.BrowserWindow

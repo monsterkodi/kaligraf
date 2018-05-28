@@ -82,6 +82,7 @@ class Kali
         child.style.zIndex = 1000
         
     shapeTool: -> @tools.getActive('shape')?.name
+    
     tool: (name) -> @tools.getTool name 
     
     # 00     00  00000000  000   000  000   000      0000000    0000000  000000000  000   0000000   000   000
@@ -170,7 +171,13 @@ class Kali
             when 'Bezier'           then return post.emit 'tool', 'click', 'bezier_smooth'
             when 'Polygon'          then return post.emit 'tool', 'click', 'polygon'
             when 'Line'             then return post.emit 'tool', 'click', 'line'
+            
             when 'Text'             then return post.emit 'tool', 'click', 'text'
+            when 'Pick'             then return post.emit 'tool', 'click', 'pick'
+            when 'Edit'             then return post.emit 'tool', 'click', 'edit'
+            when 'Pan'              then return post.emit 'tool', 'click', 'pan'
+            when 'Pipette'          then return post.emit 'tool', 'click', 'pipette'
+            when 'Loupe'            then return post.emit 'tool', 'click', 'loupe'
             
             when 'Center Selection' then return post.emit 'tool', 'centerSelection'
             
@@ -181,8 +188,8 @@ class Kali
             
             when 'Padding'          then return post.emit 'tool', 'button', 'padding', 'show'
             when 'Swap Fill/Stroke' then return post.emit 'tool', 'swapColor'
-            when 'Properties'       then return post.emit 'tool', 'toggleProperties'
-            when 'All Tools'        then return post.emit 'tool', 'toggleTools'
+            when 'Properties'       then return post.emit 'tool', 'expandProperties'
+            when 'All Tools'        then return post.emit 'tool', 'expandTools'
             when 'Groups'           then return post.emit 'tool', 'button', 'show', 'groups'
             when 'IDs'              then return post.emit 'tool', 'button', 'show', 'ids'
             when 'Wire'             then return post.emit 'tool', 'button', 'wire', 'wire'

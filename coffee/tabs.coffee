@@ -39,7 +39,7 @@ class Tabs
                 # log 'tabs.onStage', action, info
         
     onUndo: (info) =>
-        log 'tabs.onUndo', info
+        # log 'tabs.onUndo', info
         @activeTab()?.setDirty info.dirty
             
     #  0000000  000      000   0000000  000   000  

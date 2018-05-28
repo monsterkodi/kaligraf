@@ -86,9 +86,9 @@ class Tools extends Tool
             when 'deselect'      then @stage.shapes.select 'none'
             when 'invert'        then @stage.shapes.select 'invert'
             when 'swapColor'     then @stroke.swapColor()
-            when 'toggleTools'   then @toggleTools()
+            when 'expandTools'   then @expandTools()
             when 'centerSelection' then @stage.centerSelection()
-            when 'toggleProperties' then @toggleProperties()
+            when 'expandProperties' then @expandProperties()
             else log "unhandled tool action #{action} #{tool}"
         
     # 000  000   000  000  000000000  
@@ -302,7 +302,7 @@ class Tools extends Tool
         
         @getTool(tool)?.clickButton button
         
-    toggleTools: ->
+    expandTools: ->
         
         hide = false
         for tool in @children
@@ -320,7 +320,7 @@ class Tools extends Tool
             tool.hideChildren()
         super()
             
-    toggleProperties: ->
+    expandProperties: ->
         
         tool = @getTool 'font'
         if not tool.hasChildren()

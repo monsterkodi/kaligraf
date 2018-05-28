@@ -127,9 +127,14 @@ Tool
     Bezier                  ctrl+b
     Polygon                 ctrl+p
     Line                    ctrl+/
-    Text                    ctrl+t
+    --
+    Text                    ctrl+t t
+    Pick                    alt+shift+e ctrl+click
+    Edit                    alt+e alt+click
+    Pan                     alt+1 alt+ctrl+click
+    Loupe                   alt+2
+    Pipette                 alt+3 alt+ctrl+shift+click
 
-    
 # 000   000  000  00000000  000   000
 # 000   000  000  000       000 0 000
 #  000 000   000  0000000   000000000

@@ -400,23 +400,6 @@ class Tools extends Tool
                     @spaceTool = shape 
                     @kali.tool('pan').onClick()
                 return 
-            
-            switch combo
-                when 'e' then return @onAction 'centerSelection'
-                when '.' then return @onAction 'browse'
-                when 'g' then return @onAction 'group'
-                when 'l' then return @onAction 'layer'
-                when 'u' then return @onAction 'ungroup'
-                when 's' then return @onAction 'save'
-                when 'a' then return @onAction 'selectAll'
-                when 'd' then return @onAction 'deselect'
-                when 'r' then return @onAction 'load'
-                when 'x' then return @onAction 'cut'
-                when 'c' then return @onAction 'copy'
-                when 'v' then return @onAction 'paste'
-                when 'f' then return @onAction 'font'
-                when 'z' then return @onAction 'undo'
-                when 'y' then return @onAction 'redo'
         else
             if combo == 'space'
                 if @spaceTool?

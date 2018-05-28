@@ -60,7 +60,8 @@ class Menu
             @mainMenu = Menu.template()
 
         for keypath in sds.find.key @mainMenu, 'accel'
-            if combo == sds.get @mainMenu, keypath
+            combos = sds.get(@mainMenu, keypath).split ' '
+            if combo in combos
                 keypath.pop()
                 item = sds.get @mainMenu, keypath
                 post.emit 'menuAction', item.action ? item.text, item.actarg

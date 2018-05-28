@@ -37,7 +37,7 @@ class Tab
         @div.innerHTML = ''
         @div.classList.toggle 'dirty', @dirty()
                 
-        @div.appendChild elem 'span', class:'dot', text:'●'
+        @div.appendChild elem 'span', class:'dot', text:info.dir and '🖿' or '●'
         
         name = elem 'span', class:'name', html:slash.base @file()
         @div.appendChild name
@@ -74,7 +74,6 @@ class Tab
     
     revert: -> 
         delete @info.dirty
-        delete @foreign
         delete @state
         @update @info
 

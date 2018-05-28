@@ -241,9 +241,10 @@ class Kali
     
     onKeyDown: (event) =>
         
-        {mod, key, combo, char} = keyinfo.forEvent event
+        { mod, key, combo, char } = keyinfo.forEvent event
 
         if combo
+            return stopEvent(event) if 'unhandled' != @browser.handleKey mod, key, combo, char, event, true
             return stopEvent(event) if 'unhandled' != window.menu.globalModKeyComboEvent mod, key, combo, event
             
         return stopEvent(event) if 'unhandled' != @tools.handleKey mod, key, combo, char, event, true

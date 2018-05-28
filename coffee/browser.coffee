@@ -22,7 +22,7 @@ class Browser
         @element = elem 'div', class: 'browser fill'
         @element.tabIndex = 100
         @element.addEventListener 'wheel',   @onWheel
-        @element.addEventListener 'keydown', @onKeyDown
+        # @element.addEventListener 'keydown', @onKeyDown
         
         @scale  = prefs.get 'browser:scale'
         @offset = pos 0,0
@@ -103,6 +103,7 @@ class Browser
             @selectIndex 0
             
             @zoomAll()
+            @focus()
             
     # 00000000   00000000   0000000  00000000  000   000  000000000  
     # 000   000  000       000       000       0000  000     000     
@@ -436,17 +437,24 @@ class Browser
                 
     openFile: (file) ->
         
+        @element.blur()
         @stage.load file
         @hide()
             
     show: => 
         
+        log 'show'
         @items.innerHTML = ''
         @element.style.display = ''
+        @focus()
         
     hide: => 
     
         @element.style.display = 'none'
+        
+    visible: => @element.style.display != 'none'
+        
+    focus: => @element.focus()
 
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
@@ -454,26 +462,27 @@ class Browser
     # 000  000   000          000     
     # 000   000  00000000     000     
     
-    onKeyDown: (event) => 
+    handleKey: (mod, key, combo, char, event, down) => 
 
-        {mod, key, combo, char} = keyinfo.forEvent event
+        return 'unhandled' if not @visible()
+        
+        log 'handleKey', mod, key, combo
         
         switch combo
             
-            when 'left'           then @navigate -1
-            when 'right'          then @navigate +1
-            when 'up'             then @navigate -@columns
-            when 'down'           then @navigate +@columns
-            when 'command+='      then return @zoom +1
-            when 'command+-'      then @zoom -1
-            when 'esc'            then @hide()
-            when 'return', 'enter', '.'     then @openFile @selectedFile()
-            when 'command+e', 'e' then @zoomSelected()
-            when 'command+0'      then @zoomAll()
-            when 'backspace', 'delete' then @delItem @selectedItem()
+            when 'left'                             then return @navigate -1
+            when 'right'                            then return @navigate +1
+            when 'up'                               then return @navigate -@columns
+            when 'down'                             then return @navigate +@columns
+            when 'command+='                        then return @zoom +1
+            when 'command+-'                        then return @zoom -1
+            when 'esc'                              then return @hide()
+            when 'return', 'enter', '.', 'ctrl+.'   then return @openFile @selectedFile()
+            when 'command+e', 'e'                   then return @zoomSelected()
+            when 'command+0'                        then return @zoomAll()
+            when 'backspace', 'delete'              then return @delItem @selectedItem()
                 
-        if combo.startsWith 'command' then return
-        
-        stopEvent event
+        # stopEvent event
+        'unhandled'
     
 module.exports = Browser

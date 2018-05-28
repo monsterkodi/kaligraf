@@ -17,8 +17,8 @@ kali
 # 000       000  0000000  00000000
 
 File
-    Open Recent...          ctrl+.
-    Open...                 ctrl+o
+    Open Recent...          ctrl+. . 
+    Open...                 ctrl+o o
     Open Dir...             ctrl+shift+o
     -        
     Close                   ctrl+w
@@ -26,12 +26,12 @@ File
     -- 
     New                     ctrl+n
     Clear                   ctrl+k
-    Revert                  ctrl+r
+    Revert                  ctrl+r r
     ---           
-    Save                    ctrl+s
+    Save                    ctrl+s s
     Save As...              ctrl+shift+s
     ----        
-    Import...               o
+    Import...               alt+ctrl+o
     Export...               alt+ctrl+s
 
 # 00000000  0000000    000  000000000
@@ -71,9 +71,9 @@ Edit
         Lower               ctrl+down
         Back                alt+ctrl+down
     Select      
-        All                 ctrl+a
-        None                ctrl+d
-        Invert              ctrl+i
+        All                 ctrl+a a
+        None                ctrl+d d
+        Invert              ctrl+i i
         -      
         More                ctrl+m
         Less                ctrl+shift+m
@@ -86,15 +86,15 @@ Edit
     Lock                    k
     Unlock                  ;
     --          
-    Group                   ctrl+g
-    Ungroup                 ctrl+u
+    Group                   ctrl+g g
+    Ungroup                 ctrl+u u
     ---          
-    Cut                     ctrl+x
-    Copy                    ctrl+c
-    Paste                   ctrl+v
+    Cut                     ctrl+x x
+    Copy                    ctrl+c c
+    Paste                   ctrl+v v
     ----          
-    Undo                    ctrl+z
-    Redo                    ctrl+shift+z
+    Undo                    ctrl+z z
+    Redo                    ctrl+shift+z y
 
 #  0000000  000   000   0000000   000   000  
 # 000       000   000  000   000  000 0 000  
@@ -137,9 +137,9 @@ Tool
 #     0      000  00000000  00     00
 
 View
-    Layers                  ctrl+l
-    Fonts                   ctrl+f
-    Gradients               ctrl+j
+    Layers                  ctrl+l l
+    Fonts                   ctrl+f f
+    Gradients               ctrl+j j
     Tools                   alt+ctrl+t
     -
     Previous Tab            shift+tab
@@ -167,7 +167,7 @@ Window
 # 0000000   0000000    0000000   000   000  
 
 Zoom
-    Center Selection    ctrl+e
+    Center Selection    ctrl+e e
     Reset               ctrl+0
     Out                 ctrl+-
     In                  ctrl+=

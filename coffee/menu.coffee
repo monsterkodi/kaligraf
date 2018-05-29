@@ -6,7 +6,7 @@
 000   000  00000000  000   000   0000000
 ###
 
-{ post, elem, sds, menu, empty, noon, str, log, $, _ } = require 'kxk'
+{ post, elem, sds, menu, empty, slash, noon, str, log, $, _ } = require 'kxk'
 
 pkg = require '../package'
 
@@ -15,7 +15,7 @@ class Menu
     @template: ->
         
         if empty Menu.templateCache
-            Menu.templateCache = Menu.makeTemplate noon.load './coffee/menu.noon'
+            Menu.templateCache = Menu.makeTemplate noon.load slash.join __dirname, 'menu.noon'
         Menu.templateCache
         
     @makeTemplate: (obj) ->

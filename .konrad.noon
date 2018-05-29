@@ -1,3 +1,4 @@
 ignore  
     /.*-x64/
+    inno
     menu.noon

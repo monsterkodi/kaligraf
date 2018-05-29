@@ -1,5 +1,5 @@
 <br><br><br><br>
-![banner](bin/banner.svg)
+![banner](img/banner.svg)
 <br><br><br><br>
 ![shot](img/shot01.png)
 <br><br><br><br>

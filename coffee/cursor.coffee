@@ -26,7 +26,7 @@ class Cursor
         
         name = 'text-cursor' if name == 'text'
         
-        svgFile = slash.resolve slash.join __dirname, "../svg/#{name}.svg"
+        svgFile = slash.resolve slash.join __dirname, "../img/tool/#{name}.svg"
         if not slash.fileExists svgFile 
             log "no cursor file #{svgFile}"
             return 'default'
@@ -64,7 +64,7 @@ class Cursor
         
         tip = @calcTip svg, name
             
-        cursorDir = slash.join slash.dirname(svgFile), 'cursor'
+        cursorDir = slash.resolve slash.join __dirname, '../img/cursor'
         fs.ensureDirSync cursorDir 
                         
         if opt?.fill or opt?.stroke

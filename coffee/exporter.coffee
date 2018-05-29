@@ -93,7 +93,7 @@ class Exporter
             log 'no such icon file', @svgFile(name)
         null
 
-    @svgFile: (name) -> slash.join __dirname, "../svg/#{name}.svg"
+    @svgFile: (name) -> slash.join __dirname, "../img/tool/#{name}.svg"
     
     @export: (root, file, opt) ->
         

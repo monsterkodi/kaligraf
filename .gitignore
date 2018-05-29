@@ -3,6 +3,7 @@
 /package-lock.json
 /node_modules
 *-x64
+inno
 /svg/test/blank.svg
 /bin/*.json
 /Icon

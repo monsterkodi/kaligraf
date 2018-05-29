@@ -31,7 +31,7 @@ args  = require('karg') """
     noprefs   . ? don't load preferences     . = false
     verbose   . ? log more                   . = false
     watch     . ? watch sources for changes  . = false
-    DevTools  . ? open developer tools       . = false
+    DevTools  . ? open developer tools       . = true
     debug     .                                = false
      
 version  #{pkg.version}
@@ -193,7 +193,7 @@ class KaliApp
     showAbout: => 
         
         about
-            img: slash.join __dirname, "../bin/about.svg"
+            img: slash.join __dirname, "../img/about.svg"
             pkg: pkg
             imageWidth:    '250px'
             imageHeight:   '250px'

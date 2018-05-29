@@ -6,7 +6,7 @@
  0000000   0000000   000   000  0000000    0000000   000   000
 ###
 
-{ elem, clamp, slash, fs, log, _ } = require 'kxk' 
+{ prefs, elem, clamp, slash, fs, log, _ } = require 'kxk' 
 
 { svgItems, growBox } = require './utils'
 
@@ -64,8 +64,11 @@ class Cursor
         
         tip = @calcTip svg, name
             
-        cursorDir = slash.resolve slash.join __dirname, '../img/cursor'
-        fs.ensureDirSync cursorDir 
+        electron = require 'electron'
+        userDir = electron.remote.app.getPath 'userData'
+        cursorDir = slash.join userDir, 'cursor'
+        
+        fs.ensureDirSync slash.unslash cursorDir 
                         
         if opt?.fill or opt?.stroke
             svg.attr width: 32, height:32
@@ -75,9 +78,9 @@ class Cursor
             svgFileX2 = slash.join cursorDir, tip.name + " x2.svg"
             
             svg.attr width: tip.s, height:tip.s
-            fs.writeFileSync svgFileX1, svg.svg(), encoding: 'utf8'
+            fs.writeFileSync slash.unslash(svgFileX1), svg.svg(), encoding: 'utf8'
             svg.attr width: tip.s*2, height:tip.s*2
-            fs.writeFileSync svgFileX2, svg.svg(), encoding: 'utf8'
+            fs.writeFileSync slash.unslash(svgFileX2), svg.svg(), encoding: 'utf8'
             
             """-webkit-image-set( url("#{svgFileX1}") 1x, url("#{svgFileX2}") 2x ) #{tip.x} #{tip.y}, auto
             """

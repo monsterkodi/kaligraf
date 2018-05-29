@@ -31,7 +31,7 @@ args  = require('karg') """
     noprefs   . ? don't load preferences     . = false
     verbose   . ? log more                   . = false
     watch     . ? watch sources for changes  . = false
-    DevTools  . ? open developer tools       . = true
+    DevTools  . ? open developer tools       . = false
     debug     .                                = false
      
 version  #{pkg.version}

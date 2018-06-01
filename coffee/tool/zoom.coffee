@@ -6,7 +6,7 @@
 0000000   0000000    0000000   000   000  
 ###
 
-{ clamp, elem, empty, post, pos, log, _ } = require 'kxk'
+{ clamp, elem, empty, post, pos, error, log, _ } = require 'kxk'
 
 { rboxForItems, bboxForItems, boxCenter, moveBox, zoomBox, scaleBox } = require '../utils'
 
@@ -120,6 +120,8 @@ class Zoom extends Tool
         lv = list?.isVisible()
         lw = lv and list.element.getBoundingClientRect().width or 0
         
+        log '@viewSize()', @viewSize()
+        
         b = rboxForItems items, @viewPos()
         v = @viewSize()
         v.x -= 60 + lw
@@ -134,13 +136,21 @@ class Zoom extends Tool
         
         c = boxCenter bboxForItems items
         v.x += 120
-        o = c.minus v.times 0.5/z
+        o = c.minus v.times 0.5/@zoom
         
-        @setViewBox 
-            x:      o.x
-            y:      o.y
-            width:  @viewSize().x/@zoom
-            height: @viewSize().y/@zoom
+        if _.isFinite(o.x) and _.isFinite(o.y) and _.isFinite(@viewSize().x) and _.isFinite(@viewSize().y)
+        
+            log 'setViewBox', o, @viewSize(), @zoom
+            @setViewBox 
+                x:      o.x
+                y:      o.y
+                width:  @viewSize().x/@zoom
+                height: @viewSize().y/@zoom
+        else
+            log 'zoom', @zoom, z
+            log c, v, items.length, bboxForItems items
+            
+            error 'invalid viewbox', o, @viewSize()
         
     # 00000000   00000000   0000000  00000000  000000000  
     # 000   000  000       000       000          000     

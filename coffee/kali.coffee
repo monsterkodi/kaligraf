@@ -6,7 +6,7 @@
 000   000  000   000  0000000  000  
 ###
 
-{ keyinfo, stopEvent, empty, first, post, prefs, popup, elem, sw, sh, pos, log, $, _ } = require 'kxk'
+{ title, keyinfo, stopEvent, empty, first, post, prefs, popup, elem, sw, sh, pos, log, $, _ } = require 'kxk'
 
 Tools    = require './tool/tools'
 Cursor   = require './cursor'
@@ -14,7 +14,7 @@ Stage    = require './stage'
 Trans    = require './trans'
 Browser  = require './browser'
 Title    = require './title'
-Menu     = require './menu'
+# Menu     = require './menu'
 
 electron = require 'electron'
 
@@ -27,8 +27,6 @@ class Kali
 
         post.setMaxListeners 30
         
-        @setStyle 'style'
-        
         prefs.init()
         
         Cursor.kali = @
@@ -40,8 +38,7 @@ class Kali
         @toolSize     = 75
         @paletteWidth = 375
         
-        window.title = new Title
-        window.menu  = new Menu
+        window.title  = new Title
         
         @trans   = new Trans @
         @tools   = new Tools @, name: 'tools', text: 'tools', orient: 'down'
@@ -198,17 +195,6 @@ class Kali
             when 'Previous Tab'     then return window.title.tabs.navigate 'left'
             when 'Next Tab'         then return window.title.tabs.navigate 'right'
             
-            when 'Toggle Menu'      then return window.menu.toggle()
-            when 'Show Menu'        then return window.menu.show()
-            when 'Hide Menu'        then return window.menu.hide()
-            when 'DevTools'         then return win.webContents.toggleDevTools()
-            when 'Reload'           then return win.webContents.reloadIgnoringCache()
-            when 'Close Window'     then return win.close()
-            when 'Minimize'         then return win.minimize()
-            when 'Maximize'         
-                if win.isMaximized() then win.unmaximize() else win.maximize()  
-                return 
-            
         log "unhandled menu action! ------------ posting to main '#{name}' args: #{args}"
         
         post.toMain 'menuAction', name, args
@@ -221,13 +207,13 @@ class Kali
 
     initContextMenu: ->
         
-        $("#kali").addEventListener "contextmenu", (event) ->
+        $("#main").addEventListener "contextmenu", (event) ->
             
             absPos = pos event
             if not absPos?
-                absPos = pos $("#kali").getBoundingClientRect().left, $("#kali").getBoundingClientRect().top
+                absPos = pos $("#main").getBoundingClientRect().left, $("#main").getBoundingClientRect().top
                 
-            items = _.cloneDeep Menu.template()
+            items = _.clone Menu.template()
             items.shift()
             items.splice 1, 0, items.shift()
                 
@@ -252,7 +238,7 @@ class Kali
 
         if combo
             return stopEvent(event) if 'unhandled' != @browser.handleKey mod, key, combo, char, event, true
-            return stopEvent(event) if 'unhandled' != window.menu.globalModKeyComboEvent mod, key, combo, event
+            return stopEvent(event) if 'unhandled' != window.titlebar.handleKey event, true
             
         return stopEvent(event) if 'unhandled' != @tools.handleKey mod, key, combo, char, event, true
         return stopEvent(event) if 'unhandled' != @stage.handleKey mod, key, combo, char, event, true
@@ -262,22 +248,5 @@ class Kali
         {mod, key, combo, char} = keyinfo.forEvent event
         return stopEvent(event) if 'unhandled' != @tools.handleKey mod, key, combo, char, event, false
         return stopEvent(event) if 'unhandled' != @stage.handleKey mod, key, combo, char, event, false
-                
-    #  0000000  000000000  000   000  000      00000000  
-    # 000          000      000 000   000      000       
-    # 0000000      000       00000    000      0000000   
-    #      000     000        000     000      000       
-    # 0000000      000        000     0000000  00000000  
-    
-    setStyle: (name) ->
-        
-        if not $('kali-style')
-            # log 'setStyle'
-            link = document.createElement 'link'
-            link.rel  ='stylesheet'
-            link.id   = 'kali-style'
-            link.href ="#{__dirname}/css/#{name}.css"  
-            link.type ='text/css'
-            document.head.appendChild link
-        
+                        
 module.exports = Kali

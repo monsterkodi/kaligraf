@@ -2,11 +2,11 @@ doctype html
 html(lang="en")
     head
         meta(charset='utf-8')
-        title kaligraf
-        link(rel='stylesheet' href='css/style.css' type='text/css', id='kali-style')
+        link(rel='stylesheet' href='css/style.css' type='text/css', id='style-link')
     body
         #titlebar
-        #kali(tabIndex=0)
+        #main(tabIndex=0)
+            #kali
     script.
         Kali = require('./kali');
         window.kali = new Kali('#kali');

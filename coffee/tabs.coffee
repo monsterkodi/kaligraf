@@ -6,17 +6,18 @@
    000     000   000  0000000    0000000 
 ###
 
-{ post, elem, drag, prefs, slash, error, log, _ } = require 'kxk'
+{ post, elem, drag, prefs, slash, error, log, $, _ } = require 'kxk'
 
 Tab = require './tab'
 
 class Tabs
     
-    constructor: (view) ->
+    constructor: (titlebar) ->
         
         @tabs = []
         @div = elem class: 'tabs'
-        view.appendChild @div
+        
+        titlebar.insertBefore @div, $ ".minimize"
         
         @div.addEventListener 'click', @onClick
         
@@ -70,6 +71,9 @@ class Tabs
             return 'skip'
             
         @dragTab = @tab e.target
+        
+        return 'skip' if not @dragTab
+        
         @dragDiv = @dragTab.div.cloneNode true
         @dragTab.div.style.opacity = '0'
         br = @dragTab.div.getBoundingClientRect()
@@ -124,11 +128,7 @@ class Tabs
     closeTab: (tab = @activeTab()) ->
         
         return if not tab?
-        
-        # log 'tabs.closeTab', tab.dirty()
-        # if tab.dirty() and tab == @activeTab()
-            # post.emit 'stage', 'saveFile'
-           
+                   
         if @tabs.length > 1
             if tab == @activeTab()
                 tab.nextOrPrev()?.activate()
@@ -145,9 +145,6 @@ class Tabs
         return if not @activeTab()
         keep = _.pullAt @tabs, @activeTab().index()
         while @numTabs()
-            # tab = _.last @tabs
-            # if tab.dirty()
-                # tab.saveChanges()
             @tabs.pop().close()
         @tabs = keep
         @stash()

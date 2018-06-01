@@ -343,6 +343,8 @@ class Browser
     
     centerSelected: ->
   
+        return if not @selectedItem()
+        
         @setScale @scale
         @updateBorderSize()
         
@@ -450,6 +452,7 @@ class Browser
         
     hide: => 
     
+        log 'hide'
         @element.style.display = 'none'
         
     visible: => @element.style.display != 'none'

@@ -34,6 +34,9 @@ class Stage
 
         @name = 'Stage'
         @element = elem 'div', id: 'stage'
+        
+        log '@kali.element', @kali.element?, @kali.element.children.length
+        
         @kali.element.insertBefore @element, @kali.element.firstChild
 
         @svg = SVG(@element).size '100%', '100%'
@@ -892,8 +895,6 @@ class Stage
     
     load: (file=@currentFile) ->
 
-        log 'stage.load', file
-        
         @undo.clear()
         
         @currentFile = slash.resolve file
@@ -904,11 +905,13 @@ class Stage
             log "error:", e
             return
 
+        log 'stage.load', file, @svg?, svg.length
+            
         info = @setSVG svg, parent:@svg
         
         @pushRecent file
         
-        kali.browser?.hide()
+        @kali.browser?.hide()
         
         post.emit 'stage', 'layer', active:-1, num:0
         
@@ -918,8 +921,9 @@ class Stage
         
         @postLayer()
         
-        
+        log 'centerSelection'
         @centerSelection()
+        log 'focus'
         @kali.focus()
         
         post.emit 'stage', 'load', info

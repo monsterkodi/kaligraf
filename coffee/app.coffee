@@ -6,7 +6,7 @@
 000   000  000        000
 ###
 
-{ about, prefs, post, noon, watch, childp, colors, slash, fs, log } = require 'kxk'
+{ about, args, prefs, post, noon, watch, childp, colors, slash, fs, log } = require 'kxk'
 
 pkg      = require '../package.json'
 electron = require 'electron'
@@ -23,22 +23,16 @@ kaliapp  = undefined # < created in app.on 'ready'
 # 000   000  000   000  000   000       000
 # 000   000  000   000   0000000   0000000 
 
-args  = require('karg') """
+args = args.init """
 
-#{pkg.productName}
-    
-    filelist  . ? files to open              . **
-    noprefs   . ? don't load preferences     . = false
-    verbose   . ? log more                   . = false
-    watch     . ? watch sources for changes  . = false
-    DevTools  . ? open developer tools       . = false
-    debug     .                                = false
+    filelist  files to open                 **
+    noprefs   don't load preferences        false
+    verbose   log more                      false
+    watch     watch sources for changes     false
+    DevTools  open developer tools          false
+    debug     |                             false
      
-version  #{pkg.version}
-
-""", dontExit: true
-
-app.exit 0 if not args?
+"""
 
 if args.verbose
     log colors.white.bold "\n#{pkg.productName}", colors.gray "v#{pkg.version}\n"

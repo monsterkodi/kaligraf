@@ -6,7 +6,7 @@
 0000000    000   000   0000000   00     00  0000000   00000000  000   000
 ###
 
-{ stopEvent, setStyle, keyinfo, drag, elem, post, first, prefs, childp, fs, os, slash, empty, clamp, pos, log, $, _ } = require 'kxk'
+{ post, stopEvent, setStyle, keyinfo, drag, elem, first, prefs, childp, fs, os, slash, empty, clamp, pos, log, $, _ } = require 'kxk'
 
 { winTitle, boundingBox } = require './utils'
 
@@ -56,7 +56,7 @@ class Browser
                 if empty recent
                     post.emit 'tool', 'open'
                 else
-                    window.title.tabs.addTab file:'Recent', dir:true
+                    @kali.title.tabs.addTab file:'Recent', dir:true
                     @browseRecent recent
             when 'close'
                 if @selectedFile()
@@ -79,7 +79,7 @@ class Browser
         dialog.showOpenDialog opts, (dirs) => 
             while dir = dirs.shift()
                 if slash.dirExists dir
-                    window.title.tabs.addTab file:dir, dir:true
+                    @kali.title.tabs.addTab file:dir, dir:true
                     @browseDir dir
                     # return
         
@@ -433,7 +433,7 @@ class Browser
             if file = elem.upAttr event.target, 'file'
                 if event.button == 1
                     log 'onStop', event.button
-                    window.title.tabs.addTab file:file, dontActivate:true
+                    @kali.title.tabs.addTab file:file, dontActivate:true
                 else
                     @openFile file
                 

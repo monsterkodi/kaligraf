@@ -9,7 +9,7 @@ NAME=kaligraf
 konrad --run
 
 IGNORE="/(.*\.dmg$|Icon$|coffee$|.*md$|pug$|styl$|.*\.noon$|.*\.lock$|bin/dmg.*)"
-node_modules/electron-packager/cli.js . --overwrite --icon=img/$NAME.icns --ignore $IGNORE --extend-info ./bin/info.plist --extra-resource ./img/file.icns
+node_modules/electron-packager/cli.js . --overwrite --icon=img/app.icns --ignore $IGNORE --extend-info ./bin/info.plist --extra-resource ./img/file.icns
 
 rm $NAME-darwin-x64/LICENSE*
 rm $NAME-darwin-x64/version

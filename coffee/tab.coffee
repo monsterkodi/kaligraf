@@ -6,9 +6,7 @@
    000     000   000  0000000  
 ###
 
-{ elem, post, slash, fs, error, log, _ } = require 'kxk'
-
-Tooltip = require './tooltip'
+{ post, tooltip, elem, slash, fs, error, log, _ } = require 'kxk'
 
 class Tab
     
@@ -43,7 +41,7 @@ class Tab
         @div.appendChild name
 
         if @info.file?
-            @tooltip = new Tooltip elem:name, html:slash.tilde(@file()), x:0
+            @tooltip = new tooltip elem:name, html:slash.tilde(@file()), x:0
             
         @div.appendChild elem 'span', class:'dot', text:'●' if @dirty()
         @

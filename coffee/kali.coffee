@@ -6,7 +6,14 @@
 000   000  000   000  0000000  000  
 ###
 
-{ title, keyinfo, stopEvent, empty, first, post, prefs, popup, elem, sw, sh, pos, log, $, _ } = require 'kxk'
+{ post, win, title, keyinfo, stopEvent, empty, first, prefs, popup, elem, sw, sh, pos, log, $, _ } = require 'kxk'
+
+w = new win 
+    dir:    __dirname
+    pkg:    require '../package.json'
+    menu:   '../coffee/menu.noon'
+    icon:   '../img/menu@2x.png'
+    scheme: false
 
 Tools    = require './tool/tools'
 Cursor   = require './cursor'
@@ -14,20 +21,12 @@ Stage    = require './stage'
 Trans    = require './trans'
 Browser  = require './browser'
 Title    = require './title'
-# Menu     = require './menu'
-
-electron = require 'electron'
-
-remote   = electron.remote
-win      = window.win = remote.getCurrentWindow()
 
 class Kali
 
     constructor: (element) ->
 
         post.setMaxListeners 30
-        
-        prefs.init()
         
         Cursor.kali = @
         
@@ -38,8 +37,7 @@ class Kali
         @toolSize     = 75
         @paletteWidth = 375
         
-        window.title  = new Title
-        
+        @title   = new Title
         @trans   = new Trans @
         @tools   = new Tools @, name: 'tools', text: 'tools', orient: 'down'
         @stage   = new Stage @
@@ -55,11 +53,9 @@ class Kali
         
         @tools.loadPrefs()
         
-        window.title.tabs.restore()
+        @title.tabs.restore()
 
         post.on 'menuAction', @onMenuAction
-        
-        @initContextMenu()
         
     onResize: => 
 
@@ -99,8 +95,8 @@ class Kali
             when 'Layers'           then return post.emit 'tool', 'layer'
             when 'Tools'            then return post.emit 'toggle', 'tools'
             
-            when 'Close'            then return window.title.tabs.closeTab()
-            when 'Close Others'     then return window.title.tabs.closeOtherTabs()
+            when 'Close'            then return @title.tabs.closeTab()
+            when 'Close Others'     then return @title.tabs.closeOtherTabs()
             when 'Open Recent...'   then return post.emit 'browser', 'browseRecent'
             when 'Open...'          then return post.emit 'tool',    'open'
             when 'Open Dir...'      then return post.emit 'browser', 'openDir'
@@ -192,37 +188,37 @@ class Kali
             when 'Wire'             then return post.emit 'tool', 'button', 'wire', 'wire'
             when 'Unwire'           then return post.emit 'tool', 'button', 'wire', 'unwire'
             
-            when 'Previous Tab'     then return window.title.tabs.navigate 'left'
-            when 'Next Tab'         then return window.title.tabs.navigate 'right'
+            when 'Previous Tab'     then return @title.tabs.navigate 'left'
+            when 'Next Tab'         then return @title.tabs.navigate 'right'
             
         log "unhandled menu action! ------------ posting to main '#{name}' args: #{args}"
         
         post.toMain 'menuAction', name, args
 
-    #  0000000   0000000   000   000  000000000  00000000  000   000  000000000  
-    # 000       000   000  0000  000     000     000        000 000      000     
-    # 000       000   000  000 0 000     000     0000000     00000       000     
-    # 000       000   000  000  0000     000     000        000 000      000     
-    #  0000000   0000000   000   000     000     00000000  000   000     000     
+    # #  0000000   0000000   000   000  000000000  00000000  000   000  000000000  
+    # # 000       000   000  0000  000     000     000        000 000      000     
+    # # 000       000   000  000 0 000     000     0000000     00000       000     
+    # # 000       000   000  000  0000     000     000        000 000      000     
+    # #  0000000   0000000   000   000     000     00000000  000   000     000     
 
-    initContextMenu: ->
-        
-        $("#main").addEventListener "contextmenu", (event) ->
-            
-            absPos = pos event
-            if not absPos?
-                absPos = pos $("#main").getBoundingClientRect().left, $("#main").getBoundingClientRect().top
-                
-            items = _.clone Menu.template()
-            items.shift()
-            items.splice 1, 0, items.shift()
-                
-            opt = 
-                items:  items
-                x:      absPos.x
-                y:      absPos.y
-        
-            popup.menu opt
+    # initContextMenu: ->
+#         
+        # $("#main").addEventListener "contextmenu", (event) ->
+#             
+            # absPos = pos event
+            # if not absPos?
+                # absPos = pos $("#main").getBoundingClientRect().left, $("#main").getBoundingClientRect().top
+#                 
+            # items = _.clone Menu.template()
+            # items.shift()
+            # items.splice 1, 0, items.shift()
+#                 
+            # opt = 
+                # items:  items
+                # x:      absPos.x
+                # y:      absPos.y
+#         
+            # popup.menu opt
                 
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   

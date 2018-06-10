@@ -6,7 +6,7 @@ main            js/app.js
 author          monsterkodi
 license         Unlicense
 scripts
-                mac   ./bin/buildmac.sh
+                mac   bash ./bin/buildmac.sh
                 win   bash ./bin/buildwin.sh
 repository
                 type  git
@@ -14,7 +14,7 @@ repository
 dependencies
                 chroma-js       ^1.3.7
                 font-manager    ^0.3.0
-                kxk             ^0.125.0
+                kxk             https://github.com/monsterkodi/kxk.git
                 pretty-data     ^0.40.0
                 svg.filter.js   ^2.0.2
                 svg.js          ^2.6.5

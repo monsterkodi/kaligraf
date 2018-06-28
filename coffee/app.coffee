@@ -28,7 +28,7 @@ class KaliApp extends app
             index:      './index.html'
             icon:       '../img/app.ico'
             tray:       '../img/menu@2x.png'
-            about:      '../img/about.png'
+            about:      '../img/about.svg'
             onShow:     -> kaliapp.onShow()
             width:      1000
             height:     1000
@@ -70,6 +70,6 @@ class KaliApp extends app
 
 electron.app.on 'activate', -> kaliapp.showWindows()
 electron.app.on 'open-file', (event, file) -> log "open file #{file}"
-electron.app.on 'window-all-closed', -> kaliapp.quit()
+# electron.app.on 'window-all-closed', -> kaliapp.quit()
         
 kaliapp = new KaliApp

@@ -28,7 +28,7 @@ File
     Clear                   ctrl+k
     Revert                  ctrl+r r
     ---           
-    Save                    ctrl+s s
+    Save                    ctrl+s
     Save As...              ctrl+shift+s
     ----        
     Import...               alt+ctrl+o

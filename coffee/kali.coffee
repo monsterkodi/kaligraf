@@ -194,31 +194,6 @@ class Kali
         log "unhandled menu action! ------------ posting to main '#{name}' args: #{args}"
         
         post.toMain 'menuAction', name, args
-
-    # #  0000000   0000000   000   000  000000000  00000000  000   000  000000000  
-    # # 000       000   000  0000  000     000     000        000 000      000     
-    # # 000       000   000  000 0 000     000     0000000     00000       000     
-    # # 000       000   000  000  0000     000     000        000 000      000     
-    # #  0000000   0000000   000   000     000     00000000  000   000     000     
-
-    # initContextMenu: ->
-#         
-        # $("#main").addEventListener "contextmenu", (event) ->
-#             
-            # absPos = pos event
-            # if not absPos?
-                # absPos = pos $("#main").getBoundingClientRect().left, $("#main").getBoundingClientRect().top
-#                 
-            # items = _.clone Menu.template()
-            # items.shift()
-            # items.splice 1, 0, items.shift()
-#                 
-            # opt = 
-                # items:  items
-                # x:      absPos.x
-                # y:      absPos.y
-#         
-            # popup.menu opt
                 
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
@@ -234,7 +209,7 @@ class Kali
 
         if combo
             return stopEvent(event) if 'unhandled' != @browser.handleKey mod, key, combo, char, event, true
-            return stopEvent(event) if 'unhandled' != window.titlebar.handleKey event, true
+            # return stopEvent(event) if 'unhandled' != window.titlebar.handleKey event, true
             
         return stopEvent(event) if 'unhandled' != @tools.handleKey mod, key, combo, char, event, true
         return stopEvent(event) if 'unhandled' != @stage.handleKey mod, key, combo, char, event, true

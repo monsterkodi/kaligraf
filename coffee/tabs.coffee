@@ -36,11 +36,12 @@ class Tabs
             when 'load'
                 log 'tabs.onStage', action, info.file
                 @addTab file:info.file
-            # when 'save', 'clear'
-                # log 'tabs.onStage', action, info
+            when 'clear'
+                log 'tabs.onStage', action, info.file
+                @addTab file:info.file
         
     onUndo: (info) =>
-        # log 'tabs.onUndo', info
+
         @activeTab()?.setDirty info.dirty
             
     #  0000000  000      000   0000000  000   000  

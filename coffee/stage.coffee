@@ -899,10 +899,13 @@ class Stage
         
         @currentFile = slash.resolve file
         
+        @kali.browser?.hide()
+        
         try
             svg = fs.readFileSync slash.resolve(file), encoding: 'utf8'
         catch e
             log "error:", e
+            post.emit 'stage', 'load', file:@currentFile
             return
 
         log 'stage.load', file, @svg?, svg.length
@@ -910,8 +913,6 @@ class Stage
         info = @setSVG svg, parent:@svg
         
         @pushRecent file
-        
-        @kali.browser?.hide()
         
         post.emit 'stage', 'layer', active:-1, num:0
         

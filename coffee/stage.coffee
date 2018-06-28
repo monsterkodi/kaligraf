@@ -897,19 +897,21 @@ class Stage
 
         @undo.clear()
         
-        @currentFile = slash.resolve file
-        
         @kali.browser?.hide()
+        
+        if file == 'untitled'
+            @currentFile = file
+            post.emit 'stage', 'load', file:file
+            return
+        
+        @currentFile = slash.resolve file
         
         try
             svg = fs.readFileSync slash.resolve(file), encoding: 'utf8'
         catch e
             log "error:", e
-            post.emit 'stage', 'load', file:@currentFile
             return
 
-        log 'stage.load', file, @svg?, svg.length
-            
         info = @setSVG svg, parent:@svg
         
         @pushRecent file
@@ -922,9 +924,7 @@ class Stage
         
         @postLayer()
         
-        log 'centerSelection'
         @centerSelection()
-        log 'focus'
         @kali.focus()
         
         post.emit 'stage', 'load', info
@@ -968,8 +968,10 @@ class Stage
 
         @currentFile = file
         
-        if @currentFile == 'untitled.svg'
+        if @currentFile == 'untitled'
             return @saveAs()
+        
+        log 'save @currentFile', @currentFile
         
         post.emit 'stage', 'willSave', file:@currentFile
             

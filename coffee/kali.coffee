@@ -95,7 +95,7 @@ class Kali
             when 'Layers'           then return post.emit 'tool', 'layer'
             when 'Tools'            then return post.emit 'toggle', 'tools'
             
-            when 'Close'            then return @title.tabs.closeTab()
+            when 'Close Tab'        then return @title.tabs.closeTab()
             when 'Close Others'     then return @title.tabs.closeOtherTabs()
             when 'Open Recent...'   then return post.emit 'browser', 'browseRecent'
             when 'Open...'          then return post.emit 'tool',    'open'
@@ -191,7 +191,7 @@ class Kali
             when 'Previous Tab'     then return @title.tabs.navigate 'left'
             when 'Next Tab'         then return @title.tabs.navigate 'right'
             
-        log "unhandled menu action! ------------ posting to main '#{name}' args: #{args}"
+        log "onMenuAction unhandled -- posting to main '#{name}' args: #{args}"
         
         post.toMain 'menuAction', name, args
                 
@@ -209,7 +209,6 @@ class Kali
 
         if combo
             return stopEvent(event) if 'unhandled' != @browser.handleKey mod, key, combo, char, event, true
-            # return stopEvent(event) if 'unhandled' != window.titlebar.handleKey event, true
             
         return stopEvent(event) if 'unhandled' != @tools.handleKey mod, key, combo, char, event, true
         return stopEvent(event) if 'unhandled' != @stage.handleKey mod, key, combo, char, event, true

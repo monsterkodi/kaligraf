@@ -21,7 +21,7 @@ File
     Open...                 ctrl+o o
     Open Dir...             ctrl+shift+o
     -        
-    Close                   ctrl+w
+    Close Tab               ctrl+w
     Close Others            ctrl+shift+w
     -- 
     New                     ctrl+n

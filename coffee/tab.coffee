@@ -26,7 +26,6 @@ class Tab
     
     update: (info) ->
             
-        # log 'tab.update', info
         oldFile = @info?.file
         
         @info = _.clone info
@@ -67,7 +66,7 @@ class Tab
     close: ->
         
         @div.remove()
-        @tooltip.del()
+        @tooltip?.del()
         post.emit 'tabClosed', @info.file ? 'untitled'
     
     revert: -> 
@@ -85,9 +84,6 @@ class Tab
         
         activeTab = @tabs.activeTab()
 
-        # if activeTab? and activeTab.dirty()
-            # activeTab.storeState()
-        
         @setActive()
         
         if @state?

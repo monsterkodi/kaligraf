@@ -6,7 +6,7 @@
    000     000   000  0000000    0000000 
 ###
 
-{ post, elem, drag, prefs, slash, error, log, $, _ } = require 'kxk'
+{ post, elem, drag, prefs, slash, first, valid, empty, error, log, $, _ } = require 'kxk'
 
 Tab = require './tab'
 
@@ -133,12 +133,15 @@ class Tabs
         if @tabs.length > 1
             if tab == @activeTab()
                 tab.nextOrPrev()?.activate()
-        else
-            post.emit 'menuAction', 'Clear'
+            
         tab.close()
         
         _.pull @tabs, tab
         @stash()
+        
+        if empty @tabs # close the window when last tab was closed
+            post.emit 'menuAction', 'Close' 
+        
         @
   
     closeOtherTabs: -> 
@@ -221,14 +224,20 @@ class Tabs
         prefs.set 'tabs', data
     
     restore: =>
-        
         active = prefs.get 'tabs:active', 0
         files  = prefs.get 'tabs:files'
         
-        # log 'tabs.restore', active, files
-        return if _.isEmpty files # happens when first window opens
-        
         @closeTabs()
+        
+        log 'tabs.restore', active, files?.length, files
+        
+        if empty files # happens when first window opens
+            recent = prefs.get 'recent', []
+            if valid recent
+                files = [ file:first(recent) ]
+            else
+                files = [ file:'untitled' ]
+        
         while files.length
             @addTab files.shift()
         

@@ -34,11 +34,15 @@ class Tabs
         
         switch action 
             when 'load'
-                log 'tabs.onStage', action, info.file
                 @addTab file:info.file
             when 'clear'
-                log 'tabs.onStage', action, info.file
                 @addTab file:info.file
+            when 'save'
+                log 'onStage save', info
+                if @activeTab()?.file() == 'untitled'
+                    untitledTab = @activeTab()
+                @addTab file:info.file
+                @closeTab untitledTab if untitledTab
         
     onUndo: (info) =>
 
@@ -127,6 +131,8 @@ class Tabs
     #  0000000  0000000   0000000   0000000   00000000  
     
     closeTab: (tab = @activeTab()) ->
+        
+        log 'closeTab', tab.file()
         
         return if not tab?
                    

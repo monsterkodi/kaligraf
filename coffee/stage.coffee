@@ -1068,7 +1068,7 @@ class Stage
     new: ->
         
         @undo.clear()
-        @clear 'untitled.svg'
+        @clear 'untitled'
     
     doClear: -> 
         

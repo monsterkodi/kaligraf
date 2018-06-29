@@ -376,27 +376,33 @@ class Shapes
         
         if @drawing
 
-            if drag.startPos == drag.lastPos
+            tooSmall = @trans.width(@drawing) == 0 and @trans.height(@drawing) == 0 #and @drawing.type != 'text'
+            
+            if drag.startPos == drag.lastPos or tooSmall
                 
                 if @draw?.handlePick stagePos
                     return
 
-                switch shape
-                    when 'text' then
-                    when 'triangle' 
-                        @drawing.size 100, 50 * Math.sqrt 3
-                        @trans.center @drawing, stagePos
-                    when 'ellipse'
-                        @drawing.size 50, 100
-                        @trans.center @drawing, stagePos
-                    else
-                        @drawing.size 100, 100
-                        @trans.center @drawing, stagePos
+                @drawClickShape shape, stagePos
                 
             if not @draw? or @draw.handleStop event
                 @endDrawing()
                 @done() # started in handleMouseDown
 
+    drawClickShape: (shape, stagePos) ->
+        
+        switch shape
+            when 'text' then
+            when 'triangle' 
+                @drawing.size 100, 50 * Math.sqrt 3
+                @trans.center @drawing, stagePos
+            when 'ellipse'
+                @drawing.size 50, 100
+                @trans.center @drawing, stagePos
+            else
+                @drawing.size 100, 100
+                @trans.center @drawing, stagePos
+                
     # 00000000  000   000  0000000        0000000    00000000    0000000   000   000  
     # 000       0000  000  000   000      000   000  000   000  000   000  000 0 000  
     # 0000000   000 0 000  000   000      000   000  0000000    000000000  000000000  
@@ -425,6 +431,7 @@ class Shapes
             @stopEdit()
             
             if @trans.width(@drawing) == 0 and @trans.height(@drawing) == 0 and @drawing.type != 'text'
+                log 'remove @drawing'
                 @drawing.remove()
                 
             else

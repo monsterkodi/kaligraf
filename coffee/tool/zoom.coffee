@@ -120,8 +120,6 @@ class Zoom extends Tool
         lv = list?.isVisible()
         lw = lv and list.element.getBoundingClientRect().width or 0
         
-        log '@viewSize()', @viewSize()
-        
         b = rboxForItems items, @viewPos()
         v = @viewSize()
         v.x -= 60 + lw
@@ -140,14 +138,12 @@ class Zoom extends Tool
         
         if _.isFinite(o.x) and _.isFinite(o.y) and _.isFinite(@viewSize().x) and _.isFinite(@viewSize().y)
         
-            log 'setViewBox', o, @viewSize(), @zoom
             @setViewBox 
                 x:      o.x
                 y:      o.y
                 width:  @viewSize().x/@zoom
                 height: @viewSize().y/@zoom
         else
-            log 'zoom', @zoom, z
             log c, v, items.length, bboxForItems items
             
             error 'invalid viewbox', o, @viewSize()

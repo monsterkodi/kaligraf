@@ -226,7 +226,7 @@ class Tabs
         data = 
             files:  ( t.tabData() for t in @tabs )
             active: @activeTab()?.index() ? 0
-        # log 'stash', data
+
         prefs.set 'tabs', data
     
     restore: =>
@@ -234,8 +234,6 @@ class Tabs
         files  = prefs.get 'tabs:files'
         
         @closeTabs()
-        
-        log 'tabs.restore', active, files?.length, files
         
         if empty files # happens when first window opens
             recent = prefs.get 'recent', []

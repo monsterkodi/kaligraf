@@ -6,7 +6,7 @@
 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000
 ###
 
-{ prefs, setStyle, last, elem, post, pos, log, _ } = require 'kxk'
+{ prefs, setStyle, last, elem, post, pos, str, log, _ } = require 'kxk'
 
 {   contrastColor, moveBox, scaleBox, boxOffset, bboxForItems,
     normRect, rectsIntersect, rectOffset, itemBox } = require './utils'
@@ -299,18 +299,15 @@ class Selection
     stageStart: (drag, event) ->
         
         if event.button != 0
-            log 'stageSkip'
             return 'skip'
         
         eventPos = pos event
         if item = @stage.itemAtPos eventPos
-            # log 'Selection.stageStart', item?.id()
             if not @contains item
                 @addItem item, join:event.shiftKey
             else # if not switched
                 if event.shiftKey then @delItem item
         else
-            # log 'Selection.stageStart rect'
             @startRect eventPos, join:event.shiftKey
     
     # 00     00   0000000   000   000  00000000  
@@ -339,15 +336,16 @@ class Selection
     # 000   000  00000000   0000000     000       
       
     startRect: (p,o) -> 
-        
+
         if not o.join then @clear()
-        @rect = x:p.x, y:p.y, x2:p.x, y2:p.y 
+        @rect = @stage.offsetRect x:p.x, y:p.y, x2:p.x, y2:p.y 
         @updateRect o
         
     moveRect: (p,o) -> 
     
-        @rect.x2 = p.x
-        @rect.y2 = p.y
+        vp = @stage.viewPos()
+        @rect.x2 = p.x-vp.x
+        @rect.y2 = p.y-vp.y
         @updateRect o
         
     endRect: (p) -> 
@@ -365,7 +363,7 @@ class Selection
         if not elem?
             log 'dafuk?', elem, rect
             return 
-        r = @offsetRect normRect rect
+        r = normRect rect
         elem.style.left   = "#{r.x}px"
         elem.style.top    = "#{r.y}px"
         elem.style.width  = "#{r.x2 - r.x}px"
@@ -392,8 +390,6 @@ class Selection
 
         r = @stageRect normRect rect
         
-        # log 'Selection.selectInRect', rect
-        
         for child in @stage.pickableItems()
 
             rb = @trans.rect child
@@ -406,18 +402,9 @@ class Selection
                  
                 @delItem child
         
-    offsetRect: (r) ->
-        
-        s = @kali.stage.element.getBoundingClientRect()
-        x = s.left
-        y = s.top
-        x:r.x-x, x2:r.x2-x, y:r.y-y, y2:r.y2-y
-
     stageRect: (r) ->
         
-        moveBox scaleBox(@offsetRect(r), 1/@stage.zoom), boxOffset @stage.svg.viewbox()
-        
-    viewPos: -> r = @element.getBoundingClientRect(); pos r.left, r.top
+        moveBox scaleBox(r, 1/@stage.zoom), boxOffset @stage.svg.viewbox()
         
     bbox: -> @rectsWhite.bbox()
         

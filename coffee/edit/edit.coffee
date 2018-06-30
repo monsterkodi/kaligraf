@@ -411,14 +411,15 @@ class Edit
     # 000   000  00000000   0000000     000
 
     startRect: (p,o) ->
-        
-        @rect = x:p.x, y:p.y, x2:p.x, y2:p.y
+        log 'edit startRect'
+        @rect = @stage.offsetRect x:p.x, y:p.y, x2:p.x, y2:p.y
         @updateRect o
 
     moveRect: (p,o) ->
 
-        @rect.x2 = p.x
-        @rect.y2 = p.y
+        vp = @stage.viewPos()
+        @rect.x2 = p.x-vp.x
+        @rect.y2 = p.y-vp.y
         @updateRect o
 
     endRect: (p) ->
@@ -433,6 +434,7 @@ class Edit
         if not @rect.element
             @rect.element = @stage.selection.addRect()
             
+        log 'edit updateRect'
         @stage.selection.setRect @rect.element, @rect
         
         @addInRect @rect, opt

@@ -35,8 +35,6 @@ class Stage
         @name = 'Stage'
         @element = elem 'div', id: 'stage'
         
-        log '@kali.element', @kali.element?, @kali.element.children.length
-        
         @kali.element.insertBefore @element, @kali.element.firstChild
 
         @svg = SVG(@element).size '100%', '100%'
@@ -539,8 +537,11 @@ class Stage
     pickRect: (p) ->
         
         r = @svg.node.createSVGRect()
+        
         r.x      = p.x - @viewPos().x
         r.y      = p.y - @viewPos().y
+        # r.x      = p.x
+        # r.y      = p.y
         r.width  = 1
         r.height = 1
         r
@@ -1101,6 +1102,11 @@ class Stage
     viewPos:  -> r = @element.getBoundingClientRect(); pos r.left, r.top
     viewSize: -> r = @element.getBoundingClientRect(); pos r.width, r.height
 
+    offsetRect: (r) ->
+        
+        vp = @viewPos()
+        x:r.x-vp.x, x2:r.x2-vp.x, y:r.y-vp.y, y2:r.y2-vp.y
+    
     stageForView:  (viewPos)  -> pos(viewPos).scale(1.0/@zoom).plus @panPos()
     viewForStage:  (stagePos) -> pos(stagePos).sub(@panPos()).scale @zoom
     viewForEvent:  (eventPos) -> eventPos.minus @viewPos()

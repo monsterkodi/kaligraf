@@ -150,7 +150,7 @@ class Padding extends Tool
             @layerAt(index).show()
             
         box = bboxForItems @items()
-
+        
         for index in [0...Math.max(1, @numLayers())]
             layer = @layerAt index 
             layer.hide() if layer.data 'hidden'

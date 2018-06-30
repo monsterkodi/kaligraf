@@ -35,7 +35,7 @@ class Loupe extends Tool
 
     onStageDrag: (drag, event) =>
         
-        r = x:drag.startPos.x, y:drag.startPos.y, x2:drag.pos.x, y2:drag.pos.y                
+        r = @stage.offsetRect x:drag.startPos.x, y:drag.startPos.y, x2:drag.pos.x, y2:drag.pos.y                
         @selection.setRect @rect, r
                 
     onStageStop: (drag, event) =>

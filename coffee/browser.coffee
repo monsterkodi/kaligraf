@@ -453,10 +453,7 @@ class Browser
             @element.style.display = ''
             @focus()
         
-    hide: => 
-    
-        log 'hide'
-        @element.style.display = 'none'
+    hide: => @element.style.display = 'none'
         
     visible: => @element.style.display != 'none'
         

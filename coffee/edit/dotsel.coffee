@@ -356,15 +356,16 @@ class DotSel
     startRect: (p,o) ->
         
         post.emit 'dotsel', 'startRect'
-        @rect = x:p.x, y:p.y, x2:p.x, y2:p.y
+        vp = @stage.viewPos()
+        @rect = x:p.x-vp.x, y:p.y-vp.y, x2:p.x-vp.x, y2:p.y-vp.y
         @updateRect o
 
     moveRect: (p,o) ->
 
         if not @rect? then return
-        
-        @rect.x2 = p.x
-        @rect.y2 = p.y
+        vp = @stage.viewPos()
+        @rect.x2 = p.x-vp.x
+        @rect.y2 = p.y-vp.y
         @updateRect o
 
     endRect: (p) ->
@@ -381,7 +382,9 @@ class DotSel
             @rect.element = @stage.selection.addRect()
         @stage.selection.setRect @rect.element, @rect
         
-        @addInRect normRect(@rect), o
+        vp = @stage.viewPos()
+        r = x:@rect.x+vp.x, y:@rect.y+vp.y, x2:@rect.x2+vp.x, y2:@rect.y2+vp.y
+        @addInRect normRect(r), o
         
     #  0000000   000      000   0000000   000   000  
     # 000   000  000      000  000        0000  000  

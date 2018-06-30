@@ -6,7 +6,7 @@
    000      0000000    0000000   0000000
 ###
 
-{ fileExists, stopEvent, elem, drag, post, empty, first, last, fs, pos, log, $, _ } = require 'kxk'
+{ post, fileExists, stopEvent, elem, empty, first, last, fs, pos, log, $, _ } = require 'kxk'
 
 { boundingBox } = require '../utils'
 
@@ -33,6 +33,7 @@ class Tool extends Spin
         @element.classList.add 'tool'
         @element.classList.add 'down' if @cfg.orient == 'down'
         @element.addEventListener 'mouseenter', @onMouseEnter
+        @element.addEventListener 'mouseup', @onClick
         @element.addEventListener 'wheel', (event) => stopEvent event
         
         @kali.toolDiv.appendChild @element
@@ -42,18 +43,11 @@ class Tool extends Spin
         else if not @cfg.class?
             @initTitle _.capitalize @cfg.name
         
-        @drag = new drag
-            target:  @element
-            onStart: @dragStart
-            onMove:  @dragMove
-            onStop:  @dragStop
-
     bindStage: (mthds) ->
         
         mthds = [mthds] if not _.isArray mthds
         for mthd in mthds
             @stage[mthd] = @constructor.prototype[mthd].bind @stage
-            # @stage[mthd] = @[mthd]
                      
     # 000000000  000  000000000  000      00000000  
     #    000     000     000     000      000       
@@ -95,6 +89,7 @@ class Tool extends Spin
             @kali.tools.collapseTemp()
             
         if @hasChildren() and not @childrenVisible()
+            
             @kali.tools.temp = @
             if @cfg.popup == 'auto'
                 @showChildren()
@@ -221,17 +216,7 @@ class Tool extends Spin
         zIndex = parseInt @element.style.zIndex
         for child in @children
             child.element.style.zIndex = parseInt zIndex + 1 + @children.indexOf child
-                
-    # 0000000    00000000    0000000    0000000   
-    # 000   000  000   000  000   000  000        
-    # 000   000  0000000    000000000  000  0000  
-    # 000   000  000   000  000   000  000   000  
-    # 0000000    000   000  000   000   0000000   
-    
-    dragStart: (d,e) => @element.addEventListener     'mouseup', @onClick
-    dragStop:  (d,e) => @element?.removeEventListener 'mouseup', @onClick
-    dragMove:  (d,e) => @element?.removeEventListener 'mouseup', @onClick
-            
+                            
     #  0000000  000      000   0000000  000   000  
     # 000       000      000  000       000  000   
     # 000       000      000  000       0000000    

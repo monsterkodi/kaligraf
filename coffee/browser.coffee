@@ -446,9 +446,12 @@ class Browser
     show: => 
         
         log 'show'
-        @items.innerHTML = ''
-        @element.style.display = ''
-        @focus()
+        if @visible()
+            @openFile @selectedFile()
+        else
+            @items.innerHTML = ''
+            @element.style.display = ''
+            @focus()
         
     hide: => 
     
@@ -469,7 +472,7 @@ class Browser
 
         return 'unhandled' if not @visible()
         
-        log 'handleKey', mod, key, combo
+        log 'browser.handleKey', mod, key, combo, down
         
         switch combo
             
@@ -485,7 +488,6 @@ class Browser
             when 'command+0'                        then return @zoomAll()
             when 'backspace', 'delete'              then return @delItem @selectedItem()
                 
-        # stopEvent event
         'unhandled'
     
 module.exports = Browser

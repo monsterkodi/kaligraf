@@ -11,7 +11,7 @@
 { winTitle, ensureInSize } = require '../utils'
 
 FontManager = require 'font-manager' 
-Shadow      = require '../shadow'
+# Shadow      = require '../shadow'
 
 fontGroups = 
     Sans: [

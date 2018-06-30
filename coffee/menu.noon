@@ -147,8 +147,8 @@ View
     Gradients               ctrl+j j
     Tools                   alt+ctrl+t
     -
-    Previous Tab            shift+tab
-    Next Tab                tab
+    Previous Tab            shift+tab alt+ctrl+shift+left
+    Next Tab                tab alt+ctrl+shift+right
 
 # 000   000  000  000   000  0000000     0000000   000   000
 # 000 0 000  000  0000  000  000   000  000   000  000 0 000

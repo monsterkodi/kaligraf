@@ -46,7 +46,7 @@ class Kali
         @tools.init()
         
         @focus()
-        document.addEventListener 'keydown', @onKeyDown
+        # document.addEventListener 'keydown', @onKeyDown
         document.addEventListener 'keyup',   @onKeyUp
                 
         window.onresize = @onResize
@@ -56,6 +56,7 @@ class Kali
         @title.tabs.restore()
 
         post.on 'menuAction', @onMenuAction
+        post.on 'combo', @onCombo
         
     onResize: => 
 
@@ -203,16 +204,14 @@ class Kali
     
     focus: -> @element.focus()
     
-    onKeyDown: (event) =>
+    onCombo: (combo, info) =>
         
-        { mod, key, combo, char } = keyinfo.forEvent event
-
         if combo
-            return stopEvent(event) if 'unhandled' != @browser.handleKey mod, key, combo, char, event, true
-            
-        return stopEvent(event) if 'unhandled' != @tools.handleKey mod, key, combo, char, event, true
-        return stopEvent(event) if 'unhandled' != @stage.handleKey mod, key, combo, char, event, true
+            return stopEvent(event) if 'unhandled' != @browser.handleKey info.mod, info.key, info.combo, info.char, info.event, true
 
+        return stopEvent(event) if 'unhandled' != @tools.handleKey info.mod, info.key, info.combo, info.char, info.event, true
+        return stopEvent(event) if 'unhandled' != @stage.handleKey info.mod, info.key, info.combo, info.char, info.event, true
+     
     onKeyUp: (event) =>
         
         {mod, key, combo, char} = keyinfo.forEvent event

@@ -117,8 +117,6 @@ class LayerList
         
     onStage: (action, info) =>
         
-        @log "LayerList.onStage action:#{action} info:", info
-        
         switch action
             
             when 'load'    then @scroll.style.background = @stage.color.toHex()
@@ -135,8 +133,6 @@ class LayerList
     
     update: =>
 
-        @log 'LayerList.update numLayers:', @stage.numLayers()
-        
         @scroll.innerHTML = ''
         
         @viewbox = @stage.paddingBox()
@@ -148,25 +144,16 @@ class LayerList
 
     updateActive: (info) ->
         
-        # @log 'LayerList.updateActive', info
-        
         if info.num != @scroll.children.length
-            # @log 'LayerList.updateActive num differs -> update()'
             @update()
         else
-            # @log 'LayerList.updateActive highlight', @activeLayer()?
             if @activeLayer()
-                # @log 'LayerList.updateActive highlight', @activeLayer().index, @activeLayer().className, info
                 @activeLayer()?.classList.remove 'active'
             @layerAt(info.active)?.classList.add 'active'
 
     updateColor: ->
-        
         hex = @stage.color.toHex()
-        @scroll.style.background = hex                
-        if not empty document.styleSheets
-            setStyle '.layerListLayer', 'background-color', hex
-            setStyle '.layerListLayer.active', 'border-color', highlightColor hex
+        @scroll.style.background = hex            
             
     # 000       0000000   000   000  00000000  00000000   
     # 000      000   000   000 000   000       000   000  

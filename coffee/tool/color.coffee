@@ -77,9 +77,10 @@ class Color extends Tool
     #      000  000       000      000       000          000     000  000   000  000  0000  
     # 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000  
     
-    onSelection: =>
+    onSelection: (action) =>
         
-        @copyFromItems @stage.selectedLeafItems()
+        if action == 'set'
+            @copyFromItems @stage.selectedLeafItems()
         
     copyFromItems: (items) ->
         
@@ -325,7 +326,7 @@ class Color extends Tool
     #  0000000   000        0000000    000   000     000     00000000
 
     update: ->
-            
+         
         gradient = _.isString(@color) and @color.startsWith 'url'
         
         if @gradient != gradient

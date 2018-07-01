@@ -22,6 +22,8 @@ Trans    = require './trans'
 Browser  = require './browser'
 Title    = require './title'
 
+# post.debug()
+
 class Kali
 
     constructor: (element) ->
@@ -87,7 +89,7 @@ class Kali
     
     onMenuAction: (name, args) =>
     
-        log "onMenuAction '#{name}'"
+        # log "onMenuAction '#{name}'"
         
         switch name
     
@@ -135,6 +137,7 @@ class Kali
             when 'All'              then return post.emit 'tool', 'selectAll'
             when 'None'             then return post.emit 'tool', 'deselect'
             when 'Invert'           then return post.emit 'tool', 'invert'
+            when 'Select Groups'    then return post.emit 'tool', 'selectGroups'
             
             when 'Horizontal'       then return post.emit 'tool', 'button', 'flip', 'horizontal'
             when 'Vertical'         then return post.emit 'tool', 'button', 'flip', 'vertical'

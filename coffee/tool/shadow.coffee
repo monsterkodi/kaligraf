@@ -23,7 +23,7 @@ class Shadow extends Tool
         
         @size   = prefs.get 'shadow:size',  10
         @offset = prefs.get 'shadow:offset', 5
-                
+        
         @initSpin
             name:   'size'
             min:    0

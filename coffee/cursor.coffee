@@ -65,7 +65,8 @@ class Cursor
         tip = @calcTip svg, name
             
         electron = require 'electron'
-        userDir = electron.remote.app.getPath 'userData'
+        
+        userDir   = electron.remote.app?.getPath 'userData'
         cursorDir = slash.join userDir, 'cursor'
         
         fs.ensureDirSync slash.unslash cursorDir 

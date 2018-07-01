@@ -79,6 +79,7 @@ class Tools extends Tool
             when 'spaceRadial'   then @stage.shapes.edit?.dotsel.spaceRadial()
             when 'averageRadius' then @stage.shapes.edit?.dotsel.averageRadius()
             when 'selectAll'     then @stage.shapes.select 'all'
+            when 'selectGroups'  then @stage.shapes.select 'groups'
             when 'selectMore'    then @stage.shapes.select 'more'
             when 'selectLess'    then @stage.shapes.select 'less'
             when 'selectNext'    then @stage.shapes.select 'next'

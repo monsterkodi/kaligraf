@@ -6,7 +6,7 @@
 0000000      000     000   000   0000000   00000000
 ###
 
-{ elem, post, drag, prefs, stopEvent, first, last, empty, clamp, pos, slash, fs, log, _ } = require 'kxk'
+{ elem, post, prefs, stopEvent, first, last, empty, clamp, pos, slash, fs, log, _ } = require 'kxk'
 
 { contrastColor, normRect, bboxForItems, itemIDs, insideBox, itemBox, boxPos, uuid, 
   growBox, rboxForItems, boxOffset, boxCenter, itemGradient, itemMatrix } = require './utils'

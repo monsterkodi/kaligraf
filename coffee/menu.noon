@@ -75,6 +75,8 @@ Edit
         None                ctrl+d d
         Invert              ctrl+i i
         -      
+        Select Groups       alt+g
+        --
         More                ctrl+m
         Less                ctrl+shift+m
         Prev                ctrl+shift+[

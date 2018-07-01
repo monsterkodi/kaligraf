@@ -6,6 +6,8 @@
 0000000   000   000  000   000  0000000     0000000   00     00
 ###
 
+{ log } = require 'kxk'
+
 { boundingBox } = require './utils'
 
 class Shadow
@@ -39,6 +41,8 @@ class Shadow
         
         @svg.style.display = @element.style.display
         br = boundingBox @element
+        br.x -= 6
+        br.y -= 30
         @svg.style
             left:   "#{br.x-30}px"
             top:    "#{br.y-30}px"

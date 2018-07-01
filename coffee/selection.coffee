@@ -6,7 +6,7 @@
 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000
 ###
 
-{ prefs, setStyle, last, elem, post, pos, str, log, _ } = require 'kxk'
+{ post, prefs, setStyle, last, elem, pos, str, log, _ } = require 'kxk'
 
 {   contrastColor, moveBox, scaleBox, boxOffset, bboxForItems,
     normRect, rectsIntersect, rectOffset, itemBox } = require './utils'
@@ -84,6 +84,9 @@ class Selection
             for item in @items
                 @addRectForItem item
         
+        @emitSet()
+
+    emitSet: ->
         post.emit 'selection', 'set', @items
     
     addItem: (item, o = join:true) ->
@@ -97,15 +100,14 @@ class Selection
             
             @items.push item
             @addRectForItem item
-            
-            post.emit 'selection', 'add', @items, item
+            # post.emit 'selection', 'add', @items, item
             
     delItem: (item) ->
         
         if item in @items
             _.pull @items, item
             @delRectForItem item
-            post.emit 'selection', 'del', @items, item
+            # post.emit 'selection', 'del', @items, item
     
     clear: ->
 
@@ -352,6 +354,7 @@ class Selection
     
         @rect.element.remove() 
         delete @rect
+        @emitSet()
 
     addRect: ->
         

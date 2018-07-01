@@ -10,10 +10,11 @@
 
 { rectOffset, normRect, rectsIntersect } = require '../utils'
 
-Object = require './object'
-DotSel = require './dotsel'
-DotRes = require './dotres'
-Cursor = require '../cursor'
+profile = require '../profile'
+Object  = require './object'
+DotSel  = require './dotsel'
+DotRes  = require './dotres'
+Cursor  = require '../cursor'
 
 class Edit
 
@@ -60,8 +61,6 @@ class Edit
 
     del: ->
 
-        log 'edit.del'
-        
         @clear()
 
         post.removeListener 'stage',    @onStage
@@ -92,21 +91,17 @@ class Edit
     # 0000000      000     000   000     000     00000000  
 
     do: (action) -> @stage.undo.do @, action
-    done:        -> @stage.undo.done   @
+    done:        -> @stage.undo.done @
     
     state: ->
         
-        # log 'edit.state @dotsel.dots', @dotsel.dots.length
         state = 
             dotsel:  @dotsel.dots.map (dot) -> id:dot.ctrl.object.item.id(), index:dot.ctrl.index(), dot:dot.dot
             objects: @objects.map (obj) -> obj.item.id()
-        log 'edit.state state', state
         state
         
     restore: (state) ->
 
-        log 'edit.restore', state
-        
         @dotsel.clear()
         
         @objects = []
@@ -192,8 +187,6 @@ class Edit
         while valid @objects
             @delObject last @objects
 
-        log 'clear', @objects.length, @empty()
-        
         editing
 
     onStage: (action, box) => 
@@ -219,7 +212,6 @@ class Edit
             @do()
             for objectDot in @dotsel.objectDots()
                 objectDot.object.delDots objectDot.dots
-            # @dotsel.clear()
             @dotres.update()
             @done()
         
@@ -292,28 +284,22 @@ class Edit
     delItem: (item) ->
 
         if object = @objectForItem item
-            log 'edit.delItem', item.id()
             @delObject object
         
     delObject: (object) ->
-        
+        # profile 'delObject'
         if object in @objects
             
             for dot in object.dots()
                 @dotsel.delDot dot
                 
-            post.emit 'edit', 'delObject', object:object
-            
-            log 'delObject1', object.item.id(), @objects.length
+            # post.emit 'edit', 'delObject', object:object
             
             object.del()
             
-            log 'delObject2', object.item.id(), @objects.length
-            
             _.pull @objects, object
+        # profile ''
             
-            log 'delObject3', object.item.id(), @objects.length
-
     #  0000000   0000000    0000000        000  000000000  00000000  00     00  
     # 000   000  000   000  000   000      000     000     000       000   000  
     # 000000000  000   000  000   000      000     000     0000000   000000000  
@@ -322,27 +308,20 @@ class Edit
 
     addItem: (item, o = join:true) ->
 
-        # log 'addItem', item.id()
-        
         if not o.join and @dotsel.empty()
-            log 'addItem clear', item.id()
             @clear()
         
         if object = @objectForItem item 
-            log 'addItem got objects already', item.id()
             return object
             
         if @stage.isEditable item
-                   
-            log 'addItem new editable', item.id()
+            # profile 'addItem'
             object = new Object @, item
             @objects.push object 
             
-            post.emit 'edit', 'addObject', object:object
-            
+            # post.emit 'edit', 'addObject', object:object
+            # profile ''            
             return object
-        else
-            log 'addItem not editable', item.id()
 
     onDblClick: (event) =>
         
@@ -363,8 +342,6 @@ class Edit
         eventPos = pos event
                 
         item = @stage.leafItemAtPos eventPos
-        
-        log "Edit.stageStart -- item:#{item?.id()} empty:#{@empty()}", @objects.length
         
         if @empty()
             if item?
@@ -438,12 +415,12 @@ class Edit
     # 000   000  00000000   0000000     000
 
     startRect: (p,o) ->
-        log 'edit startRect'
+
         @rect = @stage.offsetRect x:p.x, y:p.y, x2:p.x, y2:p.y
         @updateRect o
 
     moveRect: (p,o) ->
-        log 'edit moveRect'
+
         vp = @stage.viewPos()
         @rect.x2 = p.x-vp.x
         @rect.y2 = p.y-vp.y
@@ -455,7 +432,7 @@ class Edit
         delete @rect
 
     updateRect: (opt={}) ->
-        log 'edit moveRect', @rect?
+
         return if not @rect?
         
         if not @rect.element
@@ -467,15 +444,10 @@ class Edit
 
     addInRect: (rect, opt) ->
         
-        log 'edit addInRect', rect.x, rect.y, rect.x2, rect.y2
-        
-        r =  normRect rect
+        r = normRect rect
         
         vp = @stage.viewPos()
         r = x:r.x+vp.x, y:r.y+vp.y, x2:r.x2+vp.x, y2:r.y2+vp.y
-        
-        # if not opt.join
-            # @clear()
         
         for item in @stage.editableItems()
 
@@ -485,5 +457,5 @@ class Edit
                 
             else if not opt.join
                 @delItem item
-
+                
 module.exports = Edit

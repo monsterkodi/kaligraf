@@ -81,7 +81,6 @@ class Browser
                 if slash.dirExists dir
                     @kali.title.tabs.addTab file:dir, dir:true
                     @browseDir dir
-                    # return
         
     browseDir: (dir) ->
         
@@ -432,7 +431,6 @@ class Browser
         if drag.startPos == drag.lastPos
             if file = elem.upAttr event.target, 'file'
                 if event.button == 1
-                    log 'onStop', event.button
                     @kali.title.tabs.addTab file:file, dontActivate:true
                 else
                     @openFile file
@@ -450,6 +448,7 @@ class Browser
         else
             @items.innerHTML = ''
             @element.style.display = ''
+            @element.parentNode.insertBefore @element, null
             @focus()
         
     hide: => @element.style.display = 'none'

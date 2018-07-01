@@ -144,8 +144,6 @@ class DotSel
     
     clear: ->
         
-        log 'dotsel.clear'
-        
         dotSelected = false
         for dot in @dots
             if dot.ctrl?.isSelected dot.dot then dotSelected = true
@@ -343,9 +341,7 @@ class DotSel
     
     delDot: (dot) ->
         
-        
         if dot in @dots
-            log 'dotsel.delDot', _.size(@dots), dot.dot
             dot.ctrl.setSelected dot.dot, false
             _.pull @dots, dot
             post.emit 'dotsel', 'del', @dots, dot
@@ -358,7 +354,6 @@ class DotSel
 
     startRect: (p,o) ->
         
-        log 'dotsel.startRect'
         post.emit 'dotsel', 'startRect'
         vp = @stage.viewPos()
         @rect = x:p.x-vp.x, y:p.y-vp.y, x2:p.x-vp.x, y2:p.y-vp.y

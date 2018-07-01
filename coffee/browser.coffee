@@ -445,7 +445,6 @@ class Browser
             
     show: => 
         
-        log 'show'
         if @visible()
             @openFile @selectedFile()
         else
@@ -469,7 +468,7 @@ class Browser
 
         return 'unhandled' if not @visible()
         
-        log 'browser.handleKey', mod, key, combo, down
+        # log 'browser.handleKey', mod, key, combo, down
         
         switch combo
             
@@ -477,12 +476,12 @@ class Browser
             when 'right'                            then return @navigate +1
             when 'up'                               then return @navigate -@columns
             when 'down'                             then return @navigate +@columns
-            when 'command+='                        then return @zoom +1
-            when 'command+-'                        then return @zoom -1
+            when 'ctrl+='                           then return @zoom +1
+            when 'ctrl+-'                           then return @zoom -1
             when 'esc'                              then return @hide()
             when 'return', 'enter', '.', 'ctrl+.'   then return @openFile @selectedFile()
-            when 'command+e', 'e'                   then return @zoomSelected()
-            when 'command+0'                        then return @zoomAll()
+            when 'ctrl+e', 'e'                      then return @zoomSelected()
+            when 'ctrl+0'                           then return @zoomAll()
             when 'backspace', 'delete'              then return @delItem @selectedItem()
                 
         'unhandled'

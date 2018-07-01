@@ -27,6 +27,8 @@ class Ctrl
 
     del: ->
 
+        log 'ctrl.del', _.size @dots
+        
         for k,d of @dots
             delete d.ctrl
             delete d.dot

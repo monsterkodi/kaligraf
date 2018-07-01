@@ -47,7 +47,7 @@ class Object extends Points
             
         for k,gradi of @gradi
             gradi.del()
-
+            
         @ctrls = []
 
     #  0000000  00000000  000000000     000  000000000  00000000  00     00
@@ -250,17 +250,21 @@ class Object extends Points
 
     delPoint: (index) ->
 
+        return if empty @ctrls[index]
+        
+        if @numPoints() <= 2
+            @edit.delItem @item
+            @item.remove()
+            return
+        
         @ctrls[index].del()
         @ctrls.splice index, 1
         points = @points()
         points.splice index, 1
 
-        if empty points
-            @edit.delItem @item
-        else
-            @applyPoints()
-            @updateCtrlDots index,   @pointAt index   if index < @numPoints()
-            @updateCtrlDots index+1, @pointAt index+1 if index < @numPoints()-1
+        @applyPoints()
+        @updateCtrlDots index,   @pointAt index   if index < @numPoints()
+        @updateCtrlDots index+1, @pointAt index+1 if index < @numPoints()-1
 
     # 0000000    00000000  000      0000000     0000000   000000000
     # 000   000  000       000      000   000  000   000     000
@@ -270,6 +274,9 @@ class Object extends Points
 
     delDots: (dots) ->
 
+        log 'object.delDots dots.length', dots.length
+        log 'object.indexDots', @indexDots(dots).length
+        
         for indots in @indexDots dots
             @delIndexDots indots.index, indots.dots
 

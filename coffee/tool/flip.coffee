@@ -39,7 +39,6 @@ class Flip extends Tool
         
         @stage.do "flip" + itemIDs items
         
-            
         for item in items
             @flipItem item, orientation
             
@@ -70,12 +69,13 @@ class Flip extends Tool
             
     flipItem: (item, orientation) ->
         
-        return if item.type not in ['path', 'polygon']
+        if item.type not in ['path', 'polygon', 'line', 'polyline']
+            return 
         
         bb = item.bbox()
         points = item.array().valueOf()
-
-        o = if item.type == 'polygon' then 0 else 1
+        
+        o = if item.type == 'path' then 1 else 0
         
         for point in points
             

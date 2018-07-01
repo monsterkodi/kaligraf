@@ -335,13 +335,13 @@ class FontList
             when 'down'          then @navigate +1
             when 'left'          then @navigateGroup -1
             when 'right'         then @navigateGroup +1
-            when 'command+up'    then stopEvent(event); @select 0
-            when 'command+down'  then stopEvent(event); @select @scrolls[@activeGroup].children.length-1
+            when 'ctrl+up'       then stopEvent(event); @select 0
+            when 'ctrl+down'     then stopEvent(event); @select @scrolls[@activeGroup].children.length-1
             when 'esc', 'enter'  then return @hide()
             # else
                 # log combo
                 
-        if combo.startsWith 'command' then return
+        if combo.startsWith 'ctrl' then return
                 
         stopEvent event
         

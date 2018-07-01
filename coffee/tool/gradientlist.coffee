@@ -378,18 +378,18 @@ class GradientList
         
         switch combo
             
-            when 'up'                        then @navigate -1
-            when 'down'                      then @navigate +1
-            when 'backspace', 'delete'       then @onDelStopOrGradient()
-            when 'n'                         then @onNewGradient()
-            when 'c'                         then @onCopyGradient()
-            when 'esc'                       then @hide()
-            when 'command+up',   'page up'   then stopEvent(event); @activate 0
-            when 'command+down', 'page down' then stopEvent(event); @activate @scroll.children.length-1
+            when 'up'                     then @navigate -1
+            when 'down'                   then @navigate +1
+            when 'backspace', 'delete'    then @onDelStopOrGradient()
+            when 'n'                      then @onNewGradient()
+            when 'c'                      then @onCopyGradient()
+            when 'esc'                    then @hide()
+            when 'ctrl+up',   'page up'   then stopEvent(event); @activate 0
+            when 'ctrl+down', 'page down' then stopEvent(event); @activate @scroll.children.length-1
             # else
                 # log combo
                 
-        if combo.startsWith 'command' then return
+        if combo.startsWith 'ctrl' then return
                 
         stopEvent event
        

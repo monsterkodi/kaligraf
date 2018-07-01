@@ -404,7 +404,7 @@ class Points extends Convert
     applyPoints: (points=@points()) -> 
         
         if @isFake()
-            
+            log 'applyPoints', points
             center = pos points[8][0], points[8][1]
             center = @trans.transform @item, center
             @trans.setCenter @item, center
@@ -482,10 +482,6 @@ class Points extends Convert
         count = 0
                 
         for index in [0...numPoints-1]
-            
-            # if true
-                # l = @kali.stage.debug.line()
-                # l.plot positions[index].x, positions[index].y, positions[index+1].x, positions[index+1].y
             
             if linesIntersect positions[index], positions[index+1], stagePos, outsidePos
                 count += 1

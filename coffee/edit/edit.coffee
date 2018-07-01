@@ -6,7 +6,7 @@
 00000000  0000000    000     000
 ###
 
-{ post, elem, empty, last, pos, log, _ } = require 'kxk'
+{ post, elem, valid, empty, last, pos, log, _ } = require 'kxk'
 
 { rectOffset, normRect, rectsIntersect } = require '../utils'
 
@@ -60,6 +60,8 @@ class Edit
 
     del: ->
 
+        log 'edit.del'
+        
         @clear()
 
         post.removeListener 'stage',    @onStage
@@ -94,11 +96,17 @@ class Edit
     
     state: ->
         
-        dotsel:  @dotsel.dots.map (dot) -> id:dot.ctrl.object.item.id(), index:dot.ctrl.index(), dot:dot.dot
-        objects: @objects.map (obj) -> obj.item.id()
+        # log 'edit.state @dotsel.dots', @dotsel.dots.length
+        state = 
+            dotsel:  @dotsel.dots.map (dot) -> id:dot.ctrl.object.item.id(), index:dot.ctrl.index(), dot:dot.dot
+            objects: @objects.map (obj) -> obj.item.id()
+        log 'edit.state state', state
+        state
         
     restore: (state) ->
 
+        log 'edit.restore', state
+        
         @dotsel.clear()
         
         @objects = []
@@ -181,9 +189,11 @@ class Edit
         editing = not @empty()
         @dotsel.clear()
         
-        while @objects.length
+        while valid @objects
             @delObject last @objects
 
+        log 'clear', @objects.length, @empty()
+        
         editing
 
     onStage: (action, box) => 
@@ -209,7 +219,7 @@ class Edit
             @do()
             for objectDot in @dotsel.objectDots()
                 objectDot.object.delDots objectDot.dots
-            @dotsel.clear()
+            # @dotsel.clear()
             @dotres.update()
             @done()
         
@@ -281,7 +291,9 @@ class Edit
 
     delItem: (item) ->
 
-        @delObject @objectForItem item
+        if object = @objectForItem item
+            log 'edit.delItem', item.id()
+            @delObject object
         
     delObject: (object) ->
         
@@ -292,9 +304,15 @@ class Edit
                 
             post.emit 'edit', 'delObject', object:object
             
+            log 'delObject1', object.item.id(), @objects.length
+            
             object.del()
+            
+            log 'delObject2', object.item.id(), @objects.length
+            
             _.pull @objects, object
             
+            log 'delObject3', object.item.id(), @objects.length
 
     #  0000000   0000000    0000000        000  000000000  00000000  00     00  
     # 000   000  000   000  000   000      000     000     000       000   000  
@@ -304,20 +322,27 @@ class Edit
 
     addItem: (item, o = join:true) ->
 
-        if not o.join and @dotsel.empty() 
+        # log 'addItem', item.id()
+        
+        if not o.join and @dotsel.empty()
+            log 'addItem clear', item.id()
             @clear()
         
         if object = @objectForItem item 
+            log 'addItem got objects already', item.id()
             return object
             
         if @stage.isEditable item
                    
+            log 'addItem new editable', item.id()
             object = new Object @, item
             @objects.push object 
             
             post.emit 'edit', 'addObject', object:object
             
             return object
+        else
+            log 'addItem not editable', item.id()
 
     onDblClick: (event) =>
         
@@ -338,7 +363,9 @@ class Edit
         eventPos = pos event
                 
         item = @stage.leafItemAtPos eventPos
-        # log "Edit.stageStart -- item:#{item?.id()} empty:#{@empty()}"
+        
+        log "Edit.stageStart -- item:#{item?.id()} empty:#{@empty()}", @objects.length
+        
         if @empty()
             if item?
                 @addItem item, join:event.shiftKey
@@ -416,7 +443,7 @@ class Edit
         @updateRect o
 
     moveRect: (p,o) ->
-
+        log 'edit moveRect'
         vp = @stage.viewPos()
         @rect.x2 = p.x-vp.x
         @rect.y2 = p.y-vp.y
@@ -428,30 +455,35 @@ class Edit
         delete @rect
 
     updateRect: (opt={}) ->
-        
+        log 'edit moveRect', @rect?
         return if not @rect?
         
         if not @rect.element
             @rect.element = @stage.selection.addRect()
             
-        log 'edit updateRect'
         @stage.selection.setRect @rect.element, @rect
         
         @addInRect @rect, opt
 
     addInRect: (rect, opt) ->
-
-        r = normRect rect
+        
+        log 'edit addInRect', rect.x, rect.y, rect.x2, rect.y2
+        
+        r =  normRect rect
+        
+        vp = @stage.viewPos()
+        r = x:r.x+vp.x, y:r.y+vp.y, x2:r.x2+vp.x, y2:r.y2+vp.y
+        
+        # if not opt.join
+            # @clear()
         
         for item in @stage.editableItems()
 
             rb = item.rbox()
             if rectsIntersect r, rb
-                
                 @addItem item
                 
             else if not opt.join
-                
                 @delItem item
 
 module.exports = Edit

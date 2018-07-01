@@ -387,9 +387,9 @@ class LayerList
         
         switch combo
             
-            when 'up'                        then stopEvent event and @navigate +1
-            when 'down'                      then stopEvent event and @navigate -1
-            when 'command+up',   'page up'   then stopEvent event and @activate @scroll.children.length-1
-            when 'command+down', 'page down' then stopEvent event and @activate 0
+            when 'up'                     then stopEvent event and @navigate +1
+            when 'down'                   then stopEvent event and @navigate -1
+            when 'ctrl+up',   'page up'   then stopEvent event and @activate @scroll.children.length-1
+            when 'ctrl+down', 'page down' then stopEvent event and @activate 0
        
 module.exports = LayerList

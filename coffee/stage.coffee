@@ -1227,7 +1227,7 @@ class Stage
                 
                 when 'left', 'right', 'up', 'down'
                     
-                    return 'unhandled' if mod.includes 'command'
+                    return 'unhandled' if mod.includes 'ctrl'
                     
                     if @selectedItems().length
                         p = pos 0,0

@@ -34,7 +34,13 @@ class Text
         @input.style.width      = "#{bbox.width+2}px"
         @input.style.height     = "#{height+2}px"
         @input.style.lineHeight = @item.leading()
-        @input.value = @item.text()
+        
+        texts = []
+        @item.lines().each (line) ->
+            texts.push @text().trim()
+        text = texts.join '\n'
+
+        @input.value = text
 
         @input.style.textAlign = switch @item.font()['text-anchor']
             when 'start'    then 'left'
@@ -179,7 +185,7 @@ class Text
 
         switch combo
             
-            when 'command+enter'
+            when 'ctrl+enter'
                 
                 v = @input.value
                 v = v.slice(0, @input.selectionStart) + '\n' + v.slice @input.selectionEnd
@@ -189,17 +195,17 @@ class Text
                 @input.selectionEnd   = s+1
                 @setText v
                 
-            when 'command+a' then stopEvent(event) and @select 'all'
-            when 'command+d' then stopEvent(event) and @select 'none'
-            when 'command+x' then stopEvent(event) and @cut()
-            when 'command+c' then stopEvent(event) and @copy()
-            when 'command+v' then stopEvent(event) and @paste()
+            when 'ctrl+a' then stopEvent(event) and @select 'all'
+            when 'ctrl+d' then stopEvent(event) and @select 'none'
+            when 'ctrl+x' then stopEvent(event) and @cut()
+            when 'ctrl+c' then stopEvent(event) and @copy()
+            when 'ctrl+v' then stopEvent(event) and @paste()
                 
             when 'esc', 'tab'
 
                 @endEditing()
         
-        if combo.startsWith 'command' then return
+        if combo.startsWith 'ctrl' then return
 
         event.stopPropagation()
             

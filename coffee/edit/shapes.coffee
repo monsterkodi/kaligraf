@@ -361,6 +361,8 @@ class Shapes
             @kali.tool(shape).onStageStop drag, event
             return
             
+        @selection.emitSet()            
+            
         if @selection.rect?
             @selection.endRect eventPos
             return

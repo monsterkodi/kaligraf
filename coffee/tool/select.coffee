@@ -6,7 +6,7 @@
 0000000   00000000  0000000  00000000   0000000     000     
 ###
 
-{ prefs, post, empty, log, _ } = require 'kxk'
+{ prefs, log, _ } = require 'kxk'
 
 Tool = require './tool'
 

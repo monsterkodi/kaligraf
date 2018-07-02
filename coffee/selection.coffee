@@ -86,8 +86,7 @@ class Selection
         
         @emitSet()
 
-    emitSet: ->
-        post.emit 'selection', 'set', @items
+    emitSet: -> post.emit 'selection', 'set', @items
     
     addItem: (item, o = join:true) ->
         
@@ -354,7 +353,6 @@ class Selection
     
         @rect.element.remove() 
         delete @rect
-        @emitSet()
 
     addRect: ->
         

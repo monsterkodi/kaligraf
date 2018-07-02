@@ -134,7 +134,7 @@ class Shapes
                 
             when 'snapbox'
                 
-                e = SnapBox.svgElemAtPos @tools, root, stagePos
+                e = SnapBox.svgElemAtPos @kali, root, stagePos
                                     
             else 
                 if root[shape]?
@@ -144,20 +144,22 @@ class Shapes
                     return
               
         uuid e
-                
-        e.style
-            stroke:           @tools.stroke.color
-            'stroke-opacity': @tools.stroke.alpha
-            'stroke-width':   @tools.width.width
+              
+        if shape not in ['snapbox']
             
-        if shape not in ['polyline', 'line']
             e.style
-                fill:           @tools.fill.color
-                'fill-opacity': @tools.fill.alpha
-        else
-            e.style 
-                fill:           'none'
-                'fill-opacity': 0.0
+                stroke:           @tools.stroke.color
+                'stroke-opacity': @tools.stroke.alpha
+                'stroke-width':   @tools.width.width
+                
+            if shape not in ['polyline', 'line']
+                e.style
+                    fill:           @tools.fill.color
+                    'fill-opacity': @tools.fill.alpha
+            else
+                e.style 
+                    fill:           'none'
+                    'fill-opacity': 0.0
         e
                 
     # 000000000  00000000  000   000  000000000  
@@ -430,8 +432,8 @@ class Shapes
             @draw?.handleEndDrawing()
             @stopEdit()
             
-            if @trans.width(@drawing) == 0 and @trans.height(@drawing) == 0 and @drawing.type != 'text'
-                log 'remove @drawing'
+            if @trans.width(@drawing) == 0 and @trans.height(@drawing) == 0 and @drawing.type != 'text' and @drawing.type != 'svg'
+                log 'remove @drawing', @drawing.type
                 @drawing.remove()
                 
             else

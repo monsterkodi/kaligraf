@@ -253,6 +253,7 @@ class Edit
     #  0000000   000   000  000   000  0000000    000  00000000  000   000     000     
     
     onGradient: (style, info) =>
+        
         if style in ['fill', 'stroke']
             if info.item in @items()
                 @objectForItem(info.item).updateGradi style, info

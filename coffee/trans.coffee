@@ -187,11 +187,13 @@ class Trans
     setWidth:  (item, w) -> 
     
         switch item.type
-            when 'text'    then item.font 'size', item.font('size')*w/@getWidth(item)
             when 'ellipse' then item.attr rx: w/2 
             when 'circle'  then item.attr r: w/2
             when 'rect'    then item.attr width: w
             when 'g'       then @setGroupWidth item, w
+            when 'text'    
+                if @getWidth(item) > 0 and w > 0
+                    item.font 'size', item.font('size')*w/@getWidth(item)
             else
                 item.width w
     
@@ -199,11 +201,13 @@ class Trans
 
         switch item.type
              
-            when 'text'    then item.font 'size', item.font('size')*h/@getHeight(item)
             when 'ellipse' then item.attr ry: h/2 
             when 'circle'  then item.attr r: h/2
             when 'rect'    then item.attr height: h
             when 'g'       then @setGroupHeight item, h
+            when 'text'    
+                if @getHeight(item) > 0 and h > 0
+                    item.font 'size', item.font('size')*h/@getHeight(item)
             else
                 item.height h
         

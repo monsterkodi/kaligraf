@@ -370,6 +370,7 @@ class Object extends Points
             log "no dot #{dot} at index #{index}?"
 
     ctrlAt: (index) -> 
+        
         if index in ['fill', 'stroke']
             return gradi?[index]
         @ctrls[@index index]

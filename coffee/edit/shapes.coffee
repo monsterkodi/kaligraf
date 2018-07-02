@@ -10,9 +10,10 @@
 
 { uuid } = require '../utils'
 
-Draw = require './draw'
-Edit = require './edit'
-Text = require './text'
+Draw    = require './draw'
+Edit    = require './edit'
+Text    = require './text'
+SnapBox = require './snapbox'
 
 class Shapes
 
@@ -131,6 +132,10 @@ class Shapes
                     stage.selection.update()
                     stage.resizer.update()
                 
+            when 'snapbox'
+                
+                e = SnapBox.svgElemAtPos @tools, root, stagePos
+                                    
             else 
                 if root[shape]?
                     e = root[shape]()
@@ -205,13 +210,6 @@ class Shapes
         delete drag.shift
         
         @clearText()
-        # log 'Shapes.onStart'
-        # shape = @kali.shapeTool()
-        # if shape == 'text'
-            # if item = @stage.itemAtPos pos event
-                # if item.type == 'text'
-                    # @editTextItem item
-                    # return
                             
         @handleMouseDown event
         

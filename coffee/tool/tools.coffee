@@ -122,6 +122,7 @@ class Tools extends Tool
                 { class: 'angle'  }
                 { class: 'font'   }
                 { class: 'anchor' }
+                { class: 'radius' }
             ]            
             [
                 { name:  'pick',    group: 'shape', popup: 'temp' }
@@ -146,6 +147,7 @@ class Tools extends Tool
                 { name: 'circle',           group: 'shape', popup: 'temp' }
                 { name: 'ellipse',          group: 'shape', popup: 'temp' }
                 { name: 'image',            group: 'shape', popup: 'temp' }
+                { name: 'snapbox',          group: 'shape', popup: 'temp' }
             ]
             [
                 { class: 'undo'   }

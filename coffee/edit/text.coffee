@@ -120,12 +120,17 @@ class Text
         
         bbox = @item.bbox()
         matrix = itemMatrix @item
-        fontSize = @item.font()['font-size']
-        leading = @item.leading()
-        switch (@item.font()['text-anchor'] ? 'start')
-            when 'start'  then matrix = matrix.multiply new SVG.Matrix().translate 0, leading.value*fontSize*0.2
-            when 'middle' then matrix = matrix.multiply new SVG.Matrix().translate -bbox.width/2, leading.value*fontSize*0.2
-            when 'end'    then matrix = matrix.multiply new SVG.Matrix().translate -bbox.width, leading.value*fontSize*0.2
+        switch @item.data('anchor')
+            when 'middle', 'start', 'end'
+                log 'updateTransform', @item.data('anchor'), bbox, @item.transform().matrix.toString(), itemMatrix(@item).toString()
+                matrix = matrix.multiply new SVG.Matrix().translate bbox.x, bbox.y
+            else
+                fontSize = @item.font()['font-size']
+                leading = @item.leading()
+                switch (@item.font()['text-anchor'] ? 'start')
+                    when 'start'  then matrix = matrix.multiply new SVG.Matrix().translate 0, leading.value*fontSize*0.2
+                    when 'middle' then matrix = matrix.multiply new SVG.Matrix().translate -bbox.width/2, leading.value*fontSize*0.2
+                    when 'end'    then matrix = matrix.multiply new SVG.Matrix().translate -bbox.width, leading.value*fontSize*0.2
         @input.style.transform = matrix.toString()
         
     #  0000000  00000000  000      00000000   0000000  000000000  

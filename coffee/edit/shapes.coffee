@@ -332,10 +332,15 @@ class Shapes
                 
             else
                 if @drawing?
-                    z  = @stage.zoom
+                    
                     p1 = @stage.stageForEvent drag.startPos
                     p2 = @stage.stageForEvent drag.pos
-                    @trans.setRect @drawing, x:p1.x, y:p1.y, x2:p2.x, y2:p2.y
+                    rect = x:p1.x, y:p1.y, x2:p2.x, y2:p2.y
+                    
+                    if 'snapbox' == @drawing.data 'type'
+                        SnapBox.setRect @drawing, rect
+                    else
+                        @trans.setRect @drawing, rect
 
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
@@ -344,7 +349,7 @@ class Shapes
     # 000   000   0000000       0      00000000  
     
     onMove: (event) =>
-        
+        # log 'shapes.onMove', @draw?
         @draw?.handleMove event
         
     #  0000000  000000000   0000000   00000000   

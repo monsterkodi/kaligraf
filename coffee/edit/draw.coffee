@@ -218,6 +218,8 @@ class Draw
     
     movePoint: (stagePos, action) ->
 
+        log 'movePoint', stagePos, action
+        
         object = @edit.objectForItem @drawing
         if not object?
             log 'no object in edit?', @edit?, @drawing?

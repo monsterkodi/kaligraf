@@ -6,7 +6,9 @@
 0000000   000   000  000   000  000        0000000     0000000   000   000
 ###
 
-{ last, first, log, _ } = require 'kxk'
+{ last, first, pos, log, _ } = require 'kxk'
+
+{ itemMatrix } = require '../utils'
 
 class SnapBox
 
@@ -15,11 +17,9 @@ class SnapBox
         r = first box.children()
         width = rect.x2 - rect.x
         height = rect.y2 - rect.y 
-        log 'SnapBox.setRect', width, height
         r.size width, height
         t = last box.children()
         t.font 'size', height/2
-        log 'anchor', t.data 'anchor'
         SnapBox.applyAnchor box
             
     @setAnchor: (box, anchor) ->
@@ -33,14 +33,16 @@ class SnapBox
         
         r = first box.children()
         t = last box.children()
-        width = r.width()
+        width  = r.width()
         height = r.height()
         switch t.data 'anchor'
-            when 'start'  then t.x Math.min height/2, width/10
-            when 'middle' then t.x width/2
-            when 'end'    then t.x width - Math.min height/2, width/10
+            when 'start'  then t.transform x:Math.min(height/2, width/10), y:0 #t.x Math.min height/2, width/10
+            when 'middle' then t.transform x:width/2, y:0
+            when 'end'    then t.transform x:(width - Math.min(height/2, width/10)), y:0
             
-    @svgElemAtPos: (kali, root, stagePos) ->
+    @resize: (box) -> SnapBox.applyAnchor box
+            
+    @svgElem: (kali, root) ->
              
         tools = kali.tools
         trans = kali.trans
@@ -65,10 +67,7 @@ class SnapBox
         t.font 'family', tools.font.family
         t.font 'anchor', tools.anchor.anchor
         t.data 'anchor', tools.anchor.anchor
-        switch tools.anchor.anchor
-            when 'start'  then t.x '40'
-            when 'middle' then t.x '200'
-            when 'end'    then t.x '360'
+        SnapBox.applyAnchor g
         t.style
             'stroke-opacity':   0        
             'fill-opacity':     tools.stroke.alpha

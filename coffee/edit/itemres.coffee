@@ -10,7 +10,8 @@
 
 { opposide, itemIDs, boxPos } = require '../utils'
 
-Res = require './res'
+Res     = require './res'
+SnapBox = require './snapbox'
     
 class ItemRes extends Res
 
@@ -154,7 +155,7 @@ class ItemRes extends Res
         for item in items
             
             @trans.resize item, transmat, pos sx, sy
-            
+                        
         @selection.update()
 
         sx = @gg.transform().scaleX * sx

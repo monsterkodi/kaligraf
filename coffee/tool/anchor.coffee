@@ -85,7 +85,6 @@ class Anchor extends Tool
         
         for item in textItems
             if item.data 'anchor'
-                log 'item.data anchor', item.data 'anchor'
                 SnapBox.setAnchor item.parent(), @anchor
             else
                 item.font 'anchor', @anchor

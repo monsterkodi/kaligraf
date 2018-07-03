@@ -10,6 +10,8 @@
 
 { normRect, boxCenter, boxOffset, boxPos, rectWidth, rectHeight, rectCenter, rectOffset, itemMatrix, itemBox } = require './utils'
 
+SnapBox = require './edit/snapbox'
+
 class Trans
 
     constructor: (@kali) ->
@@ -61,12 +63,13 @@ class Trans
     # 000   000  000            000  000   000     000       
     # 000   000  00000000  0000000   000  0000000  00000000  
     
-    resize: (item, matrix, scale) ->
+    newCenter: (item, matrix, scale) ->
         
-        oldCenter = @getCenter item
-        newCenter = new SVG.Point oldCenter
+        newCenter = new SVG.Point @getCenter item
         newCenter = pos newCenter.transform matrix
-
+        
+    newSize: (item, matrix, scale) ->
+        
         itemTrans = item.transform()
         
         rotMat    = new SVG.Matrix().rotate itemTrans.rotation
@@ -84,6 +87,11 @@ class Trans
         newSize = newSize.transform new SVG.Matrix().scale scale.x, scale.y
         newSize = newSize.transform new SVG.Matrix().rotate -itemTrans.rotation
         newSize = pos Math.abs(newSize.x), Math.abs(newSize.y)
+        
+    resize: (item, matrix, scale) ->
+
+        newCenter = @newCenter item, matrix, scale
+        newSize   = @newSize   item, matrix, scale
 
         @setSize   item, newSize
         @setCenter item, newCenter
@@ -105,6 +113,9 @@ class Trans
         for item in group.children()
             
             @resize item, transmat, scale
+            
+        if 'snapbox' == group.data 'type'
+            SnapBox.resize group
                   
     setGroupWidth:  (group, w) -> @setGroupSize group, x:w, y:@height(group)
     setGroupHeight: (group, h) -> @setGroupSize group, x:@width(group), y:h
@@ -196,6 +207,9 @@ class Trans
                     item.font 'size', item.font('size')*w/@getWidth(item)
             else
                 item.width w
+                
+        # if 'snapbox' == item.data 'type'
+            # SnapBox.resize item
     
     setHeight: (item, h) -> 
 
@@ -210,7 +224,7 @@ class Trans
                     item.font 'size', item.font('size')*h/@getHeight(item)
             else
                 item.height h
-        
+                
     setSize:   (item, size) -> 
     
         if item.type == 'g' 

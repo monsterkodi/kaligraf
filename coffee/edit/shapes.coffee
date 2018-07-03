@@ -134,7 +134,7 @@ class Shapes
                 
             when 'snapbox'
                 
-                e = SnapBox.svgElemAtPos @kali, root, stagePos
+                e = SnapBox.svgElem @kali, root
                                     
             else 
                 if root[shape]?
@@ -406,6 +406,7 @@ class Shapes
             when 'ellipse'
                 @drawing.size 50, 100
                 @trans.center @drawing, stagePos
+            when 'snapbox' then true
             else
                 @drawing.size 100, 100
                 @trans.center @drawing, stagePos

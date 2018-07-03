@@ -10,7 +10,8 @@
 
 { itemIDs } = require '../utils'
 
-Tool = require './tool'
+Tool    = require './tool'
+SnapBox = require '../edit/snapbox'
 
 class Anchor extends Tool
         
@@ -83,7 +84,11 @@ class Anchor extends Tool
         @stage.do 'anchor' + itemIDs textItems
         
         for item in textItems
-            item.font 'anchor', @anchor
+            if item.data 'anchor'
+                log 'item.data anchor', item.data 'anchor'
+                SnapBox.setAnchor item.parent(), @anchor
+            else
+                item.font 'anchor', @anchor
           
         @stage.selection.update()
         @stage.resizer.update()

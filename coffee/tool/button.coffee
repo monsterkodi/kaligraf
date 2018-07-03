@@ -58,7 +58,8 @@ class Button
             
             span.appendChild btn
                                 
-            btn.addEventListener 'mousedown', @onButtonClick
+            btn.addEventListener 'click', @onButtonClick
+            btn.addEventListener 'mousedown', (event) -> stopEvent event
 
             if btn.icon? then @setButtonIcon btn.name, btn.icon
             
@@ -139,7 +140,7 @@ class Button
     # 0000000       000     000   000        0000000  0000000  000   0000000  000   000  
     
     onButtonClick: (event) => 
-                
+            
         button = event.target.name
         
         if not button?
@@ -156,15 +157,15 @@ class Button
     clickButton: (button, event) ->
         
         btn = @button button
-
+        
         if btn.icon? and event?.metaKey and not btn.spin?
             
             @kali.stage.load Exporter.svgFile btn.icon
             return
-                
+            
         if btn.toggle?
             @toggleButton button
         
-        btn.action?(event)    
+        btn.action?(event) 
 
 module.exports = Button

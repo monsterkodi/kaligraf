@@ -33,7 +33,7 @@ class Tool extends Spin
         @element.classList.add 'tool'
         @element.classList.add 'down' if @cfg.orient == 'down'
         @element.addEventListener 'mouseenter', @onMouseEnter
-        @element.addEventListener 'mouseup', @onClick
+        @element.addEventListener 'click', @onClick
         @element.addEventListener 'wheel', (event) => stopEvent event
         
         @kali.toolDiv.appendChild @element
@@ -99,15 +99,15 @@ class Tool extends Spin
                 
     onMouseDown: (event) =>
         
-        @popupTimeout = setTimeout @popupChildren, 100
-        @element.addEventListener 'mouseup', @onMouseUp
+        # @popupTimeout = setTimeout @popupChildren, 100
+        # @element.addEventListener 'mouseup', @onMouseUp
         
     onMouseUp: (event) =>
         
-        clearTimeout @popupTimeout
+        # clearTimeout @popupTimeout
         
     popupChildren: => 
-        
+
         @toggleChildren()
         delete @popupTimeout
         @keepChildren = true
@@ -144,10 +144,12 @@ class Tool extends Spin
     hasChildren: -> @children?.length > 0
     
     childrenVisible: -> @hasChildren() and first(@children).isVisible()
-    toggleChildren:  -> if @childrenVisible() then @hideChildren() else @showChildren()
+    toggleChildren:  -> 
+
+        if @childrenVisible() then @hideChildren() else @showChildren()
     
     showChildren: -> 
-        
+
         @updateDepth()
         if @hasChildren()
             @addHalo()
@@ -156,7 +158,7 @@ class Tool extends Spin
         @updateDepth()
                 
     hideChildren: -> 
-        
+
         @delHalo()
         @element.style.zIndex = 1
         if @hasChildren()
@@ -217,11 +219,11 @@ class Tool extends Spin
         for child in @children
             child.element.style.zIndex = parseInt zIndex + 1 + @children.indexOf child
                             
-    #  0000000  000      000   0000000  000   000  
-    # 000       000      000  000       000  000   
-    # 000       000      000  000       0000000    
-    # 000       000      000  000       000  000   
-    #  0000000  0000000  000   0000000  000   000  
+    #  0000000   000   000         0000000  000      000   0000000  000   000  
+    # 000   000  0000  000        000       000      000  000       000  000   
+    # 000   000  000 0 000        000       000      000  000       0000000    
+    # 000   000  000  0000        000       000      000  000       000  000   
+    #  0000000   000   000         0000000  0000000  000   0000000  000   000  
     
     onClick: (event) => 
         

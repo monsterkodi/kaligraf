@@ -122,7 +122,6 @@ class Text
         matrix = itemMatrix @item
         switch @item.data('anchor')
             when 'middle', 'start', 'end'
-                log 'updateTransform', @item.data('anchor'), bbox, @item.transform().matrix.toString(), itemMatrix(@item).toString()
                 matrix = matrix.multiply new SVG.Matrix().translate bbox.x, bbox.y
             else
                 fontSize = @item.font()['font-size']

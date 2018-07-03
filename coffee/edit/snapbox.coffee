@@ -20,6 +20,21 @@ class SnapBox
         t = last box.children()
         t.font 'size', height/2
         log 'anchor', t.data 'anchor'
+        SnapBox.applyAnchor box
+            
+    @setAnchor: (box, anchor) ->
+        
+        t = last box.children()
+        t.font 'anchor', anchor
+        t.data 'anchor', anchor
+        SnapBox.applyAnchor box
+        
+    @applyAnchor: (box) ->
+        
+        r = first box.children()
+        t = last box.children()
+        width = r.width()
+        height = r.height()
         switch t.data 'anchor'
             when 'start'  then t.x Math.min height/2, width/10
             when 'middle' then t.x width/2

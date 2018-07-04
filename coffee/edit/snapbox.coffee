@@ -10,8 +10,41 @@
 
 { itemMatrix } = require '../utils'
 
+SnapLine = require './snapline'
+
 class SnapBox
 
+    @onStartDragDot: (kali, box, dot, event) ->
+        
+        new SnapLine kali, box, dot
+    
+    @closestTarget: (kali, box, stagePos) ->
+        
+        r = first box.children()
+        p = [
+            corner:'top left',   pos:pos 0,0
+        ,
+            corner:'top center', pos:pos r.width()/2, 0
+        ,
+            corner:'top right',  pos:pos r.width(), 0
+        ,
+            corner:'mid right',  pos:pos r.width(), r.height()/2
+        ,
+            corner:'bot right',  pos:pos r.width(), r.height()
+        ,
+            corner:'bot center', pos:pos r.width()/2, r.height()
+        ,
+            corner:'bot left',   pos:pos 0, r.height()
+        ,
+            corner:'mid left',   pos:pos 0, r.height()/2
+        ,
+            corner:'mid center', pos:pos r.width()/2, r.height()/2
+        ]
+        p = p.map (a) -> a.pos = kali.trans.fullTransform(r, a.pos); a
+        p.sort (a,b) -> a.pos.distSquare(stagePos) - b.pos.distSquare(stagePos)
+        
+        return first p
+        
     @setRect: (box, rect) ->
         
         r = first box.children()

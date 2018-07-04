@@ -10,6 +10,8 @@
 
 { rectsIntersect, normRect, bboxForItems, itemIDs, boxCenter } = require '../utils'
 
+SnapBox = require './snapbox'
+
 class DotSel
 
     constructor: (@edit) ->
@@ -46,8 +48,16 @@ class DotSel
     
     onStart: (drag, event) =>
 
+        delete @snapLine
+            
         if dot = event.target.instance
 
+            parent = dot.ctrl.object.item.parent()
+            if parent?.type == 'g' and 'snapbox' == parent.data 'type'
+                log 'dotsel.onStart', parent.type, parent.data 'type'
+                @snapLine = SnapBox.onStartDragDot @kali, parent, dot, event
+                return
+            
             if @kali.shapeTool() != 'edit'
                 post.emit 'tool', 'click', 'edit'
             
@@ -59,6 +69,8 @@ class DotSel
 
     onStop: (drag, event) =>
     
+        @snapLine?.onDragStop drag, event           
+        delete @snapLine
         delete @shift
         @kali.tool('snap').clear()
                 
@@ -70,7 +82,12 @@ class DotSel
     
     onDrag: (drag, event) =>
 
+        if @snapLine
+            @snapLine.onDrag drag, event
+            return
+        
         if not @empty()
+            
             @moveBy drag.delta.times(1/@stage.zoom), event
 
     # 00     00   0000000   000   000  00000000  

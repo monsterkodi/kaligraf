@@ -166,8 +166,8 @@ class Points extends Convert
 
     movePoint: (index, itemPos, dots=['point']) =>
         
-        points = @points()
-        point  = points[index]
+        # points = @points()
+        # point  = points[index]
 
         if _.isString dots then dots = [dots]
         
@@ -184,7 +184,7 @@ class Points extends Convert
     setPoint: (index, itemPos, dot='point') =>
         
         points = @points()
-        point  = points[index]
+        # point  = points[index]
 
         @setDotPos index, dot, itemPos, @setPoint
 
@@ -404,7 +404,9 @@ class Points extends Convert
     applyPoints: (points=@points()) -> 
         
         if @isFake()
-            log 'applyPoints', points
+            
+            log 'points.applyPoints', points
+            
             center = pos points[8][0], points[8][1]
             center = @trans.transform @item, center
             @trans.setCenter @item, center

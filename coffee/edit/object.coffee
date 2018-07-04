@@ -195,7 +195,7 @@ class Object extends Points
             index   = dot.ctrl.index()
             dotPos  = @dotPos index, dot.dot
             itemPos = @trans.fullInverse dot.ctrl.object.item, dotPos
-            # log 'updateDots', index, dotPos, itemPos
+            log 'updateDots', index, dotPos, itemPos
             @setPoint index, itemPos, dot.dot
 
         @applyPoints()

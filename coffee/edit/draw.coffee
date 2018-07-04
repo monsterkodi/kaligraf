@@ -248,6 +248,9 @@ class Draw
             object.movePoint index, refl, [ctrl]
         
         @edit.update()
+        
+        log 'draw.movePoint'
+        
         object.applyPoints()
         
         if @shape in ['bezier_smooth', 'bezier_quad', 'bezier_cube']

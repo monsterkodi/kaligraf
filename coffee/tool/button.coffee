@@ -158,7 +158,7 @@ class Button
         
         btn = @button button
         
-        if btn.icon? and event?.metaKey and not btn.spin?
+        if btn.icon? and event?.ctrlKey and not btn.spin?
             
             @kali.stage.load Exporter.svgFile btn.icon
             return

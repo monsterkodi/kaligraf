@@ -251,7 +251,7 @@ class Shapes
             when 'pick'
 
                 @stopEdit()
-                if not event.metaKey
+                if not event.ctrlKey
                     @log 'Shapes.handleMouseDown start selection rect', @stage.itemAtPos(eventPos)?.id()
                     @selection.stageStart drag, event
                     

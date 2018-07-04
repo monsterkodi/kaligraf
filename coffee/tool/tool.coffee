@@ -227,7 +227,7 @@ class Tool extends Spin
     
     onClick: (event) => 
         
-        if @svg? and event?.metaKey and Exporter.hasSVG @cfg.name ? @cfg.class
+        if @svg? and event?.ctrlKey and Exporter.hasSVG @cfg.name ? @cfg.class
             
             @kali.stage.load Exporter.svgFile @cfg.name ? @cfg.class
             return

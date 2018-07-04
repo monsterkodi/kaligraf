@@ -120,6 +120,10 @@ class Kali
             when 'Middle'           then return post.emit 'tool', 'button', 'align', 'mid'
             when 'Top'              then return post.emit 'tool', 'button', 'align', 'top'
             when 'Bottom'           then return post.emit 'tool', 'button', 'align', 'bot'
+            when 'Join'             
+                post.emit 'tool', 'button', 'align', 'mid'
+                post.emit 'tool', 'button', 'align', 'center'
+                return
             
             when 'Convert Polygon'  then return post.emit 'convert', 'P'
             when 'Convert Line'     then return post.emit 'convert', 'L'

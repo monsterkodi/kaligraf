@@ -103,7 +103,7 @@ class Lock extends Tool
         lockedIds = _.flatten locks
         _.pullAll lockedIds, movedIds
         
-        if valid(lockedIds) and not event?.metaKey
+        if valid(lockedIds) and not event?.ctrlKey
 
             itemIndexDots = {}
             

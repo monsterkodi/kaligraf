@@ -322,7 +322,7 @@ class Selection
         delta = delta.times 1/@stage.zoom
         
         if event? 
-            if not event.metaKey
+            if not event.ctrlKey
                 delta = @kali.tool('snap').delta delta, items:@items
             else
                 @kali.tool('snap').clear()

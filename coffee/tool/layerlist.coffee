@@ -241,7 +241,7 @@ class LayerList
         @log 'onButtonAction', event?
         stopEvent event
         
-        if event.metaKey
+        if event.ctrlKey
             switch action
                 when 'hide'    then return @stage.soloLayer index, 'hidden'
                 when 'disable' then return @stage.soloLayer index, 'disabled'

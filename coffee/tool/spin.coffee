@@ -91,9 +91,8 @@ class Spin extends Button
         part = last name.split ' '
         
         step = spin.step[0]
-        step = spin.step[1] if event.metaKey
-        step = spin.step[2] if event.altKey
-        step = spin.step[3] if event.ctrlKey
+        step = spin.step[1] if event.altKey
+        step = spin.step[2] if event.ctrlKey
             
         switch part
             when 'minus'

@@ -22,7 +22,7 @@ class Aspect extends Tool
         @locked = false
         
         post.on 'stage', @onStage
-        post.on 'undo',  @onUndo
+        post.on 'done',  @onDone
         
         @initTitle()
         
@@ -81,6 +81,8 @@ class Aspect extends Tool
         paddingBox = @stage.paddingBox()
         @setRatio paddingBox.height and paddingBox.width/paddingBox.height or 0
         
+    onDone: => @updateRatio()
+    
     setRatio: (@ratio) => @setSpinValue 'ratio', @ratio
     
     update: =>
@@ -96,11 +98,6 @@ class Aspect extends Tool
     #      000     000     000   000  000   000  000       
     # 0000000      000     000   000   0000000   00000000  
 
-    onUndo: (info) =>
-        
-        if info.action == 'done' 
-            @updateRatio()
-    
     onStage: (action, info) =>
         
         if action == 'load' and info.viewbox

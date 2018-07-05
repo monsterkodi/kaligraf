@@ -10,8 +10,6 @@
 
 { normRect, boxCenter, boxOffset, boxPos, rectWidth, rectHeight, rectCenter, rectOffset, itemMatrix, itemBox } = require './utils'
 
-SnapBox = require './edit/snapbox'
-
 class Trans
 
     constructor: (@kali) ->
@@ -26,7 +24,8 @@ class Trans
     rotation: (item, a, c) -> if a? then @setRotation(item, a, c) else @getRotation item
     scale:    (item, s, c) -> if s? then @setScale(   item, s, c) else @getScale    item
 
-    fullTransform: (item, p) -> pos new SVG.Point(p).transform itemMatrix(item)
+    @fullTransform: (item, p) -> pos new SVG.Point(p).transform itemMatrix(item)
+    fullTransform: (item, p) -> Trans.fullTransform item, p
     fullInverse:   (item, p) -> pos new SVG.Point(p).transform itemMatrix(item).inverse()
 
     transform: (item, p) -> pos new SVG.Point(p).transform item.transform().matrix
@@ -115,6 +114,7 @@ class Trans
             @resize item, transmat, scale
             
         if 'snapbox' == group.data 'type'
+            SnapBox = require './edit/snapbox'
             SnapBox.resize group
                   
     setGroupWidth:  (group, w) -> @setGroupSize group, x:w, y:@height(group)

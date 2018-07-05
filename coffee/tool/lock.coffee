@@ -75,7 +75,7 @@ class Lock extends Tool
         switch action
             when 'load', 'restore'  then @loadLocks()
             when 'clear'            then @clear()
-            when 'moveItems'        then @moveItemsBy info.items, info.delta
+            # when 'moveItems'        then @moveItemsBy info.items, info.delta
             when 'viewbox'
                 for k,lock of @locks
                     lock.transform(scale: 1.0/@stage.zoom).transform rotation: 45

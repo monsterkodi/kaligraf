@@ -6,10 +6,11 @@
 0000000   000   000  000   000  000        0000000  000  000   000  00000000
 ###
 
-{ last, pos, log, _ } = require 'kxk'
+{ first, last, pos, log, _ } = require 'kxk'
 
 { uuid } = require '../utils'
 
+Trans      = require '../trans'
 SnapTarget = require './snaptarget'
 
 class SnapLine
@@ -24,10 +25,10 @@ class SnapLine
 
         @line.style
             'pointer-events': 'none'
+            fill:             'none'
             stroke:           @kali.tools.stroke.color
             'stroke-opacity': @kali.tools.stroke.alpha
             'stroke-width':   @kali.tools.width.width
-            fill:             'none'
             'fill-opacity':   0.0
             
         @line.data 'type', 'snapline'
@@ -35,6 +36,47 @@ class SnapLine
         @line.data 'source-point', @dot.ctrl.itemPoint()[2]
         uuid @line
     
+    @updateLineBox: (line, box, srcOrTgt) ->
+        
+        switch srcOrTgt
+            when 'source'
+                point = line.data 'source-point'
+                SnapLine.setLineSourcePoint line, SnapLine.boxPoint box, point
+            when 'target'
+                point = line.data 'target-point'
+                SnapLine.setLineTargetPoint line, SnapLine.boxPoint box, point
+        
+    @setLineSourcePoint: (line, stagePos) ->
+        
+        points = line.array?().valueOf() 
+        firstPoint = first points
+        firstPoint[0] = stagePos.x
+        firstPoint[1] = stagePos.y
+        line.plot points
+        
+    @setLineTargetPoint: (line, stagePos) ->
+        
+        points = line.array?().valueOf() 
+        lastPoint = last points
+        lastPoint[0] = stagePos.x
+        lastPoint[1] = stagePos.y
+        line.plot points
+        
+    @boxPoint: (box, point) ->
+        
+        r = first box.children()
+        tpos = (x,y) -> Trans.fullTransform r, pos x,y
+        switch point
+            when 'top left'  then tpos 0,0
+            when 'top'       then tpos r.width()/2, 0
+            when 'top right' then tpos r.width(), 0
+            when 'right'     then tpos r.width(), r.height()/2
+            when 'bot right' then tpos r.width(), r.height()
+            when 'bot'       then tpos r.width()/2, r.height()
+            when 'bot left'  then tpos 0, r.height()
+            when 'left'      then tpos 0, r.height()/2
+            when 'center'    then tpos r.width()/2, r.height()/2
+        
     onDrag: (drag, event) =>
         
         stagePos = @kali.stage.stageForEvent pos event
@@ -55,18 +97,11 @@ class SnapLine
         
         @setTargetPoint stagePos
         
-    setTargetPoint: (stagePos) ->
-        
-        points = @line.array?().valueOf() 
-        lastPoint = last points
-        lastPoint[0] = stagePos.x
-        lastPoint[1] = stagePos.y
-                
-        @line.plot points
+    setTargetPoint: (stagePos) -> SnapLine.setLineTargetPoint @line, stagePos
         
     onDragStop: (drag, event) =>
         
-        if @target
+        if @target and (@target.box != @box or @target.closest.point != @line.data 'source-point')
             @line.remove()
             @target?.del()
             @kali.stage.do "snapline#{@line.id()}"
@@ -77,9 +112,11 @@ class SnapLine
             delete @target
             @kali.stage.done()
         else
+            @clearTarget()
             @line.remove()
 
     clearTarget: ->
+        
         @target?.del()
         delete @target
             

@@ -47,7 +47,7 @@ class Show extends Tool
         ]
         
         post.on 'stage', @onStage
-        post.on 'undo',  @onUndo
+        post.on 'done',  @onDone
         
         @stage.debug.hide() if not dbg
         
@@ -90,8 +90,6 @@ class Show extends Tool
                 when 'color'
                     @grps.style stroke: contrastColor @stage.color
                     
-    onUndo: (info) => if info.action == 'done' then @refreshGroups()
-                    
     #  0000000   00000000    0000000   000   000  00000000    0000000  
     # 000        000   000  000   000  000   000  000   000  000       
     # 000  0000  0000000    000   000  000   000  00000000   0000000   
@@ -106,6 +104,8 @@ class Show extends Tool
         
         @clearGroups()
         @updateGroups()
+        
+    onDone: => @refreshGroups()
         
     #  0000000  000   000   0000000   000   000  
     # 000       000   000  000   000  000 0 000  
@@ -140,6 +140,7 @@ class Show extends Tool
     #  0000000  0000000  00000000  000   000  000   000  
     
     clearGroups: ->
+        
         if @grps
             for group in @stage.groups()
                 group.forget 'groupRect'

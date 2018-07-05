@@ -297,7 +297,7 @@ class LayerList
     onUndo: (info) => 
         
         if info.action == 'done'
-            
+            log 'layerlist done'
             @update() 
             @onResize @stage.viewSize()
     

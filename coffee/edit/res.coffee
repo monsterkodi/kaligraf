@@ -254,11 +254,12 @@ class Res
     # 000   000  000   000  000   000  000   000
     # 0000000    000   000  000   000   0000000
 
-    onDragMove: (drag, event) => 
+    onDragMove: (drag, event) => # not used?
 
+        log 'onDragMove'
         @moveBy drag.delta, event
 
-    moveBy: (delta, event) ->
+    moveBy: (delta, event) -> log 'moveBy' # not used?
         
     empty: -> not @box
     clear: ->

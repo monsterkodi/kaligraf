@@ -26,7 +26,7 @@ class Padding extends Tool
         @bindStage ['paddingBox', 'layerBox', 'paddingViewBox']
         
         post.on 'stage',  @onStage
-        post.on 'undo',   @onUndo
+        post.on 'done',   @onDone
         post.on 'aspect', @update
         
         @initTitle()
@@ -48,8 +48,7 @@ class Padding extends Tool
             action: @onShow
         ]
         
-    onUndo: (info) =>
-        if info.action == 'done' then @update()
+    onDone: => @update()
         
     setPercent: (@percent) =>
 

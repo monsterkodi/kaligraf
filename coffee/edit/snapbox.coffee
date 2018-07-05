@@ -6,7 +6,7 @@
 0000000   000   000  000   000  000        0000000     0000000   000   000
 ###
 
-{ last, first, pos, log, _ } = require 'kxk'
+{ empty, valid, last, first, pos, log, _ } = require 'kxk'
 
 { itemMatrix } = require '../utils'
 
@@ -14,10 +14,36 @@ SnapLine = require './snapline'
 
 class SnapBox
 
+    @didTransform: (items) ->
+    
+        boxes = []
+        for item in items
+            if 'snapbox' == item.data 'type'
+                boxes.push item 
+            
+        return if empty boxes
+        
+        doc = first(boxes).doc()
+        
+        lines = []
+        
+        for line in doc.node.querySelectorAll 'line'
+            if 'snapline' == line.instance.data 'type'
+                lines.push line.instance
+                
+        return if empty lines
+        
+        for line in lines
+            for box in boxes
+                if box.id() == line.data 'source-box'
+                    SnapLine.updateLineBox line, box, 'source'
+                else if box.id() == line.data 'target-box'
+                    SnapLine.updateLineBox line, box, 'target'
+    
     @onStartDragDot: (kali, box, dot, event) ->
         
         new SnapLine kali, box, dot
-    
+        
     @closestTarget: (kali, box, stagePos) ->
         
         r = first box.children()
@@ -65,7 +91,7 @@ class SnapBox
     @applyAnchor: (box) ->
         
         r = first box.children()
-        t = last box.children()
+        t = last  box.children()
         width  = r.width()
         height = r.height()
         switch t.data 'anchor'

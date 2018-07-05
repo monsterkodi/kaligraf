@@ -351,7 +351,6 @@ class Points extends Convert
     pointAt: (index) -> @points()[@index index]        
     index: (index) -> (@numPoints() + index) % @numPoints()
     pointCode: (index) -> 
-        log @item.data('type')
         if 'snaprect' == @item.data('type') then 'B'
         else if @isPoly() then 'P' 
         else @pointAt(index)[0]
@@ -406,7 +405,7 @@ class Points extends Convert
         
         if @isFake()
             
-            log 'points.applyPoints', points
+            # log 'points.applyPoints', points
             
             center = pos points[8][0], points[8][1]
             center = @trans.transform @item, center

@@ -23,6 +23,7 @@ Points    = require './edit/points'
 Shapes    = require './edit/shapes'
 Selection = require './selection'
 ItemRes   = require './edit/itemres'
+SnapBox   = require './edit/snapbox'
 Exporter  = require './exporter'
 Cursor    = require './cursor'
 
@@ -737,7 +738,8 @@ class Stage
             center = @trans.center item
             @trans.center item, center.plus delta
             
-        post.emit 'stage', 'moveItems', items:items, delta:delta
+        SnapBox.didTransform items
+        @kali.tools.lock.moveItemsBy items, delta
         @done()
 
     # 0000000    0000000    000       0000000  000      000   0000000  000   000  

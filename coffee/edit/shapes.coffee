@@ -304,6 +304,8 @@ class Shapes
         eventPos = pos event
         stagePos = @stage.stageForEvent eventPos
         
+        # log 'onDrag', @draw?
+        
         if @draw?.handleDrag event
             return
             
@@ -311,6 +313,8 @@ class Shapes
             @kali.tool(shape).onStageDrag drag, event
             return
         
+        # log 'onDrag', shape
+            
         switch shape
             
             when 'pan'   
@@ -331,6 +335,7 @@ class Shapes
                 @edit.stageDrag drag, event
                 
             else
+                # log 'onDrag @drawing', @drawing?
                 if @drawing?
                     
                     p1 = @stage.stageForEvent drag.startPos

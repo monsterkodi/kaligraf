@@ -8,6 +8,8 @@
 
 { last, pos, log, _ } = require 'kxk'
 
+{ uuid } = require '../utils'
+
 SnapTarget = require './snaptarget'
 
 class SnapLine
@@ -27,6 +29,11 @@ class SnapLine
             'stroke-width':   @kali.tools.width.width
             fill:             'none'
             'fill-opacity':   0.0
+            
+        @line.data 'type', 'snapline'
+        @line.data 'source-box',   @box.id()
+        @line.data 'source-point', @dot.ctrl.itemPoint()[2]
+        uuid @line
     
     onDrag: (drag, event) =>
         
@@ -40,9 +47,9 @@ class SnapLine
         if box
             SnapBox = require './snapbox'
             closest = SnapBox.closestTarget @kali, box, stagePos
-            if not @target or @target.closest.corner != closest.corner
+            if not @target or @target.closest.point != closest.point
                 @clearTarget()
-                @target = new SnapTarget @kali, @box, closest
+                @target = new SnapTarget @kali, box, closest
         else if event.target.type == 'svg'
             @clearTarget()
         
@@ -54,14 +61,21 @@ class SnapLine
         lastPoint = last points
         lastPoint[0] = stagePos.x
         lastPoint[1] = stagePos.y
-        
+                
         @line.plot points
         
     onDragStop: (drag, event) =>
         
         if @target
+            @line.remove()
+            @target?.del()
+            @kali.stage.do "snapline#{@line.id()}"
+            @line.addTo @box.doc()
             @setTargetPoint @target.closest.pos
-            @clearTarget()
+            @line.data 'target-box',   @target.box.id()
+            @line.data 'target-point', @target.closest.point
+            delete @target
+            @kali.stage.done()
         else
             @line.remove()
 

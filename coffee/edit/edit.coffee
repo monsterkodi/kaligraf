@@ -140,6 +140,8 @@ class Edit
         @defs['C'] = @svg.defs().circle s
         @defs['Q'] = @svg.defs().circle s
         @defs['S'] = @svg.defs().circle s
+        @defs['B'] = @svg.defs().circle 2*s
+        @defs['B'].addClass 'snapbox'
 
         @defs['from']   = @svg.defs().rect s,s        
         @defs['to']     = @svg.defs().rect s,s        

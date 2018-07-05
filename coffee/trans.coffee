@@ -208,9 +208,6 @@ class Trans
             else
                 item.width w
                 
-        # if 'snapbox' == item.data 'type'
-            # SnapBox.resize item
-    
     setHeight: (item, h) -> 
 
         switch item.type

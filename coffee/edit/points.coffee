@@ -166,9 +166,6 @@ class Points extends Convert
 
     movePoint: (index, itemPos, dots=['point']) =>
         
-        # points = @points()
-        # point  = points[index]
-
         if _.isString dots then dots = [dots]
         
         for dot in dots
@@ -184,7 +181,6 @@ class Points extends Convert
     setPoint: (index, itemPos, dot='point') =>
         
         points = @points()
-        # point  = points[index]
 
         @setDotPos index, dot, itemPos, @setPoint
 
@@ -353,8 +349,12 @@ class Points extends Convert
     isPath: -> @item.type == 'path'
     numPoints: -> @points()?.length ? 0
     pointAt: (index) -> @points()[@index index]        
-    pointCode: (index) -> if @isPoly() then 'P' else @pointAt(index)[0]
     index: (index) -> (@numPoints() + index) % @numPoints()
+    pointCode: (index) -> 
+        log @item.data('type')
+        if 'snaprect' == @item.data('type') then 'B'
+        else if @isPoly() then 'P' 
+        else @pointAt(index)[0]
 
     isClosed: -> @posAt(0).to(@posAt @numPoints()-1).length() < 0.0001
 
@@ -374,6 +374,7 @@ class Points extends Convert
                 [box.x,  box.cy, 'left'     ]
                 [box.cx, box.cy, 'center'   ]
             ]
+            
         item.array?().valueOf()
 
     @itemPos: (item, index) ->

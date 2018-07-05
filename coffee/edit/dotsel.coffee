@@ -52,9 +52,9 @@ class DotSel
             
         if dot = event.target.instance
 
-            parent = dot.ctrl.object.item.parent()
-            if parent?.type == 'g' and 'snapbox' == parent.data 'type'
-                log 'dotsel.onStart', parent.type, parent.data 'type'
+            item = dot.ctrl.object.item
+            parent = item.parent()
+            if 'snaprect' == item.data 'type'
                 @snapLine = SnapBox.onStartDragDot @kali, parent, dot, event
                 return
             

@@ -496,12 +496,12 @@ class Shapes
                 else if @edit? or @kali.shapeTool() == 'edit'
                     @editItems @stage.treeItems pickable:true
                 else
-                    log 'select all : @selection.setItems pickableItems'
+                    # log 'select all : @selection.setItems pickableItems'
                     @selection.setItems @stage.pickableItems()
                    
             when 'groups'
                 
-                log 'select groups'
+                # log 'select groups'
                 @selection.setItems @stage.pickableItems().filter (item) => item.type == 'g' 
                     
             when 'invert'

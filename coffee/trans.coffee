@@ -50,7 +50,9 @@ class Trans
             item.transform scaleY:s.y
     
     getRotation: (item) -> item.transform 'rotation'
-    setRotation: (item, a, c) -> 
+    setRotation: (item, a, c) ->
+        
+        return if 'snapline' == item.data 'type'
         if c?
             item.transform rotation:a, cx:c.x, cy:c.y
         else
@@ -161,6 +163,7 @@ class Trans
                 for child in item.children()
                     child.transform x:delta.x, y:delta.y, relative:true
             else
+                return if 'snapline' == item.data 'type'
                 scale = @scale item
                 bb = itemBox(item).transform new SVG.Matrix().scale(scale.x, scale.y).rotate(@rotation item)
                 item.transform x:c.x-bb.cx, y:c.y-bb.cy

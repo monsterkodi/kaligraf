@@ -290,18 +290,15 @@ class Edit
             @delObject object
         
     delObject: (object) ->
-        # profile 'delObject'
+
         if object in @objects
             
             for dot in object.dots()
                 @dotsel.delDot dot
                 
-            # post.emit 'edit', 'delObject', object:object
-            
             object.del()
             
             _.pull @objects, object
-        # profile ''
             
     #  0000000   0000000    0000000        000  000000000  00000000  00     00  
     # 000   000  000   000  000   000      000     000     000       000   000  
@@ -318,12 +315,8 @@ class Edit
             return object
             
         if @stage.isEditable item
-            # profile 'addItem'
             object = new Object @, item
             @objects.push object 
-            
-            # post.emit 'edit', 'addObject', object:object
-            # profile ''            
             return object
 
     onDblClick: (event) =>
@@ -446,19 +439,20 @@ class Edit
         @addInRect @rect, opt
 
     addInRect: (rect, opt) ->
-        
+
         r = normRect rect
         
         vp = @stage.viewPos()
         r = x:r.x+vp.x, y:r.y+vp.y, x2:r.x2+vp.x, y2:r.y2+vp.y
         
-        for item in @stage.editableItems()
-
-            rb = item.rbox()
-            if rectsIntersect r, rb
-                @addItem item
-                
+        editableItems = @stage.editableItems()
+        
+        itemBoxes = editableItems.map (i) -> [i, i.rbox()]
+  
+        for itemBox in itemBoxes
+            if rectsIntersect r, itemBox[1]
+                @addItem itemBox[0]
             else if not opt.join
-                @delItem item
-                
+                @delItem itemBox[0]
+            
 module.exports = Edit

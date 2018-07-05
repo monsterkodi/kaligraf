@@ -258,13 +258,18 @@ class DotSel
 
     addInRect: (r, o) ->
 
+        dotBoxes = []
         for object in @edit.objects
             for dot in object.dots()
-                if rectsIntersect r, dot.rbox()
-                    @addDot dot, keep:true
-                else if not o?.join
-                    @delDot dot
-                    
+                dotBoxes.push [dot, dot.rbox()]
+        
+        for dotBox in dotBoxes
+            if rectsIntersect r, dotBox[1]
+                @addDot dotBox[0], keep:true
+            else if not o?.join
+                @delDot dotBox[0]
+                
+        for object in @edit.objects
             for k,gradi of object.gradi ? {}
                 for k,dot of gradi.dots 
                     if rectsIntersect r, dot.rbox()

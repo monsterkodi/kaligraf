@@ -202,7 +202,8 @@ class ItemRes extends Res
         
         if not @selection.rect?
             @selection.moveBy delta, event
-            @update()        
+            # @update()        
+            super delta, event       
             
     #  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000
     # 000       000       000      000       000          000     000  000   000  0000  000

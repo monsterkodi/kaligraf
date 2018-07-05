@@ -294,12 +294,10 @@ class LayerList
             @scroll.insertBefore layerB, @scroll.children[@swapIndex layerA.index]
         [layerA.index, layerB.index] = [layerB.index, layerA.index]
                   
-    onUndo: (info) => 
+    onDone: => 
         
-        if info.action == 'done'
-            log 'layerlist done'
-            @update() 
-            @onResize @stage.viewSize()
+        @update() 
+        @onResize @stage.viewSize()
     
     onResize: (size) => 
         
@@ -323,7 +321,7 @@ class LayerList
         prefs.set 'layerlist:visible', false
         
         post.removeListener 'stage', @onStage
-        post.removeListener 'undo',  @onUndo
+        post.removeListener 'done',  @onDone
         
         @element.style.display = 'none'
         @kali.focus()
@@ -334,7 +332,7 @@ class LayerList
         prefs.set 'layerlist:visible', true
         
         post.on 'stage', @onStage
-        post.on 'undo',  @onUndo
+        post.on 'done',  @onDone
         
         @element.style.display = 'block'
         @element.focus()

@@ -343,7 +343,7 @@ class Points extends Convert
     # 000        000   000  000  000  0000     000          000  
     # 000         0000000   000  000   000     000     0000000   
     
-    @isFakeItem: (item) -> item.type in ['circle', 'ellipse', 'rect', 'text', 'image']
+    @isFakeItem: (item) -> item.type in ['circle', 'ellipse', 'rect', 'text', 'image', 'use']
     isFake: -> Points.isFakeItem @item
     isPoly: -> @item.type in ['polygon', 'polyline', 'line', 'circle', 'ellipse', 'rect', 'text', 'image']
     isPath: -> @item.type == 'path'

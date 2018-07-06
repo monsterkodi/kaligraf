@@ -50,7 +50,7 @@ class Select extends Tool
             action: => @setShapeText 'shape-text'
         ,
             name:   'text'
-            tiny:   'select-text'
+            tiny:   'text'
             choice: @shapeText
             action: => @setShapeText 'text'
         ]

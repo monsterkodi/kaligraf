@@ -149,6 +149,7 @@ class Kali
             when 'Lock'             then return post.emit 'tool', 'button', 'lock', 'lock'
             when 'Unlock'           then return post.emit 'tool', 'button', 'lock', 'unlock'
             
+            when 'Instantiate'      then return @stage.instantiate()
             when 'Group'            then return post.emit 'tool', 'group'
             when 'Ungroup'          then return post.emit 'tool', 'ungroup'
             

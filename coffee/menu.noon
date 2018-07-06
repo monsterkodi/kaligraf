@@ -72,7 +72,7 @@ Edit
         Back                alt+ctrl+down
     Select      
         All                 ctrl+a a
-        None                ctrl+d d
+        None                ctrl+shift+a ctrl+d d
         Invert              ctrl+i i
         -      
         Select Groups       alt+g
@@ -90,6 +90,7 @@ Edit
     --          
     Group                   ctrl+g g
     Ungroup                 ctrl+u u
+    Instantiate             alt+i                  
     ---          
     Cut                     ctrl+x x
     Copy                    ctrl+c c

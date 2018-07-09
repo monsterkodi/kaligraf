@@ -1,5 +1,5 @@
 #define MyAppName "kaligraf"
-#define MyAppVersion "0.44.0"
+#define MyAppVersion "0.45.0"
 #define MyAppPublisher "monsterkodi"
 #define MyAppURL "https://github.com/monsterkodi/kaligraf"
 #define MyAppExeName "kaligraf.exe"

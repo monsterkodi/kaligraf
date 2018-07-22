@@ -564,8 +564,6 @@ class Stage
         oddeven = items.filter (item) => new Points(@kali,item).oddEvenTest stagePos
         if oddeven.length
             items = oddeven
-        # else if items.length
-            # log 'missed oddeven', items.length
         items = @filterItems items, opt
         items
         

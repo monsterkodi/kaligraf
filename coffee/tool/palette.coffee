@@ -56,8 +56,8 @@ class Palette extends Tool
 
         @rgb.attr width:@width, height:@height/2, x:0, stroke: 'none',
         @sat.attr width:@width, height:@height/6, x:0, stroke: 'none', y:@height/2
-        @val.attr width:@width, height:@height/6, x:0, stroke: 'none', y:@height/2+@height/6
-        @alx.attr width:@width, height:@height/6, x:0, stroke: 'none', y:@height/2+@height/3, fill:checkersPattern(@svg, @kali.toolSize/6, '#fff'), 'fill-opacity': 1
+        @val.attr width:@width, height:@height/6, x:0, stroke: 'none', y:@height/2 + @height/6
+        @alx.attr width:@width, height:@height/6, x:0, stroke: 'none', y:@height/2 + @height/3, fill:checkersPattern(@svg, @kali.toolSize/6, '#fff'), 'fill-opacity': 1
         @alp.attr width:@width, height:@height/6, x:0, stroke: 'none', y:@height-@height/6
 
         @dot.attr width:@height/6, height:@height/2-0.5, y:0.5

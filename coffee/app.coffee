@@ -6,9 +6,10 @@
 000   000  000        000
 ###
 
-{ post, app, about, args, prefs, noon, watch, childp, colors, slash, fs, log } = require 'kxk'
+{ post, app, about, args, prefs, noon, childp, colors, slash, fs, log } = require 'kxk'
 
 pkg      = require '../package.json'
+watch    = require 'chokidar'
 electron = require 'electron'
 kaliapp  = null
 

@@ -9,7 +9,7 @@ kali
     About                   ctrl+,
     -
     Quit                    ctrl+q
-    
+
 # 00000000  000  000      00000000
 # 000       000  000      000
 # 000000    000  000      0000000
@@ -17,20 +17,20 @@ kali
 # 000       000  0000000  00000000
 
 File
-    Open Recent...          ctrl+. . 
+    Open Recent...          ctrl+. .
     Open...                 ctrl+o o
     Open Dir...             ctrl+shift+o
-    -        
+    -
     Close Tab               ctrl+w
     Close Others            ctrl+shift+w
-    -- 
+    --
     New                     ctrl+n
     Clear                   ctrl+k
     Revert                  ctrl+r r
-    ---           
+    ---
     Save                    ctrl+s
     Save As...              ctrl+shift+s
-    ----        
+    ----
     Import...               alt+ctrl+o
     Export...               alt+ctrl+s
 
@@ -44,17 +44,17 @@ Edit
     Align
         Left                1
         Right               ctrl+1
-        -              
+        -
         Center              2
         Middle              3
         Join                j
-        --              
+        --
         Top                 4
         Bottom              ctrl+4
         ---
         Space Horizontal    5
         Space Vertical      ctrl+5
-        ---- 
+        ----
         Space Radial        alt+6
         Average Radius      alt+ctrl+6
     Bezier
@@ -70,40 +70,40 @@ Edit
         Raise               ctrl+up
         Lower               ctrl+down
         Back                alt+ctrl+down
-    Select      
+    Select
         All                 ctrl+a a
         None                ctrl+shift+a ctrl+d d
         Invert              ctrl+i i
-        -      
+        -
         Select Groups       alt+g
         --
         More                ctrl+m
         Less                ctrl+shift+m
         Prev                ctrl+shift+[
         Next                ctrl+shift+]
-    Flip      
+    Flip
         Horizontal          6
         Vertical            ctrl+6
     -
     Lock                    k
     Unlock                  ;
-    --          
+    --
     Group                   ctrl+g g
     Ungroup                 ctrl+u u
-    Instantiate             alt+i                  
-    ---          
+    Instantiate             alt+i
+    ---
     Cut                     ctrl+x x
     Copy                    ctrl+c c
     Paste                   ctrl+v v
-    ----          
+    ----
     Undo                    ctrl+z z
     Redo                    ctrl+shift+z y
 
-#  0000000  000   000   0000000   000   000  
-# 000       000   000  000   000  000 0 000  
-# 0000000   000000000  000   000  000000000  
-#      000  000   000  000   000  000   000  
-# 0000000   000   000   0000000   00     00  
+#  0000000  000   000   0000000   000   000
+# 000       000   000  000   000  000 0 000
+# 0000000   000000000  000   000  000000000
+#      000  000   000  000   000  000   000
+# 0000000   000   000   0000000   00     00
 
 Show
     Padding             p
@@ -117,7 +117,7 @@ Show
     ---
     Wire                w
     Unwire              shift+w
-    
+
 # 000000000   0000000    0000000   000
 #    000     000   000  000   000  000
 #    000     000   000  000   000  000
@@ -168,16 +168,15 @@ Window
     Screenshot              f3
     Reload                  alt+ctrl+l
     DevTools                alt+ctrl+i
-    
-# 0000000   0000000    0000000   00     00  
-#    000   000   000  000   000  000   000  
-#   000    000   000  000   000  000000000  
-#  000     000   000  000   000  000 0 000  
-# 0000000   0000000    0000000   000   000  
+
+# 0000000   0000000    0000000   00     00
+#    000   000   000  000   000  000   000
+#   000    000   000  000   000  000000000
+#  000     000   000  000   000  000 0 000
+# 0000000   0000000    0000000   000   000
 
 Zoom
     Center Selection    ctrl+e e
     Reset               ctrl+0
     Out                 ctrl+-
     In                  ctrl+=
-    

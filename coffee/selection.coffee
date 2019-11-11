@@ -6,7 +6,7 @@
 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000
 ###
 
-{ post, prefs, setStyle, last, elem, pos, str, log, _ } = require 'kxk'
+{ post, setStyle, prefs, elem, kpos, _ } = require 'kxk'
 
 {   contrastColor, moveBox, scaleBox, boxOffset, bboxForItems,
     normRect, rectsIntersect, rectOffset, itemBox } = require './utils'
@@ -302,7 +302,7 @@ class Selection
         if event.button != 0
             return 'skip'
         
-        eventPos = pos event
+        eventPos = kpos event
         if item = @stage.itemAtPos eventPos
             if not @contains item
                 @addItem item, join:event.shiftKey

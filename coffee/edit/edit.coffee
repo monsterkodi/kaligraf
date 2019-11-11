@@ -6,11 +6,10 @@
 00000000  0000000    000     000
 ###
 
-{ post, elem, valid, empty, last, pos, log, _ } = require 'kxk'
+{ post, valid, empty, elem, last, kpos, drag, def, sh, _ } = require 'kxk'
 
 { rectOffset, normRect, rectsIntersect } = require '../utils'
 
-profile = require '../profile'
 Object  = require './object'
 DotSel  = require './dotsel'
 DotRes  = require './dotres'
@@ -335,7 +334,7 @@ class Edit
     
     stageStart: (drag, event) ->
         
-        eventPos = pos event
+        eventPos = kpos eventevent
                 
         item = @stage.leafItemAtPos eventPos
         
@@ -355,7 +354,7 @@ class Edit
     
     stageDrag: (drag, event) ->
         
-        eventPos = pos event
+        eventPos = kpos event
         
         if @rect?
             @moveRect eventPos, join:event.shiftKey
@@ -374,13 +373,13 @@ class Edit
     stageStop: (drag, event) ->
         
         if @rect? 
-            @endRect pos event
+            @endRect kpos event
         else
-            @dotsel.endRect pos event
+            @dotsel.endRect kpos event
             
             if drag.startPos == drag.lastPos
                 
-                eventPos = pos event
+                eventPos = kpos event
                 
                 if item = @stage.leafItemAtPos(eventPos)
                     object = @objectForItem item

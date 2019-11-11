@@ -6,7 +6,7 @@
    000     00000000  000   000     000   
 ###
 
-{ keyinfo, stopEvent, post, elem, pos, log, _ } = require 'kxk'
+{ post, stopEvent, keyinfo, elem } = require 'kxk'
 
 { itemMatrix } = require '../utils'
 

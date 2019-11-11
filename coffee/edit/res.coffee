@@ -6,7 +6,7 @@
 000   000  00000000  0000000   
 ###
 
-{ elem, post, drag, first, last, pos, log, _ } = require 'kxk'
+{ post, elem, drag, kpos } = require 'kxk'
 
 { opposide, moveBox, zoomBox, scaleBox, boxCenter, boxOffset, boxPos, boxRelPos } = require '../utils'
 
@@ -236,7 +236,7 @@ class Res
                         
     onRotKnobMove: (drag, event) =>
             
-        @setRotationCenter @stage.stageForEvent(pos event), true        
+        @setRotationCenter @stage.stageForEvent(kpos event), true        
 
     didTransform: (transmat) -> 
         

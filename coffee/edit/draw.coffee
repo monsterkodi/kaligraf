@@ -6,7 +6,7 @@
 0000000    000   000  000   000  00     00
 ###
 
-{ post, first, last, pos, log, _ } = require 'kxk'
+{ kpos } = require 'kxk'
 
 Edit = require './edit'
 
@@ -53,7 +53,7 @@ class Draw
 
         if not @drawing? then return false
 
-        stagePos = @stage.stageForEvent pos event
+        stagePos = @stage.stageForEvent kpos event
         
         switch @shape
             when 'pie', 'arc'            then return false
@@ -73,7 +73,7 @@ class Draw
              
         if @drawing? and @picking
 
-            @movePoint @stage.stageForEvent(pos event), 'move'
+            @movePoint @stage.stageForEvent(kpos event), 'move'
             
         true
 
@@ -87,7 +87,7 @@ class Draw
         
         if not @drawing? then return false
         
-        stagePos = @stage.stageForEvent pos event
+        stagePos = @stage.stageForEvent kpos event
         
         switch @shape
             
@@ -197,7 +197,7 @@ class Draw
     
     addPoint: (p) ->
 
-        stagePos = @stage.stageForEvent pos event 
+        stagePos = @stage.stageForEvent kpos event 
         object = @edit.objectForItem @drawing
         code = switch @shape
             when 'bezier_smooth' then 'S'

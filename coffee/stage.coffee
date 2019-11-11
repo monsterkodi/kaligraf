@@ -6,7 +6,7 @@
 0000000      000     000   000   0000000   00000000
 ###
 
-{ elem, post, prefs, stopEvent, first, last, empty, clamp, pos, slash, fs, log, _ } = require 'kxk'
+{ post, prefs, empty, clamp, first, slash, elem, kpos, fs, _ } = require 'kxk'
 
 { contrastColor, normRect, bboxForItems, itemIDs, insideBox, itemBox, boxPos, uuid, 
   growBox, rboxForItems, boxOffset, boxCenter, itemGradient, itemMatrix } = require './utils'
@@ -748,7 +748,7 @@ class Stage
     
     onDblClick: (event) =>
 
-        if item = @leafItemAtPos pos event
+        if item = @leafItemAtPos kpos event
             switch item.type 
                 when 'text' then @shapes.editTextItem item
                 when 'polygon', 'polyline', 'line', 'path'
@@ -958,9 +958,9 @@ class Stage
             filters:        [ {name: 'SVG', extensions: ['svg']} ]
             properties:     ['openFile']
             
-        dialog.showOpenDialog opts, (files) => 
-            if file = first files
-                @load file 
+        dialog.showOpenDialog(opts).then (result) => 
+            if not result.cancelled and result.filePath
+                @load result.filePath
 
     import: ->
         
@@ -969,15 +969,15 @@ class Stage
             filters:        [ {name: 'SVG', extensions: ['svg']} ]
             properties:     ['openFile', 'multiSelections']
             
-        dialog.showOpenDialog opts, (files) => 
-            if not empty files
+        dialog.showOpenDialog(opts).then (result) => 
+            if not result.cancelled and result.filePath
                 @do()
-                for file in files
-                    svg = fs.readFileSync file, encoding: 'utf8'
-                    @addSVG svg, 
-                        color:  false
-                        id:     slash.base file
-                        parent: @activeLayer()
+                # for file in files
+                svg = fs.readFileSync result.filePath, encoding: 'utf8'
+                @addSVG svg, 
+                    color:  false
+                    id:     slash.base result.filePath
+                    parent: @activeLayer()
                 @done()
                 
     #  0000000   0000000   000   000  00000000
@@ -1009,9 +1009,9 @@ class Stage
             defaultPath:    @currentFile
             filters:        [ {name: 'SVG', extensions: ['svg']} ]
             
-        dialog.showSaveDialog opts, (file) => 
-            if file?
-                @save file 
+        dialog.showSaveDialog(opts).then (result) => 
+            if not result.cancelled and result.filePath
+                @save result.filePath
                 @pushRecent @currentFile
 
     pushRecent: (file) ->
@@ -1028,9 +1028,9 @@ class Stage
             defaultPath:    @currentFile
             filters:        [ {name: 'SVG,Image', extensions: ['svg', 'png', 'webp', 'jpg']} ]
         
-        dialog.showSaveDialog opts, (file) => 
-            if file?
-                Exporter.export @svg, file, padding:@kali.tool('padding').percent
+        dialog.showSaveDialog(opts).then (result) =>
+            if not result.cancelled and result.filePath
+                Exporter.export @svg, result.filePath, padding:@kali.tool('padding').percent
                 
     #  0000000   0000000   00000000   000   000
     # 000       000   000  000   000   000 000
@@ -1063,10 +1063,10 @@ class Stage
         @do()
         info = @addSVG clipboard.readText(), color:false
         viewbox = info.viewbox
-        mousePos = pos screen.getCursorScreenPoint()
+        mousePos = kpos screen.getCursorScreenPoint()
         itemBox = bboxForItems info.items
         boxCenter = boxPos itemBox, 'center'
-        mousePos.sub pos window.screenX, window.screenY
+        mousePos.sub kpos window.screenX, window.screenY
         stagePos = @stageForView mousePos
         delta = stagePos.minus boxCenter 
         @moveItemsBy info.items, delta
@@ -1120,16 +1120,16 @@ class Stage
     #    000     000  000       000   000
     #     0      000  00000000  00     00
 
-    viewPos:  -> r = @element.getBoundingClientRect(); pos r.left, r.top
-    viewSize: -> r = @element.getBoundingClientRect(); pos r.width, r.height
+    viewPos:  -> r = @element.getBoundingClientRect(); kpos r.left, r.top
+    viewSize: -> r = @element.getBoundingClientRect(); kpos r.width, r.height
 
     offsetRect: (r) ->
         
         vp = @viewPos()
         x:r.x-vp.x, x2:r.x2-vp.x, y:r.y-vp.y, y2:r.y2-vp.y
     
-    stageForView:  (viewPos)  -> pos(viewPos).scale(1.0/@zoom).plus @panPos()
-    viewForStage:  (stagePos) -> pos(stagePos).sub(@panPos()).scale @zoom
+    stageForView:  (viewPos)  -> kpos(viewPos).scale(1.0/@zoom).plus @panPos()
+    viewForStage:  (stagePos) -> kpos(stagePos).sub(@panPos()).scale @zoom
     viewForEvent:  (eventPos) -> eventPos.minus @viewPos()
     stageForEvent: (eventPos) -> @stageForView @viewForEvent eventPos
 
@@ -1139,7 +1139,7 @@ class Stage
     # 000       000       000  0000     000     000       000   000
     #  0000000  00000000  000   000     000     00000000  000   000
 
-    viewCenter:  -> pos(0,0).mid @viewSize()
+    viewCenter:  -> kpos(0,0).mid @viewSize()
     stageCenter: -> boxCenter @svg.viewbox()
     stageOffset: -> boxOffset @svg.viewbox()
     itemsCenter: -> @stageForEvent boxCenter rboxForItems @items()
@@ -1154,7 +1154,7 @@ class Stage
 
     onWheel: (event) =>
 
-        eventPos = pos event
+        eventPos = kpos event
         viewPos  = @viewForEvent eventPos
         stagePos = @stageForView viewPos
         @zoomAtPos viewPos, stagePos, (1.0 - event.deltaY/5000.0)
@@ -1175,9 +1175,9 @@ class Stage
     # 000        000   000  000  0000
     # 000        000   000  000   000
 
-    panPos: -> vb = @svg.viewbox(); pos vb.x, vb.y
+    panPos: -> vb = @svg.viewbox(); kpos vb.x, vb.y
 
-    panBy: (delta) -> @moveViewBox pos(delta).scale -1.0/@zoom
+    panBy: (delta) -> @moveViewBox kpos(delta).scale -1.0/@zoom
 
     # 000   000  000  00000000  000   000  0000000     0000000   000   000
     # 000   000  000  000       000 0 000  000   000  000   000   000 000
@@ -1251,7 +1251,7 @@ class Stage
                     return 'unhandled' if mod.includes 'ctrl'
                     
                     if @selectedItems().length
-                        p = pos 0,0
+                        p = kpos 0,0
                         s = 1
                         if mod.includes 'shift' then s*=5
                         if mod.includes 'ctrl'  then s*=10

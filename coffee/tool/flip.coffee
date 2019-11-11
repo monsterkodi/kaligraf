@@ -6,7 +6,7 @@
 000       0000000  000  000        
 ###
 
-{ post, empty, first, pos, log, $, _ } = require 'kxk'
+{ empty, first, kpos } = require 'kxk'
 
 { itemIDs, boxPos, boxCenter, itemMatrix } = require '../utils'
 
@@ -52,8 +52,8 @@ class Flip extends Tool
     flipGroup: (group, orientation) ->
         
         switch orientation
-            when 'horizontal' then scale = pos -1, +1
-            when 'vertical'   then scale = pos +1, -1
+            when 'horizontal' then scale = kpos -1, +1
+            when 'vertical'   then scale = kpos +1, -1
 
         gb = first(group.children()).bbox().transform first(group.children()).transform().matrix
         for item in group.children()
@@ -63,7 +63,7 @@ class Flip extends Tool
             ib = item.bbox().transform item.transform().matrix
             oldCenter = boxCenter ib
             newCenter = new SVG.Point oldCenter
-            newCenter = pos newCenter.transform new SVG.Matrix().around gb.cx, gb.cy, new SVG.Matrix().scale scale.x, scale.y
+            newCenter = kpos newCenter.transform new SVG.Matrix().around gb.cx, gb.cy, new SVG.Matrix().scale scale.x, scale.y
             delta = oldCenter.to newCenter
             item.transform x:item.transform().x+delta.x, y:item.transform().y+delta.y
             

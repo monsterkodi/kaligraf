@@ -6,7 +6,7 @@
 0000000     0000000      000     0000000   00000000  0000000
 ###
 
-{ empty, drag, post, first, pos, log, _ } = require 'kxk'
+{ post, empty, first, drag, kpos, _ } = require 'kxk'
 
 { rectsIntersect, normRect, bboxForItems, itemIDs, boxCenter } = require '../utils'
 
@@ -201,7 +201,7 @@ class DotSel
         
     center: ->
         
-        center = pos 0,0
+        center = kpos 0,0
         unique = @uniqueDotPositions()
         for dotPos in unique
             center.add dotPos
@@ -211,7 +211,7 @@ class DotSel
         
         dotPositions = []
         for dot in @dots
-            dotPos = pos dot.cx(), dot.cy()
+            dotPos = kpos dot.cx(), dot.cy()
             use = true
             for usedPos in dotPositions
                 if dotPos.isClose usedPos, 0.01
@@ -508,20 +508,20 @@ class DotSel
 
         @stage.do "space-radial"
         
-        center = pos 0,0
+        center = kpos 0,0
         centerDots = []
         for i in [0...@dots.length]
             if @dots[i].ctrl.index() == 0 and @dots[i].ctrl.object.isClosed()
                 log 'closed'
                 continue 
-            dotCenter = pos @dots[i].cx(), @dots[i].cy()
+            dotCenter = kpos @dots[i].cx(), @dots[i].cy()
             center.add dotCenter
             centerDots.push center:dotCenter, dot:@dots[i]
             
         center.scale 1/centerDots.length
                 
         for centerDot in centerDots
-            angle = center.to(centerDot.center).rotation(pos 1,0)
+            angle = center.to(centerDot.center).rotation(kpos 1,0)
             angle += 360 if angle < 0
             centerDot.angle = angle
 
@@ -532,7 +532,7 @@ class DotSel
         
         for centerDot in centerDots
             length = center.to(centerDot.center).length()
-            direction = pos(1,0).rotate angle
+            direction = kpos(1,0).rotate angle
             newPos = center.plus direction.scale length
             centerDot.dot.cx newPos.x
             centerDot.dot.cy newPos.y
@@ -557,11 +557,11 @@ class DotSel
         
         @stage.do "average-radius"
         
-        center = pos 0,0
+        center = kpos 0,0
         dotCenters = []
         for i in [0...@dots.length]
         
-            dotCenter = pos @dots[i].cx(), @dots[i].cy()
+            dotCenter = kpos @dots[i].cx(), @dots[i].cy()
             center.add dotCenter
             dotCenters.push dotCenter
             

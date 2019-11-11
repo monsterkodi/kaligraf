@@ -6,7 +6,7 @@
  0000000   000   000  000   000  0000000    000  00000000  000   000     000     0000000  000  0000000      000   
 ###
 
-{   stopEvent, setStyle, drag, prefs, keyinfo, elem, empty, clamp, post, pos, log, $, _ } = require 'kxk'
+{ post, stopEvent, keyinfo, prefs, empty, clamp, elem, kpos, drag, $, _ } = require 'kxk'
 
 {   gradientStops, gradientState, gradientType,
     ensureInSize, winTitle, boundingBox, boxPos, highlightColor, invertColor } = require '../utils'
@@ -24,7 +24,7 @@ class GradientList
         @stage = @kali.stage
         
         @element = elem 'div', class: 'gradientList'
-        @setPos pos prefs.get 'gradientlist:pos', pos 64, 34
+        @setPos kpos prefs.get 'gradientlist:pos', kpos 64, 34
         @element.tabIndex = 100
         
         @title = winTitle 
@@ -63,7 +63,7 @@ class GradientList
         @titleDrag = new drag
             target: @title
             onMove: (drag) => 
-                elemPos = pos parseInt(@element.style.left), parseInt(@element.style.top) 
+                elemPos = kpos parseInt(@element.style.left), parseInt(@element.style.top) 
                 newPos  = elemPos.plus drag.delta
                 prefs.set 'gradientlist:pos', newPos
                 @setPos newPos

@@ -6,7 +6,7 @@
  0000000   0000000     0000000   00000000   0000000     000
 ###
 
-{ post, empty, last, pos, log, _ } = require 'kxk'
+{ empty, last, kpos, _ } = require 'kxk'
 
 { itemGradient, itemMatrix } = require '../utils'
 
@@ -365,7 +365,7 @@ class Object extends Points
     dotPos: (index, dot='point') ->
 
         if d = @ctrlAt(index)?.dots[dot]
-            pos d.cx(), d.cy()
+            kpos d.cx(), d.cy()
         else
             log "no dot #{dot} at index #{index}?"
 

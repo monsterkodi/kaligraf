@@ -6,7 +6,7 @@
 0000000   000   000  000   000  000        
 ###
 
-{ elem, prefs, empty, first, valid, clamp, post, pos, log, _ } = require 'kxk'
+{ post, prefs, clamp, valid, first, empty, elem, kpos, os, _ } = require 'kxk'
 
 { itemIDs, growBox, boxOffset, bboxForItems, scaleBox, moveBox, setBox, itemBox } = require '../utils'
 
@@ -78,7 +78,7 @@ class Snap extends Tool
     clear: -> 
         
         @svg.clear()
-        @snapKeep = pos 0,0
+        @snapKeep = kpos 0,0
         @winner = x:null, y:null
         
     onStage: (action, box) =>
@@ -97,7 +97,7 @@ class Snap extends Tool
 
         @svg.clear()
         
-        delta = pos oldDelta
+        delta = kpos oldDelta
         
         if @snapGrid or @snapCenter or @snapBorder or @snapGaps
                                     
@@ -132,7 +132,7 @@ class Snap extends Tool
                     @winner[xy] = null
                     
         else
-            @snapKeep = pos 0,0
+            @snapKeep = kpos 0,0
             @winner = x:null, y:null
             
         delta
@@ -369,7 +369,7 @@ class Snap extends Tool
         combis.x = combis.x.filter (c) -> c[1] == 'x'
         combis.y = combis.y.filter (c) -> c[1] == 'y'
         
-        dots.map (dot) => pos dot.cx()+@snapKeep.x, dot.cy()+@snapKeep.y
+        dots.map (dot) => kpos dot.cx()+@snapKeep.x, dot.cy()+@snapKeep.y
         
     boxCombis: (box, side, combis) ->
         
@@ -437,10 +437,10 @@ class Snap extends Tool
                     l.addClass 'snap-gap'
                     r = @svg.rect size, size
                     r.addClass 'snap-gap'
-                    @trans.center r, pos x1, y1
+                    @trans.center r, kpos x1, y1
                     r = @svg.rect size, size
                     r.addClass 'snap-gap'
-                    @trans.center r, pos x2, y2
+                    @trans.center r, kpos x2, y2
             else
                 
                 val = close.val

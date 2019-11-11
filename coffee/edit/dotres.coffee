@@ -6,7 +6,7 @@
 0000000     0000000      000     000   000  00000000  0000000 
 ###
 
-{ elem, post, drag, first, last, pos, log, _ } = require 'kxk'
+{ post, drag, kpos } = require 'kxk'
 
 { opposide, scaleBox, boxPos, boxRelPos } = require '../utils'
 
@@ -69,7 +69,7 @@ class DotRes extends Res
         transmat = new SVG.Matrix().around @rotationCenter.x, @rotationCenter.y, new SVG.Matrix().rotate angle
 
         for {dot, center} in @dotInfo
-            newCenter = pos new SVG.Point(center).transform transmat
+            newCenter = kpos new SVG.Point(center).transform transmat
             dot.cx newCenter.x
             dot.cy newCenter.y
             

@@ -6,7 +6,7 @@
 000   000  0000000  000        000   000  000   000  
 ###
 
-{ prefs, clamp, empty, first, post, pos, log, _ } = require 'kxk'
+{ post, empty, clamp, _ } = require 'kxk'
 
 { itemIDs } = require '../utils'
 

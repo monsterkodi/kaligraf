@@ -6,7 +6,7 @@
    000      0000000    0000000   0000000  0000000 
 ###
 
-{ elem, stopEvent, post, prefs, first, last, empty, fs, pos, log, _ } = require 'kxk'
+{ post, childIndex, prefs, store, first, empty, last, kpos, _ } = require 'kxk'
 
 Exporter = require '../exporter'
 Tool     = require './tool'
@@ -277,7 +277,7 @@ class Tools extends Tool
                 child = parent.getTool name 
                 continue if not child
                 index = names.indexOf name
-                child.setPos parent.pos().plus pos @height*index, 0
+                child.setPos parent.pos().plus kpos @height*index, 0
                 childIndex = parent.children.indexOf(child)
                 parent.children.splice childIndex, 1
                 parent.children.splice index, 0, child

@@ -6,7 +6,7 @@
    000      0000000    0000000   0000000
 ###
 
-{ post, fileExists, stopEvent, elem, empty, first, last, fs, pos, log, $, _ } = require 'kxk'
+{ post, stopEvent, first, elem, last, kpos, $, _ } = require 'kxk'
 
 { boundingBox } = require '../utils'
 
@@ -196,7 +196,7 @@ class Tool extends Spin
             
         @setPos prt.pos()
         for c in @children
-            c.setPos @pos().plus pos @height*(1+@children.indexOf c), 0
+            c.setPos @pos().plus kpos @height*(1+@children.indexOf c), 0
         
         delete prt.children
         @parent = top
@@ -260,7 +260,7 @@ class Tool extends Spin
         @active = a
         @element.classList.toggle 'active', @active 
         
-    pos:        -> pos parseInt(@element.style.left), parseInt(@element.style.top)
+    pos:        -> kpos parseInt(@element.style.left), parseInt(@element.style.top)
     setPos: (p) -> @element.style.left = "#{p.x}px"; @element.style.top = "#{p.y}px"
         
     # 000000000   0000000    0000000    0000000   000      00000000  

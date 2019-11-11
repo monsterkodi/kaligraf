@@ -6,7 +6,7 @@
 000         0000000   000  000   000     000     0000000   
 ###
 
-{ post, empty, first, valid, last, pos, log, _ } = require 'kxk'
+{ post, valid, empty, first, kpos, _ } = require 'kxk'
 
 { linesIntersect, itemMatrix } = require '../utils'
 
@@ -381,12 +381,12 @@ class Points extends Convert
         points = @itemPoints item
         point = points[index]
         itemPos = switch point[0]
-            when 'C'      then pos point[5], point[6]
-            when 'S', 'Q' then pos point[3], point[4]
-            when 'M', 'L' then pos point[1], point[2]
-            else               pos point[0], point[1]
+            when 'C'      then kpos point[5], point[6]
+            when 'S', 'Q' then kpos point[3], point[4]
+            when 'M', 'L' then kpos point[1], point[2]
+            else               kpos point[0], point[1]
             
-        pos new SVG.Point(itemPos).transform itemMatrix item
+        kpos new SVG.Point(itemPos).transform itemMatrix item
         
     points: -> 
         
@@ -407,15 +407,15 @@ class Points extends Convert
             
             # log 'points.applyPoints', points
             
-            center = pos points[8][0], points[8][1]
+            center = kpos points[8][0], points[8][1]
             center = @trans.transform @item, center
             @trans.setCenter @item, center
             switch @item.type
                 when 'circle'
-                    top   = pos points[1][0], points[1][1]
-                    bot   = pos points[5][0], points[5][1]
-                    left  = pos points[7][0], points[7][1]
-                    right = pos points[3][0], points[3][1]
+                    top   = kpos points[1][0], points[1][1]
+                    bot   = kpos points[5][0], points[5][1]
+                    left  = kpos points[7][0], points[7][1]
+                    right = kpos points[3][0], points[3][1]
                     radius = (top.to(bot).length() + left.to(right).length())/4
                     @item.attr r: radius
             @updateFakePoints()
@@ -435,8 +435,8 @@ class Points extends Convert
 
         switch dot
             when 'point' then @posForPoint point
-            when 'ctrl1', 'ctrls', 'ctrlq' then pos point[1], point[2]
-            when 'ctrl2'                   then pos point[3], point[4]
+            when 'ctrl1', 'ctrls', 'ctrlq' then kpos point[1], point[2]
+            when 'ctrl2'                   then kpos point[3], point[4]
             when 'ctrlb'
                 point = @pointAt index
                 switch point[0]
@@ -452,15 +452,15 @@ class Points extends Convert
 
             else
                 log "Points.posAt -- unhandled dot? #{dot}"
-                pos point[1], point[2]
+                kpos point[1], point[2]
 
     posForPoint: (point) ->
                 
         switch point[0]
-            when 'C'               then pos point[5], point[6]
-            when 'S', 'Q'          then pos point[3], point[4]
-            when 'M', 'L'          then pos point[1], point[2]
-            else                        pos point[0], point[1]
+            when 'C'               then kpos point[5], point[6]
+            when 'S', 'Q'          then kpos point[3], point[4]
+            when 'M', 'L'          then kpos point[1], point[2]
+            else                        kpos point[0], point[1]
 
     indexPositions: ->
         
@@ -480,7 +480,7 @@ class Points extends Convert
         positions = @approxPositions 3
         numPoints = positions.length
         return false if not numPoints
-        outsidePos = pos stagePos.x+999999, stagePos.y
+        outsidePos = kpos stagePos.x+999999,stagePos.y
         count = 0
                 
         for index in [0...numPoints-1]

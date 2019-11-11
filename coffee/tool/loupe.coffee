@@ -6,7 +6,7 @@
 0000000   0000000    0000000   000        00000000  
 ###
 
-{ pos, log, _ } = require 'kxk'
+{ drag, kpos } = require 'kxk'
 
 Tool = require './tool' 
  
@@ -54,8 +54,8 @@ class Loupe extends Tool
 
     loupe: (p1, p2) ->
 
-        viewPos1 = @viewForEvent pos p1
-        viewPos2 = @viewForEvent pos p2
+        viewPos1 = @viewForEvent kpos p1
+        viewPos2 = @viewForEvent kpos p2
         viewPos  = viewPos1.mid viewPos2
 
         sc = @stageForView viewPos

@@ -6,7 +6,7 @@
 000   000  000   000  0000000  000  
 ###
 
-{ post, win, title, keyinfo, stopEvent, empty, first, prefs, popup, elem, sw, sh, pos, log, $, _ } = require 'kxk'
+{ post, stopEvent, keyinfo, elem, kpos, args, win, sw, sh, $ } = require 'kxk'
 
 w = new win 
     dir:    __dirname
@@ -62,7 +62,7 @@ class Kali
         
     onResize: => 
 
-        post.emit 'resize', pos sw(), sh()
+        post.emit 'resize', kpos sw(), sh()
                             
     closeStopPalette: ->
         

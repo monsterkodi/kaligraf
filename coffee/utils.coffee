@@ -6,7 +6,7 @@
  0000000      000     000  0000000  0000000     
 ###
 
-{ stopEvent, empty, last, clamp, elem, pos, log, _ } = require 'kxk'
+{ stopEvent, filter, empty, kpos, last, elem, _ } = require 'kxk'
 
 uuid   = require 'uuid/v4'
 chroma = require 'chroma-js'
@@ -80,7 +80,7 @@ module.exports =
             bb ?= b
             bb = bb.merge b
 
-        module.exports.moveBox bb, pos -offset.x, -offset.y
+        module.exports.moveBox bb, kpos -offset.x, -offset.y
 
     bboxForItems: (items, offset={x:0,y:0}) ->
         
@@ -96,7 +96,7 @@ module.exports =
             bb = bb.merge b
 
         if bb?
-            module.exports.moveBox bb, pos -offset.x, -offset.y
+            module.exports.moveBox bb, kpos -offset.x, -offset.y
         else
             new SVG.BBox()
 
@@ -113,15 +113,15 @@ module.exports =
         else
             item.bbox()            
             
-    boxCenter: (box) -> pos box.x + box.width/2, box.y + box.height/2
-    boxOffset: (box) -> pos box.x, box.y
-    boxSize:   (box) -> pos box.width, box.height
+    boxCenter: (box) -> kpos box.x + box.width/2, box.y + box.height/2
+    boxOffset: (box) -> kpos box.x, box.y
+    boxSize:   (box) -> kpos box.width, box.height
     
-    boxRelPos: (box, rel) -> pos box.x + rel.x * box.width, box.y + rel.y * box.height
+    boxRelPos: (box, rel) -> kpos box.x + rel.x * box.width, box.y + rel.y * box.height
     
     boxPos: (box, name='top left') ->
         
-        return pos box.x, box.y if name == 'top left'
+        return kpos box.x, box.y if name == 'top left'
         
         p = module.exports.boxCenter box
         if name.includes 'left'  then p.x = box.x
@@ -231,11 +231,11 @@ module.exports =
     # 000   000  000       000          000     
     # 000   000  00000000   0000000     000     
     
-    rectSize:   (r) -> pos r.x2 - r.x, r.y2 - r.y
+    rectSize:   (r) -> kpos r.x2 - r.x, r.y2 - r.y
     rectWidth:  (r) -> r.x2 - r.x
     rectHeight: (r) -> r.y2 - r.y
-    rectCenter: (r) -> pos(r.x,r.y).mid pos(r.x2,r.y2)
-    rectOffset: (r) -> pos(r.x,r.y)
+    rectCenter: (r) -> kpos(r.x,r.y).mid kpos(r.x2,r.y2)
+    rectOffset: (r) -> kpos(r.x,r.y)
         
     # 000  000   000  000000000  00000000  00000000    0000000  00000000   0000000  000000000  
     # 000  0000  000     000     000       000   000  000       000       000          000     
@@ -417,7 +417,7 @@ module.exports =
                 if state.from?
                     gradient.attr cx:state.to.x, cy:state.to.y
                 if state.radius?
-                    gradient.attr r:pos(state.from).dist pos(state.radius)
+                    gradient.attr r:kpos(state.from).dist kpos(state.radius)
                     
             when 'linear'
                 for attr in ['x1', 'y1', 'x2', 'y2']

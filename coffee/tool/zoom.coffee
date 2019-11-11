@@ -6,7 +6,7 @@
 0000000   0000000    0000000   000   000  
 ###
 
-{ clamp, elem, empty, post, pos, error, log, _ } = require 'kxk'
+{ post, empty, clamp, kpos, _ } = require 'kxk'
 
 { rboxForItems, bboxForItems, boxCenter, moveBox, zoomBox, scaleBox } = require '../utils'
 
@@ -197,6 +197,6 @@ class Zoom extends Tool
 
         vc = @viewCenter()
         vc.x = 560.5 if @viewSize().x > 1120
-        vc.minus(pos(@kali.toolSize+0.5,@kali.toolSize/2+0.5)).scale(1/zoom)
+        vc.minus(kpos(@kali.toolSize+0.5,@kali.toolSize/2+0.5)).scale(1/zoom)
         
 module.exports = Zoom

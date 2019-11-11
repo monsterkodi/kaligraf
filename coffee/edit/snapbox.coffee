@@ -6,7 +6,7 @@
 0000000   000   000  000   000  000        0000000     0000000   000   000
 ###
 
-{ empty, valid, last, first, pos, log, _ } = require 'kxk'
+{ empty, first, kpos, last } = require 'kxk'
 
 { itemMatrix } = require '../utils'
 
@@ -48,23 +48,23 @@ class SnapBox
         
         r = first box.children()
         p = [
-            point:'top left',   pos:pos 0,0
+            point:'top left',   pos:kpos 0,0
         ,
-            point:'top',        pos:pos r.width()/2, 0
+            point:'top',        pos:kpos r.width()/2, 0
         ,
-            point:'top right',  pos:pos r.width(), 0
+            point:'top right',  pos:kpos r.width(), 0
         ,
-            point:'right',      pos:pos r.width(), r.height()/2
+            point:'right',      pos:kpos r.width(), r.height()/2
         ,
-            point:'bot right',  pos:pos r.width(), r.height()
+            point:'bot right',  pos:kpos r.width(), r.height()
         ,
-            point:'bot',        pos:pos r.width()/2, r.height()
+            point:'bot',        pos:kpos r.width()/2, r.height()
         ,
-            point:'bot left',   pos:pos 0, r.height()
+            point:'bot left',   pos:kpos 0, r.height()
         ,
-            point:'left',       pos:pos 0, r.height()/2
+            point:'left',       pos:kpos 0, r.height()/2
         ,
-            point:'center',     pos:pos r.width()/2, r.height()/2
+            point:'center',     pos:kpos r.width()/2, r.height()/2
         ]
         p = p.map (a) -> a.pos = kali.trans.fullTransform(r, a.pos); a
         p.sort (a,b) -> a.pos.distSquare(stagePos) - b.pos.distSquare(stagePos)

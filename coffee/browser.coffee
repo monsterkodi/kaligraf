@@ -6,7 +6,7 @@
 0000000    000   000   0000000   00     00  0000000   00000000  000   000
 ###
 
-{ post, stopEvent, setStyle, keyinfo, drag, elem, first, prefs, childp, fs, os, slash, empty, clamp, pos, log, $, _ } = require 'kxk'
+{ post, stopEvent, setStyle, childp, prefs, empty, slash, clamp, elem, kpos, drag, args, fade, fs, kerror, $, _ } = require 'kxk'
 
 { winTitle, boundingBox } = require './utils'
 
@@ -22,10 +22,9 @@ class Browser
         @element = elem 'div', class: 'browser fill'
         @element.tabIndex = 100
         @element.addEventListener 'wheel',   @onWheel
-        # @element.addEventListener 'keydown', @onKeyDown
         
         @scale  = prefs.get 'browser:scale'
-        @offset = pos 0,0
+        @offset = kpos 0 0
                         
         @scroll = elem class: 'browserScroll'
         @element.appendChild @scroll
@@ -75,9 +74,11 @@ class Browser
         opts =         
             title:      'Open'
             properties: ['openDirectory']
-        
-        dialog.showOpenDialog opts, (dirs) => 
-            while dir = dirs.shift()
+                    
+        dialog.showOpenDialog(opts).then (result) =>
+
+            if not result.cancelled and result.filePath
+                dir = result.filePath
                 if slash.dirExists dir
                     @kali.title.tabs.addTab file:dir, dir:true
                     @browseDir dir
@@ -182,8 +183,8 @@ class Browser
 
         try
             svg = fs.readFileSync slash.resolve(file), encoding: 'utf8'
-        catch e
-            log "error adding file #{file}", e
+        catch err
+            kerror "error adding file #{file} #{err}"
             return
         
         item = elem 'span', class: 'browserItem'
@@ -213,7 +214,7 @@ class Browser
     zoom: (dir) ->
         
         br = @element.getBoundingClientRect()
-        @setScale @scale * (1 + dir * 0.5), pos br.width/2, br.height/2
+        @setScale @scale * (1 + dir * 0.5), kpos br.width/2, br.height/2
        
     zoomAll: ->
         
@@ -268,7 +269,7 @@ class Browser
             br     = boundingBox @scroll
             oldscl = @scale
             oldoff = @offset.times @scale
-            relpos = pos eventPos.x / br.width, eventPos.y / br.height
+            relpos = kpos eventPos.x / br.width, eventPos.y / br.height
         
             @scale = clamp 0.05, 50, scale
             
@@ -297,7 +298,7 @@ class Browser
             if event.deltaY > 0
                 @fadeCenter()
                 
-            @setScale scale, pos event 
+            @setScale scale, kpos event 
         else
             
             @wheelSum ?= 0

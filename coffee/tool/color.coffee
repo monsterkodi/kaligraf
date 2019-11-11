@@ -6,7 +6,7 @@
  0000000   0000000   0000000   0000000   000   000
 ###
 
-{ empty, elem, stopEvent, post, prefs, clamp, first, pos, log, $, _ } = require 'kxk'
+{ post, prefs, empty, first, kpos, $, _ } = require 'kxk'
 
 {   itemIDs, itemGradient, colorGradient, grayGradient, gradientState, checkersPattern,
     cloneGradient, gradientUrl, urlGradient, setGradientStops } = require '../utils'
@@ -292,7 +292,7 @@ class Color extends Tool
 
     showChildren: -> 
         
-        childPos = pos(@kali.toolSize,0).plus @kali.tools.stroke.pos()
+        childPos = kpos(@kali.toolSize,0).plus @kali.tools.stroke.pos()
         
         if @gradient
             

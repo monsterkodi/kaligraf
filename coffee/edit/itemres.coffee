@@ -6,7 +6,7 @@
 000     000     00000000  000   000  000   000  00000000  0000000 
 ###
 
-{ elem, post, drag, first, last, pos, log, _ } = require 'kxk'
+{ post, drag, kpos, _ } = require 'kxk'
 
 { opposide, itemIDs, boxPos } = require '../utils'
 
@@ -62,7 +62,7 @@ class ItemRes extends Res
             newAngle = angle+rotation
             newAngle = Math.round newAngle if opt?.round
             @trans.rotation item, newAngle
-            newCenter = pos new SVG.Point(center).transform transmat
+            newCenter = kpos new SVG.Point(center).transform transmat
             @trans.center item, newCenter
             
         @selection.update()
@@ -114,7 +114,7 @@ class ItemRes extends Res
         center = drag.id
         items = @selection.items
         
-        delta = pos drag.delta
+        delta = kpos drag.delta
                 
         left  = center.includes 'left'
         right = center.includes 'right'
@@ -159,7 +159,7 @@ class ItemRes extends Res
                 
         for item in items
             
-            @trans.resize item, transmat, pos sx, sy
+            @trans.resize item, transmat, kpos sx, sy
                         
         @selection.update()
 

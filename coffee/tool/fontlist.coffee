@@ -6,11 +6,11 @@
 000        0000000   000   000     000     0000000  000  0000000      000   
 ###
 
-{ stopEvent, prefs, keyinfo, elem, drag, clamp, last, post, log, _ } = require 'kxk'
+{ post, stopEvent, keyinfo, prefs, clamp, elem, drag, last, _ } = require 'kxk'
 
 { winTitle, ensureInSize } = require '../utils'
 
-FontManager = require 'font-manager' 
+# FontManager = require 'font-manager' 
 # Shadow      = require '../shadow'
 
 fontGroups = 
@@ -189,7 +189,8 @@ class FontList
         @element.addEventListener 'wheel', (event) -> event.stopPropagation()
         @element.addEventListener 'keydown', @onKeyDown
                 
-        fonts = FontManager.getAvailableFontsSync().map (font) -> font.family
+        # fonts = FontManager.getAvailableFontsSync().map (font) -> font.family
+        fonts = ['Arial' 'Helvetica']
         fonts = _.uniq fonts
 
         #  0000000   00000000    0000000   000   000  00000000    0000000  

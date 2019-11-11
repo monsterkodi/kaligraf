@@ -6,7 +6,7 @@
  0000000   000   000  000   000  0000000    000  00000000  000   000     000     
 ###
 
-{ prefs, post, empty, pos, log, _ } = require 'kxk'
+{ post, prefs, empty, kpos, _ } = require 'kxk'
 
 { itemIDs, itemGradient, setGradientState, gradientState } = require '../utils'
 
@@ -114,8 +114,8 @@ class Gradient extends Tool
 
         switch @state.type
             when 'radial'
-                @state.from = pos 0.5, 0.5
-                @state.to   = pos 0.5, 0.5
+                @state.from = kpos 0.5, 0.5
+                @state.to   = kpos 0.5, 0.5
                 switch @state.spread
                     when 'pad'
                         @state.r = 0.5
@@ -125,11 +125,11 @@ class Gradient extends Tool
                 delete @state.r
                 switch @state.spread
                     when 'pad'
-                        @state.from = pos 0.2, 0
-                        @state.to   = pos 0.8, 0
+                        @state.from = kpos 0.2, 0
+                        @state.to   = kpos 0.8, 0
                     else
-                        @state.from = pos 0.0, 0
-                        @state.to   = pos 0.5, 0
+                        @state.from = kpos 0.0, 0
+                        @state.to   = kpos 0.5, 0
         
         setGradientState @gradient, @state
         
@@ -201,7 +201,7 @@ class Gradient extends Tool
                 
                 switch type 
                     when 'radial'
-                        state.r = pos(state.from).dist pos(state.to)
+                        state.r = kpos(state.from).dist kpos(state.to)
                         state.radius = x:state.from.x+state.r, y:state.from.y
                         state.to = x:state.from.x, y:state.from.y
                     when 'linear'

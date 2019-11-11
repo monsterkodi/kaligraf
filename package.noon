@@ -1,5 +1,4 @@
 name            kaligraf
-productName     kaligraf
 version         0.45.0
 description     svg editor
 main            js/app.js
@@ -12,15 +11,13 @@ repository
                 type  git
                 url   git+https://github.com/monsterkodi/kaligraf.git
 dependencies
-                chroma-js       ^1.3.7
-                font-manager    ^0.3.0
-                kxk             https://github.com/monsterkodi/kxk.git
-                performance-now  ^2.1.0
+                chroma-js       ^2.1.0
+                kxk             ^0.359.0
                 pretty-data     ^0.40.0
                 svg.filter.js   ^2.0.2
-                svg.js          ^2.6.5
-                uuid            ^3.2.1
+                svg.js          ^2.7.1
+                uuid            ^3.3.3
 devDependencies
-                electron        ^2.0.2
-                electron-packager  ^12.1.0
-                electron-rebuild  ^1.7.3
+                electron        ^7.1.1
+                electron-packager  ^14.1.0
+                electron-rebuild  ^1.8.6

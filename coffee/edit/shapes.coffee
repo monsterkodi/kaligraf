@@ -6,7 +6,7 @@
 0000000   000   000  000   000  000        00000000  0000000 
 ###
 
-{ post, drag, last, slash, pos, log, _ } = require 'kxk'
+{ post, slash, drag, kpos } = require 'kxk'
 
 { uuid } = require '../utils'
 
@@ -239,7 +239,7 @@ class Shapes
         newShape = @autoSwitch event
         shape    = newShape
         
-        eventPos = pos event 
+        eventPos = kpos event 
         stagePos = @stage.stageForEvent eventPos
           
         if shape in ['loupe', 'pipette']
@@ -301,7 +301,7 @@ class Shapes
 
         shape = @autoSwitch event
         
-        eventPos = pos event
+        eventPos = kpos event
         stagePos = @stage.stageForEvent eventPos
         
         # log 'onDrag', @draw?
@@ -365,7 +365,7 @@ class Shapes
     
     onStop: (drag, event) =>
         
-        eventPos = pos event
+        eventPos = kpos event
         stagePos = @stage.stageForEvent eventPos
         shape    = @kali.shapeTool() 
         

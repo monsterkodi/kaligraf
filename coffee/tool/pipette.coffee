@@ -6,7 +6,7 @@
 000        000  000        00000000     000        000     00000000
 ###
 
-{ elem, post, pos, log, fs, fileExists, $, _ } = require 'kxk'
+{ post, kpos, drag } = require 'kxk'
 
 Exporter = require '../exporter'
 Tool     = require './tool' 
@@ -27,7 +27,7 @@ class Pipette extends Tool
     
     onStageDown: (event) =>
 
-        item = @stage.leafItemAtPos pos event
+        item = @stage.leafItemAtPos kpos event
 
         if item?
                         
@@ -57,7 +57,7 @@ class Pipette extends Tool
                 post.emit 'color', 'stroke', prop:'color', color: @tools.stroke.color, stroke: @tools.fill.alpha
             return
             
-        item = @stage.leafItemAtPos pos event
+        item = @stage.leafItemAtPos kpos event
         if item?
             @stage.undo.do @stage, 'color'+item.id()
             style = {}

@@ -6,7 +6,7 @@
 0000000   000   000  000   000  000        0000000  000  000   000  00000000
 ###
 
-{ first, last, pos, log, _ } = require 'kxk'
+{ first, kpos, last } = require 'kxk'
 
 { uuid } = require '../utils'
 
@@ -17,7 +17,7 @@ class SnapLine
 
     constructor: (@kali, @box, @dot) ->
         
-        stagePos = pos @dot.cx(), @dot.cy()
+        stagePos = kpos @dot.cx(),@dot.cy()
 
         root = @box.doc()
         @line = root.line()
@@ -65,7 +65,7 @@ class SnapLine
     @boxPoint: (box, point) ->
         
         r = first box.children()
-        tpos = (x,y) -> Trans.fullTransform r, pos x,y
+        tpos = (x,y) -> Trans.fullTransform r, kpos xx,y
         switch point
             when 'top left'  then tpos 0,0
             when 'top'       then tpos r.width()/2, 0
@@ -79,7 +79,7 @@ class SnapLine
         
     onDrag: (drag, event) =>
         
-        stagePos = @kali.stage.stageForEvent pos event
+        stagePos = @kali.stage.stageForEvent kpos eventevent
         
         if 'snapbox' == event.target?.instance?.parent()?.data? 'type'
             box = event.target.instance.parent()

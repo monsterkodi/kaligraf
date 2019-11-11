@@ -6,7 +6,7 @@
  0000000   0000000   000   000      0      00000000  000   000     000   
 ###
 
-{ first, pos, log, _ } = require 'kxk'
+{ first, kpos, _ } = require 'kxk'
 
 Ctrl = require './ctrl'
 
@@ -53,7 +53,7 @@ class Convert
                             newDots = newDots.concat _.values @ctrls[index].dots
                             continue
                         when 'Q'
-                            ctrl = pos point[1], point[2]
+                            ctrl = kpos point[1], point[2]
                             mid1 = prevp.plus (prevp.to ctrl).times 2/3
                             mid2 = thisp.plus (thisp.to ctrl).times 2/3
                             point.splice 1, 2, mid1.x, mid1.y, mid2.x, mid2.y
@@ -153,31 +153,30 @@ class Convert
         
         switch @item.type
             when 'ellipse'
-                r = pos @item.attr().rx, @item.attr().ry
+                r = kpos @item.attr().rx, @item.attr().ry
             else
-                r = pos @item.attr().r, @item.attr().r
+                r = kpos @item.attr().r, @item.attr().r
                 
-        c = pos @item.cx(), @item.cy()
+        c = kpos @item.cx(), @item.cy()
         
         log 'ellipseToPath', @item.type, c, r, @trans.getCenter @item
         f = 0.551915
-        p1 = c.plus pos r.x, 0
+        p1 = c.plus kpos r.x, 0
         newPoints.push ['M', p1.x, p1.y]
-        p2 = c.plus pos 0, r.y
-        c1 = p1.plus pos 0, r.y*f
-        c2 = p2.plus pos r.x*f, 0
+        p2 = c.plus kpos 0, r.y
+        c1 = p1.plus kpos 0, r.y*f
+        c2 = p2.plus kpos r.x*f, 0
         newPoints.push ['C', c1.x, c1.y, c2.x, c2.y, p2.x, p2.y]
-        p3 = c.plus pos -r.x, 0
-        c1 = p2.plus pos -r.x*f, 0
-        c2 = p3.plus pos 0, r.y*f
+        p3 = c.plus kpos -r.x, 0
+        c1 = p2.plus kpos -r.x*f, 0
+        c2 = p3.plus kpos 0, r.y*f
         newPoints.push ['C', c1.x, c1.y, c2.x, c2.y, p3.x, p3.y]
-        p4 = c.plus pos 0, -r.y
-        c1 = p3.plus pos 0, -r.y*f
-        c2 = p4.plus pos -r.x*f, 0
+        p4 = c.plus kpos 0, -r.y
+        c1 = p3.plus kpos 0, -r.y*f
+        c2 = p4.plus kpos -r.x*f, 0
         newPoints.push ['C', c1.x, c1.y, c2.x, c2.y, p4.x, p4.y]
-        # p4 = c.plus pos 0, -r.y
-        c1 = p4.plus pos r.x*f, 0
-        c2 = p1.plus pos 0, -r.y*f
+        c1 = p4.plus kpos r.x*f, 0
+        c2 = p1.plus kpos 0, -r.y*f
         newPoints.push ['C', c1.x, c1.y, c2.x, c2.y, p1.x, p1.y]
         
         newPoints
@@ -245,7 +244,7 @@ class Convert
 
                 when 'Q', 'S'
 
-                    ctrl  = pos point[1], point[2]
+                    ctrl  = kpos point[1], point[2]
                     ctrl1 = prevp.mid ctrl
                     ctrl2 = thisp.mid ctrl
                     mid = ctrl1.mid ctrl2

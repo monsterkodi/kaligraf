@@ -5,7 +5,7 @@
 000   000  000   000  000   000  000   000  000
  0000000   000   000  000   000  0000000    000
 ###
-{ pos, log, _ } = require 'kxk'
+{ kpos, _ } = require 'kxk'
 
 { boxPos, itemGradient } = require '../utils'
 
@@ -125,38 +125,38 @@ class Gradi
             
             when 'radius'
                 if @gradient.attr('r')
-                    pos @gradient.attr('fx')+@gradient.attr('r'), @gradient.attr('fy')
+                    kpos @gradient.attr('fx')+@gradient.attr('r'), @gradient.attr('fy')
                 else
-                    pos 0.5, 0
+                    kpos 0.5, 0
                     
             when 'from'   
                 
                 if @type == 'radial' 
                     if @gradient.attr('fx') and @gradient.attr('fy')
-                        pos @gradient.attr('fx'), @gradient.attr('fy')
+                        kpos @gradient.attr('fx'), @gradient.attr('fy')
                     else
-                        pos 0.5, 0.5
+                        kpos 0.5, 0.5
                 else
                     if @gradient.attr('x1') and @gradient.attr('y1')
-                        pos @gradient.attr('x1'), @gradient.attr('y1')
+                        kpos @gradient.attr('x1'), @gradient.attr('y1')
                     else
-                        pos 0, 0
+                        kpos 0, 0
                         
             when 'to'   
                 
                 if @type == 'radial' 
                     if @gradient.attr('cx') and @gradient.attr('cy')
-                        pos @gradient.attr('cx'), @gradient.attr('cy')
+                        kpos @gradient.attr('cx'), @gradient.attr('cy')
                     else
-                        pos 0.5, 0.5
+                        kpos 0.5, 0.5
                 else
                     if @gradient.attr('x2') and @gradient.attr('y2')
-                        pos @gradient.attr('x2'), @gradient.attr('y2')
+                        kpos @gradient.attr('x2'), @gradient.attr('y2')
                     else
-                        pos 0.5, 0
+                        kpos 0.5, 0
                 
         bb = @object.item.bbox()
-        relPos.mul pos bb.width, bb.height
+        relPos.mul kpos bb.width, bb.height
         relPos.add boxPos bb
         relPos.add @stage.viewPos().times -1
         dotPos = @trans.fullTransform @object.item, relPos
@@ -185,11 +185,11 @@ class Gradi
 
         switch line
             when 'from-to'
-                pos1 = pos @dots['from'].cx(), @dots['from'].cy()
-                pos2 = pos @dots['to'].cx(),   @dots['to'].cy()
+                pos1 = kpos @dots['from'].cx(), @dots['from'].cy()
+                pos2 = kpos @dots['to'].cx(),   @dots['to'].cy()
             when 'radius'
-                pos1 = pos @dots['from'].cx(),   @dots['from'].cy()
-                pos2 = pos @dots['radius'].cx(), @dots['radius'].cy()
+                pos1 = kpos @dots['from'].cx(),   @dots['from'].cy()
+                pos2 = kpos @dots['radius'].cx(), @dots['radius'].cy()
             else
                 log "Gradi.plotLine -- unhandled line #{line}?"
                 return
@@ -243,8 +243,8 @@ class Gradi
         
         bb = @object.item.bbox()
         
-        from = pos @dots['from'].cx(), @dots['from'].cy()
-        to   = pos @dots['to'].cx(),   @dots['to'].cy()
+        from = kpos @dots['from'].cx(), @dots['from'].cy()
+        to   = kpos @dots['to'].cx(),   @dots['to'].cy()
         
         from = @trans.fullInverse @object.item, from
         to   = @trans.fullInverse @object.item, to
@@ -258,18 +258,18 @@ class Gradi
         w = @trans.width  @object.item
         h = @trans.height @object.item
 
-        from.mul pos 1/w, 1/h
-        to.mul   pos 1/w, 1/h
+        from.mul kpos 1/w, 1/h
+        to.mul   kpos 1/w, 1/h
         
         @gradient.from from.x, from.y
         @gradient.to   to.x,   to.y
         
         if @type == 'radial'
             
-            radius = pos @dots['radius'].cx(), @dots['radius'].cy()
+            radius = kpos @dots['radius'].cx(), @dots['radius'].cy()
             radius = @trans.fullInverse @object.item, radius
             radius.sub boxPos bb
-            radius.mul pos 1/w, 1/h
+            radius.mul kpos 1/w, 1/h
             @gradient.radius from.dist radius
             
 module.exports = Gradi

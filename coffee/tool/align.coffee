@@ -6,7 +6,7 @@
 000   000  0000000  000   0000000   000   000
 ###
 
-{ post, first, pos, log, $, _ } = require 'kxk'
+{ post, first, kpos } = require 'kxk'
 
 { itemIDs } = require '../utils'
 
@@ -91,7 +91,7 @@ class Align extends Tool
         for item in items
             rect = @trans.getRect item
             oldCenter = @trans.center item
-            newCenter = pos oldCenter
+            newCenter = kpos oldCenter
             
             switch side
                 when 'left'   then newCenter.x = avg + rect.width/2

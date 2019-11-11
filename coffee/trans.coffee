@@ -6,7 +6,7 @@
    000     000   000  000   000  000   000  0000000 
 ###
 
-{ pos, log, _ } = require 'kxk'
+{ kpos, _ } = require 'kxk'
 
 { normRect, boxCenter, boxOffset, boxPos, rectWidth, rectHeight, rectCenter, rectOffset, itemMatrix, itemBox } = require './utils'
 
@@ -24,15 +24,15 @@ class Trans
     rotation: (item, a, c) -> if a? then @setRotation(item, a, c) else @getRotation item
     scale:    (item, s, c) -> if s? then @setScale(   item, s, c) else @getScale    item
 
-    @fullTransform: (item, p) -> pos new SVG.Point(p).transform itemMatrix(item)
+    @fullTransform: (item, p) -> kpos new SVG.Point(p).transform itemMatrix(item)
     fullTransform: (item, p) -> Trans.fullTransform item, p
-    fullInverse:   (item, p) -> pos new SVG.Point(p).transform itemMatrix(item).inverse()
+    fullInverse:   (item, p) -> kpos new SVG.Point(p).transform itemMatrix(item).inverse()
 
-    transform: (item, p) -> pos new SVG.Point(p).transform item.transform().matrix
-    inverse:   (item, p) -> pos new SVG.Point(p).transform item.transform().matrix.inverse()
+    transform: (item, p) -> kpos new SVG.Point(p).transform item.transform().matrix
+    inverse:   (item, p) -> kpos new SVG.Point(p).transform item.transform().matrix.inverse()
     
     itemPosToView: (item, p) -> 
-        pos new SVG.Point(p).transform itemMatrix item
+        kpos new SVG.Point(p).transform itemMatrix item
                     
     follow: (follower, followee) ->
         follower.transform new SVG.Matrix()
@@ -40,7 +40,7 @@ class Trans
             follower.transform ancestor.transform(), relative:true
         follower.transform followee.transform(), relative:true
     
-    getScale: (item) -> pos item.transform('scaleX'), item.transform('scaleY')
+    getScale: (item) -> kpos item.transform('scaleX'), item.transform('scaleY')
     setScale: (item, s, c) ->
         if c?
             item.transform scaleX:s.x, cx:c.x, cy:c.y
@@ -67,7 +67,7 @@ class Trans
     newCenter: (item, matrix, scale) ->
         
         newCenter = new SVG.Point @getCenter item
-        newCenter = pos newCenter.transform matrix
+        newCenter = kpos newCenter.transform matrix
         
     newSize: (item, matrix, scale) ->
         
@@ -80,14 +80,14 @@ class Trans
         oldSize.y = -oldSize.y
         newSize2  = new SVG.Point oldSize
         newSize2  = newSize2.transform rotMat
-        scaleDir  = scale.minus pos 1,1
+        scaleDir  = scale.minus kpos 1,1
         if Math.abs(@dot newSize1, scaleDir) > Math.abs(@dot newSize2, scaleDir)
             newSize = newSize1
         else
             newSize = newSize2
         newSize = newSize.transform new SVG.Matrix().scale scale.x, scale.y
         newSize = newSize.transform new SVG.Matrix().rotate -itemTrans.rotation
-        newSize = pos Math.abs(newSize.x), Math.abs(newSize.y)
+        newSize = kpos Math.abs(newSize.x), Math.abs(newSize.y)
         
     resize: (item, matrix, scale) ->
 
@@ -107,7 +107,7 @@ class Trans
 
         oldSize = @size group
         
-        scale = pos size.x/oldSize.x, size.y/oldSize.y
+        scale = kpos size.x/oldSize.x, size.y/oldSize.y
         
         transmat = new SVG.Matrix().around 0, 0, new SVG.Matrix().scale scale.x, scale.y
         
@@ -235,6 +235,6 @@ class Trans
             
     getWidth:  (item) -> item.bbox().width
     getHeight: (item) -> item.bbox().height
-    getSize:   (item) -> pos @getWidth(item), @getHeight(item)
+    getSize:   (item) -> kpos @getWidth(item), @getHeight(item)
     
 module.exports = Trans

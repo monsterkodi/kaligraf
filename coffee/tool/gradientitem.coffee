@@ -6,7 +6,7 @@
  0000000   000   000  000   000  0000000    000  00000000  000   000     000     000     000     00000000  000   000
 ###
 
-{ elem, drag, clamp, post, pos, log, $, _ } = require 'kxk'
+{ post, clamp, elem, kpos, drag } = require 'kxk'
 
 { boundingBox, boxPos, checkersPattern, colorBrightness, id, gradientStops, gradientColor } = require '../utils'
 
@@ -122,7 +122,7 @@ class GradientItem
         
         br = boundingBox @element
         op = eventPos.minus boxPos br
-        op.mul pos @width/br.w, @height/br.h
+        op.mul kpos @width/br.w, @height/br.h
             
     #  0000000  000000000   0000000   00000000   000000000  
     # 000          000     000   000  000   000     000     
@@ -132,7 +132,7 @@ class GradientItem
     
     onStopStart: (drag, event) => 
         
-        eventPos = pos event
+        eventPos = kpos event
         
         itemPos = @itemPosFor eventPos
         return 'skip' if not (@height*2/5 < itemPos.y < @height)
@@ -164,7 +164,7 @@ class GradientItem
     onStopMove:  (drag, event) => 
         
         stop = drag.stop
-        eventPos = pos event
+        eventPos = kpos event
         itemPos = @itemPosFor eventPos
         prev = @prevOffset stop.index
         next = @nextOffset stop.index
@@ -191,7 +191,7 @@ class GradientItem
 
     onStopDblClick: (event) =>
 
-        itemPos = @itemPosFor pos event
+        itemPos = @itemPosFor kpos event
         stop = @addStop itemPos.x/@width
         @activateStop stop.index
             
@@ -207,7 +207,7 @@ class GradientItem
         
         br = boundingBox @element
         stopPos = boxPos br
-        stopPos.add pos 0, br.h
+        stopPos.add kpos 0, br.h
         
         palette = new Palette @kali, 
             onLeave: @closePalette 

@@ -6,7 +6,7 @@
  0000000     000     000   000  0000000
 ###
 
-{ last, pos, log, _ } = require 'kxk'
+{ valid } = require 'kxk'
 
 class Ctrl
 

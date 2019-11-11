@@ -6,7 +6,7 @@
 000   000  000   000   0000000   0000000  00000000  
 ###
 
-{ clamp, empty, first, post, pos, log, _ } = require 'kxk'
+{ post, kpos } = require 'kxk'
 
 { boxCenter } = require '../utils'
 
@@ -88,7 +88,7 @@ class Angle extends Tool
                 
                 rotDot = (index, dot) ->
                     dotPos = points.posAt index, dot
-                    newPos = pos new SVG.Point(dotPos).transform transmat
+                    newPos = kpos new SVG.Point(dotPos).transform transmat
                     points.setDotPos index, dot, newPos
                 for index in [0...points.numPoints()]
                     rotDot index, 'point'

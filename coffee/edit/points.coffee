@@ -100,7 +100,7 @@ class Points extends Convert
                         idots.dots = idots.dots.filter (d) -> d != 'ctrlr'
                         idts.dots.push('point') if 'point' not in idts.dots
 
-        itemDelta = @trans.fullInverse(@item, cfg.delta).minus @trans.fullInverse(@item, pos(0,0))
+        itemDelta = @trans.fullInverse(@item, cfg.delta).minus @trans.fullInverse(@item, kpos(0,0))
         
         indexDots = indexDots.filter (idts) -> idts.dots.length
 

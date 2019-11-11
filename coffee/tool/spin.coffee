@@ -6,7 +6,7 @@
 0000000   000        000  000   000
 ###
 
-{ stopEvent, elem, first, last, log, _ } = require 'kxk'
+{ stopEvent, title, first, elem, last, _ } = require 'kxk'
 
 Button   = require './button'
 
@@ -14,7 +14,7 @@ class Spin extends Button
         
     initSpin: (spin) ->
         
-        spin.step ?= [1,5,10,50]
+        spin.step ?= [1 5 10 50]
         
         buttons = [
             tiny:   'spin-minus'
@@ -43,7 +43,7 @@ class Spin extends Button
         
         @button(spin.name + ' reset').innerHTML = spin.str? and spin.str(spin.value) or spin.value
         
-        span.addEventListener 'wheel', @onSpinWheel
+        span.addEventListener 'wheel' @onSpinWheel
         
     # 000   000  000   000  00000000  00000000  000      
     # 000 0 000  000   000  000       000       000      

@@ -334,7 +334,7 @@ class Edit
     
     stageStart: (drag, event) ->
         
-        eventPos = kpos eventevent
+        eventPos = kpos event
                 
         item = @stage.leafItemAtPos eventPos
         

@@ -6,7 +6,7 @@
 0000000      000     000   000   0000000   00000000
 ###
 
-{ post, prefs, empty, clamp, first, slash, elem, kpos, fs, _ } = require 'kxk'
+{ post, prefs, empty, clamp, first, slash, elem, kpos, fs, klog, _ } = require 'kxk'
 
 { contrastColor, normRect, bboxForItems, itemIDs, insideBox, itemBox, boxPos, uuid, 
   growBox, rboxForItems, boxOffset, boxCenter, itemGradient, itemMatrix } = require './utils'
@@ -959,8 +959,9 @@ class Stage
             properties:     ['openFile']
             
         dialog.showOpenDialog(opts).then (result) => 
-            if not result.cancelled and result.filePath
-                @load result.filePath
+            klog 'result' result
+            if not result.canceled and result.filePaths[0]
+                @load result.filePaths[0]
 
     import: ->
         
@@ -970,14 +971,14 @@ class Stage
             properties:     ['openFile', 'multiSelections']
             
         dialog.showOpenDialog(opts).then (result) => 
-            if not result.cancelled and result.filePath
+            if not result.canceled and result.filePaths.length
                 @do()
-                # for file in files
-                svg = fs.readFileSync result.filePath, encoding: 'utf8'
-                @addSVG svg, 
-                    color:  false
-                    id:     slash.base result.filePath
-                    parent: @activeLayer()
+                for file in result.filePaths
+                    svg = fs.readFileSync file, encoding: 'utf8'
+                    @addSVG svg, 
+                        color:  false
+                        id:     slash.base file
+                        parent: @activeLayer()
                 @done()
                 
     #  0000000   0000000   000   000  00000000
@@ -1010,7 +1011,7 @@ class Stage
             filters:        [ {name: 'SVG', extensions: ['svg']} ]
             
         dialog.showSaveDialog(opts).then (result) => 
-            if not result.cancelled and result.filePath
+            if not result.canceled and result.filePath
                 @save result.filePath
                 @pushRecent @currentFile
 
@@ -1026,10 +1027,10 @@ class Stage
         opts =         
             title:          'Export'
             defaultPath:    @currentFile
-            filters:        [ {name: 'SVG,Image', extensions: ['svg', 'png', 'webp', 'jpg']} ]
+            filters:        [ {name: 'SVG,Image', extensions: ['svg' 'png' 'webp' 'jpg']} ]
         
         dialog.showSaveDialog(opts).then (result) =>
-            if not result.cancelled and result.filePath
+            if not result.canceled and result.filePath
                 Exporter.export @svg, result.filePath, padding:@kali.tool('padding').percent
                 
     #  0000000   0000000   00000000   000   000

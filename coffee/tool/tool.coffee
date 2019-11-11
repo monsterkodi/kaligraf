@@ -15,12 +15,10 @@ Exporter = require '../exporter'
 
 class Tool extends Spin
 
-    constructor: (kali, cfg) ->
+    @: (@kali, @cfg) ->
 
-        super()
+        super
         
-        @kali   = kali
-        @cfg    = cfg
         @height = @kali.toolSize
         @name   = @cfg.name ? @cfg.class
         @stage  = @kali.stage 

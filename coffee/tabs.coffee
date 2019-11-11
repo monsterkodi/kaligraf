@@ -6,7 +6,7 @@
    000     000   000  0000000    0000000 
 ###
 
-{ post, elem, drag, prefs, slash, first, valid, empty, error, log, $, _ } = require 'kxk'
+{ post, empty, prefs, valid, first, elem, drag, klog, $, _ } = require 'kxk'
 
 Tab = require './tab'
 
@@ -38,7 +38,7 @@ class Tabs
             when 'clear'
                 @addTab file:info.file
             when 'save'
-                log 'onStage save', info
+                klog 'onStage save', info
                 if @activeTab()?.file() == 'untitled'
                     untitledTab = @activeTab()
                 @addTab file:info.file
@@ -132,7 +132,7 @@ class Tabs
     
     closeTab: (tab = @activeTab()) ->
         
-        log 'closeTab', tab.file()
+        klog 'closeTab' tab.file()
         
         return if not tab?
                    

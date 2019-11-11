@@ -40,8 +40,8 @@ class Browser
             onMove:  @onDrag
             onStop:  @onStop
         
-        post.on 'resize',  @onResize
-        post.on 'browser', @onBrowser
+        post.on 'resize'  @onResize
+        post.on 'browser' @onBrowser
         
         @hide()
 
@@ -77,8 +77,8 @@ class Browser
                     
         dialog.showOpenDialog(opts).then (result) =>
 
-            if not result.cancelled and result.filePath
-                dir = result.filePath
+            if not result.canceled and result.filePaths[0]
+                dir = result.filePaths[0]
                 if slash.dirExists dir
                     @kali.title.tabs.addTab file:dir, dir:true
                     @browseDir dir
